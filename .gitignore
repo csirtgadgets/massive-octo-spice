@@ -1,0 +1,15 @@
+configure
+autom4te.cache
+install-sh
+Makefile
+Makefile.in
+config.log
+config.status
+config.pld
+compile
+missing
+install-sh
+ltmain.sh
+aclocal.m4
+.vagrant
+missing
