@@ -1,0 +1,14 @@
+[phishtank]
+guid = everyone
+# phishtank asks but not requires that you get your own apikey for their API
+feed = 'http://data.phishtank.com/data/XXXXXXXXXXXXXXXXXXXXXXXXXXXX INSERT YOUR KEY HERE XXXXXXXXXXXXXXXXXXXXXX/online-valid.json.gz'
+# if you don't get one, cif-smrt will default to this feed url instead of the one above, but PT might block you eventually
+feed = http://data.phishtank.com/data/online-valid.json.gz
+assessment = 'phishing'
+source = 'phishtank.com'
+fields = 'submission_time,url,target,phish_detail_url'
+fields_map = 'detecttime,address,description,alternativeid'
+severity = 'medium'
+confidence = 85
+restriction = 'need-to-know'
+alternativeid_restriction = 'public'

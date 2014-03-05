@@ -1,0 +1,85 @@
+#!/usr/bin/env perl
+
+# fix lib paths, some may be relative
+BEGIN { # BEGIN RT CMD BOILERPLATE
+    require File::Spec;
+    require Cwd;
+    my @libs = ("/opt/cif/lib");
+    my $bin_path;
+
+    for my $lib (@libs) {
+        unless ( File::Spec->file_name_is_absolute($lib) ) {
+            $bin_path ||= ( File::Spec->splitpath(Cwd::abs_path(__FILE__)) )[1];
+            $lib = File::Spec->catfile( $bin_path, File::Spec->updir, $lib );
+        }
+        unshift @INC, $lib;
+    }
+
+}
+
+# cif stuff
+use CIF qw/debug/;
+
+# other
+use Getopt::Long;
+use Config::Simple;
+use Data::Dumper;
+
+my $help;
+my $man;
+my $daemon      = 0;
+our $debug      = 0;
+my $verbosity   = 0;
+
+my $router      = 'zmq+tcp://localhost:'.CIF::DEFAULT_PORT();
+my $token       = 0;
+
+my $smrt_config;
+my $client_config;
+
+my $config = $ENV{'HOME'}.'/.cif';
+if(-e $config){
+    $config = Config::Simple->new($config);
+    $client_config  = $config->get_block('client');
+    $smrt_config    = $config->get_block('smrt');
+    
+    $token  = $smrt_config->{'token'}   || $client_config->{'token'}    || $token;
+    $router = $smrt_config->{'router'}  || $client_config->{'router'}   || $router;
+}
+
+Getopt::Long::Configure("bundling");
+GetOptions(
+    'help|h'        => \$help, 
+    'config|C=s'    => \$config,
+    'router|R=s'    => \$router,
+    'token|T=s'     => \$token,
+    'daemon|D'      => \$daemon,
+    'debug|d'       => \$debug,
+    'verbosity|v'   => \$verbosity,
+) or die(usage());
+
+die(usage()) if($help);
+
+$debug = $verbosity if($verbosity);
+
+sub usage {
+    return <<EOF;
+
+Usage: $0 [OPTION]
+
+ Options:
+    -R, --router=STRING     specify a router to connect to, default $router
+    -T, --token=STRING      specify a default token/apikey to use, default: $token
+    -C, --config=FILE       specify cofiguration file, default: ~/.cif 
+    -D, --daemon            run as daemon
+    -d, --debug             turn on debugging
+    -v, --verbosity         turn up debug verbosity [1-10]
+    -h, --help              this message       
+
+ Examples:
+    $0 -C /path/to/cif.conf
+
+EOF
+}
+
+exit(0);
