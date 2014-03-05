@@ -1,21 +1,13 @@
-Massive Octo Spice
+massive-octo-spice
 ==
 
 Building and installation
 ===
-Generic
-====
-```
-$ ./configure
-$ make && make fixdeps
-$ make test
-$ sudo make install
-```
+Coming soon...
 
 Resources
 ===
 Git repository: github.com/csirtgadgets/massive-octo-spice
-
 
 COPYRIGHT AND LICENCE
 ===
