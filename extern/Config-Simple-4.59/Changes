@@ -1,0 +1,120 @@
+ Change log for Config::Simple
+  $Date: 2006/09/12 19:15:04 $
+
+4.59    - Tuesday, September 12, 2006
+
+    * FIXED: If simple configuration file's first line consisted of
+      values containing '=' the guess_syntax() mistakenly identified
+      the syntax of the file as 'ini' as opposed to 'simple'. Test case
+      created. Thanks to Craig Manley to point this out.
+
+4.58    - Thursday, February 10, 2005
+
+    * FIXED: if commented lines had leading spaces tests Config::Simple failed
+      to parse them properly. Thanks to Ricky Nance for pointing this out.
+
+
+4.57 
+	* FIXED [BUG 7793] - http://rt.cpan.org/NoAuth/Bug.html?id=7793
+	* FIXED [BUG 6252] - http://rt.cpan.org/NoAuth/Bug.html?id=6252
+
+4.56 
+    * clear() method is no longer autoloaded to avoid collisions with CLEAR()
+      on Win32 systems.
+	* FIXED: if value of a key evaluated to false the whole key wasn't being stored
+	  in the config file.
+
+
+4.55
+    * vars() was buggy if a key in the configuration file was a list and the second
+      element was 0 (zero).
+
+4.54
+    * parse_inif_file(), parse_cfg_file() and parse_http_file()
+      are optimized to be used as static methods that return
+      the file contents as hashref.
+    * more tests performed against some reported bug reports
+
+4.53
+    * write() and dump() methods open files with 0666 permission
+      as opposed to 0600.
+4.52
+    * '-strict' and '-lc' switches, if used together were buggy
+    * if either -name or -value pased to param() was 0 (zero),
+      it used to fail.
+
+4.51
+    * t/is_modified.cfg was missing from the MANIFEST
+
+4.50
+    * extra empty block() was removed. Thanks to Vitaly Kushneriuk 
+      for this note
+
+4.49
+    * get_block() method now returns a list of all the available
+      blocks from an ini file.
+    * block() method was missing in previous releases. Added as
+      an alias to get_block()
+    
+
+4.48
+    * 'autosave' mode used to save into the file even if nothing had been
+      modified. Fixed in this release
+
+4.47
+    * clear() method introduced
+    * if 'authosave' and 'filename' options were passed to new(),
+      'autosave' was being ignored.
+    * delete() and DELETE() methods shouldn't be autoloaded with 
+      AutoLoad. Creates problems for systems with case sensitive file names.
+      Only DELETE() is autoloaded.
+
+4.46
+    * tie() interface, convenience methods as well as deprecated
+      methods are loaded on demand using AutoLoader.
+    * Minor bugs in the test suits fixed.
+    * Shorter, better manual SYNOPSIS and other minor documentation fixes.    
+
+4.45
+    * full support for tie-interface
+    * bug in param() method fixed, where it used to display 'undef'
+      as a value of any variable in the config file with a single '0'.
+
+4.44
+    * import_from() class method now supports second argument
+      to be a reference to an existing hash
+
+4.43
+    * Minor fix: forgot to remove "use diagnostics" line.
+
+4.42
+    * bug fix in get_block() as well as set_block() method
+    * get_block() and set_block() methods are finally documented
+      along with "-block" param() option  
+
+4.41
+    * Test scripts fixed
+    * import_names() specific section of the manual updated
+
+4.4
+    * import_names() method to import values as global variables
+      to the caller's name space.
+    * import_from() class method to import values from a file
+      instead of from an object
+    * comments on the as_string() will have last update date.
+      This applies to write() and save() methods as well.
+
+4.3
+    * Better exception handling through Config::Simple->error()
+4.2
+    * Using Fcntl.pm for more portable O_* values
+4.0
+    * Support for multiple values using comma (,);
+    * Smart support for multiple configuration file syntax including
+      ini-files, simple config. as well as http-like style
+    * quoting key values is optional
+    * -lc switch to disable case sensitive parsing of block names and keys
+    * much improved write()
+
+
+$Revision: 3.33 $

@@ -1,0 +1,554 @@
+NAME
+    Config::Simple - simple configuration file class
+
+SYNOPSIS
+      use Config::Simple;
+
+      # OO interface:
+      $cfg = new Config::Simple('app.cfg');
+      $user = $cfg->param("User");    # read the value  
+      $cfg->param(User=>'sherzodr');  # update  
+      my %Config = $cfg->vars();      # load everything into %Config
+      $cfg->write();                  # saves the changes to file
+    
+      # tie interface:
+      tie my %Config, "Config::Simple", "app.cgi";    
+      $user = $Config{'User'};  
+      $Config{'User'} = 'sherzodr';  
+      tied(%Config)->write();
+
+ABSTRACT
+    Reading and writing configuration files is one of the most frequent
+    aspects of any software design. Config::Simple is the library to help
+    you with it.
+
+    Config::Simple is a class representing configuration file object. It
+    supports several configuration file syntax and tries to identify the
+    file syntax to parse them accordingly. Library supports parsing,
+    updating and creating configuration files.
+
+ABOUT CONFIGURATION FILES
+    Keeping configurable variables in your program source code is ugly,
+    really. And for people without much of a programming experience,
+    configuring your programs is like performing black magic. Besides, if
+    you need to access these values from within multiple files, or want your
+    programs to be able to update configuration files, you just have to
+    store them in an external file. That's where Config::Simple comes into
+    play, making it very easy to read and write configuration files.
+
+    If you have never used configuration files before, here is a brief
+    overview of various syntax to choose from.
+
+  SIMPLE CONFIGURATION FILE
+
+    Simple syntax is what you need for most of your projects. These are, as
+    the name asserts, the simplest. File consists of key/value pairs,
+    delimited by nothing but white space. Keys (variables) should be
+    strictly alpha-numeric with possible dashes (-). Values can hold any
+    arbitrary text. Here is an example of such a configuration file:
+
+      Alias     /exec
+      TempFile  /usr/tmp
+
+    Comments start with a pound ('#') sign and cannot share the same line
+    with other configuration data.
+
+  HTTP-LIKE SYNTAX
+
+    This format of separating key/value pairs is used by HTTP messages. Each
+    key/value is separated by semi-colon (:). Keys are alphanumeric strings
+    with possible '-'. Values can be any arbitrary text:
+
+    Example:
+
+      Alias: /exec
+      TempFile: /usr/tmp
+
+    It is OK to have spaces around ':'. Comments start with '#' and cannot
+    share the same line with other configuration data.
+
+  INI-FILE
+
+    These configuration files are more native to Win32 systems. Data is
+    organized in blocks. Each key/value pair is delimited with an equal (=)
+    sign. Blocks are declared on their own lines enclosed in '[' and ']':
+
+      [BLOCK1]
+      KEY1=VALUE1
+      KEY2=VALUE2
+
+      [BLOCK2]
+      KEY1=VALUE1
+      KEY2=VALUE2
+
+    Your Winamp 2.x play list is an example of such a configuration file.
+
+    This is the perfect choice if you need to organize your configuration
+    file into categories:
+
+      [site]
+      url="http://www.handalak.com"
+      title="Web site of a \"Geek\""
+      author=sherzodr
+
+      [mysql]  
+      dsn="dbi:mysql:db_name;host=handalak.com"
+      user=sherzodr
+      password=marley01
+
+  SIMPLIFIED INI-FILE
+
+    These files are pretty much similar to traditional ini-files, except
+    they don't have any block declarations. This style is handy if you do
+    not want any categorization in your configuration file, but still want
+    to use '=' delimited key/value pairs. While working with such files,
+    Config::Simple assigns them to a default block, called 'default' by
+    default :-).
+
+      url = "http://www.handalak.com"
+
+    Comments can begin with either pound ('#') or semi-colon (';'). Each
+    comment should reside on its own line
+
+PROGRAMMING STYLE
+    Most of the programs simply need to be able to read settings from a
+    configuration file and assign them to a hash. If that's all you need,
+    you can simply use its import_from() - class method with the name of the
+    configuration file and a reference to an existing (possibly empty) hash:
+
+      Config::Simple->import_from('myconf.cfg', \%Config);
+  
+    Now your hash %Config holds all the configuration file's key/value
+    pairs. Keys of a hash are variable names inside your configuration file,
+    and values are their respective values. If "myconf.cfg" was a
+    traditional ini-file, keys of the hash consist of block name and
+    variable delimited with a dot, such as "block.var".
+
+    If that's all you need, you can stop right here. Otherwise, read on.
+    There is much more Config::Simple offers.
+
+  READING THE CONFIGURATION FILE
+
+    To be able to use more features of the library, you will need to use its
+    object interface:
+
+      $cfg = new Config::Simple('app.cfg');
+
+    The above line reads and parses the configuration file accordingly. It
+    tries to guess which syntax is used by passing the file to
+    guess_syntax() method. Alternatively, you can create an empty object,
+    and only then read the configuration file in:
+
+      $cfg = new Config::Simple();
+      $cfg->read('app.cfg');
+
+    As in the first example, read() also calls guess_syntax() method on the
+    file.
+
+    If, for any reason, it fails to guess the syntax correctly (which is
+    less likely), you can try to debug by using its guess_syntax() method.
+    It expects file handle for a configuration file and returns the name of
+    a syntax. Return value is one of "ini", "simple" or "http".
+
+      open(FH, "app.cfg");
+      printf("This file uses '%s' syntax\n", $cfg->guess_syntax(\*FH));
+
+  ACCESSING VALUES
+
+    After you read the configuration file in successfully, you can use
+    param() method to access the configuration values. For example:
+
+      $user = $cfg->param("User");
+
+    will return the value of "User" from either simple configuration file,
+    or http-styled configuration as well as simplified ini-files. To access
+    the value from a traditional ini-file, consider the following syntax:
+
+      $user = $cfg->param("mysql.user");
+
+    The above returns the value of "user" from within "[mysql]" block.
+    Notice the use of dot "." to delimit block and key names.
+
+    Config::Simple also supports vars() method, which, depending on the
+    context used, returns all the values either as hashref or hash:
+
+      my %Config = $cfg->vars();
+      print "Username: $Config{User}";
+
+      # If it was a traditional ini-file:
+      print "Username: $Config{'mysql.user'}";
+
+    If you call vars() in scalar context, you will end up with a reference
+    to a hash:
+
+      my $Config = $cfg->vars();
+      print "Username: $Config->{User}";
+
+    If you know what you're doing, you can also have an option of importing
+    all the names from the configuration file into your current name space
+    as global variables. All the block/key names will be uppercased and will
+    be converted to Perl's valid variable names; that is, all the dots
+    (block-key separator) and other '\W' characters will be substituted with
+    underscore '_':
+
+      $cfg = new Config::Simple('app.cfg');
+      $cfg->import_names();
+
+      # or, with a single line:
+      Config::Simple->new('app.cfg')->import_names();
+  
+      print STDERR "Debugging mode is on" if $DEBUG_MODE;
+
+    In the above example, if there was a variable 'mode' under '[debug]'
+    block, it will be now accessible via $DEBUG_MODE, as opposed to
+    $cfg->param('debug.mode');
+
+    "import_names()" by default imports the values to its caller's name
+    space. Optionally, you can specify where to import the values by passing
+    the name of the name space as the first argument. It also prevents
+    potential name collisions:
+
+      Config::Simple->new('app.cfg')->import_names('CFG');
+      print STDERR "Debugging mode is on" if $CFG::DEBUG_MODE;
+
+    If all you want is to import values from a configuration file, the above
+    syntax may still seem longer than necessary. That's why Config::Simple
+    supports import_from() - class method, which is called with the name of
+    the configuration file. It will call import_names() for you:
+
+      Config::Simple->import_from('app.cfg');
+
+    The above line imports all the variables into the caller's name space.
+    It's similar to calling import_names() on an object. If you pass a
+    string as the second argument, it will treat it as the alternative name
+    space to import the names into. As we already showed in the very first
+    example, you can also pass a reference to an existing hash as the second
+    argument. In this case, that hash will be modified with the values of
+    the configuration file.
+
+      # import into $CFG name space:
+      Config::Simple->import_from('app.cfg', 'CFG');
+
+      # import into %Config hash:
+      Config::Simple->import_from('app.cfg', \%Config);
+
+    The above line imports all the values to 'CFG' name space. import_from()
+    returns underlying Config::Simple object (which you may not even need
+    anymore):
+
+      $cfg = Config::Simple->import_from('app.cfg', \my %Config);
+      $cfg->write('app.cfg.bak');
+
+  UPDATING THE VALUES
+
+    Configuration values, once read into Config::Simple, can be updated from
+    within your program by using the same param() method used for accessing
+    them. For example:
+
+      $cfg->param("User", "sherzodR");
+
+    The above line changes the value of "User" to "sherzodR". Similar syntax
+    is applicable for ini-files as well:
+
+      $cfg->param("mysql.user", "sherzodR");
+
+    If the key you're trying to update does not exist, it will be created.
+    For example, to add a new "[session]" block to your ini-file, assuming
+    this block doesn't already exist:
+
+      $cfg->param("session.life", "+1M");
+
+    You can also delete values calling delete() method with the name of the
+    variable:
+
+      $cfg->delete('mysql.user'); # deletes 'user' under [mysql] block
+
+  SAVING/WRITING CONFIGURATION FILES
+
+    The above updates to the configuration values are in-memory operations.
+    They do not reflect in the file itself. To modify the files accordingly,
+    you need to call either "write()" or "save()" methods on the object:
+
+      $cfg->write();
+
+    The above line writes the modifications to the configuration file.
+    Alternatively, you can pass a name to either write() or save() to
+    indicate the name of the file to create instead of modifying existing
+    configuration file:
+
+      $cfg->write("app.cfg.bak");
+
+    If you want the changes saved at all times, you can turn "autosave" mode
+    on by passing true value to $cfg->autosave(). It will make sure before
+    your program is terminated, all the configuration values are written
+    back to its file:
+
+      $cfg = new Config::Simple('aff.cfg');
+      $cfg->autosave(1);
+
+  CREATING CONFIGURATION FILES
+
+    Occasionally, your programs may want to create their own configuration
+    files on the fly, possibly from a user input. To create a configuration
+    file from scratch using Config::Simple, simply create an empty
+    configuration file object and define your syntax. You can do it by
+    either passing "syntax" option to new(), or by calling syntax() method.
+    Then play with param() method as you normally would. When you're done,
+    call write() method with the name of the configuration file:
+
+      $cfg = new Config::Simple(syntax=>'ini');
+      # or you could also do:
+      # $cfg->autosave('ini')
+
+      $cfg->param("mysql.dsn", "DBI:mysql:db;host=handalak.com");
+      $cfg->param("mysql.user", "sherzodr");
+      $cfg->param("mysql.pass", 'marley01');
+      $cfg->param("site.title", 'sherzodR "The Geek"');
+      $cfg->write("new.cfg");
+
+    This creates the a file "new.cfg" with the following content:
+
+      ; Config::Simple 4.43
+      ; Sat Mar  8 00:32:49 2003
+
+      [site]
+      title=sherzodR "The Geek"
+
+      [mysql]
+      pass=marley01
+      dsn=DBI:mysql:db;host=handalak.com
+      user=sherzodr
+
+    Neat, huh? Supported syntax keywords are "ini", "simple" or "http".
+    Currently there is no support for creating simplified ini-files.
+
+  MULTIPLE VALUES
+
+    Ever wanted to define array of values in your single configuration
+    variable? I have! That's why Config::Simple supports this fancy feature
+    as well. Simply separate your values with a comma:
+
+      Files hp.cgi, template.html, styles.css
+
+    Now param() method returns an array of values:
+
+      @files = $cfg->param("Files");
+      unlink $_ for @files;
+
+    If you want a comma as part of a value, enclose the value(s) in double
+    quotes:
+
+      CVSFiles "hp.cgi,v", "template.html,v", "styles.css,v"
+
+    In case you want either of the values to hold literal quote ("), you can
+    escape it with a backlash:
+
+      SiteTitle "sherzod \"The Geek\""
+
+  TIE INTERFACE
+
+    If OO style intimidates you, Config::Simple also supports tie()
+    interface. This interface allows you to tie() an ordinary Perl hash to
+    the configuration file. From that point on, you can use the variable as
+    an ordinary Perl hash.
+
+      tie %Config, "Config::Simple", 'app.cfg';
+
+      # Using %Config as an ordinary hash
+      print "Username is '$Config{User}'\n";
+      $Config{User} = 'sherzodR';
+
+    To access the method provided in OO syntax, you need to get underlying
+    Config::Simple object. You can do so with tied() function:
+
+      tied(%Config)->write();
+
+    WARNING: tie interface is experimental and not well tested yet. It also
+    doesn't perform all the hash manipulating operations of Perl. Let me
+    know if you encounter a problem.
+
+MISCELLANEOUS
+  CASE SENSITIVITY
+
+    By default, configuration file keys and values are case sensitive. Which
+    means, $cfg->param("User") and $cfg->param("user") are referring to two
+    different values. But it is possible to force Config::Simple to ignore
+    cases all together by enabling "-lc" switch while loading the library:
+
+      use Config::Simple ('-lc');
+
+    WARNING: If you call write() or save(), while working on "-lc" mode, all
+    the case information of the original file will be lost. So use it if you
+    know what you're doing.
+
+  USING QUOTES
+
+    Some people suggest if values consist of none alpha-numeric strings,
+    they should be enclosed in double quotes. Well, says them! Although
+    Config::Simple supports parsing such configuration files already, it
+    doesn't follow this rule while writing them. If you really need it to
+    generate such compatible configuration files, "-strict" switch is what
+    you need:
+
+      use Config::Simple '-strict';
+
+    Now, when you write the configuration data back to files, if values hold
+    any none alpha-numeric strings, they will be quoted accordingly. All the
+    double quotes that are part of the value will be escaped with a
+    backslash.
+
+  EXCEPTION HANDLING
+
+    Config::Simple doesn't believe in dying that easily (unless you insult
+    it using wrong syntax). It leaves the decision to the programmer
+    implementing the library. You can use its error() - class method to
+    access underlying error message. Methods that require you to check for
+    their return values are read() and write(). If you pass filename to
+    new(), you will need to check its return value as well. They return any
+    true value indicating success, undef otherwise:
+
+      # following new always returns true:
+      $cfg = new Config::Simple();
+
+      # read() can fail:
+      $cfg->read('app.cfg') or die $cfg->error();
+
+      # following new() can fail:
+      $cfg = new Config::Simple('app.cfg') or die Config::Simple->error();
+
+      # import_from() calls read(), so it can fail:
+      Config::Simple->import_from('app.cfg', \%Config) or die Config::Simple->error();
+
+      # write() may fail:
+      $cfg->write() or die $cfg->error();
+
+METHODS
+    new()
+        - constructor. Optionally accepts several arguments. Returns
+        Config::Simple object. Supported arguments are filename, syntax,
+        autosave. If there is a single argument, will be treated as the name
+        of the configuration.
+
+    read()
+        - accepts name of the configuration file to parse. Before that, it
+        tries to guess the syntax of the file by calling guess_syntax()
+        method. Then calls either of parse_ini_file(), parse_cfg_file() or
+        parse_http_file() accordingly. If the name of the file is provided
+        to the constructor - new(), there is no need to call read().
+
+    param([$name], [$value])
+        - used for accessing and updating configuration variables. If used
+        with no arguments returns all the available names from the
+        configuration file.
+
+    delete($name)
+        - deletes a variable from a configuration file. $name has the same
+        meaning and syntax as it does in param()
+
+    vars()
+        - depending on the context used, returns all the values available in
+        the configuration file either as a hash or a reference to a hash
+
+    import_names()
+        - imports all the names from the configuration file to the caller's
+        name space. Optional argument, if passed, will be treated as the
+        name space variables to be imported into. All the names will be
+        uppercased. Non-alphanumeric strings in the values will be
+        underscored
+
+    import_from()
+        - class method. Accepts the name of the file to import names from.
+        Additional arguments will be passed to import_names(). Returns
+        underlying Config::Simple object
+
+    get_block($name)
+        is mostly used for accessing blocks in ini-styled configuration
+        files. Returns a hashref of all the key/value pairs of a given
+        block. Also supported by param() method with the help of "-block"
+        option:
+
+          $hash = $cfg->get_block('Project');
+          # is the same as saying:
+          $hash = $cfg->param(-block=>'Project');
+
+    set_block($name, $values)
+        used in assigning contents to a block in ini-styled configuration
+        files. $name should be the name of a [block], and $values is assumed
+        to be a hashref mapping key/value pairs. Also supported by param()
+        method with the help of "-block" and "-value" (or "-values")
+        options:
+
+          $cfg->set_block('Project', {Count=>3, 'Multiple Column' => 20});
+          # is the same as:
+          $cfg->param(-block=>'Project', -value=>{Count=>3, 'Multiple Column' => 20});
+
+        Warning: all the contents of a block, if previously existed will be
+        wiped out. If you want to set specific key/value pairs, use explicit
+        method:
+
+          $cfg->param('Project.Count', 3);
+
+    as_string()
+        - returns the configuration file as a chunk of text. It is the same
+        text used by write() and save() to store the new configuration file
+        back to file.
+
+    write()
+        - writes the configuration file into disk. Argument, if passed, will
+        be treated as the name of the file configuration variables should be
+        saved in.
+
+    save()
+        - same as write().
+
+    dump()
+        - for debugging only. Dumps the whole Config::Simple object using
+        Data::Dumper. Argument, if passed, will be treated as the name of
+        the file object should be dumped in. The second argument specifies
+        amount of indentation as documented in Data::Dumper manual. Default
+        indent size is 2.
+
+    error()
+        - returns the last error message from read/write or import_*
+        operations.
+
+TODO
+    *   Support for lines with continuation character, '\'.
+
+    *   Retaining comments while writing the configuration files back and/or
+        methods for manipulating comments. Everyone loves comments!
+
+    *   Support for Apache-like style configuration file. For now, if you
+        want this functionality, checkout the Config::General manpage
+        instead.
+
+BUGS
+    Submit bugs to Sherzod B. Ruzmetov <sherzodr@cpan.org>
+
+CREDITS
+    Michael Caldwell (mjc@mjcnet.com)
+        whitespace support, "-lc" switch and for various bug fixes
+
+    Scott Weinstein (Scott.Weinstein@lazard.com)
+        bug fix in TIEHASH
+
+    Ruslan U. Zakirov <cubic@wr.miee.ru>
+        default name space suggestion and patch
+
+    Hirosi Taguti
+        import_names() and import_from() idea.
+
+COPYRIGHT
+      Copyright (C) 2002-2003 Sherzod B. Ruzmetov.
+
+      This software is free library. You can modify and/or distribute it
+      under the same terms as Perl itself
+
+AUTHOR
+      Sherzod B. Ruzmetov E<lt>sherzodr@cpan.orgE<gt>
+      URI: http://author.handalak.com
+
+SEE ALSO
+    the Config::General manpage, the Config::Simple manpage, the
+    Config::Tiny manpage
+

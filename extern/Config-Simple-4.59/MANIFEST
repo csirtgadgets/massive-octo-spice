@@ -1,0 +1,28 @@
+Changes
+Makefile.PL
+MANIFEST			This list of files
+MANIFEST.SKIP
+README
+Simple.pm
+t/.#bug.cfg.1.10
+t/.#is_modified.cfg.1.25
+t/.#project.ini.1.51
+t/.#simple.cfg.1.50
+t/.#simplified.ini.1.50
+t/bug.cfg
+t/bug.t
+t/create.t
+t/guess_syntax.cfg
+t/guess_syntax.t
+t/import.t
+t/ini.t
+t/is_modified.cfg
+t/is_modified.t
+t/project.ini
+t/read-rv.t
+t/simple.cfg
+t/simple.t
+t/simplified-ini.t
+t/simplified.ini
+t/tie.t
+META.yml                                 Module meta-data (added by MakeMaker)
