@@ -1,3 +1,4 @@
+*.swp
 configure
 autom4te.cache
 install-sh
@@ -13,3 +14,17 @@ ltmain.sh
 aclocal.m4
 .vagrant
 missing
+
+# From https://github.com/github/gitignore/blob/master/Global/OSX.gitignore
+.DS_Store
+Icon?
+._*
+.Spotlight-V100
+.Trashes
+
+# From: https://github.com/github/gitignore/blob/master/Global/Linux.gitignore
+.*
+!.gitignore
+*~
+*.sw[a-p]
+.directory
