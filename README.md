@@ -8,7 +8,9 @@ Coming soon...
 
 Resources
 ===
+Getting Involved: csirtgadgets.org/contribute 
 Git repository: github.com/csirtgadgets/massive-octo-spice
+
 
 COPYRIGHT AND LICENCE
 ===
