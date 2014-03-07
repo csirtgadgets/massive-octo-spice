@@ -14,7 +14,7 @@ test: test_perl
 install: install_perl install-es
 
 install-es:
-	-( cd elasticsearch && make install )
+	( cd elasticsearch && make install )
 
 build_perl:
 	for file in $(EXTERN_PERL) ; do \

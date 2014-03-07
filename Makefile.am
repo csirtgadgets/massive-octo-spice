@@ -17,13 +17,13 @@ testdeps:
 test: extern-test libcif-test router-test smrt-test
 
 extern-test:
-	-( cd extern && make test )
+	( cd extern && make test )
 
 libcif-test:
-	-( cd libcif && make test )
+	( cd libcif && make test )
 
 router-test:
-	-( cd router && make test )
+	( cd router && make test )
 
 smrt-test:
 	( cd smrt && make test )
@@ -40,16 +40,16 @@ var-install:
 	[ -d $(CIF_PATH)/$(localstatedir)/log ] || $(INSTALL) -m 0750 -d $(CIF_PATH)/$(localstatedir)/log
 
 libcif-install:
-	-( cd libcif && make install )
+	( cd libcif && make install )
 
 router-install:
-	-( cd router && make install )
+	( cd router && make install )
 
 smrt-install:
-	-( cd smrt && make install )
+	( cd smrt && make install )
 
 extern-install:
-	-( cd extern && make install )
+	( cd extern && make install )
 
 fixperms:
 	chmod 0755 $(prefix)
