@@ -5,19 +5,15 @@ script: sh autogen.sh && ./configure
 #    PERL5LIB="$HOME/perl5/lib/perl5"
 perl:
     - 5.18
-install:
-    #- sudo apt-get install -qq perlbrew python-software-properties
-    #- echo "yes" | sudo add-apt-repository "ppa:chris-lea/zeromq" 
-    #- sudo apt-get update -qq
-    #- perlbrew init
-    #- perlbrew install 5.18.2
-    #- perlbrew switch 5.18.2
+before_install:
+    - sudo apt-get install -qq perlbrew python-software-properties
+    - echo "yes" | sudo add-apt-repository "ppa:chris-lea/zeromq" 
+    - sudo apt-get update -qq
+    - sudo apt-get install -qq cpanminus openjdk-7-jre-headless libtool pkg-config libzmq3-dev libffi6 libmoose-perl libmouse-perl libanyevent-perl liblwp-protocol-https-perl sqlite3 libxml2-dev libexpat-dev
     - perl --version
     - perl -V
-    #- sudo apt-get install -qq cpanminus openjdk-7-jre-headless libtool pkg-config libzmq3-dev libffi6 libmoose-perl libmouse-perl libanyevent-perl liblwp-protocol-https-perl sqlite3 libxml2-dev libexpat-dev
-    - cpanm --version
-    - cpanm -q -f Try::Tiny Snort::Rule
-    #- cpanm -v Mouse Try::Tiny Regexp::Common::net Mail::RFC822::Address.pm Compress::Snappy JSON::XS Carp::Assert DateTime::Format::DateParse Text::Table Snort::Rule Log::Dispatch URI Time::HiRes Digest::SHA Module::PluginFinder Config::Simple ZMQx::Class LWP::UserAgent LWPx::ParanoidAgent Net::SSL ElasticSearch ElasticSearch::SearchBuilder MouseX::Foreign Net::Patricia Net::DNS::Match DBIx::Connector DBD::SQLite Crypt::Random::Source Regexp::IPv6 Test::Perl::Critic XML::LibXML File::Type Module::PluginFinder XML::RSS String::Tokenizer
+install:
+    - cpanm -f -q Mouse Try::Tiny Regexp::Common::net Mail::RFC822::Address.pm Compress::Snappy JSON::XS Carp::Assert DateTime::Format::DateParse Text::Table Snort::Rule Log::Dispatch URI Time::HiRes Digest::SHA Module::PluginFinder Config::Simple ZMQx::Class LWP::UserAgent LWPx::ParanoidAgent Net::SSL ElasticSearch ElasticSearch::SearchBuilder MouseX::Foreign Net::Patricia Net::DNS::Match DBIx::Connector DBD::SQLite Crypt::Random::Source Regexp::IPv6 Test::Perl::Critic XML::LibXML File::Type Module::PluginFinder XML::RSS String::Tokenizer
     
 notifications:
     email:
