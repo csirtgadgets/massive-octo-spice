@@ -5,9 +5,10 @@ env:
     PERL5LIB="$HOME/perl5/lib/perl5"
 before_install:
     #- echo "yes" | sudo add-apt-repository "ppa:chris-lea/zeromq" 
-    #- sudo apt-get install -qq perlbrew python-software-properties
-    #- sudo apt-get update -qq
+    - sudo apt-get update -qq
+    - sudo apt-get install -qq perlbrew python-software-properties
     - perlbrew init
+    - perlbrew install 5.18.2
     - perlbrew switch 5.18.2
     - perl --version
     - perl -V
