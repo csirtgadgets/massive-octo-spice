@@ -15,6 +15,7 @@ wget -O - http://packages.elasticsearch.org/GPG-KEY-elasticsearch | apt-key add 
 echo "deb http://ppa.launchpad.net/chris-lea/zeromq/ubuntu precise main" >> /etc/apt/sources.list
 echo "deb-src http://ppa.launchpad.net/chris-lea/zeromq/ubuntu precise main" >> /etc/apt/sources.list
 echo "deb http://packages.elasticsearch.org/elasticsearch/1.0/debian stable main" >> /etc/apt/sources.list
+# echo "yes" | sudo add-apt-repository "ppa:chris-lea/zeromq"
 
 # system stuff
 aptitude hold grub-common grub-pc
