@@ -3,12 +3,6 @@ package CIF::Smrt;
 use 5.011;
 use strict;
 use warnings;
-use threads;
-use namespace::autoclean;
-
-# version info
-my $VERSION = '2.000001'; #2.00.00-alpha.1
-$VERSION = eval $VERSION;  # see L<perlmodstyle>
 
 use Mouse;
 
