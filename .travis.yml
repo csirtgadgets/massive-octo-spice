@@ -7,13 +7,12 @@ before_install:
     - echo "yes" | sudo add-apt-repository "ppa:chris-lea/zeromq" 
     - sudo apt-get update -qq
     - sudo apt-get install -qq openjdk-7-jre-headless libtool pkg-config libzmq3-dev libffi6 libmoose-perl libmouse-perl libanyevent-perl liblwp-protocol-https-perl sqlite3 libxml2-dev libexpat-dev rng-tools
-    - sudo apt-get install -qq libtry-tiny-perl libmouse-perl libjson-xs-perl libtest-tcp-perl libtest-sharedfork-perl libdbi-perl libdbix-connector-perl libnet-patricia-perl libdbd-sqlite3-perl
     - perl --version
     - perl -V
 
 install:
     #- cpanm -f -q Mouse Try::Tiny 
-    - time cpanm -n -f -q Regexp::Common::net Mail::RFC822::Address Carp::Assert DateTime::Format::DateParse Text::Table Snort::Rule Log::Dispatch URI Time::HiRes Digest::SHA Module::PluginFinder ZMQx::Class LWP::UserAgent LWPx::ParanoidAgent Net::SSL ElasticSearch ElasticSearch::SearchBuilder MouseX::Foreign Net::DNS::Match Crypt::Random::Source Regexp::IPv6 Test::Perl::Critic XML::LibXML File::Type Module::PluginFinder XML::RSS String::Tokenizer Compress::Snappy JSON::XS
+    - time cpanm -n -f -q Regexp::Common::net Mail::RFC822::Address Carp::Assert DateTime::Format::DateParse Text::Table Snort::Rule Log::Dispatch URI Time::HiRes Digest::SHA Module::PluginFinder ZMQx::Class LWP::UserAgent LWPx::ParanoidAgent Net::SSL ElasticSearch ElasticSearch::SearchBuilder MouseX::Foreign Net::DNS::Match Crypt::Random::Source Regexp::IPv6 Test::Perl::Critic XML::LibXML File::Type Module::PluginFinder XML::RSS String::Tokenizer Compress::Snappy JSON::XS Config::Simple DBIx::Connector Try::Tiny Mouse Test::TCP Test::SharedFork Net::Patricia DBD::SQLite
 
 before_script:
     - sh autogen.sh
