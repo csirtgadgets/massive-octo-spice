@@ -9,10 +9,10 @@ all: default
 default:
 
 fixdeps:
-	$(PERL) ./sbin/test-deps --verbose --install --prefix $(prefix)
+	$(PERL) ./sbin/test-deps --verbose --install
 
 testdeps:
-	$(PERL) ./sbin/test-deps --verbose --prefix $(prefix)
+	$(PERL) ./sbin/test-deps --verbose
 
 test: extern-test libcif-test router-test smrt-test
 

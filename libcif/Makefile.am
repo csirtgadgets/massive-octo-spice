@@ -9,10 +9,10 @@ all-am: default
 default: 
 
 fixdeps:
-	$(PERL) ./sbin/test-deps --verbose --install --prefix $(prefix)
+	$(PERL) ./sbin/test-deps --verbose --install
 
 testdeps:
-	$(PERL) ./sbin/test-deps --verbose --prefix $(prefix)
+	$(PERL) ./sbin/test-deps --verbose
 
 test: testdeps 
 	$(PERL) "-MExtUtils::Command::MM" -e "test_harness($(TEST_VERBOSE), split(/,/,'$(LIBS)'))" $(TEST_FILES)
