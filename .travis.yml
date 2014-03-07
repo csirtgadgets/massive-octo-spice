@@ -8,8 +8,7 @@ before_install:
     - sudo apt-get update -qq
     - sudo apt-get install -qq openjdk-7-jre-headless libtool pkg-config libzmq3-dev libffi6 libmoose-perl libmouse-perl libanyevent-perl liblwp-protocol-https-perl sqlite3 libxml2-dev libexpat-dev rng-tools
     - sudo apt-get install -qq libtry-tiny-perl libmouse-perl libjson-xs-perl libtest-tcp-perl libtest-sharedfork-perl libdbi-perl libdbix-connector-perl libnet-patricia-perl libdbd-sqlite3-perl
-    - sudo echo 'HRNGDEVICE=/dev/urandom' >> /etc/default/rng-tools
-    - sudo service rng-tools restart
+    - sudo rngd -r /dev/urandom
     - perl --version
     - perl -V
 
