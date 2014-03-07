@@ -7,8 +7,8 @@ before_install:
     - echo "yes" | sudo add-apt-repository "ppa:chris-lea/zeromq" 
     - sudo apt-get install -qq perlbrew python-software-properties
     - sudo apt-get update -qq
-    - perlbrew init
-    - perlbrew switch 5.14.2
+    - perlbrew install 5.18.2
+    - perlbrew switch 5.18.2
     - perl --version
     - perl -V
     #- sudo apt-get install -qq cpanminus openjdk-7-jre-headless libtool pkg-config libzmq3-dev libffi6 libmoose-perl libmouse-perl libanyevent-perl liblwp-protocol-https-perl sqlite3 libxml2-dev libexpat-dev
