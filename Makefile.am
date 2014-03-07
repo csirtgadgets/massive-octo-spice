@@ -26,7 +26,7 @@ router-test:
 	( cd router && make test )
 
 smrt-test:
-	( cd smrt && make test )
+	cd smrt && make test
 
 install: files-install fixperms
 
