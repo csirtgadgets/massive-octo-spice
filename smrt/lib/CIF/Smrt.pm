@@ -8,7 +8,6 @@ use Mouse;
 
 # cif support
 use CIF qw/hash_create_random debug normalize_timestamp/;
-require CIF::Type;
 require CIF::Client;
 require CIF::ObservableFactory;
 require CIF::RuleFactory;
