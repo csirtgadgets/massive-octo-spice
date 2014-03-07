@@ -1,8 +1,8 @@
 language: perl
 #script: sh autogen.sh && ./configure && make && make test
 script: sh autogen.sh && ./configure
-env:
-    PERL5LIB="$HOME/perl5/lib/perl5"
+#env:
+#    PERL5LIB="$HOME/perl5/lib/perl5"
 perl:
     - 5.18
 before_install:
