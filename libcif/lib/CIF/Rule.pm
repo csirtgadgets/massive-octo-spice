@@ -3,7 +3,6 @@ package CIF::Rule;
 use strict;
 use warnings;
 
-
 use Mouse::Role;
 
 use constant RE_COMMENTS => qr/^(#|;)/;

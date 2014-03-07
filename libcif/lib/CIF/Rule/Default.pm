@@ -3,12 +3,10 @@ package CIF::Rule::Default;
 use strict;
 use warnings;
 
-
 use Mouse;
 
 use Carp;
 use Carp::Assert;
-use CIF::Type;
 use CIF::Observable;
 
 with 'CIF::Rule';
