@@ -34,7 +34,7 @@ our @EXPORT = qw(
 #our $VERSION = '2.00000001';
 #$VERSION = eval { $VERSION; };# see L<perlmodstyle>
 
-use constant PROTOCOL_VERSION   => ;
+use constant PROTOCOL_VERSION   => 2.0000001;
 
 use constant DEFAULT_PORT                   => 4961;
 use constant DEFAULT_FRONTEND_PORT          => DEFAULT_PORT();
