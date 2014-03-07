@@ -5,7 +5,6 @@ use warnings;
 
 use Mouse::Role;
 use CIF qw/debug hash_create_random observable_type/;
-use CIF::Type;
 use Time::HiRes qw/tv_interval/;
 use Data::Dumper;
 use Carp;
