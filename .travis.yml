@@ -1,5 +1,5 @@
 language: c
-script: sh autogen.sh && ./configure && make
+script: sh autogen.sh && ./configure && make && make test
 env:
     PERL5LIB="$HOME/perl5/lib/perl5"
 before_install:
