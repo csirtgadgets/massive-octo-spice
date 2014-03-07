@@ -3,9 +3,7 @@ package CIF::Message::Submission;
 use strict;
 use warnings;
 
-
 use Mouse;
-use CIF::Type;
 
 has 'Observables' => (
     is      => 'ro',
