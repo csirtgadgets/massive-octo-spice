@@ -7,9 +7,6 @@ use namespace::autoclean;
 use Mouse;
 use MouseX::Foreign qw(LWP::UserAgent);
 
-# cif stuff
-use CIF::Type;
-
 use Net::SSLeay;
 Net::SSLeay::SSLeay_add_ssl_algorithms();
 
