@@ -32,7 +32,7 @@ AC_SUBST(CIF_VERSION_MINOR,      ${cif_version_minor})
 AC_SUBST(CIF_VERSION_PATCH,      ${cif_version_patch})
 AC_SUBST(CIF_VERSION_META,       ${cif_version_meta})
 
-AC_SUBST(CIF_PROTOCOL_VERSION,  m4_esyscmd([( cat ../.protocol_version ) | tr -d "\n"]))
+AC_SUBST(CIF_PROTOCOL_VERSION,  m4_esyscmd([( cat .protocol_version ) | tr -d "\n"]))
 
 AC_PROG_INSTALL
 AC_PATH_PROG([WGET],[wget],[not found])

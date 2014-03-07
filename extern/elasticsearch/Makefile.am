@@ -13,7 +13,7 @@ HASHFILE = "$(ES).asc"
 FILES = \
 	elasticsearch.yml
 
-all-am: build 
+all-am:
 
 build:
 	[ -e $(ES) ] || $(WGET) $(ES_BASE_URL)/$(ES)
