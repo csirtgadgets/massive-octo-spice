@@ -1,5 +1,6 @@
 massive-octo-spice
 ==
+[![Build Status](https://travis-ci.org/csirtgadgets/massive-octo-spice.png?branch=master)](https://travis-ci.org/csirtgadgets/massive-octo-spice) [![Coverage Status](https://coveralls.io/repos/csirtgadgets/massive-octo-spice/badge.png?branch=master)](https://coveralls.io/r/csirtgadgets/massive-octo-spice?branch=master)
 
 Building and installation
 ===
