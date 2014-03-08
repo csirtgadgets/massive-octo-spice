@@ -3,11 +3,9 @@ package CIF::Rule::XPath;
 use strict;
 use warnings;
 
-
 use Mouse;
 
 use Carp::Assert;
-use CIF::Type;
 
 with 'CIF::Rule';
 
