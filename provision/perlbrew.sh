@@ -1,7 +1,7 @@
 #!/bin/bash
 
-set -e
-
+PERL_VERSION=perl-5.18.2
+PERLBREW_ROOT=/home/vagrant/perl5/perlbrew
 FLAG=/tmp/.provisioned_perlbrew
 
 if [ -e $FLAG ]; then
@@ -9,15 +9,14 @@ if [ -e $FLAG ]; then
     exit
 fi
 
-mkdir /opt/perl5
-export PERLBREW_ROOT=/opt/perl5
-perlbrew init
-source ${PERLBREW_ROOT}/etc/bashrc
-echo "export PERLBREW_ROOT=/opt/perl5" >> /home/vagrant/.profile
-echo "source ${PERLBREW_ROOT}/etc/bashrc" >> /home/vagrant/.profile
-exec /bin/bash
-perlbrew install -v perl-5.18.2 -n --switch -Dusethreads
-perlbrew install-cpanm
-chown vagrant:vagrant /home/vagrant/.perlbrew -R
+cpanm -n -f -q App::perlbrew
 
+PERLBREW_ROOT=${PERLBREW_ROOT} perlbrew init
+echo "source ${PERLBREW_ROOT}/etc/bashrc" >> /home/vagrant/.bash_profile
+
+. ${PERLBREW_ROOT}/etc/bashrc
+PERLBREW_ROOT=${PERLBREW_ROOT} perlbrew install -v ${PERL_VERSION} -n -Dusethreads
+chown -R vagrant:vagrant ${PERLBREW_ROOT}
+
+PERLBREW_ROOT=${PERLBREW_ROOT} perlbrew install-cpanm
 touch $FLAG
