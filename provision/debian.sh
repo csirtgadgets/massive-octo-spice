@@ -9,6 +9,7 @@ if [ -e $FLAG ]; then
     exit
 fi
 
+aptitude hold grub-common grub-pc
 apt-get update
 apt-get install -qq python-software-properties
 echo "yes" | sudo add-apt-repository "ppa:chris-lea/zeromq"
