@@ -6,7 +6,7 @@ use warnings;
 use Mouse;
 use CIF qw/hash_create_random/;
 use CIF::MessageFactory;
-use Time::HiRes qw(tv_interval);
+use Time::HiRes qw(gettimeofday);
 
 has 'version'   => (
     is      => 'ro',
@@ -41,7 +41,7 @@ has 'timestamp' => (
     is      => 'ro',
     isa     => 'Num',
     reader  => 'get_timestamp',
-    default => sub { tv_interval() },
+    default => sub { gettimeofday() },
 );
 
 has 'id'   => (
@@ -70,7 +70,6 @@ around BUILDARGS => sub {
     my $args    = shift;
 
     $args->{'Data'} = CIF::MessageFactory->new_plugin($args);
-    
     return $self->$orig($args);
 };
 

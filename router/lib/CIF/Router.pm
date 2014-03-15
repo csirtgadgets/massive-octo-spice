@@ -17,6 +17,7 @@ use ZMQx::Class;
 use Data::Dumper;
 use AnyEvent;
 use JSON::XS;
+use Try::Tiny;
 
 # constants
 use constant DEFAULT_FRONTEND_PORT          => CIF::DEFAULT_FRONTEND_PORT();
@@ -44,7 +45,7 @@ has 'frontend'  => (
 
 has 'frontend_watcher'  => (
     is => 'rw',
-    isa => 'EV::IO',
+    isa => 'AnyEvent::Loop::io',
 );
 
 has 'auth_handle' => (
@@ -90,7 +91,7 @@ sub debug {
 sub startup {
     my $self = shift;
     my $args = shift;
-
+    
     $self->frontend(
         ZMQx::Class->socket(
             'REP',
@@ -99,12 +100,23 @@ sub startup {
     );
     debug('frontend started on: '.$self->frontend_listen());
     
-    my $ret;
+    my ($ret,$err);
     $self->frontend_watcher(
         $self->frontend->anyevent_watcher(
             sub {
                 while (my $msg = $self->frontend->receive()){
-                    $msg = $self->process(@$msg);
+                    debug('received message...');
+                    try {
+                        $msg = $self->process(@$msg);
+                    } catch {
+                        $err = shift;
+                    };
+                    
+                    if($err){
+                        $ret = -1;
+                        debug($err);
+                    }
+                    debug('sending msg back...');
                     $self->frontend->send($msg);
                 }
             }
@@ -113,34 +125,44 @@ sub startup {
     debug('started...');
     return 1;
 }
-
+##TODO refactor
 sub process {
     my $self = shift;
     my $msg = shift;
 
     $msg = JSON::XS::decode_json($msg);
-
+    $msg = @{$msg}[0] if(ref($msg) eq 'ARRAY');
+    
     my $r = CIF::Message->new({
-        rtype   => $msg->{'@rtype'},
+        rtype   => $msg->{'@rtype'} || $msg->{'rtype'},
         mtype   => 'response',
         Token   => $msg->{'Token'},
     });
     
     my $ret = $self->get_auth_handle()->process($msg);
-
     if($ret){
         my $req = CIF::Router::RequestFactory->new_plugin({ 
-            msg             => $msg, 
+            msg             => $msg,
             auth_handle     => $self->get_auth_handle(),
             storage_handle  => $self->get_storage_handle(),
         });
-        $r->set_Data($req->process($msg));
-        $r->set_stype('success');
+        if($req){
+            my $rv = $req->process($msg);
+            if($rv < 0){
+                $r->set_stype('failure');
+                $r->set_Data('ERROR: contact administrator');
+            } else {
+                $r->set_Data($rv);
+                $r->set_stype('success');
+            }
+        } else {
+            $r->set_stype('failure');
+            $r->set_Data('ERROR: not supported');
+        }
     } else {
         $r->set_stype('unauthorized');
         delete($r->{'Data'});
     }
-    
     $r = CIF::Encoder::Json->encode({ 
         encoder_pretty  => 1,
         data            => $r 

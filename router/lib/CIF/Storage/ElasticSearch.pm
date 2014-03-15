@@ -3,33 +3,45 @@ package CIF::Storage::ElasticSearch;
 use 5.011;
 use strict;
 use warnings;
-use namespace::autoclean;
 
 use Mouse;
-use ElasticSearch;
-use ElasticSearch::SearchBuilder;
-use CIF qw/observable_type hash_create_random/;
+use Search::Elasticsearch;
+use Search::Elasticsearch::Bulk;
+use CIF qw/observable_type hash_create_random debug/;
 use Net::Patricia;
 use Net::DNS::Match;
 use DateTime;
-use Time::HiRes qw/tv_interval/;
+use Try::Tiny;
+use Carp::Assert;
+use CIF qw/hash_create_random is_hash_sha256/;
 
 with 'CIF::Storage';
 
 my $date = DateTime->from_epoch(epoch => time());
 $date = $date->ymd('.');
 
-use constant DEFAULT_HOST           => 'localhost:9200';
-use constant DEFAULT_INDEX_BASE     => 'logstash';
-use constant DEFAULT_INDEX_SEARCH   => DEFAULT_INDEX_BASE().'-*';
-use constant DEFAULT_TYPE           => 'observables';
+use constant DEFAULT_NODE               => 'localhost:9200';
+use constant DEFAULT_INDEX_BASE         => 'cif';
+use constant DEFAULT_INDEX_SEARCH       => DEFAULT_INDEX_BASE().'-*';
+use constant DEFAULT_TYPE               => 'observables';
+use constant DEFAULT_LIMIT              => 500;
+use constant DEFAULT_SEARCH_FIELD       => 'observable';
+use constant DEFAULT_MAX_CONFIDENCE     => 100;
+use constant DEFAULT_MAX_FLUSH_COUNT    => 10000;
 
 has 'handle' => (
+    is          => 'rw',
+    isa         => 'Search::Elasticsearch::Client::Direct',
+    reader      => 'get_handle',
+    writer      => 'set_handle',
+    lazy_build  => 1,
+);
+
+has 'nodes' => (
     is      => 'ro',
-    isa     => 'ElasticSearch',
-    default => sub { ElasticSearch->new(servers => DEFAULT_HOST()) },
-    reader  => 'get_handle',
-    lazy    => 1,
+    isa     => 'ArrayRef',
+    default => sub { [ DEFAULT_NODE() ] },
+    reader  => 'get_nodes',
 );
 
 has 'index' => (
@@ -53,6 +65,24 @@ has 'type'  => (
     reader  => 'get_type',
 );
 
+has 'max_flush' => (
+    is      => 'ro',
+    isa     => 'Int',
+    default => DEFAULT_MAX_FLUSH_COUNT(),
+    reader  => 'get_max_flush',
+);
+
+sub _build_handle {
+    my $self = shift;
+    my $args = shift;
+ 
+    $self->set_handle(
+        Search::Elasticsearch->new(
+            nodes   => $self->get_nodes(),
+        )
+    );
+}
+
 sub understands {
     my $self = shift;
     my $args = shift;
@@ -63,94 +93,143 @@ sub understands {
 
 sub shutdown {}
 
+sub check_handle {
+    my $self = shift;
+
+    my ($ret,$err);
+    try {
+        $self->get_handle->info();
+    } catch {
+        $err = shift;
+    };
+
+    return 1 unless($err);
+    for($err){
+        if(/No nodes are available/){
+            debug('No nodes are available...');
+            last;
+        }
+        warn $err;
+    }
+    return 0;
+}
+
+sub ping {
+    my $self = shift;
+    my $args = shift;
+    
+    return 1 if($self->check_handle());
+    return 0;
+}
+
 sub process {
     my $self = shift;
     my $args = shift;
     
+    return -1 unless($self->check_handle());
+    
     my $ret;
     if($args->{'Query'}){
-        $ret = $self->process_query($args);
+        $ret = $self->_search($args);
     } elsif($args->{'Observables'}){
-        $ret = $self->process_submission($args);
+        $ret = $self->_submission($args);
     }
     return $ret;
 }
 
-sub process_submission {
+sub _search {
+    my $self = shift;
+    my $args = shift;
+    
+    return -1 if(ref($args->{'Query'}));
+    
+    my $groups = $args->{'groups'} || ['everyone'];
+    $groups = [$groups] unless(ref($groups) && ref($groups) eq 'ARRAY');
+
+    foreach (@$groups) {
+        $_ = { "term" => { 'group' => $_ } };
+    }
+    
+    my $q = $args->{'Query'};
+    
+    $q = [ split(/\//,$q) ];
+    unshift(@{$q}, DEFAULT_SEARCH_FIELD()) unless($#{$q} > 0);
+    my ($f,$v) = @$q;
+    my $terms = [ split(/,/,$v) ];
+    foreach (@$terms){
+        $_ = { "term" => { $f => $_ } };
+    }
+    $q = {
+        query => {
+            filtered    => {
+                filter  => {
+                    "and"   => [
+                        @$terms,
+                    ],                      
+                },
+            },
+        }         
+    };
+    
+    if($args->{'confidence'}){
+        push(@{$q->{'query'}->{'filtered'}->{'filter'}->{'and'}},
+            { range => { "confidence" => { 'from' => $args->{'confidence'}, 'to' => DEFAULT_MAX_CONFIDENCE() } } }
+        );
+    }
+    
+    push(@{$q->{'query'}->{'filtered'}->{'filter'}->{'and'}},
+        filter => { "or" => $groups },
+    );
+    
+    my %search = (
+        index   => $self->get_index_search(),
+        size    => $args->{'limit'} || DEFAULT_LIMIT(),
+        body    => $q,
+    );
+    
+    my $results = $self->get_handle()->search(%search);
+    $results = $results->{'hits'}->{'hits'};
+    $results = [ map { $_ = $_->{'_source'} } @$results ];
+
+    return $results;
+}
+
+sub _submission {
     my $self = shift;
     my $args = shift;
     
     my @objs = @{$args->{'Observables'}};
     my @results;
     
+    ##TODO
     my $timestamp = DateTime->from_epoch(epoch => time());
     $timestamp = $timestamp->ymd().'T'.$timestamp->hms().'Z';
     
-    my $ret;
-    foreach(@objs){
-        $ret = $self->get_handle()->create(
-            index   => $self->get_index(),
-            type    => $self->get_type(),
-            data    => {
-                %$_,
-                '@timestamp'    => $timestamp,
-                '@version'      => 2,
-            },
-            
-        );
-        push(@results,$ret->{'_id'});
-        $ret = undef;
-    }
-    return \@results;
-}
-
-sub process_query {
-    my $self = shift;
-    my $args = shift;
-
-    my $otype = observable_type($args->{'Query'});
-    my $queryb; my $cb; my $filterb;
-
-    if($otype){
-        for($otype){
-            if(/^ip/){
-                $queryb = _process_ip($args);
-                $cb = *_process_ip_results;
-                last();
-            }
-            if(/^fqdn$/){
-                $queryb = _process_fqdn($args);
-                $cb = *_process_fqdn_results;
-                last();
-            }
-            $queryb = { message => $args->{'Query'} };
-        }
-    } else {
-        $filterb = { tags => $args->{'Query'} };
-    }
+    return -1 unless($self->check_handle());
     
-    $filterb = {
-        %$filterb,
-        group   => $args->{'group'},
-    };
-
-    my $results = $self->get_handle()->search(
-        index   => $self->get_index_search(),
-        size    => $args->{'limit'},
-        filterb => $filterb,
-        queryb => $queryb,
+    my $id;
+    my ($ret,$err);
+    my $bulk = Search::Elasticsearch::Bulk->new(
+        es  => $self->get_handle(),
+        index       => $self->get_index(),
+        type        => $self->get_type(),
+        max_count   => $self->get_max_flush(),
+        verbose     => 1,
     );
 
-    $results = $results->{'hits'}->{'hits'};
-    $results = [ map { $_ = $_->{'_source'} } @$results ];
-    
-    if($cb){
-        $results = $cb->({
-            Query   => $args->{'Query'},
-            Results => $results,
+    foreach (@objs){
+        $_->{'@timestamp'}  = $timestamp;
+        $_->{'@version'}    = 2;
+        $_->{'id'}  = hash_create_random();
+        $bulk->index({ 
+            id      => $_->{'id'}, 
+            source => $_ ,
         });
     }
-    return $results;
+
+    $ret = $bulk->flush();
+    $ret = [ map { $_ = $_->{'index'}->{'_id'} } @{$ret->{'items'}} ];
+    return $ret;
 }
 
 ##TODO -- factory?

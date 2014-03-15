@@ -24,12 +24,14 @@ use CIF::Router;
 # other
 use Getopt::Long;
 use AnyEvent;
+use Data::Dumper;
 
 my $help;
 my $man;
 my $frontend    = CIF::Router::DEFAULT_FRONTEND_LISTEN();
 my $backend     = CIF::Router::DEFAULT_BACKEND_LISTEN();
-my $publisher   = CIF::Router::DEFAULT_PUBLISHER_LISTEN();
+my $storage     = 'elasticsearch';
+my $auth        = 'DUMMY',
 my $daemon      = 0;
 our $debug      = 0;
 my $verbosity   = 0;
@@ -43,7 +45,6 @@ GetOptions(
     'config|C=s'    => \$config,
     'frontend|F=s'  => \$frontend,
     'backend|B=s'   => \$backend,
-    'publisher|P=s' => \$publisher,
     'daemon|D'      => \$daemon,
     'debug|d'       => \$debug,
     'verbosity|v'   => \$verbosity,
@@ -62,7 +63,6 @@ Usage: $0 [OPTION]
     -D, --daemon            run as daemon
     -F, --frontend=STRING   specify the frontend binding, default: $frontend
     -B, --backend=STRING    specify the backend binding, default: $backend
-    -P, --publisher=STRING  specify the publisher binding, default: $publisher
     -C, --config=FILE       specify cofiguration file, default: ~/.cif 
     -d, --debug             turn on debugging
     -v, --verbosity         turn up debug verbosity [1-10]
@@ -76,24 +76,15 @@ EOF
 
 my $done = AnyEvent->condvar();
 
-#http://search.cpan.org/~mlehmann/AnyEvent-7.05/lib/AnyEvent.pm#CHILD_PROCESS_WATCHERS
-#my ($pid,$w);
-#if($daemon){
-#    $pid = fork or exit 5;
-#    $w = AnyEvent->child(
-#        pid => $pid,
-#        cb  => sub {
-#            my ($pid,$status) = @_;
-#            say 'pid '.$pid.' exited with status '.$status;
-#            $done->send();
-#        },
-#    );
-#}
-
 my $router = CIF::Router->new({
     frontend_listen     => $frontend,
     backend_listen      => $backend,
-    publisher_listen    => $publisher,
+    storage             => {
+        plugin  => $storage,
+    },
+    auth                => {
+        plugin  => $auth,
+    },
 });
 
 $router->startup();

@@ -44,6 +44,8 @@ has 'max_retries' => (
     is      => 'rw',
     isa     => 'Int',
     default => 5,
+    reader  => 'get_max_retries',
+    writer  => 'set_max_retries',
 );
 
 has 'timeout'   => (

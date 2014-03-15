@@ -63,6 +63,7 @@ AC_CONFIG_FILES([
     libcif/lib/CIF/Generated.pm
     router/Makefile
     router/bin/cif-router
+    router/es/Makefile
     smrt/Makefile
     smrt/bin/cif-smrt
     extern/Makefile

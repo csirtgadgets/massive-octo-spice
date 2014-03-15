@@ -5,7 +5,7 @@ use warnings;
 use namespace::autoclean;
 
 use Mouse;
-use Time::HiRes qw(tv_interval);
+use Time::HiRes qw(gettimeofday);
 
 with 'CIF::Router::Request';
     
@@ -13,7 +13,7 @@ has 'Timestamp' => (
     is          => 'ro',
     isa         => 'Num',
     reader      => 'get_Timestamp',
-    default     => sub { tv_interval() },
+    default     => sub { gettimeofday() },
 );
 
 sub understands {
@@ -32,16 +32,6 @@ sub process {
         Timestamp   => $self->get_Timestamp(),
     });
 }
-
-around BUILDARGS => sub {
-    my $orig = shift;
-    my $self = shift;
-    my $args = shift;
- 
-    #$args->{'Timestamp'} = tv_interval() unless($args->{'Timestamp'});
-
-    return $self->$orig($args);
-};
 
 sub TO_JSON {
     my $self = shift;

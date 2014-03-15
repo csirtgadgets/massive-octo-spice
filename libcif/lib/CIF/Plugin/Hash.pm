@@ -15,7 +15,7 @@ our @ISA = qw(Exporter);
 # If you do not need this, moving things directly into @EXPORT or @EXPORT_OK
 # will save memory.
 our %EXPORT_TAGS = ( 'all' => [ qw(
-    is_hash hash_create_random
+    is_hash hash_create_random is_hash_sha256 hash_create_static
 ) ] );
 
 our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
@@ -41,6 +41,11 @@ my $HTYPES = {
 sub hash_create_random {
     my $arg = shift || DEFAULT_RANDOM_BYTES();
     return sha256_hex(gettimeofday().get_strong($arg));
+}
+
+sub hash_create_static {
+    my $arg = shift || return;
+    return sha256_hex($arg);
 }
 
 sub is_hash {

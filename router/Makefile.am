@@ -1,6 +1,7 @@
+SUBDIRS = es
 EXTRA_DIST = lib bin contrib t
 
-TEST_FILES=t/00*.t
+TEST_FILES=t/00*.t t/10-*.t
 TEST_VERBOSE=0
 LIBS=../libcif/lib,lib
 

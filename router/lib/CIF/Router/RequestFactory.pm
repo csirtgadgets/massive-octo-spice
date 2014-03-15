@@ -4,6 +4,8 @@ use strict;
 use warnings;
 
 use Module::PluginFinder;
+use Try::Tiny;
+use Carp;
 
 my $finder = Module::PluginFinder->new(
     search_path => 'CIF::Router::Request',
@@ -16,7 +18,15 @@ my $finder = Module::PluginFinder->new(
 sub new_plugin {
     my ($self,$args) = @_;
 
-    return $finder->construct($args->{'msg'},{%{$args}}) or die "I don't know how to create this type of Plugin";
+    my ($ret,$err);
+    try {
+        $ret = $finder->construct($args->{'msg'},{%{$args}});
+    } catch {
+        $err = shift;
+    };
+    return $ret if($ret);
+    return if($err =~ /^Unable to/);
+    croak($err);
 }
 
 1;

@@ -17,9 +17,11 @@ BEGIN {
     }
 };
 
+#our $debug = 1;
+my $storage = 'DUMMY';
+my $auth = 'DUMMY';
 use CIF qw/hash_create_random/;
 
-say 'starting router...';
 my $t = threads->create('start_router');
 
 my $cli = CIF::Client->new({
@@ -29,7 +31,7 @@ my $cli = CIF::Client->new({
     });
 
 my $ret = $cli->ping();
-say $ret;
+ok($ret > 0, 'running ping...');
 
 my $observables =  [
         {
@@ -52,21 +54,19 @@ my $observables =  [
         },
 ];
 
+diag('submit...');
 $ret = $cli->submit({ Observables => $observables });
+ok($ret,'submit...');
 
+diag('query...');
 $ret = $cli->query({
-    #query       => '62.182.0.0/16',
-    #query        => 'umc.su',
-    #query       => ['botnet','fqdn'],
-    #query => 'botnet',
-    #query       => 'botnet,fqdn',
-    #query => 'hijacked',
-    #query   => 'example.com',
-    query       => 'malware',
+    query       => 'example.com',
     group       => 'group1',
     limit       => 50,
     confidence  => 25,
 });
+
+ok($ret !~ /^ERROR/, 'testing query...');
 
 my $txt = $cli->format({ format => 'table', data => $ret });
 
@@ -77,15 +77,23 @@ $t->kill('KILL')->detach();
 
 sub start_router {
     $SIG{'KILL'} = sub { threads->exit(); };
+    
+    diag('starting router...');
     my $obj = CIF::Router->new({
         encoder_pretty  => 1,
+        storage => {
+            plugin => $storage,
+        },
+        auth    => {
+            plugin => $auth,
+        }
     });
 
     my $done = AnyEvent->condvar();
 
     my $ret = $obj->startup();
 
-    say 'waiting...';
+    diag('waiting...');
     $done->recv();
 }
         

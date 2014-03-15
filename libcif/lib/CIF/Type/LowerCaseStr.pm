@@ -3,7 +3,6 @@ package CIF::Type::LowerCaseStr;
 use strict;
 use warnings;
 
-
 use Mouse::Util::TypeConstraints;
 
 subtype "CIF::Type::LowerCaseStr", 

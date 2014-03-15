@@ -2,7 +2,6 @@ package CIF::Smrt::Handler::Default;
 
 use warnings;
 use strict;
-use namespace::autoclean;
 
 use Mouse;
 
@@ -19,7 +18,7 @@ has 'fetcher'   => (
 
 has 'parser'    => (
     is      => 'ro',
-    reader  => 'get_fetcher',
+    reader  => 'get_parser',
 );
 
 sub understands {
@@ -36,21 +35,19 @@ around BUILDARGS => sub {
     my $origin  = shift;
     my $self    = shift;
     my $args    = shift;
-
+    
     $args->{'parser'}   = CIF::Smrt::ParserFactory->new_plugin($args);
     $args->{'fetcher'}  = CIF::Smrt::FetcherFactory->new_plugin($args);
     
     return $self->$origin($args);
 };
-
 sub fetch {}
-
 sub process {
     my $self = shift;
     my $args = shift;
-    
+
     my $ret = $self->get_fetcher()->process($args);
-    
+
     my $ftype = File::Type->new()->mime_type(@$ret[0]);
     
     if(my $decoder = CIF::Smrt::DecoderFactory->new_plugin({ type => $ftype })){

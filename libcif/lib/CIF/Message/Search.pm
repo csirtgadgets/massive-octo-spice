@@ -1,29 +1,35 @@
-package CIF::Message::Query;
+package CIF::Message::Search;
 
 use strict;
 use warnings;
 
 use Mouse;
+use CIF::Type;
 
 has 'confidence'    => (
     is      => 'ro',
     isa     => 'Int',
-    default => 0,
     reader  => 'get_confidence',
 );
 
 has 'limit' => (
     is      => 'ro',
     isa     => 'Int',
-    default => CIF::DEFAULT_QUERY_LIMIT(),
     reader  => 'get_limit',
 );
 
 has 'group' => (
     is      => 'ro',
     isa     => 'Str',
-    default => CIF::DEFAULT_GROUP(),
     reader  => 'get_group',
+    coerce  => 1,
+);
+
+has 'Tags'  => (
+    is      => 'ro',
+    isa     => 'ArrayRef',
+    reader  => 'get_tags',
+    coerce  => 1,
 );
 
 has 'Query' => (
@@ -38,15 +44,29 @@ has 'Results'   => (
     isa     => 'ArrayRef',
     reader  => 'get_Results',
     writer  => 'set_Results',
-); 
+);
    
 sub understands {
     my $self = shift;
     my $args = shift;
     
     return unless($args->{'rtype'});
-    return 1 if($args->{'rtype'} eq 'query');
+    return 1 if($args->{'rtype'} eq 'search');
 }
+
+around BUILDARGS => sub {
+    my $orig = shift;
+    my $self = shift;
+    my $args = shift;
+    
+    $args->{'group'}        = '' unless($args->{'group'});
+    $args->{'Tags'}         = [] unless($args->{'Tags'});
+    $args->{'confidence'}   = 0 unless(defined($args->{'confidence'}));
+    $args->{'limit'}        = 500 unless(defined($args->{'limit'}));
+    
+    
+    return $self->$orig($args);
+};
 
 sub TO_JSON {
     my $self = shift;

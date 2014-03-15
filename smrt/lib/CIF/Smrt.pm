@@ -40,7 +40,6 @@ has 'is_test'   => (
 has 'other_attributes'  => (
     is      => 'ro',
     isa     => 'HashRef',
-    #slurpy  => 1,
 );
 
 has 'handler'   => (
@@ -77,20 +76,20 @@ around BUILDARGS => sub {
 sub process {
     my $self = shift;
     my $args = shift;
-    
+
     $self->set_rule(
         CIF::RuleFactory->new_plugin($args->{'rule'})
     );
-    
+
     $self->set_handler(
         CIF::Smrt::HandlerFactory->new_plugin({
             rule => $self->get_rule(),
         }),
     );
-
-    my $ret = $self->get_handler()->process();
+    
+    my $ret = $self->get_handler()->process($self->get_rule());
     assert($ret,'handler failed');
-
+    
     debug('building events...');
     map { $self->get_rule()->process({ data => $_ }) } @$ret;
     return $ret;

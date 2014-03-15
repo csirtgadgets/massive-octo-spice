@@ -10,4 +10,9 @@ requires qw(
     process
 );
 
+has 'handle' => (
+    is      => 'ro',
+    reader  => 'get_handle',
+);
+
 1;

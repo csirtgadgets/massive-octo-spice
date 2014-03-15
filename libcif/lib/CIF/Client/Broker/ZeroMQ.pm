@@ -62,7 +62,7 @@ sub send {
 
     my $ret = $self->get_socket->send($msg);
     return 0 unless($ret);
-
+    
     $ret = $self->get_socket->receive('blocking');
     
     assert($ret);

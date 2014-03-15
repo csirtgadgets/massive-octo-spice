@@ -4,6 +4,8 @@ use warnings;
 use strict;
 
 use Mouse;
+use Try::Tiny;
+use CIF qw/debug/;
 
 extends 'LWP::UserAgent';
 with 'CIF::Client::Broker';

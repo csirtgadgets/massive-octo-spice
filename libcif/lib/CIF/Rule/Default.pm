@@ -96,6 +96,12 @@ has 'store_content' => (
     reader  => 'get_store_content',
 );
 
+has 'feed' => (
+    is      => 'ro',
+    isa     => 'Str',
+    reader  => 'get_feed',
+);
+
 around BUILDARGS => sub {
     my $orig    = shift;
     my $self    = shift;
@@ -105,8 +111,9 @@ around BUILDARGS => sub {
         die "config file doesn't exist: ".$args->{'config'} unless(-e $args->{'config'});
         $args->{'config'} = Config::Simple->new($args->{'config'});
         $args->{'defaults'} = $args->{'config'}->get_block('default');
-        $args->{'config'} = $args->{'config'}->get_block($args->{'rule'});
-        $args = { %{$args->{'config'}},  %{$args->{'defaults'}}, %{$args->{'override'}} };
+        $args->{'config'} = $args->{'config'}->get_block($args->{'feed'});
+        $args->{'override'} = {} unless($args->{'override'});
+        $args = { %{$args->{'config'}}, %{$args->{'defaults'}}, %{$args->{'override'}}, feed => $args->{'feed'} };
     }
     
     return $self->$orig($args);

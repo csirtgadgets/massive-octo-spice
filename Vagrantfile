@@ -15,8 +15,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   # The url from where the 'config.vm.box' box will be fetched if it
   # doesn't already exist on the user's system.
-  #config.vm.box_url = "http://files.vagrantup.com/precise64.box"
-  config.vm.box_url = "file:///Users/wes/precise64-cifv2.box"
+  
+  # sha1sum cd5fefb61f43f48e98c9e6a3c9fd90061ce6cd01  precise64-cifv2.box
+  config.vm.box_url = "https://www.dropbox.com/s/ojvyyeevnwchaas/precise64-cifv2.box"
 
   # Create a forwarded port mapping which allows access to a specific port
   # within the machine from a port on the host machine. In the example below,

@@ -21,7 +21,7 @@ sub understands {
 sub process {
     my $self = shift;
     my $data = shift;
-    
+
     my @header = map { $_, { is_sep => 1, title => '|' } } @{$self->get_columns()};
     pop(@header);
     my $table = Text::Table->new(@header);
