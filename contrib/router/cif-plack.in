@@ -1,0 +1,106 @@
+#!/usr/bin/env perl
+
+# fix lib paths, some may be relative
+BEGIN {
+    require File::Spec;
+    require Cwd;
+    my @libs = ("@CIF_PATH@/lib");
+    my $bin_path;
+
+    for my $lib (@libs) {
+        unless ( File::Spec->file_name_is_absolute($lib) ) {
+            $bin_path ||= ( File::Spec->splitpath(Cwd::abs_path(__FILE__)) )[1];
+            $lib = File::Spec->catfile( $bin_path, File::Spec->updir, $lib );
+        }
+        unshift @INC, $lib;
+    }
+
+}
+
+##TODO http://wiki.nginx.org/HttpPerlModule
+##TODO http://mongrel2.org/wiki/quick_start.html
+##TODO http://stackoverflow.com/questions/8765385/mongrel2-vs-nginxzeromq
+#http://www.matt-peters.com/blog/?p=35
+
+use Getopt::Long;
+use CIF qw/debug/;
+#use CIF::Client;
+use Plack::Runner qw();
+use Plack::Request;
+use JSON::XS;
+use Data::Dumper;
+use Try::Tiny;
+
+use constant DEFAULT_UPSTREAM => 'tcp://localhost:'.CIF::DEFAULT_PORT();
+
+my $help;
+my $man;
+my $remote = DEFAULT_UPSTREAM();
+our $debug = 0;
+
+my $config = $ENV{'HOME'}.'/.cif';
+
+Getopt::Long::Configure ("bundling");
+GetOptions(
+    'remote|R=s'  => \$remote,
+    'help|h'      => \$help, 
+    'config|C=s'  => \$config,
+    'debug|d'     => \$debug,
+) or die(usage());
+
+die(usage()) if($help);
+
+sub usage {
+    return <<EOF;
+
+Usage: $0 [OPTION]
+
+ Options:
+    -R, --remote=STRING     upstream router, default: $remote
+    -C, --config=FILE       specify cofiguration file, default: ~/.cif 
+    -h, --help              this message       
+
+ Examples:
+    $0 -C /path/to/cif.conf
+
+EOF
+}
+
+my $app = sub {
+    my $env = shift;
+    my $req = Plack::Request->new($env);
+    my $q = { 
+        Token       => $req->param('token'),
+        Query       => $req->param('query')         || $req->param('q'),
+        Tags        => $req->param('tags'),
+        group       => $req->param('group'),
+        confidence  => $req->param('confidence')    || 0,
+        limit       => $req->param('limit')         || 500
+    };
+    my $err;
+    require CIF::Client;
+    my $broker = CIF::Client->new({ remote => $remote });
+    try {
+        $ret = $broker->search($q);
+    } catch {
+        $err = shift;
+    };
+    if($err || $ret =~ /^ERROR/){
+        debug($err);
+        return [
+            '500',
+            ['Content-Type' => 'application/json'],
+            ['something broke...'],
+        ];
+    } else {
+        $ret = JSON::XS::encode_json($ret);
+        return [
+            '200',
+            ['Content-Type' => 'application/json'],
+            [$ret],
+        ];
+    }
+};
+
+my $runner = Plack::Runner->new();
+$runner->run($app);
