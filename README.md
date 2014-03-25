@@ -11,7 +11,7 @@ Building and Installation
 ===
 Operating System
 ====
-Currently only debian is functional, others to follow.
+Currently only debian is functional, others to follow.  
 1. setup the OS
 ```
 $ sudo ./prep/operatingsystem.sh
