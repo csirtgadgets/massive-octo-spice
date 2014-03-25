@@ -1,4 +1,3 @@
-SUBDIRS = es
 EXTRA_DIST = lib bin contrib t
 
 TEST_FILES=t/00*.t t/10-*.t

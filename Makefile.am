@@ -1,4 +1,4 @@
-SUBDIRS = libcif router smrt extern
+SUBDIRS = libcif router smrt extern schema
 EXTRA_DIST = sbin etc contrib config.layout .deps
 
 BUILD=$(shell git describe --tags)
@@ -50,6 +50,9 @@ smrt-install:
 
 extern-install:
 	( cd extern && make install )
+
+initdb:
+	( cd schema && make initdb )
 
 fixperms:
 	chmod 0755 $(prefix)

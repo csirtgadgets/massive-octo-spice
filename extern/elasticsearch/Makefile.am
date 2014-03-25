@@ -1,3 +1,4 @@
+SUBDIRS = mapping
 EXTRA_DIST = \
     elasticsearch.yml.in \
     elasticsearch-1.0.1.tar.gz \
