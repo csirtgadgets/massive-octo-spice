@@ -1,11 +1,11 @@
-package CIF::Format::Csv;
+package CIF::Format::Json;
 
+use 5.011;
 use strict;
 use warnings;
-use namespace::autoclean;
 
 use Mouse;
-#use Text::CSV;
+use JSON::XS;
 
 with 'CIF::Format';
 
@@ -14,13 +14,13 @@ sub understands {
     my $args = shift;
 
     return unless($args->{'format'});
-    return 1 if($args->{'format'} eq 'csv');
+    return 1 if($args->{'format'} eq 'json');
 }
 
 sub process {
     my $self = shift;
-    my $args = shift;
-
+    my $data = shift;
+    return JSON::XS->new->pretty->convert_blessed(1)->encode($data);
 }
 
 __PACKAGE__->meta()->make_immutable();

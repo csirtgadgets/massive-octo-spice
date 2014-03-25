@@ -2,6 +2,7 @@ package CIF::Rule::Default;
 
 use strict;
 use warnings;
+use namespace::autoclean;
 
 use Mouse;
 
@@ -51,25 +52,6 @@ has 'skip_first' => (
     reader  => 'get_skip_first',
 );
 
-
-has 'not_before' => (
-    is          => 'rw', 
-    isa         => 'CIF::Type::DateTimeInt',
-);
-
-has '_now' => (
-    is          => 'ro', 
-    isa         => 'CIF::Type::DateTimeInt',
-    default     => sub { time() },
-);
-
-has 'skip_comments' => (
-    is      => 'ro',
-    isa     => 'Bool',
-    default => 1,
-    reader  => 'get_skip_comments',
-);
-
 has 'ignore'    => (
     is      => 'ro',
     isa     => 'ArrayRef',
@@ -102,6 +84,11 @@ has 'feed' => (
     reader  => 'get_feed',
 );
 
+has 'zip_filename' => (
+    is      => 'ro',
+    isa     => 'Str',
+);
+
 around BUILDARGS => sub {
     my $orig    = shift;
     my $self    = shift;
@@ -113,9 +100,9 @@ around BUILDARGS => sub {
         $args->{'defaults'} = $args->{'config'}->get_block('default');
         $args->{'config'} = $args->{'config'}->get_block($args->{'feed'});
         $args->{'override'} = {} unless($args->{'override'});
-        $args = { %{$args->{'config'}}, %{$args->{'defaults'}}, %{$args->{'override'}}, feed => $args->{'feed'} };
+        $args = { %{$args->{'config'}}, %{$args->{'defaults'}}, %{$args->{'override'}}, feed => $args->{'feed'}, meta => $args->{'meta'} };
     }
-    
+
     return $self->$orig($args);
 };
 
@@ -133,7 +120,7 @@ sub process {
     my $args = shift;
 
     $self->_merge_defaults($args);
-    
+    $self->process_meta($args);
 }
 
 sub _merge_defaults {
@@ -141,13 +128,19 @@ sub _merge_defaults {
     my $args = shift;
 
     return unless($self->get_defaults());
-
     foreach my $k (keys %{$self->get_defaults()}){        
         for($self->get_defaults()->{$k}){
             if($_ && $_ =~ /<(\S+)>/){
                 # if we have something that requires expansion
                 # < >'s
-                my $val = $args->{'data'}->{$1};
+                my $val;
+                
+                ##TODO -- work-around
+                if($1 =~ /^remote$/){
+                    $val = $self->get_remote();
+                } else {
+                    $val = $args->{'data'}->{$1};
+                }
                 unless($val){
                     warn 'missing: '.$k;
                     assert($val);

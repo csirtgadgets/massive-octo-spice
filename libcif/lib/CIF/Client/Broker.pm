@@ -7,12 +7,20 @@ use Mouse::Role;
 
 use constant DEFAULT_AGENT_STRING => 'libcif/'.$CIF::VERSION.' (csirtgadgets.org)';
 
+requires qw(send receive get_fd shutdown);
+
 has 'agent' => (
     is      => 'rw',
     isa     => 'Str',
     default => DEFAULT_AGENT_STRING(),
     reader  => 'get_agent',
     writer  => 'set_agent',
+);
+
+has 'subscriber' => (
+    is      => 'ro',
+    isa     => 'Bool',
+    reader  => 'get_subscriber',
 );
 
 has 'remote' => (

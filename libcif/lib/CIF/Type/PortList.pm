@@ -3,7 +3,6 @@ package CIF::Type::PortList;
 use strict;
 use warnings;
 
-
 use Mouse::Util::TypeConstraints;
 
 subtype "CIF::Type::PortList", 

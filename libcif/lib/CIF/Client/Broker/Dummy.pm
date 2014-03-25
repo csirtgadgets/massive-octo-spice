@@ -1,9 +1,8 @@
 package CIF::Client::Broker::Dummy;
 
-use 5.011;
 use strict;
 no warnings;
-#no if $] >= 5.018, warnings => "experimental";
+use namespace::autoclean;
 
 use Mouse;
 use JSON::XS;
@@ -21,6 +20,9 @@ sub understands {
 }
 
 sub init { return 1; }
+
+sub get_fd {}
+sub receive {}
 
 sub send {
     my $self    = shift;

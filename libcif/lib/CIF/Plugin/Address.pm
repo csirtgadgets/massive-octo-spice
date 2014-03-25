@@ -30,7 +30,7 @@ use URI; ##TODO -- change from regexs
 use Regexp::Common qw/net/;
 
 use constant RE_FQDN_LAZY       => qr/^$RE{net}{domain}{-rfc1101}{-nospace}$/;
-use constant RE_FQDN            => qr/^([a-z0-9.-]+)?\.[a-z]{2,10}$/;
+use constant RE_FQDN            => qr/^([a-zA-Z0-9.-]+)?\.[a-z]{2,10}$/;
 use constant RE_IPV4            => qr/^$RE{'net'}{'IPv4'}/;
 use constant RE_IPV6            => qr/^$RE{'net'}{'IPv6'}/;
 use constant ASN_MAX            => 2**32 - 1;

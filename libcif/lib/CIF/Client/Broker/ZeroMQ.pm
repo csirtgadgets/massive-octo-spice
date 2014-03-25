@@ -5,20 +5,29 @@ use warnings;
 use strict;
 
 use Mouse;
-use ZMQx::Class;
-use ZMQ::LibZMQ3;
+use ZMQ::FFI;
+use ZMQ::FFI::Constants qw(ZMQ_REQ ZMQ_SUB);
 use Carp;
 use Carp::Assert;
+use CIF qw(debug);
 
 with 'CIF::Client::Broker';
 
 use constant RE_REMOTE  => qr/^((zeromq|zmq)(\+))?(tcp|inproc|ipc|proc)\:\/{2}([[\S]+|\*])(\:(\d+))?$/;
 
-has 'socket' => (
+has 'context' => (
     is      => 'rw',
-    isa     => 'ZMQx::Class::Socket',
-    reader  => 'get_socket',
-    writer  => 'set_socket',
+    reader  => 'get_context',
+    writer  => 'set_context',
+    default => sub { ZMQ::FFI->new() },
+);
+
+has 'socket' => (
+    is          => 'rw',
+    reader      => 'get_socket',
+    writer      => 'set_socket',
+    builder     => '_build_socket',
+    required    => 1,
 );
 
 sub understands {
@@ -41,18 +50,25 @@ around BUILDARGS => sub {
     return $self->$orig(%args);
 };
 
-##TODO
-# this could actually be a DEALER socket
-# to handle async, but would need to re-work the 'worker' queues a bit on the backend
-# re-write this outside of ZMQx::Class, or re-write ZMQx::Class to have better threading support
-sub BUILD {
+sub _build_socket {
     my $self = shift;
-    $self->set_socket(
-        ZMQx::Class->socket(
-            'REQ',
-            connect => $self->get_remote(),
-        )
+    my $args = shift;
+
+    my $socket = $self->get_context()->socket(
+        ($self->get_subscriber()) ? ZMQ_SUB : ZMQ_REQ
     );
+    $socket->subscribe('') if($self->get_subscriber());
+    $socket->connect($self->get_remote());
+    return $socket;
+    
+}
+
+sub receive {
+    return shift->get_socket()->recv();
+}
+
+sub get_fd {
+    return shift->get_socket->get_fd();
 }
 
 # this should already be a string by the time it hits us
@@ -61,12 +77,9 @@ sub send {
     my $msg = shift;
 
     my $ret = $self->get_socket->send($msg);
-    return 0 unless($ret);
     
-    $ret = $self->get_socket->receive('blocking');
-    
-    assert($ret);
-    return @{$ret}[0];
+    $ret = $self->get_socket->recv();
+    return $ret;
 }
 
 sub shutdown {

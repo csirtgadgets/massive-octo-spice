@@ -73,7 +73,6 @@ around BUILDARGS => sub {
     $args->{'broker'}           = CIF::Client::BrokerFactory->new_plugin({ config => $args });
     $args->{'format_handle'}    = CIF::FormatFactory->new_plugin($args) if($args->{'format'});
     $args->{'encoder_handle'}   = CIF::EncoderFactory->new_plugin($args);
-    
     return $self->$orig($args);
 };
 
@@ -118,7 +117,31 @@ sub send {
     $msg = ${$msg}[0] if(ref($msg) && ref($msg) eq 'ARRAY');
     
     return $msg;
-}  
+}
+
+sub receive {
+    my $self = shift;
+    my $msg = $self->get_broker->receive();
+    $msg = $self->decode($msg);
+    map { $_ = CIF::ObservableFactory->new_plugin($_) } (@{$msg});
+    return $msg;
+}
+
+sub subscribe {
+	my $self = shift;
+	my $cb = shift;
+	
+	return AnyEvent->io(
+	   fh      => $self->get_broker->get_fd(),
+	   poll    => 'r',
+	   cb      => $cb,
+    );
+}
+
+sub has_pollin {
+    my $self = shift;
+    return $self->get_broker->get_socket->has_pollin();
+}
 
 sub ping {
     my $self = shift;
@@ -169,7 +192,7 @@ sub submit {
         Token       => $args->{'Token'} || $self->Token(),
         Observables => $args->{'Observables'},
     });
-    
+
     my $sent = ($#{$args->{'Observables'}} + 1);
     debug('sending: '.($sent));
     my $t = gettimeofday();

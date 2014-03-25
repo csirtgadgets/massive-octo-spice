@@ -33,6 +33,8 @@ sub understands {
 }
 
 sub init { return 1; }
+sub get_fd {}
+sub receive {}
 
 sub BUILD {
     my $self    = shift;

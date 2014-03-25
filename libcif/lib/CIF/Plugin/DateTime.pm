@@ -26,7 +26,7 @@ our @EXPORT = qw(
 use DateTime::Format::DateParse;
 
 use constant RE_DATETIME_STR    => qr/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/;
-use constant RE_DATETIME_INT    => qr/^\d{9,}/;
+use constant RE_DATETIME_INT    => qr/^\d{6,}/;
 
 sub is_datetime {
     my $arg = shift || return;
