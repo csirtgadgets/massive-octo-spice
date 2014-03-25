@@ -1,9 +1,13 @@
 massive-octo-spice
 ==
-[![Build Status](https://travis-ci.org/csirtgadgets/massive-octo-spice.png?branch=master)](https://travis-ci.org/csirtgadgets/massive-octo-spice) [![Coverage Status](https://coveralls.io/repos/csirtgadgets/massive-octo-spice/badge.png?branch=master)](https://coveralls.io/r/csirtgadgets/massive-octo-spice?branch=master)
-
-[Getting Involved](http://csirtgadgets.org/contribute)
+Getting Involved
+===
+[Contribute](http://csirtgadgets.org/contribute)
 [Repository](https://github.com/csirtgadgets/massive-octo-spice)
+
+Master Build Status
+===
+[![Build Status](https://travis-ci.org/csirtgadgets/massive-octo-spice.png?branch=master)](https://travis-ci.org/csirtgadgets/massive-octo-spice) [![Coverage Status](https://coveralls.io/repos/csirtgadgets/massive-octo-spice/badge.png?branch=master)](https://coveralls.io/r/csirtgadgets/massive-octo-spice?branch=master)
 
 Building and Installation
 ===
