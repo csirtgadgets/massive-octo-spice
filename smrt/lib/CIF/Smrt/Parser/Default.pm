@@ -26,6 +26,8 @@ sub process {
     my $args = shift;
 
     my $cols = $self->get_rule()->get_values();
+
+    return unless($#{$args->{'content'}} > 0);
     assert($cols,'missing values param');
     assert($#{$args->{'content'}} > 0, 'no content to parse...');
     

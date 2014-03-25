@@ -15,7 +15,7 @@ sub understands {
     my $args = shift;
 
     return 1 if($args->{'rule'}->get_remote() =~ /^file:\/\//);
-    return 1 if(-e $args->{'rule'}->get_remote());
+    return 1 if($args->{'rule'}->get_remote() =~ /^\/[\w|\/]+/);
     return 0;
 }
 

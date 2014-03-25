@@ -8,6 +8,7 @@ use Mouse;
 
 with 'CIF::Smrt::Decoder';
 
+# this is here since pluginfinder dies's stupidly
 sub understands {
     my $self = shift;
     my $args = shift;
@@ -19,7 +20,7 @@ sub process {
     my $self = shift;
     my $args = shift;
     
-    return $args;
+    return $args->{'data'};
 }
 
 __PACKAGE__->meta()->make_immutable();

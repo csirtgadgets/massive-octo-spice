@@ -22,10 +22,8 @@ sub understands {
 sub process {
     my $self = shift;
     my $args = shift;
-    
-    $args = join("\n",@$args) if(ref($args) eq 'ARRAY');
-    
-    my $uncompressed = Compress::Zlib::memGunzip($args);
+      
+    my $uncompressed = Compress::Zlib::memGunzip($args->{'data'});
     my $ft = File::Type->new()->mime_type($uncompressed);
 
     return unless($ft =~ /octet-stream/); #only return octect streams(aka text)

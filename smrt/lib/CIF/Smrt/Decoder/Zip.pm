@@ -22,17 +22,18 @@ sub understands {
 sub process {
     my $self = shift;
     my $args = shift;
-    
-    my $file = $args->{'zip_filename'};
+
+    my $file = $args->{'zip_filename'} || 'domains.txt';
     unless($file){
         $args->{'remote'} =~ m/\/([a-zA-Z0-9_]+).zip$/;
         $file = $1;
     }
-    
     return unless($file);
 
     my $unzipped;
     unzip \$args->{'data'} => \$unzipped, Name => $file || die('unzip failed: '.$UnzipError);
+    $unzipped =~ s/\r//g;
+    $unzipped = [ split(/\n/,$unzipped) ];
     return $unzipped;   
 }
 

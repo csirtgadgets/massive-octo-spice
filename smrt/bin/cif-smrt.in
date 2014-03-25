@@ -39,6 +39,12 @@ my $token       = hash_create_random();
 my $rule       = '';
 my $feed        = '';
 my $threads     = 1;
+my $limit       = 0;
+my $refresh     = 0;
+my $meta        = 0;
+my $mutex       = '/tmp/cif/smrt.lock';
+my $test_mode   = 0;
+my $today = DateTime->today()->ymd('');
 
 my $smrt_config;
 my $client_config;
@@ -59,16 +65,27 @@ GetOptions(
     'config|C=s'    => \$config,
     'remote|R=s'    => \$remote,
     'token|T=s'     => \$token,
-    'rule|r=s'     => \$rule,
+    'rule|r=s'      => \$rule,
     'feed|f=s'      => \$feed,
     'daemon|D'      => \$daemon,
     'threads|t=i'   => \$threads,
     'debug|d'       => \$debug,
     'verbosity|v'   => \$verbosity,
+    'limit|L=i'     => \$limit,
+    'refresh|Z'     => \$refresh,
+    'meta|M'        => \$meta,
+    'mutex|m=s'     => \$mutex,
+    'test|x'        => \$test_mode,
 ) or die(usage());
 
 die(usage()) if($help);
-die(usage()) unless($rule && $feed);
+die(usage()) unless($rule);
+
+if(-f $rule && !$feed){
+    die(usage());
+} elsif(!$feed && !(-d $rule)){
+    die(usage());
+}
 
 $debug = $verbosity if($verbosity);
 
@@ -84,7 +101,8 @@ Usage: $0 [OPTION]
     -D, --daemon            run as daemon
     -d, --debug             turn on debugging
     -v, --verbosity         turn up debug verbosity [1-10]
-    -h, --help              this message       
+    -h, --help              this message
+    -M, --meta              apply metadata processors, default: $meta 
 
  Examples:
     $0 -C /path/to/cif.conf
@@ -98,23 +116,69 @@ my $smrt = CIF::Smrt->new({
         Token           => $token,
         encoder_pretty  => 1,
     },
+    test_mode   => $test_mode,
 });
 
 my ($err,$ret);
 
-$ret = $smrt->process({
-    rule    => {
+##TODO refactor this into libcif rules?
+my $rules;
+if(-d $rule){
+    opendir(F,$rule) || die('unable to open: '.$rule.'... '.$!);
+    my $files = [ sort { $a cmp $b } grep (/.cfg$/,readdir(F)) ];
+    foreach my $f (@$files){
+        my $t = Config::Simple->new($rule.'/'.$f);
+        my @sections = keys(%{$t->{'_DATA'}});
+        next unless($t->param(-block => 'default')->{'enabled'});
+        foreach my $section (@sections){
+            next if($section =~ /^default/);
+            next if($t->param(-block => $section)->{'disabled'});
+            my $c = $t->param(-block => $section);
+            push(@$rules,{
+                config  => $rule."/".$f,
+                feed    => $section,
+                override    => {
+                    limit   => $limit,
+                },
+                meta    => (defined($c->{'meta'})) ? $c->{'meta'} : $meta,
+            });
+                
+        }
+    }
+            
+} else {
+    $rules = [{
         config  => $rule,
         feed    => $feed,
-    },
-});
+        override    => {
+            limit   => $limit,
+        },
+        meta    => $meta,
+    }];
+}
 
-($err,$ret) = $smrt->get_client->submit({
-    Observables => $ret,
-});
-croak($err) if($err);
-#$ret = join("\n",map { $_ = 'id: '.$_ } @$ret );
-#$ret = "success: \n".$ret;
-#say $ret;
+foreach (@$rules){
+    debug('processing: '.$_->{'config'}.' - '.$_->{'feed'});
+    $ret = $smrt->process({
+        rule    => $_,
+    });
+    ($err,$ret) = $smrt->get_client->submit({
+        Observables => $ret,
+    });
+    croak($err) if($err);
+}
+
+debug('cleaning up tmp...');
+opendir(F,'/tmp/cif/smrt/cache') || die($!);
+my $tmp = [ sort { $a cmp $b } grep (/^\d+\.log$/,readdir(F)) ];
+foreach (@$tmp){
+    m/^(\d+)\.log$/;
+    if($1 < $today){
+        debug('removing: /tmp/cif/smrt/cache/'.$_);
+        #todo -- clean this
+        system('rm -f /tmp/cif/smrt/cache/'.$_);
+    }
+}
+
 
 exit(0);

@@ -7,14 +7,17 @@ use warnings;
 use Mouse;
 
 # cif support
-use CIF qw/hash_create_random debug normalize_timestamp/;
+use CIF qw/hash_create_random debug normalize_timestamp is_ip/;
 require CIF::Client;
 require CIF::ObservableFactory;
 require CIF::RuleFactory;
 require CIF::Smrt::HandlerFactory;
+
 use Data::Dumper;
 use Config::Simple;
 use Carp::Assert;
+
+use constant MAX_DATETIME => 999999999999999999;
 
 has 'config'    => (
     is      => 'ro',
@@ -54,6 +57,12 @@ has 'rule'   => (
     reader  => 'get_rule',
 );
 
+has 'test_mode' => (
+    is      => 'ro',
+    isa     => 'Bool',
+    reader  => 'get_test_mode',
+);
+
 around BUILDARGS => sub {
     my $orig = shift;
     my $self = shift;
@@ -83,16 +92,35 @@ sub process {
 
     $self->set_handler(
         CIF::Smrt::HandlerFactory->new_plugin({
-            rule => $self->get_rule(),
+            rule        => $self->get_rule(),
+            test_mode   => $self->get_test_mode(),
         }),
     );
-    
+
     my $ret = $self->get_handler()->process($self->get_rule());
-    assert($ret,'handler failed');
+    return unless($ret);
     
-    debug('building events...');
-    map { $self->get_rule()->process({ data => $_ }) } @$ret;
-    return $ret;
+    my @array;  
+    debug('building events: '.($#{$ret} + 1));
+    my $ts;
+    # threading start here?
+    foreach (@$ret){
+        $ts = $_->{'detecttime'} || $_->{'reporttime'} || MAX_DATETIME();
+        $ts = normalize_timestamp($ts)->epoch();
+
+        next unless($self->get_rule()->get__not_before() <= $ts );
+        $self->get_rule()->process({ data => $_ });
+        push(@array,$_);
+    }
+    return \@array;
+}
+
+# threading goes here.
+sub _process {
+    my $self = shift;
+    my $args = shift;
+    
+       
 }
 
 

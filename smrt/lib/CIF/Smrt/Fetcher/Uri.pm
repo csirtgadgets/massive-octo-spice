@@ -79,10 +79,14 @@ sub process {
     assert(-w $tmp, 'temp space is not writeable by user, or file exists and is not owned by user: '.$tmp) if(-e $tmp);
     ##TODO -- umask
     
-    my $ret = $self->get_handle()->mirror($self->get_rule()->get_remote(),$tmp);
-    unless($ret->is_success() || $ret->status_line() =~ /^304 /){
-        debug('ERROR: '.$ret->status_line());
-        return $ret->decoded_content();
+    my $ret;
+    unless($self->get_test_mode() && -e $tmp){
+        debug('pulling: '.$self->get_rule()->get_remote());
+        $ret = $self->get_handle()->mirror($self->get_rule()->get_remote(),$tmp);
+        unless($ret->is_success() || $ret->status_line() =~ /^304 /){
+            debug('ERROR: '.$ret->status_line());
+            return $ret->decoded_content();
+        }
     }
     return $self->process_file({ file => $tmp });
 }
