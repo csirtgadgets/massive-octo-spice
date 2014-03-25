@@ -12,7 +12,7 @@ sub understands {
     my $args = shift;
 
     return unless($args->{'plugin'});
-    return 1 if($args->{'plugin'} eq 'DUMMY');
+    return 1 if(lc($args->{'plugin'}) eq 'dummy');
 }
 
 sub process { return 1; }

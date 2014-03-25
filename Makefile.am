@@ -1,5 +1,5 @@
 SUBDIRS = libcif router smrt extern schema
-EXTRA_DIST = sbin etc contrib config.layout .deps
+EXTRA_DIST = sbin contrib config.layout .deps contrib/client.conf
 
 BUILD=$(shell git describe --tags)
 CIF_LAYOUT = @cif_layout_name@

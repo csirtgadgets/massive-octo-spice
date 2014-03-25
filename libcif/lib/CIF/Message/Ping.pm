@@ -5,14 +5,14 @@ use warnings;
 
 
 use Mouse;
-use Time::HiRes qw(tv_interval);
+use Time::HiRes qw(gettimeofday);
     
 has 'Timestamp' => (
     is          => 'ro',
     isa         => 'Num',
     reader      => 'get_Timestamp',
     lazy        => 1,
-    default     => sub { tv_interval() },
+    default     => sub { gettimeofday() },
 );
 
 sub understands {
@@ -27,8 +27,6 @@ around BUILDARGS => sub {
     my $orig = shift;
     my $self = shift;
     my $args = shift;
- 
-    #$args->{'Timestamp'} = tv_interval() unless($args->{'Timestamp'});
 
     return $self->$orig($args);
 };

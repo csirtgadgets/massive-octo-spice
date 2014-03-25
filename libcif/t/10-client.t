@@ -14,19 +14,7 @@ my $obj = CIF::Client->new({
     no_log  => 1,
     remote  => 'http://localhost',
 });
-warn Dumper($obj);
 
-my $ret;
-
-#while ( 1 ) {
-#    my $random = int( rand ( 10_000 ) );
-#    say 'sending :'.$random;
-#    $ret = $obj->send({ data => 'hello: '.$random });
-#    unless($ret){
-#        say 'failed...';
-#        last;
-#    }
-#    select( undef, undef, undef, 1);
-#}
+ok($obj);
 
 done_testing();

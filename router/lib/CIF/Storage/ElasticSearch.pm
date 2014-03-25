@@ -189,6 +189,9 @@ sub _search {
     
     my $results = $self->get_handle()->search(%search);
     $results = $results->{'hits'}->{'hits'};
+    
+    ##http://www.perlmonks.org/?node_id=743445
+    ##http://search.cpan.org/dist/Perl-Critic/lib/Perl/Critic/Policy/ControlStructures/ProhibitMutatingListFunctions.pm
     $results = [ map { $_ = $_->{'_source'} } @$results ];
 
     return $results;
@@ -228,6 +231,9 @@ sub _submission {
     }
 
     $ret = $bulk->flush();
+    
+    ##http://www.perlmonks.org/?node_id=743445
+    ##http://search.cpan.org/dist/Perl-Critic/lib/Perl/Critic/Policy/ControlStructures/ProhibitMutatingListFunctions.pm
     $ret = [ map { $_ = $_->{'index'}->{'_id'} } @{$ret->{'items'}} ];
     return $ret;
 }

@@ -14,7 +14,7 @@ say 'starting router...';
 my $obj = CIF::Router->new({
     encoder_pretty  => 1,
     auth    => {
-        plugin => 'sql',
+        plugin => 'dummy',
     },
     storage => {
         plugin => 'elasticsearch',

@@ -1,7 +1,6 @@
 #!/usr/bin/env perl
 
-# fix lib paths, some may be relative
-BEGIN { # BEGIN RT CMD BOILERPLATE
+BEGIN {
     require File::Spec;
     require Cwd;
     my @libs = ("@CIF_PATH@/lib");
@@ -17,11 +16,8 @@ BEGIN { # BEGIN RT CMD BOILERPLATE
 
 }
 
-# cif stuff
 use CIF qw/debug/;
 use CIF::Router;
-
-# other
 use Getopt::Long;
 use AnyEvent;
 use Data::Dumper;
@@ -35,7 +31,6 @@ my $auth        = 'DUMMY',
 my $daemon      = 0;
 our $debug      = 0;
 my $verbosity   = 0;
-my $pid;
 
 my $config = $ENV{'HOME'}.'/.cif';
 
@@ -45,7 +40,6 @@ GetOptions(
     'config|C=s'    => \$config,
     'frontend|F=s'  => \$frontend,
     'backend|B=s'   => \$backend,
-    'daemon|D'      => \$daemon,
     'debug|d'       => \$debug,
     'verbosity|v'   => \$verbosity,
 ) or die(usage());
@@ -53,14 +47,14 @@ GetOptions(
 die(usage()) if($help);
 
 $debug = $verbosity if($verbosity);
-
+$debug = 1;
+$daemon = 1;
 sub usage {
     return <<EOF;
 
 Usage: $0 [OPTION]
 
  Options:
-    -D, --daemon            run as daemon
     -F, --frontend=STRING   specify the frontend binding, default: $frontend
     -B, --backend=STRING    specify the backend binding, default: $backend
     -C, --config=FILE       specify cofiguration file, default: ~/.cif 
@@ -74,8 +68,6 @@ Usage: $0 [OPTION]
 EOF
 }
 
-my $done = AnyEvent->condvar();
-
 my $router = CIF::Router->new({
     frontend_listen     => $frontend,
     backend_listen      => $backend,
@@ -88,5 +80,7 @@ my $router = CIF::Router->new({
 });
 
 $router->startup();
-
+my $done = AnyEvent->condvar();
+$SIG{'INT'} = sub { $done->send(); };
+$SIG{'KILL'} = sub { $done->send(); };
 $done->recv();

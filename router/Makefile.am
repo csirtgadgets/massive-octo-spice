@@ -1,4 +1,4 @@
-EXTRA_DIST = lib bin contrib t
+EXTRA_DIST = lib bin t
 
 TEST_FILES=t/00*.t t/10-*.t
 TEST_VERBOSE=0

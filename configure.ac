@@ -10,7 +10,6 @@ dnl ${ac_configure_args} is available later, but it's quoted differently
 dnl and undocumented.  See http://www.spinics.net/lists/ac/msg10022.html.
 AC_SUBST(CONFIGURE_INCANT, "$0 $@")
 
-# makes things easier, until we get it all in C(-ish)
 AC_PREFIX_DEFAULT([/opt/cif])
 
 AC_SUBST([cif_version_major],
@@ -61,14 +60,16 @@ AC_CONFIG_FILES([
     libcif/Makefile
     libcif/lib/CIF.pm
     libcif/lib/CIF/Generated.pm
+    libcif/bin/cif
     router/Makefile
     router/bin/cif-router
-    router/es/Makefile
     smrt/Makefile
     smrt/bin/cif-smrt
     extern/Makefile
     extern/elasticsearch/Makefile
     extern/elasticsearch/elasticsearch.yml
+    extern/kibana/Makefile
+    schema/Makefile
 ])
 
 #dnl CIF_USER

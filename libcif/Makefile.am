@@ -1,6 +1,6 @@
 EXTRA_DIST = lib sbin bin contrib t config.layout .deps
 
-TEST_FILES=t/00*.t
+TEST_FILES=t/00-*.t t/10-*.t
 TEST_VERBOSE=0
 LIBS=lib
 
@@ -14,7 +14,7 @@ fixdeps:
 testdeps:
 	$(PERL) ./sbin/test-deps --verbose
 
-test: testdeps 
+test:
 	$(PERL) "-MExtUtils::Command::MM" -e "test_harness($(TEST_VERBOSE), split(/,/,'$(LIBS)'))" $(TEST_FILES)
 
 install: libs-install bin-install fix-perms

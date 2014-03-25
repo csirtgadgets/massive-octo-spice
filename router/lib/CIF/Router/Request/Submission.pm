@@ -5,7 +5,6 @@ use warnings;
 use namespace::autoclean;
 
 use Mouse;
-use Time::HiRes qw(tv_interval);
 use CIF::Message::Submission;
 
 with 'CIF::Router::Request';

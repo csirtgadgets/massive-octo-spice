@@ -128,15 +128,8 @@ sub startup {
                 while (my $msg = $self->frontend->receive()){
                     debug('received message...');
                     
-                    ##TODO -- clean this up, permissions, etc
-                    debug('publishing...');
-                    $m = JSON::XS::decode_json(@{$msg}[0]);
-                    $m = [@{$m->{'Data'}->{'Observables'}}];
-                    if($m){
-                        $m = JSON::XS::encode_json($m);
-                        $self->get_publisher->send($m);
-                    }
-                    $m = undef;
+                    $self->publish($msg);
+                    
                     try {
                         $msg = $self->process(@$msg);
                     } catch {
@@ -154,6 +147,22 @@ sub startup {
         )
     );
     debug('started...');
+    return 1;
+}
+
+sub publish {
+    my $self = shift;
+    my $data = shift;
+    
+    ##TODO -- clean this up, permissions, etc
+    #debug('publishing...');
+    #$m = JSON::XS::decode_json(@{$msg}[0]);
+    #$m = [@{$m->{'Data'}->{'Observables'}}];
+    #if($m){
+    #    $m = JSON::XS::encode_json($m);
+    #    $self->get_publisher->send($m);
+    #}
+    #$m = undef;
     return 1;
 }
 ##TODO refactor

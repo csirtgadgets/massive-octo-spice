@@ -10,11 +10,7 @@ BEGIN {
     use_ok('CIF::ObservableFactory');
 };
 
-use CIF qw/hash_create_random/;
-
 my $ob = '10.0.0.1';
-$ob = hash_create_random();
-$ob = 'http://Example.com/1.htm';
 
 my $obs = {
     observable  => $ob,
@@ -33,7 +29,6 @@ my $obs = {
 };
 
 my $msg = CIF::ObservableFactory->new_plugin($obs);
-
-warn Dumper($msg);
+ok($msg);
 
 done_testing();

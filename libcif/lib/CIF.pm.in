@@ -18,7 +18,7 @@ our @ISA = qw(Exporter);
 our %EXPORT_TAGS = ( 'all' => [ qw(
     normalize_timestamp debug init_logging
     is_ip is_asn is_email is_fqdn is_url is_url_broken is_protocol
-    is_hash hash_create_random s_hash_sha256 hash_create_static
+    is_hash hash_create_random is_hash_sha256 hash_create_static
     is_binary
     is_datetime normalize_timestamp
     protocol_to_int

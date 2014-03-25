@@ -154,7 +154,7 @@ sub ping {
     });
     my $ret = $self->send($msg);
     my $ts = $msg->{'Data'}->{'Timestamp'};
-    return tv_interval([$ts]);
+    return tv_interval([split(/\./,$ts)]);
 }
 
 sub search {

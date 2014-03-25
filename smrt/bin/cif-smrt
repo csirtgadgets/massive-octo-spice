@@ -1,10 +1,14 @@
 #!/usr/bin/env perl
 
+use strict;
+use warnings;
+use feature 'say';
+
 # fix lib paths, some may be relative
 BEGIN { # BEGIN RT CMD BOILERPLATE
     require File::Spec;
     require Cwd;
-    my @libs = ("/opt/cif/lib");
+    my @libs = ('/opt/cif/lib');
     my $bin_path;
 
     for my $lib (@libs) {
@@ -17,12 +21,10 @@ BEGIN { # BEGIN RT CMD BOILERPLATE
 
 }
 
-# cif stuff
-use CIF qw/debug/;
-
-# other
 use Getopt::Long;
 use Config::Simple;
+use CIF qw/debug hash_create_random/;
+use CIF::Smrt;
 use Data::Dumper;
 
 my $help;
@@ -31,8 +33,18 @@ my $daemon      = 0;
 our $debug      = 0;
 my $verbosity   = 0;
 
-my $router      = 'zmq+tcp://localhost:'.CIF::DEFAULT_PORT();
-my $token       = 0;
+my $remote      = 'zmq+tcp://localhost:'.CIF::DEFAULT_PORT();
+my $token       = hash_create_random();
+
+my $rule       = '';
+my $feed        = '';
+my $threads     = 1;
+my $limit       = 0;
+my $refresh     = 0;
+my $meta        = 0;
+my $mutex       = '/tmp/cif/smrt.lock';
+my $test_mode   = 0;
+my $today = DateTime->today()->ymd('');
 
 my $smrt_config;
 my $client_config;
@@ -44,21 +56,36 @@ if(-e $config){
     $smrt_config    = $config->get_block('smrt');
     
     $token  = $smrt_config->{'token'}   || $client_config->{'token'}    || $token;
-    $router = $smrt_config->{'router'}  || $client_config->{'router'}   || $router;
+    $remote = $smrt_config->{'remote'}  || $client_config->{'remote'}   || $remote;
 }
 
 Getopt::Long::Configure("bundling");
 GetOptions(
     'help|h'        => \$help, 
     'config|C=s'    => \$config,
-    'router|R=s'    => \$router,
+    'remote|R=s'    => \$remote,
     'token|T=s'     => \$token,
+    'rule|r=s'      => \$rule,
+    'feed|f=s'      => \$feed,
     'daemon|D'      => \$daemon,
+    'threads|t=i'   => \$threads,
     'debug|d'       => \$debug,
     'verbosity|v'   => \$verbosity,
+    'limit|L=i'     => \$limit,
+    'refresh|Z'     => \$refresh,
+    'meta|M'        => \$meta,
+    'mutex|m=s'     => \$mutex,
+    'test|x'        => \$test_mode,
 ) or die(usage());
 
 die(usage()) if($help);
+die(usage()) unless($rule);
+
+if(-f $rule && !$feed){
+    die(usage());
+} elsif(!$feed && !(-d $rule)){
+    die(usage());
+}
 
 $debug = $verbosity if($verbosity);
 
@@ -68,18 +95,90 @@ sub usage {
 Usage: $0 [OPTION]
 
  Options:
-    -R, --router=STRING     specify a router to connect to, default $router
+    -R, --remote=STRING     specify a remote to connect to, default $remote
     -T, --token=STRING      specify a default token/apikey to use, default: $token
     -C, --config=FILE       specify cofiguration file, default: ~/.cif 
     -D, --daemon            run as daemon
     -d, --debug             turn on debugging
     -v, --verbosity         turn up debug verbosity [1-10]
-    -h, --help              this message       
+    -h, --help              this message
+    -M, --meta              apply metadata processors, default: $meta 
 
  Examples:
     $0 -C /path/to/cif.conf
 
 EOF
 }
+
+my $smrt = CIF::Smrt->new({
+    client_config => {
+        remote          => $remote,
+        Token           => $token,
+        encoder_pretty  => 1,
+    },
+    test_mode   => $test_mode,
+});
+
+my ($err,$ret);
+
+##TODO refactor this into libcif rules?
+my $rules;
+if(-d $rule){
+    opendir(F,$rule) || die('unable to open: '.$rule.'... '.$!);
+    my $files = [ sort { $a cmp $b } grep (/.cfg$/,readdir(F)) ];
+    foreach my $f (@$files){
+        my $t = Config::Simple->new($rule.'/'.$f);
+        my @sections = keys(%{$t->{'_DATA'}});
+        next unless($t->param(-block => 'default')->{'enabled'});
+        foreach my $section (@sections){
+            next if($section =~ /^default/);
+            next if($t->param(-block => $section)->{'disabled'});
+            my $c = $t->param(-block => $section);
+            push(@$rules,{
+                config  => $rule."/".$f,
+                feed    => $section,
+                override    => {
+                    limit   => $limit,
+                },
+                meta    => (defined($c->{'meta'})) ? $c->{'meta'} : $meta,
+            });
+                
+        }
+    }
+            
+} else {
+    $rules = [{
+        config  => $rule,
+        feed    => $feed,
+        override    => {
+            limit   => $limit,
+        },
+        meta    => $meta,
+    }];
+}
+
+foreach (@$rules){
+    debug('processing: '.$_->{'config'}.' - '.$_->{'feed'});
+    $ret = $smrt->process({
+        rule    => $_,
+    });
+    ($err,$ret) = $smrt->get_client->submit({
+        Observables => $ret,
+    });
+    croak($err) if($err);
+}
+
+debug('cleaning up tmp...');
+opendir(F,'/tmp/cif/smrt/cache') || die($!);
+my $tmp = [ sort { $a cmp $b } grep (/^\d+\.log$/,readdir(F)) ];
+foreach (@$tmp){
+    m/^(\d+)\.log$/;
+    if($1 < $today){
+        debug('removing: /tmp/cif/smrt/cache/'.$_);
+        #todo -- clean this
+        system('rm -f /tmp/cif/smrt/cache/'.$_);
+    }
+}
+
 
 exit(0);
