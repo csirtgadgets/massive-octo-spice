@@ -12,10 +12,10 @@ Building and Installation
 Operating System
 ====
 Currently only debian is functional, others to follow.
+1. setup the OS
 ```
 $ sudo ./prep/operatingsystem.sh
 ```
-
 PerlBrew
 ====
 Using the latest version of perl can drastically improve performance. This is not required, but recommended. Perlbrew will compile the latest version of perl on your system, the process takes anywhere from 15-45min depending on system resources.
@@ -26,12 +26,25 @@ $ echo "source ${PERLBREW_ROOT}/etc/bashrc" >> ${HOME}/.bash_profile
 
 CIF
 ====
+1. configure and install
 ```
 $ ./configure
 $ make testdeps
 $ sudo make fixdeps
 $ make && make test
 $ sudo make install
+$ sudo service elasticsearch start
+$ make initdb
+```
+1. set the appropriate paths ($HOME/.profile)
+```
+if [ -d "/opt/cif/bin" ]; then
+    PATH="/opt/cif/bin:$PATH"
+fi
+```
+1. start the router
+```
+$ sudo service cif-router start
 ```
 
 COPYRIGHT AND LICENCE
