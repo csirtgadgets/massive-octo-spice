@@ -1,19 +1,17 @@
-massive-octo-spice
-==
 Getting Involved
 ===
-[Contribute](http://csirtgadgets.org/contribute)
-[Repository](https://github.com/csirtgadgets/massive-octo-spice)
+[Project Page](http://csirtgadgets.org/cif/v2)  
+[Mailing List](https://groups.google.com/forum/#!forum/ci-framework)  
+[Contribution Process](http://csirtgadgets.org/contribute)  
+[Branching Model](http://nvie.com/posts/a-successful-git-branching-model/)
 
-Master Build Status
-===
-[![Build Status](https://travis-ci.org/csirtgadgets/massive-octo-spice.png?branch=master)](https://travis-ci.org/csirtgadgets/massive-octo-spice) [![Coverage Status](https://coveralls.io/repos/csirtgadgets/massive-octo-spice/badge.png?branch=master)](https://coveralls.io/r/csirtgadgets/massive-octo-spice?branch=master)
+[![Build Status](https://travis-ci.org/csirtgadgets/massive-octo-spice.png?branch=master)](https://travis-ci.org/csirtgadgets/massive-octo-spice)
 
 Building and Installation
 ===
 Operating System
 ====
-Currently only debian is supported, others to follow.
+Currently only debian is functional, others to follow.
 ```
 $ sudo ./prep/operatingsystem.sh
 ```
