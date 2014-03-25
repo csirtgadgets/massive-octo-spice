@@ -26,6 +26,9 @@ use constant DEFAULT_BACKEND_PORT           => CIF::DEFAULT_BACKEND_PORT();
 use constant DEFAULT_FRONTEND_LISTEN        => 'tcp://*:'.DEFAULT_FRONTEND_PORT();
 use constant DEFAULT_BACKEND_LISTEN         => 'tcp://*:'.DEFAULT_BACKEND_PORT();
 
+use constant DEFAULT_PUBLISHER_PORT         => CIF::DEFAULT_PUBLISHER_PORT();
+use constant DEFAULT_PUBLISHER_LISTEN       => 'tcp://*:'.DEFAULT_PUBLISHER_PORT();
+
 has 'port'      => (
     is      => 'ro',
     isa     => 'Int',
@@ -36,6 +39,7 @@ has 'frontend_listen'   => (
     is      => 'ro',
     isa     => 'Str',
     default => DEFAULT_FRONTEND_LISTEN(),
+    reader  => 'get_frontend_listen',
 );
 
 has 'frontend'  => (
@@ -45,7 +49,19 @@ has 'frontend'  => (
 
 has 'frontend_watcher'  => (
     is => 'rw',
-    isa => 'AnyEvent::Loop::io',
+);
+
+has 'publisher' => (
+    is      => 'rw',
+    isa     => 'ZMQx::Class::Socket',
+    reader  => 'get_publisher',
+);
+
+has 'publisher_listen' => (
+    is      => 'ro',
+    isa     => 'Str',
+    default => DEFAULT_PUBLISHER_LISTEN(),
+    reader  => 'get_publisher_listen',
 );
 
 has 'auth_handle' => (
@@ -95,17 +111,32 @@ sub startup {
     $self->frontend(
         ZMQx::Class->socket(
             'REP',
-            bind => $self->frontend_listen(),
+            bind => $self->get_frontend_listen(),
         )
     );
-    debug('frontend started on: '.$self->frontend_listen());
-    
-    my ($ret,$err);
+    debug('frontend started on: '.$self->get_frontend_listen());
+    $self->publisher(
+        ZMQx::Class->socket(
+            'PUB',
+            bind    => $self->get_publisher_listen(),
+        )
+    );
+    my ($ret,$err,$m);
     $self->frontend_watcher(
         $self->frontend->anyevent_watcher(
             sub {
                 while (my $msg = $self->frontend->receive()){
                     debug('received message...');
+                    
+                    ##TODO -- clean this up, permissions, etc
+                    debug('publishing...');
+                    $m = JSON::XS::decode_json(@{$msg}[0]);
+                    $m = [@{$m->{'Data'}->{'Observables'}}];
+                    if($m){
+                        $m = JSON::XS::encode_json($m);
+                        $self->get_publisher->send($m);
+                    }
+                    $m = undef;
                     try {
                         $msg = $self->process(@$msg);
                     } catch {
