@@ -1,3 +1,4 @@
+*/*.tar.gz
 */blib/*
 # From https://github.com/github/gitignore/blob/master/Perl.gitignore
 */blib/*
