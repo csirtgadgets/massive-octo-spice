@@ -16,5 +16,5 @@ COPYRIGHT AND LICENCE
 ===
 
 Free use of this software is granted under the terms of the GNU Lesser General
-Public License (LGPL). For details see the files `COPYING` included with the
+Public License (LGPLv3). For details see the files `COPYING` included with the
 distribution.
