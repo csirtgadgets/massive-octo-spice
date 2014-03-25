@@ -32,6 +32,9 @@ $ make testdeps
 $ sudo make fixdeps
 $ make && make test
 $ sudo make install
+$ sudo service elasticsearch start
+$ make initdb
+$ sudo service cif-router start
 ```
 
 COPYRIGHT AND LICENCE
