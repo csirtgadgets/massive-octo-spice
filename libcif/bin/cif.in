@@ -24,12 +24,14 @@ use JSON::XS;
 use Getopt::Long;
 use Data::Dumper;
 use Carp;
+use Time::HiRes qw(tv_interval);
 
 our $debug      = 0;
 
 my $help;
 my $man;
-my $remote      = 'tcp://localhost:'.CIF::DEFAULT_PORT();
+my $remote      = 'tcp://localhost';
+my $port        = CIF::DEFAULT_PORT();
 my $query;
 my $verbosity   = 0;
 my $group;
@@ -37,8 +39,10 @@ my $token       = hash_create_random();
 my $limit       = 500;
 my $confidence  = 0;
 my $format      = 'table';
-my $ping;
+my $ping        = 0;
 my $tags;
+my $subscriber  = 0;
+my $nolog       = 0;
 
 my $config = $ENV{'HOME'}.'/.cif';
 
@@ -60,10 +64,12 @@ GetOptions(
     
     'ping|p'            => \$ping,
     'format|f=s'        => \$format,
+    'subscriber|S'      => \$subscriber,
+    'nolog|n'           => \$nolog,
 ) or die(usage());
 
 die(usage()) if($help);
-die(usage()) unless($query || $ping || $submit);
+die(usage()) unless($query || $ping || $submit || $subscriber);
 
 if($submit){
     $submit = [];
@@ -104,17 +110,30 @@ Advanced Options:
 EOF
 }
 
+if($subscriber){
+    $remote .= ':'.CIF::DEFAULT_PUBLISHER_PORT();
+} else {
+    $remote .= ':'.CIF::DEFAULT_PORT();
+}
+
 my $cli = CIF::Client->new({
     remote          => $remote,
     Token           => $token,
     encoder_pretty  => 1,
+    subscriber      => $subscriber,
 });
 
 my ($ret,$err);
 if($ping){
     say 'pinging: '.$remote.'...';
-    $ret = $cli->ping();
-    say 'roundtrip: '.$ret.' ms';
+    my $d = 0;
+    $SIG{'INT'} = sub { $d = 1; };
+    while(!$d){
+        $ret = $cli->ping();
+        say 'roundtrip: '.$ret.' ms';
+        select(undef,undef,undef,1);
+    }
+    say '';
     exit(0);
 } elsif($query){
     ($err,$ret) = $cli->search({
@@ -131,8 +150,20 @@ if($ping){
         Observables => $submit,
     });
     croak($err) if($err);
-    $ret = join("\n",map { $_ = "id: $_->{'id'}, observable: $_->{'observable'}" } @$ret );
+    $ret = join("\n",map { $_ = "id: $_" } @$ret );
     $ret = "success: \n".$ret;
+} elsif($subscriber){
+    require AnyEvent;
+    my $done = AnyEvent->condvar();
+    $SIG{'INT'} = sub { $done->send(); };
+    debug('subbing...');
+    my $w = $cli->subscribe(sub {
+        while($cli->has_pollin()){
+            my $msg = $cli->receive();
+            say Dumper(@$msg);
+        }
+    });
+    $done->recv();
 }
 
 say $ret if($ret);
