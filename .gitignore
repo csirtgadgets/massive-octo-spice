@@ -1,3 +1,7 @@
+router/bin/cif-router
+smrt/bin/cif-smrt
+libcif/bin/cif
+
 */_Inline/*
 *.swp
 configure
