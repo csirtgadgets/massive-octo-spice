@@ -23,15 +23,15 @@ BEGIN { # BEGIN RT CMD BOILERPLATE
 
 use Getopt::Long;
 use Config::Simple;
-use CIF qw/debug hash_create_random/;
+use CIF qw/debug hash_create_random init_logging $Logger/;
 use CIF::Smrt;
 use Data::Dumper;
 
 my $help;
 my $man;
 my $daemon      = 0;
-our $debug      = 0;
-my $verbosity   = 0;
+my $debug       = 0;
+my $verbose     = 0;
 
 my $remote      = 'zmq+tcp://localhost:'.CIF::DEFAULT_PORT();
 my $token       = hash_create_random();
@@ -70,7 +70,7 @@ GetOptions(
     'daemon|D'      => \$daemon,
     'threads|t=i'   => \$threads,
     'debug|d'       => \$debug,
-    'verbosity|v'   => \$verbosity,
+    'verbosity|v'   => \$verbose,
     'limit|L=i'     => \$limit,
     'refresh|Z'     => \$refresh,
     'meta|M'        => \$meta,
@@ -87,7 +87,10 @@ if(-f $rule && !$feed){
     die(usage());
 }
 
-$debug = $verbosity if($verbosity);
+$debug = ($debug) ? 'INFO' : 'ERROR';
+$debug = 'DEBUG' if($verbose);
+
+init_logging($debug);
 
 sub usage {
     return <<EOF;
@@ -158,23 +161,27 @@ if(-d $rule){
 }
 
 foreach (@$rules){
-    debug('processing: '.$_->{'config'}.' - '.$_->{'feed'});
+    $Logger->info('processing: '.$_->{'config'}.' - '.$_->{'feed'});
     $ret = $smrt->process({
         rule    => $_,
     });
-    ($err,$ret) = $smrt->get_client->submit({
-        Observables => $ret,
-    });
-    croak($err) if($err);
+    if($ret){
+        ($err,$ret) = $smrt->get_client->submit({
+            Observables => $ret,
+        });
+        croak($err) if($err);
+    } else {
+        $Logger->info('nothing [new] to send...');
+    }
 }
 
-debug('cleaning up tmp...');
+$Logger->info('cleaning up tmp...');
 opendir(F,'/tmp/cif/smrt/cache') || die($!);
 my $tmp = [ sort { $a cmp $b } grep (/^\d+\.log$/,readdir(F)) ];
 foreach (@$tmp){
     m/^(\d+)\.log$/;
     if($1 < $today){
-        debug('removing: /tmp/cif/smrt/cache/'.$_);
+        $Logger->info('removing: /tmp/cif/smrt/cache/'.$_);
         #todo -- clean this
         system('rm -f /tmp/cif/smrt/cache/'.$_);
     }

@@ -5,17 +5,14 @@ use strict;
 use warnings;
 
 use Mouse;
-use CIF;
+use CIF qw/$Logger/;
 use CIF::Message;
-use CIF::Message::Ping; # dont need this
 use CIF::Encoder::Json;
 use CIF::Router::RequestFactory;
 use CIF::Router::AuthFactory;
 use CIF::StorageFactory;
 use Config::Simple;
 use ZMQx::Class;
-use Data::Dumper;
-use AnyEvent;
 use JSON::XS;
 use Try::Tiny;
 
@@ -98,12 +95,6 @@ around BUILDARGS => sub {
     return $self->$orig($args);
 };
 
-sub debug {
-    my $msg = shift;
-    $msg = '[router] '.$msg;
-    CIF::debug($msg);
-}
-
 sub startup {
     my $self = shift;
     my $args = shift;
@@ -114,7 +105,7 @@ sub startup {
             bind => $self->get_frontend_listen(),
         )
     );
-    debug('frontend started on: '.$self->get_frontend_listen());
+    $Logger->debug('frontend started on: '.$self->get_frontend_listen());
     $self->publisher(
         ZMQx::Class->socket(
             'PUB',
@@ -126,7 +117,7 @@ sub startup {
         $self->frontend->anyevent_watcher(
             sub {
                 while (my $msg = $self->frontend->receive()){
-                    debug('received message...');
+                    $Logger->debug('received message...');
                     
                     $self->publish($msg);
                     
@@ -138,15 +129,15 @@ sub startup {
                     
                     if($err){
                         $ret = -1;
-                        debug($err);
+                        $Logger->error($err);
                     }
-                    debug('sending msg back...');
+                    $Logger->debug('sending msg back...');
                     $self->frontend->send($msg);
                 }
             }
         )
     );
-    debug('started...');
+    $Logger->debug('started...');
     return 1;
 }
 
@@ -165,11 +156,13 @@ sub publish {
     #$m = undef;
     return 1;
 }
+
 ##TODO refactor
 sub process {
     my $self = shift;
     my $msg = shift;
-
+    
+    ##todo encoder factory?
     $msg = JSON::XS::decode_json($msg);
     $msg = @{$msg}[0] if(ref($msg) eq 'ARRAY');
     
@@ -203,6 +196,8 @@ sub process {
         $r->set_stype('unauthorized');
         delete($r->{'Data'});
     }
+    
+    ##todo encoder factory?
     $r = CIF::Encoder::Json->encode({ 
         encoder_pretty  => 1,
         data            => $r 
@@ -210,71 +205,6 @@ sub process {
     return $r;
 }
 
-sub shutdown {
-    my $self = shift;
-    
-    debug('shutting down');
-    
-    $self->{'frontend'}     = undef;
-    $self->{'backend'}      = undef;
-}
-
-sub DESTROY {
-    my $self = shift;
-    $self->shutdown();
-}
-
-__PACKAGE__->meta->make_immutable(inline_destructor => 0);  
+__PACKAGE__->meta->make_immutable();  
 
 1;
-__END__
-# Below is stub documentation for your module. You'd better edit it!
-
-=head1 NAME
-
-CIF::Router - Perl extension for blah blah blah
-
-=head1 SYNOPSIS
-
-  use CIF::Router;
-  blah blah blah
-
-=head1 DESCRIPTION
-
-Stub documentation for CIF::Router, created by h2xs. It looks like the
-author of the extension was negligent enough to leave the stub
-unedited.
-
-Blah blah blah.
-
-=head2 EXPORT
-
-None by default.
-
-
-
-=head1 SEE ALSO
-
-Mention other useful documentation such as the documentation of
-related modules or operating system documentation (such as man pages
-in UNIX), or any relevant external documentation such as RFCs or
-standards.
-
-If you have a mailing list set up for your module, mention it here.
-
-If you have a web site set up for your module, mention it here.
-
-=head1 AUTHOR
-
-Wesley Young, E<lt>wes@macports.orgE<gt>
-
-=head1 COPYRIGHT AND LICENSE
-
-Copyright (C) 2014 by Wesley Young
-
-This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself, either Perl version 5.12.4 or,
-at your option, any later version of Perl 5 you may have available.
-
-
-=cut

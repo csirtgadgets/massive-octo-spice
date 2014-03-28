@@ -5,9 +5,7 @@ use strict;
 use warnings;
 
 use Mouse;
-
-# cif support
-use CIF qw/hash_create_random debug normalize_timestamp is_ip/;
+use CIF qw/hash_create_random normalize_timestamp is_ip init_logging $Logger/;
 require CIF::Client;
 require CIF::ObservableFactory;
 require CIF::RuleFactory;
@@ -101,7 +99,7 @@ sub process {
     return unless($ret);
     
     my @array;  
-    debug('building events: '.($#{$ret} + 1));
+    $Logger->info('building events: '.($#{$ret} + 1));
     my $ts;
     # threading start here?
     foreach (@$ret){
@@ -114,15 +112,6 @@ sub process {
     }
     return \@array;
 }
-
-# threading goes here.
-sub _process {
-    my $self = shift;
-    my $args = shift;
-    
-       
-}
-
 
 __PACKAGE__->meta->make_immutable();
 

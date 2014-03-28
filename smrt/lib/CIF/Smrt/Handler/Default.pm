@@ -8,7 +8,7 @@ use Mouse;
 use CIF::Smrt::FetcherFactory;
 use CIF::Smrt::DecoderFactory;
 use CIF::Smrt::ParserFactory;
-use CIF qw/debug/;
+use CIF qw/$Logger/;
 
 with 'CIF::Smrt::Handler';
 
@@ -49,21 +49,21 @@ sub process {
     my $self = shift;
     my $args = shift;
 
-    debug('fetching...');
+    $Logger->debug('fetching...');
     my $ret = $self->get_fetcher()->process($args);
     return unless($ret);
     
-    debug('determining mime-type');
+    $Logger->debug('determining mime-type');
     my $ftype = File::Type->new()->mime_type(@$ret[0]);
     
-    debug('decoding...');
+    $Logger->debug('decoding...');
 
     ## TODO - fix $ret / Zip malwaredomains (arrayref)
     if(my $decoder = CIF::Smrt::DecoderFactory->new_plugin({ type => $ftype })){
         $ret = $decoder->process({ data => $ret });
     }
 
-    debug('parsing...');
+    $Logger->debug('parsing...');
     $ret = $self->get_parser()->process({ content => $ret });
     
     return $ret;

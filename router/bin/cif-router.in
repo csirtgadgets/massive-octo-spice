@@ -16,7 +16,7 @@ BEGIN {
 
 }
 
-use CIF qw/debug/;
+use CIF qw/init_logging $Logger/;
 use CIF::Router;
 use Getopt::Long;
 use AnyEvent;
@@ -67,6 +67,9 @@ Usage: $0 [OPTION]
 
 EOF
 }
+$debug = ($debug) ? 'DEBUG' : 'ERROR';
+
+init_logging($debug);
 
 my $router = CIF::Router->new({
     frontend_listen     => $frontend,

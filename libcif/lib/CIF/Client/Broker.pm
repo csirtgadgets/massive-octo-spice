@@ -5,7 +5,7 @@ use warnings;
 
 use Mouse::Role;
 
-use constant DEFAULT_AGENT_STRING => 'libcif/'.$CIF::VERSION.' (csirtgadgets.org)';
+use constant DEFAULT_AGENT_STRING => 'libcif/'.CIF::VERSION().' ('.CIF::ORG().')';
 
 requires qw(send receive get_fd shutdown);
 

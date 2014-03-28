@@ -9,7 +9,7 @@ use Carp::Assert;
 use Net::SSLeay;
 use File::Path qw(make_path);
 use File::Spec;
-use CIF qw/debug/;
+use CIF qw/$Logger/;
 Net::SSLeay::SSLeay_add_ssl_algorithms();
 
 with 'CIF::Smrt::Fetcher';
@@ -81,10 +81,10 @@ sub process {
     
     my $ret;
     unless($self->get_test_mode() && -e $tmp){
-        debug('pulling: '.$self->get_rule()->get_remote());
+        $Logger->debug('pulling: '.$self->get_rule()->get_remote());
         $ret = $self->get_handle()->mirror($self->get_rule()->get_remote(),$tmp);
         unless($ret->is_success() || $ret->status_line() =~ /^304 /){
-            debug('ERROR: '.$ret->status_line());
+            $Logger->error($ret->status_line());
             return $ret->decoded_content();
         }
     }

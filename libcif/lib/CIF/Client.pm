@@ -4,7 +4,7 @@ use 5.011;
 use strict;
 use warnings;
 
-use CIF qw/debug/;
+use CIF qw/init_logging $Logger/;
 use CIF::Message;
 use CIF::Client::BrokerFactory;
 use CIF::FormatFactory;
@@ -106,13 +106,13 @@ sub send {
     my $self = shift;
     my $msg  = shift;
     
-    debug('encoding...');
+    $Logger->debug('encoding...');
     $msg = $self->encode({ data => $msg });
-    debug('sending upstream...');
+    $Logger->debug('sending upstream...');
 
     $msg = $self->get_broker()->send($msg);
 
-    debug('decoding...');
+    $Logger->debug('decoding...');
     $msg = $self->decode($msg);
     $msg = ${$msg}[0] if(ref($msg) && ref($msg) eq 'ARRAY');
     
@@ -194,12 +194,12 @@ sub submit {
     });
 
     my $sent = ($#{$args->{'Observables'}} + 1);
-    debug('sending: '.($sent));
+    $Logger->info('sending: '.($sent));
     my $t = gettimeofday();
     $msg = $self->send($msg);
     $t = tv_interval([$t]);
-    debug('took: ~'.$t);
-    debug('rate: ~'.($sent/$t).' o/s');
+    $Logger->info('took: ~'.$t);
+    $Logger->info('rate: ~'.($sent/$t).' o/s');
     return $msg->{'Data'} if($msg->{'@stype'} eq 'failure');
     
     return (undef,$msg->{'Data'}->{'Results'});   
@@ -212,7 +212,7 @@ sub format {
     return '' unless(ref($args->{'data'}) eq 'ARRAY');
     return '' unless($#{$args->{'data'}} > -1);
     
-    debug('formatting...');
+    $Logger->info('formatting...');
     unless($self->get_format_handle()){
         assert($args->{'format'},'missing arg: format');
         $self->set_format_handle(CIF::FormatFactory->new_plugin($args));

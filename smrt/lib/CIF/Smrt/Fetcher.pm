@@ -3,12 +3,11 @@ package CIF::Smrt::Fetcher;
 use strict;
 use warnings;
 
-#TODO make $CIF::Smrt::VERSION work
-use constant DEFAULT_AGENT => 'cif-smrt/2.00.00 (csirtgadgets.org)';
-
 use Mouse::Role;
 use CIF qw/hash_create_static/;
 use File::Spec;
+
+use constant DEFAULT_AGENT => 'cif-smrt/'.CIF::VERSION().' ('.CIF::ORG().')';
 
 # http://stackoverflow.com/questions/10954827/perl-moose-how-can-i-dynamically-choose-a-specific-implementation-of-a-metho
 requires qw(understands process);
