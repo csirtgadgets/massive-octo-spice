@@ -28,27 +28,28 @@ our %EXPORT_TAGS = ( 'all' => [ qw(
 our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
 
 our @EXPORT = qw(
-
+    $Logger 
 );
 
-#our $VERSION = '2.00000001';
-#$VERSION = eval { $VERSION; };# see L<perlmodstyle>
+# push these out to make this code simpler to read
+# we still export the symbols though
+use CIF::Plugin::Address qw(:all);
+use CIF::Plugin::Hash qw(:all);
+use CIF::Plugin::Binary qw(:all);
+use CIF::Plugin::DateTime qw(:all);
 
-use constant PROTOCOL_VERSION   => 2.0000001;
+use CIF::Logger;
+use File::Spec ();
+use Cwd ();
 
-use constant DEFAULT_PORT                   => 4961;
-use constant DEFAULT_FRONTEND_PORT          => DEFAULT_PORT();
-use constant DEFAULT_BACKEND_PORT           => (DEFAULT_PORT() + 1);
-use constant DEFAULT_PUBLISHER_PORT         => (DEFAULT_PORT() + 2);
-use constant DEFAULT_STATS_PUBLISHER_PORT   => (DEFAULT_PORT() + 3);
+__PACKAGE__->LoadGeneratedData();
 
-use constant DEFAULT_CONFIG => $ENV{'HOME'}.'/.cif';
-
+use constant DEFAULT_CONFIG         => $ENV{'HOME'}.'/.cif';
 use constant DEFAULT_QUERY_LIMIT    => 500;
 use constant DEFAULT_GROUP          => 'everyone';
 
-use vars qw($Logger);
 use vars qw(
+    $Logger
     $BasePath
     $LibPath
     $EtcPath
@@ -63,20 +64,6 @@ use vars qw(
     $SmrtPath
     $SmrtLibPath
 );
-
-# push these out to make this code simpler to read
-# we still export the symbols though
-use CIF::Plugin::Address qw(:all);
-use CIF::Plugin::Hash qw(:all);
-use CIF::Plugin::Binary qw(:all);
-use CIF::Plugin::DateTime qw(:all);
-use CIF::Plugin::Debug qw(:all);
-
-use Log::Dispatch;
-use File::Spec ();
-use Cwd ();
-
-__PACKAGE__->LoadGeneratedData();
 
 # Preloaded methods go here.
 
@@ -93,27 +80,18 @@ sub observable_type {
     return 0;
 }
 
-no warnings;
 sub init_logging {
-    my $d = shift;
-    return unless($d);
-    
-    $::debug = $d;
-    require Log::Dispatch;
-    unless($CIF::Logger){
-        $CIF::Logger = Log::Dispatch->new();
-        require Log::Dispatch::Screen;
-        $CIF::Logger->add( 
-            Log::Dispatch::Screen->new(
-                name        => 'screen',
-                min_level   => 'debug',
-                stderr      => 1,
-                newline     => 1
-             )
-        );
+    my $level = shift || 'ERROR';
+    $Logger = CIF::Logger->new({ level => $level })->get_logger();
+}
+
+sub debug {
+    my $m = shift || return;
+    unless($Logger){
+        init_logging('DEBUG');
     }
-}   
-use warnings;
+    $Logger->debug($m);
+}
 
 sub LoadGeneratedData {
     my $class = shift;
