@@ -32,6 +32,8 @@ AC_SUBST(CIF_VERSION_PATCH,      ${cif_version_patch})
 AC_SUBST(CIF_VERSION_META,       ${cif_version_meta})
 
 AC_SUBST(CIF_PROTOCOL_VERSION,  m4_esyscmd([( cat .protocol_version ) | tr -d "\n"]))
+AC_SUBST(ORG,'csirtgadgets.org')
+AC_SUBST(DEFAULT_PORT, 4961)
 
 AC_PROG_INSTALL
 AC_PATH_PROG([WGET],[wget],[not found])
@@ -58,7 +60,6 @@ AC_CONFIG_SUBDIRS([
 AC_CONFIG_FILES([
     Makefile
     libcif/Makefile
-    libcif/lib/CIF.pm
     libcif/lib/CIF/Generated.pm
     libcif/bin/cif
     router/Makefile

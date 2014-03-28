@@ -72,3 +72,8 @@ realclean:
 
 reconf:
 	autoreconf -vf
+
+dist-hook:
+	rm -rf $(distdir)/puppet
+	rm -rf $(distdir)/provision
+	rm -rf $(distdir)/build
