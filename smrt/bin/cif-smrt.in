@@ -44,6 +44,7 @@ my $refresh     = 0;
 my $meta        = 0;
 my $mutex       = '/tmp/cif/smrt.lock';
 my $test_mode   = 0;
+my $clean       = 0;
 my $today = DateTime->today()->ymd('');
 
 my $smrt_config;
@@ -76,6 +77,7 @@ GetOptions(
     'meta|M'        => \$meta,
     'mutex|m=s'     => \$mutex,
     'test|x'        => \$test_mode,
+    'clean|c'       => \$clean,
 ) or die(usage());
 
 die(usage()) if($help);
@@ -105,13 +107,16 @@ Usage: $0 [OPTION]
     -d, --debug             turn on debugging
     -v, --verbosity         turn up debug verbosity [1-10]
     -h, --help              this message
-    -M, --meta              apply metadata processors, default: $meta 
+    -M, --meta              apply metadata processors, default: $meta
+    -c, --clean             clear cache 
 
  Examples:
     $0 -C /path/to/cif.conf
 
 EOF
 }
+
+_clean_tmp();
 
 my $smrt = CIF::Smrt->new({
     client_config => {
@@ -175,17 +180,18 @@ foreach (@$rules){
     }
 }
 
-$Logger->info('cleaning up tmp...');
-opendir(F,'/tmp/cif/smrt/cache') || die($!);
-my $tmp = [ sort { $a cmp $b } grep (/^\d+\.log$/,readdir(F)) ];
-foreach (@$tmp){
-    m/^(\d+)\.log$/;
-    if($1 < $today){
-        $Logger->info('removing: /tmp/cif/smrt/cache/'.$_);
-        #todo -- clean this
-        system('rm -f /tmp/cif/smrt/cache/'.$_);
+sub _clean_tmp {
+    $Logger->info('cleaning up tmp...');
+    opendir(F,'/tmp/cif/smrt/cache') || die($!);
+    my $tmp = [ sort { $a cmp $b } grep (/^\d+\.log$/,readdir(F)) ];
+    foreach (@$tmp){
+        m/^(\d+)\.log$/;
+        if($clean || ($1 < $today)){
+            $Logger->info('removing: /tmp/cif/smrt/cache/'.$_);
+            #todo -- clean this
+            system('rm -f /tmp/cif/smrt/cache/'.$_);
+        }
     }
 }
-
 
 exit(0);
