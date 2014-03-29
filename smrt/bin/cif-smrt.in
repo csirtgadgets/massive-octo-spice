@@ -1,11 +1,6 @@
 #!/usr/bin/env perl
 
-use strict;
-use warnings;
-use feature 'say';
-
-# fix lib paths, some may be relative
-BEGIN { # BEGIN RT CMD BOILERPLATE
+BEGIN {
     require File::Spec;
     require Cwd;
     my @libs = ('@CIF_PATH@/lib');
@@ -18,9 +13,14 @@ BEGIN { # BEGIN RT CMD BOILERPLATE
         }
         unshift @INC, $lib;
     }
-
 }
 
+use strict;
+use warnings;
+use feature 'say';
+
+use AnyEvent;
+use Daemon::Control;
 use Getopt::Long;
 use Config::Simple;
 use CIF qw/debug hash_create_random init_logging $Logger/;
@@ -28,29 +28,32 @@ use CIF::Smrt;
 use Data::Dumper;
 
 my $help;
-my $man;
 my $daemon      = 0;
 my $debug       = 0;
 my $verbose     = 0;
+my $config      = $CIF::EtcPath.'/cif-smrt.conf';
+my $pidfile     = $CIF::VarPath.'/smrt.pid';
+my $user        = $CIF::CIF_USER;
+my $group       = $CIF::CIF_GROUP;
 
 my $remote      = 'zmq+tcp://localhost:'.CIF::DEFAULT_PORT();
-my $token       = hash_create_random();
-
-my $rule       = '';
+my $token       = '';
+my $rule        = $CIF::SmrtRulesPath;
 my $feed        = '';
-my $threads     = 1;
 my $limit       = 0;
 my $refresh     = 0;
 my $meta        = 0;
-my $mutex       = '/tmp/cif/smrt.lock';
+my $mutex       = $CIF::VarPath.'/smrt.lock';
 my $test_mode   = 0;
 my $clean       = 0;
+my $interval    = 60; #min
+my $randomstart = 30; #min
+
 my $today = DateTime->today()->ymd('');
 
 my $smrt_config;
 my $client_config;
 
-my $config = $ENV{'HOME'}.'/.cif';
 if(-e $config){
     $config = Config::Simple->new($config);
     $client_config  = $config->get_block('client');
@@ -62,22 +65,30 @@ if(-e $config){
 
 Getopt::Long::Configure("bundling");
 GetOptions(
+    # basic
     'help|h'        => \$help, 
     'config|C=s'    => \$config,
+    'daemon|D'      => \$daemon,
+    'debug|d'       => \$debug,
+    'verbosity|v'   => \$verbose,
+    'user|u=s'      => \$user,
+    'group|g=s'     => \$group,
+    'pidfile|p=s'   => \$pidfile,
+    
+    # advanced
     'remote|R=s'    => \$remote,
     'token|T=s'     => \$token,
     'rule|r=s'      => \$rule,
     'feed|f=s'      => \$feed,
-    'daemon|D'      => \$daemon,
-    'threads|t=i'   => \$threads,
-    'debug|d'       => \$debug,
-    'verbosity|v'   => \$verbose,
     'limit|L=i'     => \$limit,
     'refresh|Z'     => \$refresh,
     'meta|M'        => \$meta,
-    'mutex|m=s'     => \$mutex,
     'test|x'        => \$test_mode,
     'clean|c'       => \$clean,
+    
+    # timing stuff
+    'interval|i=i'      => \$interval,
+    'randomstart|R=i'   => \$randomstart,
 ) or die(usage());
 
 die(usage()) if($help);
@@ -97,87 +108,158 @@ init_logging($debug);
 sub usage {
     return <<EOF;
 
-Usage: $0 [OPTION]
+Usage: $0 [-D status|start|stop|restart|reload] [OPTIONS]
 
  Options:
+    -C, --config=FILE       specify cofiguration file, default: $config
+    -d, --debug             turn on debugging [INFO]
+    -v, --verbosity         turn up debug verbosity [DEBUG]
+    -h, --help              this message
+     
+    -r, --rule=STRING       specify a rule or a rules directory, default: $rule
+    -f, --feed=STRING       specify a feed (within a rule)
     -R, --remote=STRING     specify a remote to connect to, default $remote
     -T, --token=STRING      specify a default token/apikey to use, default: $token
-    -C, --config=FILE       specify cofiguration file, default: ~/.cif 
+    
+ Daemon Options:
     -D, --daemon            run as daemon
-    -d, --debug             turn on debugging
-    -v, --verbosity         turn up debug verbosity [1-10]
-    -h, --help              this message
+    -u, --user              run daemon as user, default: $user
+    -g, --group             run daemon as group, default: $group
+    -p, --pid               pidfile location, default: $pidfile
+    
+    -r, --randomstart       random start delay, default: $randomstart min
+    -i, --interval          runtime interval, default: $interval min
+    
+ Advanced Options:
     -M, --meta              apply metadata processors, default: $meta
-    -c, --clean             clear cache 
+    -c, --clean             clear cache
+    -x, --test              run in test mode
 
  Examples:
-    $0 -C /path/to/cif.conf
+    $0 -C $config
+    $0 -D start -C $config -p $pidfile
+    $0 -D start -r $rule
 
 EOF
 }
 
-_clean_tmp();
+init_logging($debug);
 
-my $smrt = CIF::Smrt->new({
-    client_config => {
-        remote          => $remote,
-        Token           => $token,
-        encoder_pretty  => 1,
-    },
-    test_mode   => $test_mode,
-});
-
-my ($err,$ret);
-
-##TODO refactor this into libcif rules?
-my $rules;
-if(-d $rule){
-    opendir(F,$rule) || die('unable to open: '.$rule.'... '.$!);
-    my $files = [ sort { $a cmp $b } grep (/.cfg$/,readdir(F)) ];
-    foreach my $f (@$files){
-        my $t = Config::Simple->new($rule.'/'.$f);
-        my @sections = keys(%{$t->{'_DATA'}});
-        next unless($t->param(-block => 'default')->{'enabled'});
-        foreach my $section (@sections){
-            next if($section =~ /^default/);
-            next if($t->param(-block => $section)->{'disabled'});
-            my $c = $t->param(-block => $section);
-            push(@$rules,{
-                config  => $rule."/".$f,
-                feed    => $section,
-                override    => {
-                    limit   => $limit,
-                },
-                meta    => (defined($c->{'meta'})) ? $c->{'meta'} : $meta,
-            });
-                
-        }
-    }
-            
-} else {
-    $rules = [{
-        config  => $rule,
-        feed    => $feed,
-        override    => {
-            limit   => $limit,
-        },
-        meta    => $meta,
-    }];
+if(-e $pidfile){
+    $Logger->error('already running or a stale pidfile, check: '.$pidfile);
+    exit(-1);
 }
 
-foreach (@$rules){
-    $Logger->info('processing: '.$_->{'config'}.' - '.$_->{'feed'});
-    $ret = $smrt->process({
-        rule    => $_,
+my $rv;
+if($daemon){
+    $rv = Daemon::Control->new(
+        name    => 'cif-smrt',
+        program => sub { main() },
+        
+        pid_file    => $pidfile,
+        fork        => 2,
+        
+        user        => $user,
+        group       => $group,
+    )->run();   
+} else {
+    $rv = main();
+}
+
+
+sub main {
+    my $done = AnyEvent->condvar();
+    
+    $randomstart = int(rand($randomstart)); # sometime in the next $randomstart
+    $Logger->info('delaying start for: '.$randomstart.'min then running every '.$interval.'min there after...');
+    $Logger->info('to run immediately, set: -R 0');
+    
+    $randomstart    = (60 * $randomstart);
+    $interval       = (60 * $interval);
+    
+    my $w = AnyEvent->timer(
+        after       => $randomstart, 
+        interval    => $interval, # once an hour
+        cb          => sub { _main($done) }
+    );
+    
+    $done->recv();
+}
+
+sub _main {
+    my $d = shift;
+    
+    _clean_tmp();
+    
+    my $smrt = CIF::Smrt->new({
+        client_config => {
+            remote          => $remote,
+            Token           => $token,
+            encoder_pretty  => ($debug ne 'ERROR') ? 1 : 0,
+        },
+        test_mode   => $test_mode,
     });
-    if($ret){
-        ($err,$ret) = $smrt->get_client->submit({
-            Observables => $ret,
-        });
-        croak($err) if($err);
-    } else {
-        $Logger->info('nothing [new] to send...');
+
+    my ($err,$ret);
+    
+    $ret = $smrt->ping_router();
+    unless($ret){
+        $Logger->error('router unavailable... ping timeout');
+        return;
     }
+
+    ##TODO refactor this into libcif rules?
+    my $rules;
+    if(-d $rule){
+        opendir(F,$rule) || die('unable to open: '.$rule.'... '.$!);
+        my $files = [ sort { $a cmp $b } grep (/.cfg$/,readdir(F)) ];
+        foreach my $f (@$files){
+            my $t = Config::Simple->new($rule.'/'.$f);
+            my @sections = keys(%{$t->{'_DATA'}});
+            next unless($t->param(-block => 'default')->{'enabled'});
+            foreach my $section (@sections){
+                next if($section =~ /^default/);
+                next if($t->param(-block => $section)->{'disabled'});
+                my $c = $t->param(-block => $section);
+                push(@$rules,{
+                    config  => $rule."/".$f,
+                    feed    => $section,
+                    override    => {
+                        limit   => $limit,
+                    },
+                    meta    => (defined($c->{'meta'})) ? $c->{'meta'} : $meta,
+                });
+                    
+            }
+        }
+                
+    } else {
+        $rules = [{
+            config  => $rule,
+            feed    => $feed,
+            override    => {
+                limit   => $limit,
+            },
+            meta    => $meta,
+        }];
+    }
+    
+    foreach (@$rules){
+        $Logger->info('processing: '.$_->{'config'}.' - '.$_->{'feed'});
+        $ret = $smrt->process({
+            rule    => $_,
+        });
+        if($ret){
+            ($err,$ret) = $smrt->get_client->submit({
+                Observables => $ret,
+            });
+            croak($err) if($err);
+        } else {
+            $Logger->info('nothing [new] to send...');
+        }
+    }
+    return 1;
+    
 }
 
 sub _clean_tmp {
@@ -191,7 +273,6 @@ sub _clean_tmp {
             #todo -- clean this
             system('rm -f /tmp/cif/smrt/cache/'.$_);
         }
+ 
     }
 }
-
-exit(0);

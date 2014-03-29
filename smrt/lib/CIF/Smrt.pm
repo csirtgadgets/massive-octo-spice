@@ -113,6 +113,19 @@ sub process {
     return \@array;
 }
 
-__PACKAGE__->meta->make_immutable();
+sub ping_router {
+    my $self = shift;
+    my $args = shift;
+    
+    my $ret = $self->get_client->ping();
+    return $ret;
+}
+
+sub DESTROY {
+    my $self = shift;
+    $self->get_client->get_broker()->shutdown();
+}
+
+__PACKAGE__->meta->make_immutable(inline_destructor => 0);
 
 1;
