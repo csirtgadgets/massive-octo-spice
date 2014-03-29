@@ -105,13 +105,17 @@ sub startup {
             bind => $self->get_frontend_listen(),
         )
     );
-    $Logger->debug('frontend started on: '.$self->get_frontend_listen());
+    $Logger->info('frontend started on: '.$self->get_frontend_listen());
+    
     $self->publisher(
         ZMQx::Class->socket(
             'PUB',
             bind    => $self->get_publisher_listen(),
         )
     );
+    
+    $Logger->info('publisher started on: '.$self->get_publisher_listen());
+    
     my ($ret,$err,$m);
     $self->frontend_watcher(
         $self->frontend->anyevent_watcher(
@@ -137,7 +141,7 @@ sub startup {
             }
         )
     );
-    $Logger->debug('started...');
+    $Logger->info('router started...');
     return 1;
 }
 

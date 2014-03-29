@@ -16,23 +16,29 @@ BEGIN {
 
 }
 
+use strict;
+use warnings;
+use feature 'say';
+
 use CIF qw/init_logging $Logger/;
 use CIF::Router;
 use Getopt::Long;
 use AnyEvent;
+use Daemon::Control;
 use Data::Dumper;
 
 my $help;
-my $man;
 my $frontend    = CIF::Router::DEFAULT_FRONTEND_LISTEN();
 my $backend     = CIF::Router::DEFAULT_BACKEND_LISTEN();
 my $storage     = 'elasticsearch';
-my $auth        = 'DUMMY',
+my $auth        = 'dummy',
 my $daemon      = 0;
-our $debug      = 0;
+my $debug       = 0;
 my $verbosity   = 0;
-
-my $config = $ENV{'HOME'}.'/.cif';
+my $pidfile     = $CIF::VarPath.'/run/cif-router.pid';
+my $user        = $CIF::CIF_USER;
+my $group       = $CIF::CIF_GROUP;
+my $config      = "$CIF::EtcPath/cif-router.conf";
 
 Getopt::Long::Configure ("bundling");
 GetOptions(
@@ -41,49 +47,89 @@ GetOptions(
     'frontend|F=s'  => \$frontend,
     'backend|B=s'   => \$backend,
     'debug|d'       => \$debug,
+    'daemon|D'      => \$daemon,
     'verbosity|v'   => \$verbosity,
+    'pidfile|p'     => \$pidfile,
+    'user|u=s'      => \$user,
+    'group|g=s'     => \$group,
+    'auth|a=s'      => \$auth,
+    'storage|s=s'   => \$storage,
 ) or die(usage());
 
 die(usage()) if($help);
 
 $debug = $verbosity if($verbosity);
-$debug = 1;
-$daemon = 1;
+
 sub usage {
     return <<EOF;
 
-Usage: $0 [OPTION]
+Usage: $0 [-D status|start|stop|restart|reload] [OPTIONS]
 
  Options:
     -F, --frontend=STRING   specify the frontend binding, default: $frontend
     -B, --backend=STRING    specify the backend binding, default: $backend
-    -C, --config=FILE       specify cofiguration file, default: ~/.cif 
-    -d, --debug             turn on debugging
-    -v, --verbosity         turn up debug verbosity [1-10]
-    -h, --help              this message       
+    -C, --config=FILE       specify cofiguration file, default: $config
+    -d, --debug             turn on debugging [INFO]
+    -v, --verbosity         turn up debug verbosity [DEBUG]
+    -h, --help              this message
+    
+ Daemon Options:
+    -D, --daemon            run as daemon
+    -u, --user              run daemon as user, default: $user
+    -g, --group             run daemon as group, default: $group
+    -p, --pid               pidfile location, default: $pidfile
+    
+ Advanced Options:
+    -A, --auth              specify authorization plugin, default: $auth
+    -S, --storage           specify storage plugin, default: $storage
 
  Examples:
-    $0 -C /path/to/cif.conf
+    $0 -C $config
+    $0 -D start -C $config -p $pidfile
 
 EOF
 }
-$debug = ($debug) ? 'DEBUG' : 'ERROR';
 
-init_logging($debug);
+$debug = ($debug) ? 'INFO' : 'ERROR';
+$debug = 'DEBUG' if($verbose);
 
-my $router = CIF::Router->new({
-    frontend_listen     => $frontend,
-    backend_listen      => $backend,
-    storage             => {
-        plugin  => $storage,
-    },
-    auth                => {
-        plugin  => $auth,
-    },
-});
+if($daemon){
+    my $r = Daemon::Control->new(
+        name    => 'cif-router',
+        program => sub { _main() },
+        
+        lsb_start   => '$syslog',
+        lsb_stop    => '$syslog',
+        lsb_sdesc   => 'CIF Router',
+        lsb_desc    => 'CIF Router',
+        
+        pid_file    => $pidfile,
+        fork        => 2,
+        
+        user         => $user,
+        group        => $group,
+    )->run();
+} else {
+    _main();
+}
 
-$router->startup();
-my $done = AnyEvent->condvar();
-$SIG{'INT'} = sub { $done->send(); };
-$SIG{'KILL'} = sub { $done->send(); };
-$done->recv();
+sub _main {
+    init_logging($debug);
+    my $done        = AnyEvent->condvar();
+    $SIG{'INT'}     = sub { $done->send(); };
+    $SIG{'KILL'}    = sub { $done->send(); };
+    my $router = CIF::Router->new({
+        frontend_listen     => $frontend,
+        backend_listen      => $backend,
+        storage             => {
+            plugin  => $storage,
+        },
+        auth                => {
+            plugin  => $auth,
+        },
+    });
+    
+    $router->startup();
+    
+    $done->recv();
+}
