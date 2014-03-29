@@ -27,7 +27,12 @@ $VarPath    = $BasePath . '/var';
 $SmrtPath = '@CIF_SMRT_PATH@';
 $SmrtLibPath = $SmrtPath . '/lib';
 
+$SmrtRulesPath = $EtcPath . '/rules';
+
 $RouterPath = '@CIF_ROUTER_PATH@';
 $RouterLibPath = $RouterPath . '/lib';
+
+$CIF_USER = '@CIF_USER@';
+$CIF_GROUP = '@CIF_GROUP@';
 
 1;

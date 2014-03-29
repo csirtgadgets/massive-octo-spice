@@ -64,6 +64,9 @@ use vars qw(
     $RouterLibPath
     $SmrtPath
     $SmrtLibPath
+    $SmrtRulesPath
+    $CIF_USER
+    $CIF_GROUP
 );
 
 init_logging() unless($Logger);
