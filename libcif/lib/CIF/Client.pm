@@ -111,6 +111,7 @@ sub send {
     $Logger->debug('sending upstream...');
 
     $msg = $self->get_broker()->send($msg);
+    return 0 unless($msg);
 
     $Logger->debug('decoding...');
     $msg = $self->decode($msg);
@@ -147,14 +148,22 @@ sub ping {
     my $self = shift;
     my $args = shift;
     
+    $Logger->info('generating ping request...');
     my $msg = CIF::Message->new({
         rtype   => 'ping',
         mtype   => 'request',
         Token   => $self->Token(),
     });
+    $Logger->info('sending ping...');
     my $ret = $self->send($msg);
-    my $ts = $msg->{'Data'}->{'Timestamp'};
-    return tv_interval([split(/\./,$ts)]);
+    if($ret){
+        my $ts = $msg->{'Data'}->{'Timestamp'};
+        $Logger->info('ping returned');
+        return tv_interval([split(/\./,$ts)]);
+    } else {
+        $Logger->info('timeout...');
+    }
+    return 0;
 }
 
 sub search {

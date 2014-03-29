@@ -6,20 +6,22 @@ use strict;
 
 use Mouse;
 use ZMQ::FFI;
-use ZMQ::FFI::Constants qw(ZMQ_REQ ZMQ_SUB);
+use ZMQ::FFI::Constants qw(ZMQ_REQ ZMQ_SUB ZMQ_SNDTIMEO ZMQ_RCVTIMEO ZMQ_LINGER);
 use Carp;
 use Carp::Assert;
-use CIF qw(debug);
+use CIF qw($Logger);
+use Try::Tiny;
 
 with 'CIF::Client::Broker';
 
-use constant RE_REMOTE  => qr/^((zeromq|zmq)(\+))?(tcp|inproc|ipc|proc)\:\/{2}([[\S]+|\*])(\:(\d+))?$/;
+use constant RE_REMOTE          => qr/^((zeromq|zmq)(\+))?(tcp|inproc|ipc|proc)\:\/{2}([[\S]+|\*])(\:(\d+))?$/;
+use constant DEFAULT_TIMEOUT    => 2000;
 
 has 'context' => (
     is      => 'rw',
     reader  => 'get_context',
     writer  => 'set_context',
-    default => sub { ZMQ::FFI->new() },
+    builder => '_build_context',
 );
 
 has 'socket' => (
@@ -50,6 +52,12 @@ around BUILDARGS => sub {
     return $self->$orig(%args);
 };
 
+sub _build_context {
+    my $self = shift;
+    
+    return ZMQ::FFI->new();
+}
+
 sub _build_socket {
     my $self = shift;
     my $args = shift;
@@ -57,6 +65,8 @@ sub _build_socket {
     my $socket = $self->get_context()->socket(
         ($self->get_subscriber()) ? ZMQ_SUB : ZMQ_REQ
     );
+    $socket->set(ZMQ_SNDTIMEO,'int',DEFAULT_TIMEOUT());
+    $socket->set(ZMQ_RCVTIMEO,'int',DEFAULT_TIMEOUT());
     $socket->subscribe('') if($self->get_subscriber());
     $socket->connect($self->get_remote());
     return $socket;
@@ -76,25 +86,30 @@ sub send {
     my $self = shift;
     my $msg = shift;
 
-    my $ret = $self->get_socket->send($msg);
+    my ($ret,$err);
+    $ret = $self->get_socket->send($msg);
     
-    $ret = $self->get_socket->recv();
+    try {
+        $ret = $self->get_socket->recv();
+    } catch {
+        $err = shift;
+    };
+
+    if($err){
+        for($err){
+            if(/Resource temporarily unavail/){
+                # o/w queued msgs will hang the context thread
+                $self->get_socket()->set(ZMQ_LINGER,'int',0);
+                return 0;
+            }
+        }
+    }
+    
     return $ret;
 }
 
-sub shutdown {
-    my $self = shift;
+sub shutdown {}
 
-    $self->{'socket'} = undef;
-
-    return 1;
-}
-
-sub DESTROY {
-    my $self = shift;
-    $self->shutdown();
-}
-
-__PACKAGE__->meta->make_immutable(inline_destructor => 0);
+__PACKAGE__->meta->make_immutable();
 
 1;

@@ -6,6 +6,7 @@ use warnings;
 use Mouse::Role;
 
 use constant DEFAULT_AGENT_STRING => 'libcif/'.CIF::VERSION().' ('.CIF::ORG().')';
+use constant DEFAULT_TIMEOUT => 300;
 
 requires qw(send receive get_fd shutdown);
 
@@ -59,7 +60,8 @@ has 'max_retries' => (
 has 'timeout'   => (
     is      => 'ro',
     isa     => 'Int',
-    default => 300,
+    reader  => 'get_timeout',
+    default => DEFAULT_TIMEOUT(),
 );
 
 1;
