@@ -30,8 +30,8 @@ sub _build_logger {
     my $self = shift;
     my $args = shift;
     
-    my $layout = "[%p][%d{yyyy-MM-dd'T'HH:mm:ss}Z]: %m%n";
-    $layout = "[%p][%d{yyyy-MM-dd'T'HH:mm:ss}Z][%F:%L]: %m%n" if($self->level() eq 'DEBUG');
+    my $layout = "[%d{yyyy-MM-dd'T'HH:mm:ss,SSS}Z][%p]: %m%n";
+    $layout = "[%d{yyyy-MM-dd'T'HH:mm:ss,SSS}Z][%p][%F:%L]: %m%n" if($self->level() eq 'DEBUG');
     
     Log::Log4perl->easy_init({
         level       => $self->level(),
