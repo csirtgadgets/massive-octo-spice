@@ -34,7 +34,7 @@ my $storage     = 'elasticsearch';
 my $auth        = 'dummy',
 my $daemon      = 0;
 my $debug       = 0;
-my $verbosity   = 0;
+my $verbose     = 0;
 my $pidfile     = $CIF::VarPath.'/run/cif-router.pid';
 my $user        = $CIF::CIF_USER;
 my $group       = $CIF::CIF_GROUP;
@@ -48,7 +48,7 @@ GetOptions(
     'backend|B=s'   => \$backend,
     'debug|d'       => \$debug,
     'daemon|D'      => \$daemon,
-    'verbosity|v'   => \$verbosity,
+    'verbosity|v'   => \$verbose,
     'pidfile|p'     => \$pidfile,
     'user|u=s'      => \$user,
     'group|g=s'     => \$group,
@@ -57,8 +57,6 @@ GetOptions(
 ) or die(usage());
 
 die(usage()) if($help);
-
-$debug = $verbosity if($verbosity);
 
 sub usage {
     return <<EOF;
@@ -70,7 +68,7 @@ Usage: $0 [-D status|start|stop|restart|reload] [OPTIONS]
     -B, --backend=STRING    specify the backend binding, default: $backend
     -C, --config=FILE       specify cofiguration file, default: $config
     -d, --debug             turn on debugging [INFO]
-    -v, --verbosity         turn up debug verbosity [DEBUG]
+    -v, --verbose           turn up debug verbosity [DEBUG]
     -h, --help              this message
     
  Daemon Options:
