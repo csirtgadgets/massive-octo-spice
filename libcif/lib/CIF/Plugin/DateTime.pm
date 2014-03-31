@@ -58,10 +58,15 @@ sub normalize_timestamp {
     
     # already epoch
     return DateTime->from_epoch(epoch => $dt) if($dt =~ /^\d{10}$/);
-    
+
+    return DateTime->today()->epoch() if(lc($dt) =~ /^today$/);
     # something else
     if($dt && ref($dt) ne 'DateTime'){
-        if($dt =~ /^\d+$/){
+        if($dt =~ /^(yesterday)$/){
+            $dt = DateTime->today()->subtract(days => 1);
+        } elsif($dt =~ /^(\d+) days? ago/){
+            $dt = DateTime->today()->subtract(days => $1);
+        } elsif($dt =~ /^\d+$/){
             if($dt =~ /^\d{8}$/){
                 $dt.= 'T00:00:00Z';
                 $dt = eval { DateTime::Format::DateParse->parse_datetime($dt) };

@@ -87,26 +87,31 @@ sub process {
     $self->set_rule(
         CIF::RuleFactory->new_plugin($args->{'rule'})
     );
-
+    
+    $Logger->info('starting at: '.
+        DateTime->from_epoch(epoch => $self->get_rule->get_not_before())->datetime(),'Z'
+    );
+    
     $self->set_handler(
         CIF::Smrt::HandlerFactory->new_plugin({
             rule        => $self->get_rule(),
             test_mode   => $self->get_test_mode(),
         }),
     );
-
+    
     my $ret = $self->get_handler()->process($self->get_rule());
     return unless($ret);
     
     my @array;  
     $Logger->info('building events: '.($#{$ret} + 1));
     my $ts;
-    # threading start here?
+    
+    ##TODO threading start here?
     foreach (@$ret){
-        $ts = $_->{'detecttime'} || $_->{'reporttime'} || MAX_DATETIME();
+        $ts = $_->{'detecttime'} || $_->{'lasttime'} || $_->{'reporttime'} || MAX_DATETIME();
         $ts = normalize_timestamp($ts)->epoch();
 
-        next unless($self->get_rule()->get__not_before() <= $ts );
+        next unless($self->get_rule()->get_not_before() <= $ts );
         $self->get_rule()->process({ data => $_ });
         push(@array,$_);
     }

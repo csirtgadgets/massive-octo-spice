@@ -48,6 +48,7 @@ my $test_mode   = 0;
 my $clean       = 0;
 my $interval    = 60; #min
 my $randomstart = 30; #min
+my $notbefore;
 
 my $today = DateTime->today()->ymd('');
 
@@ -85,6 +86,7 @@ GetOptions(
     'meta|M'        => \$meta,
     'test|x'        => \$test_mode,
     'clean|c'       => \$clean,
+    'nbefore|N=s'   => \$notbefore,
     
     # timing stuff
     'interval|i=i'      => \$interval,
@@ -98,6 +100,12 @@ if(-f $rule && !$feed){
     die(usage());
 } elsif(!$feed && !(-d $rule)){
     die(usage());
+}
+
+if($notbefore && $notbefore =~ /^\d+$/){
+    print usage();
+    print $0.' -N|--notbefore requires quotes around the value (eg: -N "3 days ago")'."\n\n";
+    exit(-1);
 }
 
 $debug = ($debug) ? 'INFO' : 'ERROR';
@@ -134,6 +142,7 @@ Usage: $0 [-D status|start|stop|restart|reload] [OPTIONS]
     -M, --meta              apply metadata processors, default: $meta
     -c, --clean             clear cache
     -x, --test              run in test mode
+    -N, --notbefore         not before "[today|yesterday|X days ago]"
 
  Examples:
     $0 -C $config
@@ -163,7 +172,7 @@ if($daemon){
         group       => $group,
     )->run();   
 } else {
-    $rv = main();
+    $rv = _main();
 }
 
 
@@ -225,9 +234,10 @@ sub _main {
                     config  => $rule."/".$f,
                     feed    => $section,
                     override    => {
-                        limit   => $limit,
+                        limit       => $limit,
+                        not_before  => $notbefore,
                     },
-                    meta    => (defined($c->{'meta'})) ? $c->{'meta'} : $meta,
+                    meta        => (defined($c->{'meta'})) ? $c->{'meta'} : $meta,
                 });
                     
             }
@@ -238,7 +248,8 @@ sub _main {
             config  => $rule,
             feed    => $feed,
             override    => {
-                limit   => $limit,
+                limit       => $limit,
+                not_before  => $notbefore,
             },
             meta    => $meta,
         }];

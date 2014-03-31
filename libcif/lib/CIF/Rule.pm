@@ -10,11 +10,11 @@ use CIF::MetaFactory;
 
 use constant RE_COMMENTS => qr/^([#|;]+)/;
 
-has '_not_before'    => (
+has 'not_before'    => (
     is          => 'ro',
     isa         => 'CIF::Type::DateTimeInt',
     coerce      => 1,
-    reader      => 'get__not_before',
+    reader      => 'get_not_before',
     default     => sub { DateTime->today()->epoch() },
 );
 
