@@ -39,6 +39,11 @@ my $pidfile     = $CIF::VarPath.'/run/cif-router.pid';
 my $user        = $CIF::CIF_USER;
 my $group       = $CIF::CIF_GROUP;
 my $config      = "$CIF::EtcPath/cif-router.conf";
+my $notify;
+my $notify_to   = 'root@localhost';
+my $notify_subj = '[cif-router] ERROR';
+my $notify_from = 'cif';
+my $notify_level = 'error';
 
 Getopt::Long::Configure ("bundling");
 GetOptions(
@@ -54,6 +59,12 @@ GetOptions(
     'group|g=s'     => \$group,
     'auth|a=s'      => \$auth,
     'storage|s=s'   => \$storage,
+    
+    #notification
+    'notify'        => \$notify,
+    'notify-to=s'   => \$notify_to,
+    'notify-subj=s' => \$notify_subj,
+    'notify-from=s' => \$notify_from,
 ) or die(usage());
 
 die(usage()) if($help);
@@ -61,7 +72,7 @@ die(usage()) if($help);
 sub usage {
     return <<EOF;
 
-Usage: $0 [-D status|start|stop|restart|reload] [OPTIONS]
+Usage: $0 [OPTIONS] [status|start|stop|restart|reload]
 
  Options:
     -F, --frontend=STRING   specify the frontend binding, default: $frontend
@@ -77,6 +88,13 @@ Usage: $0 [-D status|start|stop|restart|reload] [OPTIONS]
     -g, --group             run daemon as group, default: $group
     -p, --pid               pidfile location, default: $pidfile
     
+ Notification Options:
+    --notify:               turn on notification, default: off.
+    --notify-to:            default: $notify_to
+    --notify-from:          default: $notify_from
+    --notify-subj:          default: $notify_subj
+    --notify-level:         default: $notify_level
+    
  Advanced Options:
     -A, --auth              specify authorization plugin, default: $auth
     -S, --storage           specify storage plugin, default: $storage
@@ -91,31 +109,39 @@ EOF
 $debug = ($debug) ? 'INFO' : 'ERROR';
 $debug = 'DEBUG' if($verbose);
 
-if($daemon){
-    my $r = Daemon::Control->new(
-        name    => 'cif-router',
-        program => sub { _main() },
-        
-        lsb_start   => '$syslog',
-        lsb_stop    => '$syslog',
-        lsb_sdesc   => 'CIF Router',
-        lsb_desc    => 'CIF Router',
-        
-        pid_file    => $pidfile,
-        fork        => 2,
-        
-        user         => $user,
-        group        => $group,
-    )->run();
-} else {
-    _main();
+if($notify){
+    $notify = { 
+        to          => $notify_to, 
+        from        => $notify_from, 
+        subject     => $notify_subj, 
+        min_level   => lc($notify_level) }
 }
+
+init_logging(
+    { level => $debug},
+    $notify,   
+);
+
+unless($daemon){
+    $ARGV[0] = 'start' unless($ARGV);
+}
+
+my $r = Daemon::Control->new(
+    name    => 'cif-router',
+    program => sub { _main() },
+    
+    pid_file    => $pidfile,
+    fork        => ($daemon) ? 2 : 0,
+    
+    user         => $user,
+    group        => $group,
+);
+
+$r->run();
 
 sub _main {
     init_logging($debug);
     my $done        = AnyEvent->condvar();
-    $SIG{'INT'}     = sub { $done->send(); };
-    $SIG{'KILL'}    = sub { $done->send(); };
     my $router = CIF::Router->new({
         frontend_listen     => $frontend,
         backend_listen      => $backend,

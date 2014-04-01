@@ -38,17 +38,23 @@ my $group       = $CIF::CIF_GROUP;
 
 my $remote      = 'zmq+tcp://localhost:'.CIF::DEFAULT_PORT();
 my $token       = '';
-my $rule        = $CIF::SmrtRulesPath;
+my $rule        = $CIF::SmrtRulesDefault;
 my $feed        = '';
 my $limit       = 0;
 my $refresh     = 0;
 my $meta        = 0;
-my $mutex       = $CIF::VarPath.'/smrt.lock';
 my $test_mode   = 0;
 my $clean       = 0;
 my $interval    = 60; #min
 my $randomstart = 30; #min
-my $notbefore;
+my $notbefore   = 'today';
+my $cache       = '/tmp/cif/smrt/cache';
+my $consolemode = 0;
+my $notify;
+my $notify_to   = 'root@localhost';
+my $notify_subj = '[cif-smrt] ERROR';
+my $notify_from = 'cif';
+my $notify_level = 'error';
 
 my $today = DateTime->today()->ymd('');
 
@@ -87,11 +93,35 @@ GetOptions(
     'test|x'        => \$test_mode,
     'clean|c'       => \$clean,
     'nbefore|N=s'   => \$notbefore,
+    'cache|P=s'     => \$cache,
+    'consolemode'   => \$consolemode,
+    
+    #notification
+    'notify'        => \$notify,
+    'notify-to=s'   => \$notify_to,
+    'notify-subj=s' => \$notify_subj,
+    'notify-from=s' => \$notify_from,
     
     # timing stuff
     'interval|i=i'      => \$interval,
     'randomstart|R=i'   => \$randomstart,
 ) or die(usage());
+
+$debug = ($debug) ? 'INFO' : 'ERROR';
+$debug = 'DEBUG' if($verbose);
+
+if($notify){
+    $notify = { 
+        to          => $notify_to, 
+        from        => $notify_from, 
+        subject     => $notify_subj, 
+        min_level   => lc($notify_level) }
+}
+
+init_logging(
+    { level => $debug},
+    $notify,   
+);
 
 die(usage()) if($help);
 die(usage()) unless($rule);
@@ -108,15 +138,10 @@ if($notbefore && $notbefore =~ /^\d+$/){
     exit(-1);
 }
 
-$debug = ($debug) ? 'INFO' : 'ERROR';
-$debug = 'DEBUG' if($verbose);
-
-init_logging($debug);
-
 sub usage {
     return <<EOF;
 
-Usage: $0 [-D status|start|stop|restart|reload] [OPTIONS]
+Usage: $0 [OPTIONS] [-D status|start|stop|restart|reload]
 
  Options:
     -C, --config=FILE       specify cofiguration file, default: $config
@@ -134,15 +159,24 @@ Usage: $0 [-D status|start|stop|restart|reload] [OPTIONS]
     -u, --user              run daemon as user, default: $user
     -g, --group             run daemon as group, default: $group
     -p, --pid               pidfile location, default: $pidfile
+    --consolemode           run daemon in console mode (no-fork).
     
     -r, --randomstart       random start delay, default: $randomstart min
     -i, --interval          runtime interval, default: $interval min
+    
+ Notification Options:
+    --notify:               turn on notification, default: off.
+    --notify-to:            default: $notify_to
+    --notify-from:          default: $notify_from
+    --notify-subj:          default: $notify_subj
+    --notify-level:         default: $notify_level
     
  Advanced Options:
     -M, --meta              apply metadata processors, default: $meta
     -c, --clean             clear cache
     -x, --test              run in test mode
     -N, --notbefore         not before "[today|yesterday|X days ago]"
+    -P, --cache             cache location, default $cache
 
  Examples:
     $0 -C $config
@@ -152,29 +186,23 @@ Usage: $0 [-D status|start|stop|restart|reload] [OPTIONS]
 EOF
 }
 
-init_logging($debug);
-
-if(-e $pidfile){
-    $Logger->error('already running or a stale pidfile, check: '.$pidfile);
-    exit(-1);
-}
-
-my $rv;
 if($daemon){
-    $rv = Daemon::Control->new(
+    $ARGV[0] = 'start' if($consolemode && !$ARGV); # default set run_command if we're in console mode
+                                                   # and forget to 'start'
+
+    my $rv = Daemon::Control->new(
         name    => 'cif-smrt',
         program => sub { main() },
         
         pid_file    => $pidfile,
-        fork        => 2,
+        fork        => ($consolemode) ? 0 : 2,
         
         user        => $user,
         group       => $group,
-    )->run();   
+    )->run();
 } else {
-    $rv = _main();
+    _main()
 }
-
 
 sub main {
     my $done = AnyEvent->condvar();
@@ -189,15 +217,16 @@ sub main {
     my $w = AnyEvent->timer(
         after       => $randomstart, 
         interval    => $interval, # once an hour
-        cb          => sub { _main($done) }
+        cb          => sub { 
+            _main(); 
+            $Logger->info('sleeping: '.($interval/60).'min'); 
+        }
     );
     
     $done->recv();
 }
 
-sub _main {
-    my $d = shift;
-    
+sub _main { 
     _clean_tmp();
     
     my $smrt = CIF::Smrt->new({
@@ -256,7 +285,7 @@ sub _main {
     }
     
     foreach (@$rules){
-        $Logger->info('processing: '.$_->{'config'}.' - '.$_->{'feed'});
+        $Logger->info("processing: $0 -d -r $_->{'config'} -f $_->{'feed'}");
         $ret = $smrt->process({
             rule    => $_,
         });
@@ -269,21 +298,20 @@ sub _main {
             $Logger->info('nothing [new] to send...');
         }
     }
-    return 1;
-    
+    $Logger->info('done');    
 }
 
+##TODO re-factor
 sub _clean_tmp {
     $Logger->info('cleaning up tmp...');
-    opendir(F,'/tmp/cif/smrt/cache') || die($!);
+    opendir(F,$cache) || return;
     my $tmp = [ sort { $a cmp $b } grep (/^\d+\.log$/,readdir(F)) ];
     foreach (@$tmp){
         m/^(\d+)\.log$/;
         if($clean || ($1 < $today)){
-            $Logger->info('removing: /tmp/cif/smrt/cache/'.$_);
+            $Logger->info('removing: '.$cache.'/'.$_);
             #todo -- clean this
-            system('rm -f /tmp/cif/smrt/cache/'.$_);
+            system('rm -f '.$cache.'/'.$_);
         }
- 
     }
 }
