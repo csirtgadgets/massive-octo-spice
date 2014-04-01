@@ -156,7 +156,7 @@ path.conf: @prefix@/elasticsearch/config
 #
 # path.data: /path/to/data1,/path/to/data2
 
-path.data: @prefix@/var
+path.data: @prefix@/elasticsearch/var
 
 # Path to temporary files:
 #
@@ -166,7 +166,7 @@ path.data: @prefix@/var
 #
 # path.logs: /path/to/logs
 
-path.logs: @prefix@/var/log
+path.logs: @prefix@/elasticsearch/var/log
 
 # Path to where plugins are installed:
 #
