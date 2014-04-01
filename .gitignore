@@ -2,6 +2,7 @@ libcif/lib/CIF/Generated.pm
 router/bin/cif-router
 smrt/bin/cif-smrt
 libcif/bin/cif
+extern/kibana/contrib/kibana-nginx.conf
 
 */_Inline/*
 *.swp
