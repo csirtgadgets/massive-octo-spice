@@ -3,7 +3,7 @@ Getting Involved
 [Project Page](http://csirtgadgets.org/cif/v2)  
 [Mailing List](https://groups.google.com/forum/#!forum/ci-framework)  
 [Contribution Process](http://csirtgadgets.org/contribute)  
-[Branching Model](http://nvie.com/posts/a-successful-git-branching-model/)
+[Branching Model](http://datasift.github.io/gitflow/IntroducingGitFlow.html)
 
 [![Build Status](https://travis-ci.org/csirtgadgets/massive-octo-spice.png?branch=master)](https://travis-ci.org/csirtgadgets/massive-octo-spice)
 
