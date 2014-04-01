@@ -1,3 +1,5 @@
+MIME::Lite
+Log::Dispatch::Email::MIMELite
 Log::Log4perl
 Carp::Assert
 Class::CSV
