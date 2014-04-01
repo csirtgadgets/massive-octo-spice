@@ -59,7 +59,7 @@ sub normalize_timestamp {
     # already epoch
     return DateTime->from_epoch(epoch => $dt) if($dt =~ /^\d{10}$/);
 
-    return DateTime->today()->epoch() if(lc($dt) =~ /^today$/);
+    return DateTime->today() if(lc($dt) =~ /^today$/);
     # something else
     if($dt && ref($dt) ne 'DateTime'){
         if($dt =~ /^(yesterday)$/){

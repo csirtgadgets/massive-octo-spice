@@ -102,23 +102,7 @@ sub decode {
     return $self->get_encoder_handle()->decode({ data => $data });
 }
 
-sub send {
-    my $self = shift;
-    my $msg  = shift;
-    
-    $Logger->debug('encoding...');
-    $msg = $self->encode({ data => $msg });
-    $Logger->debug('sending upstream...');
 
-    $msg = $self->get_broker()->send($msg);
-    return 0 unless($msg);
-
-    $Logger->debug('decoding...');
-    $msg = $self->decode($msg);
-    $msg = ${$msg}[0] if(ref($msg) && ref($msg) eq 'ARRAY');
-    
-    return $msg;
-}
 
 sub receive {
     my $self = shift;
@@ -189,6 +173,24 @@ sub search {
     return (undef, $msg->{'Data'}->{'Results'});
 }
 
+sub send {
+    my $self = shift;
+    my $msg  = shift;
+    
+    $Logger->debug('encoding...');
+    $msg = $self->encode({ data => $msg });
+    $Logger->debug('sending upstream...');
+    
+    $msg = $self->get_broker()->send($msg);
+    return 0 unless($msg);
+
+    $Logger->debug('decoding...');
+    $msg = $self->decode($msg);
+    $msg = ${$msg}[0] if(ref($msg) && ref($msg) eq 'ARRAY');
+    
+    return $msg;
+}
+
 sub submit {
     my $self = shift;
     my $args = shift;
@@ -209,6 +211,7 @@ sub submit {
     $t = tv_interval([$t]);
     $Logger->info('took: ~'.$t);
     $Logger->info('rate: ~'.($sent/$t).' o/s');
+    die unless($msg);
     return $msg->{'Data'} if($msg->{'@stype'} eq 'failure');
     
     return (undef,$msg->{'Data'}->{'Results'});   

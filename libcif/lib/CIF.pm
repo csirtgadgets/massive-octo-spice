@@ -65,11 +65,12 @@ use vars qw(
     $SmrtPath
     $SmrtLibPath
     $SmrtRulesPath
+    $SmrtRulesDefault
+    $SmrtRulesContrib
+    $SmrtRulesLocal
     $CIF_USER
     $CIF_GROUP
 );
-
-init_logging() unless($Logger);
 
 # Preloaded methods go here.
 
@@ -87,8 +88,22 @@ sub observable_type {
 }
 
 sub init_logging {
-    my $level = shift || 'ERROR';
-    $Logger = CIF::Logger->new({ level => $level })->get_logger();
+    my $args        = shift;
+    my $mail_args   = shift;
+
+    $args = { level => $args } unless(ref($args) && ref($args) eq 'HASH');
+    
+    $Logger = CIF::Logger->new($args)->get_logger();
+    
+    if($mail_args){
+        my $appender = Log::Log4perl::Appender->new(
+        "Log::Dispatch::Email::MIMELite",
+            %$mail_args,
+            buffered    => 0,
+        );
+        $appender->layout(Log::Log4perl::Layout::SimpleLayout->new());
+        $Logger->add_appender($appender);
+    }
 }
 
 sub debug {

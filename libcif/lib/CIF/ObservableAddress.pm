@@ -3,7 +3,6 @@ package CIF::ObservableAddress;
 use strict;
 use warnings;
 
-
 use Mouse::Role;
 
 with 'CIF::Observable';
@@ -31,8 +30,8 @@ has 'application' => (
 ##TODO
 has 'countrycode'   => (
     is      => 'ro',
-    #isa     => 'Str',
-    #coerce  => 1,
+    isa     => 'CIF::Type::LowerCaseStr',
+    coerce  => 1,
     reader  => 'get_countrycode',
 );
 

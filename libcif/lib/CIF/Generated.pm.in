@@ -27,7 +27,10 @@ $VarPath    = $BasePath . '/var';
 $SmrtPath = '@CIF_SMRT_PATH@';
 $SmrtLibPath = $SmrtPath . '/lib';
 
-$SmrtRulesPath = $EtcPath . '/rules';
+$SmrtRulesPath      = $EtcPath . '/rules';
+$SmrtRulesDefault   = $SmrtRulesPath . '/default';
+$SmrtRulesLocal     = $SmrtRulesPath . '/local';
+$SmrtRulesContrib   = $SmrtRulesPath . '/contrib';
 
 $RouterPath = '@CIF_ROUTER_PATH@';
 $RouterLibPath = $RouterPath . '/lib';
