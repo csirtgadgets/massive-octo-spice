@@ -14,7 +14,7 @@ fixdeps:
 testdeps:
 	$(PERL) ./sbin/test-deps --verbose
 
-test: extern-test libcif-test router-test smrt-test
+test: libcif-test router-test smrt-test
 
 extern-test:
 	( cd extern && make test )
@@ -30,14 +30,23 @@ smrt-test:
 
 install: files-install fixperms
 
-files-install: libcif-install router-install smrt-install var-install etc-install extern-install
+files-install: contrib-install libcif-install router-install smrt-install var-install etc-install extern-install
 
+contrib-install:
+	[ -d $(DESTDIR)$(CIF_PATH)/contrib ] || $(INSTALL) -m 0760 -d $(DESTDIR)$(CIF_PATH)/contrib
+	-( cd contrib && find . -type d -print ) | while read dir ; do \
+    	$(INSTALL) -m 0750 -d "$(DESTDIR)$(CIF_PATH)/contrib/$$dir" ; \
+    done
+	-( cd contrib && find . -type f -print | grep -v ".in$$" ) | while read file ; do \
+    	$(INSTALL) -m 0660 "contrib/$$file" "$(DESTDIR)$(CIF_PATH)/contrib/$$file" ; \
+    done
+	
 etc-install:
-	[ -d $(CIF_PATH)/$(sysconfdir) ] || $(INSTALL) -m 0750 -d $(CIF_PATH)/$(sysconfdir)
+	[ -d $(DESTDIR)$(CIF_PATH)/$(sysconfdir) ] || $(INSTALL) -m 0750 -d $(DESTDIR)$(CIF_PATH)/$(sysconfdir)
 
 var-install:
-	[ -d $(CIF_PATH)/$(localstatedir) ] || $(INSTALL) -m 0750 -d $(CIF_PATH)/$(localstatedir)
-	[ -d $(CIF_PATH)/$(localstatedir)/log ] || $(INSTALL) -m 0750 -d $(CIF_PATH)/$(localstatedir)/log
+	[ -d $(DESTDIR)$(CIF_PATH)/$(localstatedir) ] || $(INSTALL) -m 0750 -d $(DESTDIR)$(CIF_PATH)/$(localstatedir)
+	[ -d $(DESTDIR)$(CIF_PATH)/$(localstatedir)/log ] || $(INSTALL) -m 0750 -d $(DESTDIR)$(CIF_PATH)/$(localstatedir)/log
 
 libcif-install:
 	( cd libcif && make install )
@@ -54,10 +63,15 @@ extern-install:
 initdb:
 	( cd schema && make initdb )
 
+removedb:
+	( cd schema && make removedb )
+
+reloaddb: removedb initdb
+
 fixperms:
-	chmod 0755 $(prefix)
-	chown -R $(CIF_USER) $(prefix)
-	chgrp -R $(CIF_GROUP) $(prefix)
+	chmod 0755 $(DESTDIR)$(prefix)
+	chown -R $(CIF_USER) $(DESTDIR)$(prefix)
+	chgrp -R $(CIF_GROUP) $(DESTDIR)$(prefix)
 
 clean:
 	rm Makefile
