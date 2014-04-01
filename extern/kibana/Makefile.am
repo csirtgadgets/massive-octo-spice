@@ -13,8 +13,18 @@ build:
 	[ -e $(FILE) ] || $(WGET) $(BASE_URL)/$(FILE)
 	[ "$(shell $(SHA1SUM) -c $(FILE).asc)"="$(FILE): OK" ] 
 
-install: base-install config-install
+install: base-install config-install contrib-install
 
 base-install:
-	[ -d "$(CIF_PATH)/kibana" ] || $(INSTALL) -m 0755 -d $(CIF_PATH)/kibana
-	tar -zxvf $(FILE) -C "$(CIF_PATH)/kibana" --strip 1
+	[ -d "$(DESTDIR)$(CIF_PATH)/kibana" ] || $(INSTALL) -m 0750 -d $(DESTDIR)$(CIF_PATH)/kibana
+	[ -d "$(DESTDIR)$(CIF_PATH)/kibana/www" ] || $(INSTALL) -m 0755 -d $(DESTDIR)$(CIF_PATH)/kibana/www
+	tar -pzxvf $(FILE) -C "$(DESTDIR)$(CIF_PATH)/kibana/www" --strip 1
+
+contrib-install:
+	-( cd contrib && find . -type f -print | grep -v ".in$$" ) | while read file ; do \
+        $(INSTALL) -m 0660 "contrib/$$file" "$(DESTDIR)$(CIF_PATH)/contrib/$$file" ; \
+    done
+
+config-install:
+	cp $(DESTDIR)$(CIF_PATH)/kibana/www/app/dashboards/default.json $(DESTDIR)$(CIF_PATH)/kibana/www/app/dashboards/default.json.orig
+	$(INSTALL) -m 664 "dashboard.json" $(DESTDIR)$(CIF_PATH)/kibana/www/app/dashboards/default.json

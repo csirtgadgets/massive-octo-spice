@@ -20,24 +20,24 @@ test:
 install: libs-install bin-install fix-perms
 
 libs-install:
-	[ -d $(CIF_PATH)/$(libdir) ] || $(INSTALL) -m 0755 -d $(CIF_PATH)/$(libdir)
+	[ -d $(DESTDIR)$(CIF_PATH)/$(libdir) ] || $(INSTALL) -m 0755 -d $(DESTDIR)$(CIF_PATH)/$(libdir)
 	-( cd lib && find . -type d -print ) | while read dir ; do \
-    $(INSTALL) -m 0755 -d "$(CIF_PATH)/$(libdir)/$$dir" ; \
+    $(INSTALL) -m 0755 -d "$(DESTDIR)$(CIF_PATH)/$(libdir)/$$dir" ; \
     done
 	-( cd lib && find . -type f -print | grep -v ".in$$" ) | while read file ; do \
-    $(INSTALL) -m 0644 "lib/$$file" "$(CIF_PATH)/$(libdir)/$$file" ; \
+    $(INSTALL) -m 0644 "lib/$$file" "$(DESTDIR)$(CIF_PATH)/$(libdir)/$$file" ; \
     done
 
 bin-install:    
-	[ -d $(CIF_PATH)/$(bindir) ] || $(INSTALL) -m 0755 -d $(CIF_PATH)/$(bindir)
+	[ -d $(DESTDIR)$(CIF_PATH)/$(bindir) ] || $(INSTALL) -m 0755 -d $(DESTDIR)$(CIF_PATH)/$(bindir)
 	-( cd bin && find . -type f -print | grep -v ".in$$" ) | while read file ; do \
-        $(INSTALL) -m 0755 "bin/$$file" "$(CIF_PATH)/$(bindir)/$$file" ; \
+        $(INSTALL) -m 0755 "bin/$$file" "$(DESTDIR)$(CIF_PATH)/$(bindir)/$$file" ; \
     done
 
 fix-perms:
-	chmod 0755 $(prefix)
-	chown -R $(CIF_USER) $(prefix)
-	chgrp -R $(CIF_GROUP) $(prefix)
+	chmod 0755 $(DESTDIR)$(prefix)
+	chown -R $(CIF_USER) $(DESTDIR)$(prefix)
+	chgrp -R $(CIF_GROUP) $(DESTDIR)$(prefix)
 
 clean:
 	rm Makefile

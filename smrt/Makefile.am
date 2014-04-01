@@ -18,28 +18,25 @@ local-whitelist:
 	[ -e $(CIF_PATH)/local/etc/whitelist_urls ] || touch "$(CIF_PATH)/local/etc/whitelist_urls"
 
 rules-install:
-	echo "FIXME!!!!"
-
-rules-install2:
-	[ -d $(CIF_PATH)/$(sysconfdir) ] || $(INSTALL) -m 0755 -d $(CIF_PATH)/$(sysconfdir)
+	[ -d $(DESTDIR)$(CIF_PATH)/$(sysconfdir)/rules ] || $(INSTALL) -m 0755 -d $(DESTDIR)$(CIF_PATH)/$(sysconfdir)/rules
 	-( cd rules && find . -type d -print ) | while read dir ; do \
-    $(INSTALL) -m 0750 -d "$(CIF_PATH)/$(sysconfdir)/$$dir" ; \
+    $(INSTALL) -m 0750 -d "$(DESTDIR)$(CIF_PATH)/$(sysconfdir)/rules/$$dir" ; \
     done
 	-( cd rules && find . -type f -print ) | while read file ; do \
-    $(INSTALL) -m 0640 "rules/$$file" "$(CIF_PATH)/$(sysconfdir)/$$file" ; \
+    $(INSTALL) -m 0640 "rules/$$file" "$(DESTDIR)$(CIF_PATH)/$(sysconfdir)/rules/$$file" ; \
     done
 
 libs-install:
-	[ -d $(CIF_PATH)/$(libdir) ] || $(INSTALL) -m 0755 -d $(CIF_PATH)/$(libdir)
+	[ -d $(DESTDIR)$(CIF_PATH)/$(libdir) ] || $(INSTALL) -m 0755 -d $(DESTDIR)$(CIF_PATH)/$(libdir)
 	-( cd lib && find . -type d -print ) | while read dir ; do \
-    $(INSTALL) -m 0755 -d "$(CIF_PATH)/$(libdir)/$$dir" ; \
+    $(INSTALL) -m 0755 -d "$(DESTDIR)$(CIF_PATH)/$(libdir)/$$dir" ; \
     done
 	-( cd lib && find . -type f -print | grep -v ".in$$" ) | while read file ; do \
-    $(INSTALL) -m 0644 "lib/$$file" "$(CIF_PATH)/$(libdir)/$$file" ; \
+    $(INSTALL) -m 0644 "lib/$$file" "$(DESTDIR)$(CIF_PATH)/$(libdir)/$$file" ; \
     done
     
 bin-install:    
-	[ -d $(CIF_PATH)/$(bindir) ] || $(INSTALL) -m 0755 -d $(CIF_PATH)/$(bindir)
+	[ -d $(DESTDIR)$(CIF_PATH)/$(bindir) ] || $(INSTALL) -m 0755 -d $(DESTDIR)$(CIF_PATH)/$(bindir)
 	-( cd bin && find . -type f -print | grep -v ".in$$" ) | while read file ; do \
-        $(INSTALL) -m 0755 "bin/$$file" "$(CIF_PATH)/$(bindir)/$$file" ; \
+        $(INSTALL) -m 0755 "bin/$$file" "$(DESTDIR)$(CIF_PATH)/$(bindir)/$$file" ; \
     done

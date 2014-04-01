@@ -1,19 +1,21 @@
 CURLOPTS=-w "\n"
-CURL=/usr/bin/curl $(CURLOPTS)
-HOST=http://localhost:9200
+CURLCMD=$(CURL) $(CURLOPTS)
+HOST=http://$(ES_HOST)
 MAPPING=map.json
 INDEX=cif
+INDICIES=cif-*
 
 all-am: default
 default:
 
 initdb:
-	$(CURL) -XPUT $(HOST)/$(INDEX) -d @$(MAPPING)
+	$(CURLCMD) -XPUT $(HOST)/$(INDEX) -d @$(MAPPING)
 
-removedb:
-	$(CURL) -XDELETE $(HOST)/$(INDEX) -w "\n"
+dropdb:
+	$(CURLCMD) -XDELETE $(HOST)/$(INDICIES) -w "\n"
+	$(CURLCMD) -XDELETE $(HOST)/$(INDEX) -w "\n"
 
-reloaddb: removedb initdb
+reloaddb: dropdb initdb
 
 list:
-	$(CURL) -XGET $(HOST)/$(INDEX)/_mapping?pretty -w "\n"
+	$(CURLCMD) -XGET $(HOST)/$(INDEX)/_mapping?pretty -w "\n"

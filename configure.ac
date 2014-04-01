@@ -11,6 +11,10 @@ dnl and undocumented.  See http://www.spinics.net/lists/ac/msg10022.html.
 AC_SUBST(CONFIGURE_INCANT, "$0 $@")
 
 AC_PREFIX_DEFAULT([/opt/cif])
+# setup
+m4_include([m4/layout.m4])
+m4_include([m4/ax_check_user.m4])
+m4_include([m4/ax_check_group.m4])
 
 AC_SUBST([cif_version_major],
     m4_bregexp(AC_PACKAGE_VERSION,[^\(\w+\)\.\(\w+\)\.\(\w+\)-?\(\w+\.\d+\)?],[\1]))
@@ -35,44 +39,6 @@ AC_SUBST(CIF_PROTOCOL_VERSION,  m4_esyscmd([( cat .protocol_version ) | tr -d "\
 AC_SUBST(ORG,'csirtgadgets.org')
 AC_SUBST(DEFAULT_PORT, 4961)
 
-AC_PROG_INSTALL
-AC_PATH_PROG([WGET],[wget],[not found])
-AC_PATH_PROG([SHA1SUM],[sha1sum],[not found])
-AC_ARG_VAR([PERL],[Perl interpreter command])
-AC_PATH_PROG([PERL], [perl], [not found])
-if test "$PERL" = 'not found'; then
-    AC_MSG_ERROR([cannot use $PACKAGE_NAME without perl])
-fi 
-
-# for elastic search
-AC_PATH_PROG([JAVA], [java], [not found])
-if test "$JAVA" = 'not found'; then
-    AC_MSG_ERROR([cannot use $PACKAGE_NAME without java (for elastic search)])
-fi
-
-# setup
-m4_include([m4/layout.m4])
-CIF_ENABLE_LAYOUT
-
-AC_CONFIG_SUBDIRS([
-])
-
-AC_CONFIG_FILES([
-    Makefile
-    libcif/Makefile
-    libcif/lib/CIF/Generated.pm
-    libcif/bin/cif
-    router/Makefile
-    router/bin/cif-router
-    smrt/Makefile
-    smrt/bin/cif-smrt
-    extern/Makefile
-    extern/elasticsearch/Makefile
-    extern/elasticsearch/elasticsearch.yml
-    extern/kibana/Makefile
-    schema/Makefile
-])
-
 #dnl CIF_USER
 AC_ARG_WITH(user,
     AC_HELP_STRING([--with-user=USER],
@@ -89,6 +55,78 @@ AC_ARG_WITH(group,
     CIF_GROUP=$CIF_USER
 )
 AC_SUBST(CIF_GROUP)
+
+AX_CHECK_USER(USER,[$CIF_USER],no)
+if test x$USER = xno; then
+    AC_MSG_ERROR([$CIF_USER user does not exist, it must be created first])
+fi
+
+AX_CHECK_GROUP(GROUP,[$CIF_GROUP],no)
+if test x$GROUP = xno; then
+    AC_MSG_ERROR([$CIF_GROUP group does not exist, it must first be created])
+fi  
+
+AC_PROG_INSTALL
+AC_PATH_PROG([WGET],[wget],[not found])
+AC_PATH_PROG([SHA1SUM],[sha1sum],[not found])
+AC_ARG_VAR([PERL],[Perl interpreter command])
+AC_PATH_PROG([PERL], [perl], [not found])
+if test "$PERL" = 'not found'; then
+    AC_MSG_ERROR([cannot use $PACKAGE_NAME without perl])
+fi 
+
+#AC_ARG_VAR([DEVMODE])
+#AC_ARG_ENABLE(devmode, AC_HELP_STRING(--enable-devmode, Enable development mode (user/group=vagrant, --enable-embedded) @<:@default=no@:>@),
+#    enable_devmode=$enableval, enable_devmode="no")
+#AM_CONDITIONAL(DEVMODE, test x$enable_devmode = xyes)
+
+AC_ARG_VAR([ES_HOST],[ElasticSearch Host])
+AC_ARG_WITH(es-host,
+    AC_HELP_STRING([--with-es-host=ES_HOST],
+        [elastic search host @<:@default=localhost:9200@:>@]),
+        ES_HOST=$withval,
+        ES_HOST='localhost:9200')
+AC_SUBST(ES_HOST)
+
+# for elastic search
+AC_ARG_ENABLE(embedded, AC_HELP_STRING(--enable-embedded, Enable embedded support for ElasticSearch (requires java) @<:@default=no@:>@),
+    enable_embedded=$enableval, enable_embedded="no")
+
+if test x$enable_embedded = xyes; then 
+    AC_PATH_PROG([CURL],[curl],[not found])
+    if test "$CURL" = 'not found'; then
+        AC_MSG_ERROR([curl required to configure elasticsearch...])
+    fi
+    AC_PATH_PROG([JAVA], [java], [not found])
+    if test "$JAVA" = 'not found'; then
+        AC_MSG_ERROR([cannot use $PACKAGE_NAME without java (ElasticSearch)])
+    fi
+    AC_CONFIG_FILES([
+        extern/elasticsearch/Makefile
+        extern/elasticsearch/elasticsearch.yml
+        extern/kibana/Makefile
+        extern/kibana/contrib/kibana-nginx.conf
+    ])
+fi
+AM_CONDITIONAL(HAVE_EMBEDDED, test x$enable_embedded = xyes)
+
+CIF_ENABLE_LAYOUT
+
+AC_CONFIG_SUBDIRS([
+])
+
+AC_CONFIG_FILES([
+    Makefile
+    libcif/Makefile
+    libcif/lib/CIF/Generated.pm
+    libcif/bin/cif
+    router/Makefile
+    router/bin/cif-router
+    smrt/Makefile
+    smrt/bin/cif-smrt
+    extern/Makefile
+    schema/Makefile
+])
 
 dnl layout paths
 AC_SUBST([CIF_PATH],         ${exp_prefix})

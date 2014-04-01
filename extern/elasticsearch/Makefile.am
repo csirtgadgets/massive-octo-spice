@@ -22,10 +22,10 @@ build:
 install: base-install config-install
 
 base-install:
-	[ -d "$(CIF_PATH)/elasticsearch" ] || $(INSTALL) -m 0755 -d $(CIF_PATH)/elasticsearch
-	tar -zxvf $(ES) -C "$(CIF_PATH)/elasticsearch" --strip 1
+	[ -d "$(DESTDIR)$(CIF_PATH)/elasticsearch" ] || $(INSTALL) -m 0755 -d $(DESTDIR)$(CIF_PATH)/elasticsearch
+	tar -zxvf $(ES) -C "$(DESTDIR)$(CIF_PATH)/elasticsearch" --strip 1
 
 config-install:
 	for file in $(FILES) ; do \
-		$(INSTALL) -m 0640 "$$file" "$(CIF_PATH)/elasticsearch/config/$$file" ; \
+		$(INSTALL) -m 0640 "$$file" "$(DESTDIR)$(CIF_PATH)/elasticsearch/config/$$file" ; \
 	done
