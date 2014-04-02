@@ -1,3 +1,5 @@
+extern/elasticsearch/elasticsearch.yml
+build/deb/default/cif
 libcif/lib/CIF/Generated.pm
 router/bin/cif-router
 smrt/bin/cif-smrt

@@ -1,6 +1,0 @@
-# Run as this user ID and group ID
-CIF_USER=cif
-CIF_GROUP=cif
-
-# Directory where the binary distribution resides
-CIF_HOME=/opt/cif

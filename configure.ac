@@ -88,6 +88,15 @@ AC_ARG_WITH(es-host,
         ES_HOST='localhost:9200')
 AC_SUBST(ES_HOST)
 
+AC_ARG_VAR([PERLBREW_ROOT],[PerlBrew root location])
+AC_ARG_WITH(perlbrew-root,
+    AC_HELP_STRING([--with-perlbrew-root=PERLBREW_ROOT],
+        [perlbrew root location @<:@default=/opt/perl5@:>@]),
+    PERLBREW_ROOT=$withval,
+    PERLBREW_ROOT='/opt/perl5')
+
+AC_SUBST(PERLBREW_ROOT)
+
 # for elastic search
 AC_ARG_ENABLE(embedded, AC_HELP_STRING(--enable-embedded, Enable embedded support for ElasticSearch (requires java) @<:@default=no@:>@),
     enable_embedded=$enableval, enable_embedded="no")
@@ -126,6 +135,8 @@ AC_CONFIG_FILES([
     smrt/bin/cif-smrt
     extern/Makefile
     schema/Makefile
+    build/Makefile
+    build/deb/default/cif
 ])
 
 dnl layout paths

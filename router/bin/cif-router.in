@@ -54,7 +54,7 @@ GetOptions(
     'debug|d'       => \$debug,
     'daemon|D'      => \$daemon,
     'verbosity|v'   => \$verbose,
-    'pidfile|p'     => \$pidfile,
+    'pidfile|p=s'   => \$pidfile,
     'user|u=s'      => \$user,
     'group|g=s'     => \$group,
     'auth|a=s'      => \$auth,

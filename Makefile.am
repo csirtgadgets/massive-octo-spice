@@ -28,6 +28,9 @@ router-test:
 smrt-test:
 	cd smrt && make test
 
+install-debian: install
+	( cd build && make install-debian )
+
 install: files-install fixperms
 
 files-install: contrib-install libcif-install router-install smrt-install var-install etc-install extern-install
@@ -63,10 +66,10 @@ extern-install:
 initdb:
 	( cd schema && make initdb )
 
-removedb:
-	( cd schema && make removedb )
+dropdb:
+	( cd schema && make dropdb )
 
-reloaddb: removedb initdb
+reloaddb: dropdb initdb
 
 fixperms:
 	chmod 0755 $(DESTDIR)$(prefix)

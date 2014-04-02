@@ -1,0 +1,24 @@
+PATH=@prefix@/bin:/bin:/usr/bin:/sbin:/usr/sbin
+
+export PERLBREW_ROOT=@PERLBREW_ROOT@
+if [ -f @PERLBREW_ROOT@/etc/bashrc ]; then
+    source @PERLBREW_ROOT@/etc/bashrc
+fi
+
+# Run as this user ID and group ID
+CIF_USER=@CIF_USER@
+CIF_GROUP=@CIF_GROUP@
+
+# Directory where the binary distribution resides
+CIF_HOME=@prefix@
+
+# data directory
+DATA_DIR=@prefix@/var/
+LOG_DIR=@prefix@/var/log
+
+# work directory
+WORK_DIR=/tmp/
+
+# configuration directory
+CONF_DIR=@prefix@/etc
+
