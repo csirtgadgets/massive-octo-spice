@@ -18,7 +18,9 @@ BEGIN {
 
 use Data::Dumper;
 use AnyEvent;
-use CIF qw/hash_create_random/;
+use CIF qw/init_logging $Logger hash_create_random/;
+
+init_logging({ level => 'ERROR' });
 
 my $storage = 'dummy';
 my $auth = 'dummy';

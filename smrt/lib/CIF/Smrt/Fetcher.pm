@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use Mouse::Role;
-use CIF qw/hash_create_static/;
+use CIF qw/$Logger hash_create_static/;
 use File::Spec;
 
 use constant DEFAULT_AGENT => 'cif-smrt/'.CIF::VERSION().' ('.CIF::ORG().')';
@@ -35,12 +35,14 @@ sub process_file {
     my $self = shift;
     my $args = shift;
     
-    ##TODO -- remove old logs
     ##TODO - refactor
     my $ts = $args->{'ts'} || DateTime->today();
     my ($vol,$dir) = File::Spec->splitpath($args->{'file'});
     my $log = File::Spec->catfile($dir,$ts->ymd('').'.log');
-
+    
+    $Logger->debug('using log: '.$log);
+   
+    $Logger->debug('file: '.$args->{'file'});
     die "file doesn't exist: ".$args->{'file'} unless(-e $args->{'file'});
     my $file = URI::file->new_abs($args->{'file'});
     unless ($file->scheme() eq 'file') {
@@ -65,7 +67,7 @@ sub process_file {
         chomp();
         $tmp = hash_create_static($ts->epoch().$_);
         next if(!$_ || $exists->{$tmp});
-        print $wh $tmp."\n";
+        print $wh $tmp."\n" unless($file->path() =~ /testdata/); ##TODO- workaround for tests
         push(@$array,$_);
     }
     $fh->close();

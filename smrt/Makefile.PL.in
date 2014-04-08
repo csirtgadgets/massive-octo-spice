@@ -1,0 +1,27 @@
+use 5.011000;
+use ExtUtils::MakeMaker;
+
+sub MY::libscan {
+    my( $mm, $file ) = @_;
+    return if $file =~  /\.(swp|log|in)$/; # SKIP
+    return $file;
+}
+
+sub MY::postamble {
+    return <<'MAKE_FRAG';
+
+clean-local:
+	find . -name '*.log' -delete
+
+MAKE_FRAG
+}
+
+# See lib/ExtUtils/MakeMaker.pm for details of how to influence
+# the contents of the Makefile that is written.
+WriteMakefile(
+    NAME            => 'CIF::Smrt',
+    VERSION         => '@CIF_VERSION@',
+    EXE_FILES       => ['bin/cif-smrt'],
+    NO_META         => 1,
+    NO_MYMETA       => 1,
+);

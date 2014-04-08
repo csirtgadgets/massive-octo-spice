@@ -44,7 +44,6 @@ use Cwd ();
 
 __PACKAGE__->LoadGeneratedData();
 
-
 use constant DEFAULT_CONFIG         => $ENV{'HOME'}.'/.cif';
 use constant DEFAULT_QUERY_LIMIT    => 500;
 use constant DEFAULT_GROUP          => 'everyone';
@@ -92,26 +91,34 @@ sub init_logging {
     my $mail_args   = shift;
 
     $args = { level => $args } unless(ref($args) && ref($args) eq 'HASH');
-    
-    $Logger = CIF::Logger->new($args)->get_logger();
+
+    $Logger = CIF::Logger->new($args);
+
+    if($args->{'filename'}){
+        my $appender = Log::Log4perl::Appender->new(
+            'Log::Log4perl::Appender::File', 
+            mode                => 'append',
+            %$args
+        );
+        $appender->layout(
+            Log::Log4perl::Layout::PatternLayout->new(
+                $Logger->get_layout()
+            )
+        );
+        $Logger->get_logger()->add_appender($appender);
+    }
     
     if($mail_args){
         my $appender = Log::Log4perl::Appender->new(
         "Log::Dispatch::Email::MIMELite",
             %$mail_args,
             buffered    => 0,
+            layout              => Log::Log4perl::Layout::PatternLayout->new(),
+            ConversionPattern   => $Logger->get_layout(),
         );
-        $appender->layout(Log::Log4perl::Layout::SimpleLayout->new());
-        $Logger->add_appender($appender);
+        $Logger->get_logger()->add_appender($appender);
     }
-}
-
-sub debug {
-    my $m = shift || return;
-    unless($Logger){
-        init_logging('DEBUG');
-    }
-    $Logger->debug($m);
+    $Logger = $Logger->get_logger();
 }
 
 sub LoadGeneratedData {

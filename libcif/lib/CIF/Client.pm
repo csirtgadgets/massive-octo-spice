@@ -208,10 +208,9 @@ sub submit {
     $Logger->info('sending: '.($sent));
     my $t = gettimeofday();
     $msg = $self->send($msg);
-    $t = tv_interval([$t]);
+    $t = tv_interval([split(/\./,$t)]);
     $Logger->info('took: ~'.$t);
     $Logger->info('rate: ~'.($sent/$t).' o/s');
-    die unless($msg);
     return $msg->{'Data'} if($msg->{'@stype'} eq 'failure');
     
     return (undef,$msg->{'Data'}->{'Results'});   

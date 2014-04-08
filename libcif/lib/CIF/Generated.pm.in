@@ -15,27 +15,22 @@ use constant DEFAULT_BACKEND_PORT           => (DEFAULT_PORT() + 1);
 use constant DEFAULT_PUBLISHER_PORT         => (DEFAULT_PORT() + 2);
 use constant DEFAULT_STATS_PUBLISHER_PORT   => (DEFAULT_PORT() + 3);
 
-$BasePath = '@prefix@';
+$CIF_USER = '@CIF_USER@';
+$CIF_GROUP = '@CIF_GROUP@';
 
-$LibPath = $BasePath.'/lib';
-$EtcPath = $BasePath.'/etc';
+$BasePath = '@CIF_PATH@';
+
+$LibPath    = '@siteperldir@';
+$EtcPath    = '@ext_sysconfdir@';
+$VarPath    = '@ext_localstatedir@';
 
 $BinPath    = $BasePath . '/bin';
 $SbinPath   = $BasePath . '/sbin';
-$VarPath    = $BasePath . '/var';
 
-$SmrtPath = '@CIF_SMRT_PATH@';
-$SmrtLibPath = $SmrtPath . '/lib';
 
 $SmrtRulesPath      = $EtcPath . '/rules';
 $SmrtRulesDefault   = $SmrtRulesPath . '/default';
 $SmrtRulesLocal     = $SmrtRulesPath . '/local';
 $SmrtRulesContrib   = $SmrtRulesPath . '/contrib';
-
-$RouterPath = '@CIF_ROUTER_PATH@';
-$RouterLibPath = $RouterPath . '/lib';
-
-$CIF_USER = '@CIF_USER@';
-$CIF_GROUP = '@CIF_GROUP@';
 
 1;

@@ -32,19 +32,20 @@ sub send {
     $msg = @$msg[0] if(ref($msg) eq 'ARRAY'); #TODO?
 
     my $r = CIF::Message->new({
-        rtype   => $msg->{'@rtype'},
+        rtype   => $msg->{'rtype'},
         mtype   => 'response',
         stype   => 'success',
         Token   => $msg->{'Token'},
     });
-    for($msg->{'@rtype'}){
+
+    for($msg->{'rtype'}){
         if(/^ping$/){
             $r->{'Data'} = CIF::Message::Ping->new({
                     Timestamp   => $msg->{'Data'}->{'Timestamp'},
             });
             last();
         }
-        if(/^query$/){
+        if(/^search$/){
             $r->{'Data'} = CIF::Message::Query->new({
                 Query   => $msg->{'Data'}->{'Query'},
                 Results => [

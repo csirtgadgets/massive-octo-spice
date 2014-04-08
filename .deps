@@ -1,8 +1,8 @@
+App::cpanminus~1.7
 MIME::Lite
 Log::Dispatch::Email::MIMELite
 Log::Log4perl
 Carp::Assert
-Class::CSV
 Compress::Snappy
 Config::Auto
 Config::JSON
@@ -26,7 +26,7 @@ Net::Abuse::Utils
 Net::DNS::Match
 Net::Patricia
 Net::SSL
-Plack::Runner
+Plack~1.0030
 Regexp::Common::net 
 Regexp::IPv6
 Search::Elasticsearch

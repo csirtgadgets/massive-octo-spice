@@ -75,7 +75,7 @@ sub process {
         } else {
             # if we're dealing with csv, strip the ""'s if they exist
             if($self->get_rule()->get_parser() eq 'csv'){
-                s/"//eg foreach(@y);
+                s/"//g foreach(@y);
             }
             
         }

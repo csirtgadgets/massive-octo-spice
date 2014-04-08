@@ -15,10 +15,11 @@ BEGIN {
 my $rules = [
     {
         config  => 'rules/default/malc0de.cfg',
-        rule    => 'url',
+        feed    => 'url',
         override    => {
-            remote  => 'file://../testdata/malc0de.com/rss.xml',
+            remote  => 'testdata/malc0de.com/rss.xml',
             limit   => 5,
+            not_before  => '10000 days ago',
         }
     },
 ];

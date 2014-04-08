@@ -1,0 +1,39 @@
+use 5.011000;
+use ExtUtils::MakeMaker;
+
+sub MY::libscan {
+    my( $mm, $file ) = @_;
+    return if $file =~  /\.(swp|.in)$/; # SKIP
+    return $file;
+}
+
+sub MY::postamble {
+    return <<'MAKE_FRAG';
+
+FILES = \
+	cif-router.conf
+
+testdeps:
+	$(PERL) ./sbin/test-deps --verbose
+
+fixdeps:
+	cat .deps | while read mydep ; do \
+		cpanm $$mydep ; \
+	done
+
+etc-install:
+	for file in $(FILES); do \
+		$(INSTALL) -m 0640 "$$file" "$(DESTDIR)$(ext_sysconfdir)/$$file" ; \
+	done
+MAKE_FRAG
+}
+
+# See lib/ExtUtils/MakeMaker.pm for details of how to influence
+# the contents of the Makefile that is written.
+WriteMakefile(
+    NAME            => 'CIF::Router',
+    VERSION         => '@CIF_VERSION@',
+	EXE_FILES	    => ['bin/cif-router'],
+    NO_META         => 1,
+    NO_MYMETA       => 1,
+);

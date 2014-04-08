@@ -2,6 +2,7 @@ use strict;
 use warnings;
 use 5.011;
 
+use Test::More skip_all => 'not ready yet';
 use Test::More;
 use Data::Dumper;
 
@@ -13,9 +14,10 @@ BEGIN {
 my $rules = [
     {
         config  => 'rules/example/garwarn.cfg',
-        rule    => 'blog',
+        feed    => 'blog',
         override    => {
-            remote  => 'file://../testdata/garwarn/test.html',
+            remote  => 'testdata/garwarn/test.html',
+            not_before  => '10000 days ago',
         }
     },
 ];

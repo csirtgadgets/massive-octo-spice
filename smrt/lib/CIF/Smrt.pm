@@ -76,6 +76,8 @@ around BUILDARGS => sub {
     if($args->{'client_config'}){
         $args->{'client'} = CIF::Client->new($args->{'client_config'});   
     }
+    
+    init_logging({ level => 'ERROR'}) unless($Logger);
  
     return $self->$orig($args);
 };
@@ -87,7 +89,7 @@ sub process {
     $self->set_rule(
         CIF::RuleFactory->new_plugin($args->{'rule'})
     );
-    
+
     $Logger->info('starting at: '.
         DateTime->from_epoch(epoch => $self->get_rule->get_not_before())->datetime(),'Z'
     );
@@ -99,9 +101,10 @@ sub process {
         }),
     );
     
+    $Logger->info('processing...');
     my $ret = $self->get_handler()->process($self->get_rule());
     return unless($ret);
-    
+
     my @array;  
     $Logger->info('building events: '.($#{$ret} + 1));
     my $ts;

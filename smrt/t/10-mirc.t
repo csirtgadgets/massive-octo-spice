@@ -15,9 +15,10 @@ use CIF qw/hash_create_random/;
 my $rules = [
     {
         config  => 'rules/default/00_mirc_whitelist.cfg',
-        rule    => 'domains',
+        feed    => 'domains',
         override    => {
-            remote    => 'file://../testdata/mirc.com/servers.ini',
+            remote    => 'testdata/mirc.com/servers.ini',
+            not_before  => '10000 days ago',
         },
     },
 ];
@@ -32,8 +33,8 @@ my $smrt = CIF::Smrt->new({
 my $ret;
 foreach my $r (@$rules){
     $ret = $smrt->process({ 
-        rule            => $r,
-        encoder_pretty  => 1,
+        rule        => $r,
+        test_mode   => 1,
     });
     ok($#{$ret},'testing for results...');
     $ret = $smrt->get_client->submit({

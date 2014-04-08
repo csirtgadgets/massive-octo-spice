@@ -1,20 +1,5 @@
 #!/usr/bin/env perl
 
-BEGIN {
-    require File::Spec;
-    require Cwd;
-    my @libs = ('@CIF_PATH@/lib');
-    my $bin_path;
-
-    for my $lib (@libs) {
-        unless ( File::Spec->file_name_is_absolute($lib) ) {
-            $bin_path ||= ( File::Spec->splitpath(Cwd::abs_path(__FILE__)) )[1];
-            $lib = File::Spec->catfile( $bin_path, File::Spec->updir, $lib );
-        }
-        unshift @INC, $lib;
-    }
-}
-
 use strict;
 use warnings;
 use feature 'say';
@@ -56,6 +41,8 @@ my $notify_subj = '[cif-smrt] ERROR';
 my $notify_from = 'cif';
 my $notify_level = 'error';
 
+my $logfile         = $CIF::VarPath.'/log/cif-smrt.log';
+
 my $today = DateTime->today()->ymd('');
 
 my $smrt_config;
@@ -75,12 +62,17 @@ GetOptions(
     # basic
     'help|h'        => \$help, 
     'config|C=s'    => \$config,
+    
+    # daemon opts
     'daemon|D'      => \$daemon,
-    'debug|d'       => \$debug,
-    'verbosity|v'   => \$verbose,
     'user|u=s'      => \$user,
     'group|g=s'     => \$group,
     'pidfile|p=s'   => \$pidfile,
+    
+    # logging
+    'logfile=s'     => \$logfile,
+    'debug|d'       => \$debug,
+    'verbosity|v'   => \$verbose,
     
     # advanced
     'remote|R=s'    => \$remote,
@@ -119,7 +111,12 @@ if($notify){
 }
 
 init_logging(
-    { level => $debug},
+    { 
+        category    => 'CIF::Smrt', 
+        level       => $debug, 
+        filename    => $logfile,
+        name        => 'cif-smrt',
+    },
     $notify,   
 );
 
@@ -163,6 +160,8 @@ Usage: $0 [OPTIONS] [-D status|start|stop|restart|reload]
     
     -r, --randomstart       random start delay, default: $randomstart min
     -i, --interval          runtime interval, default: $interval min
+    
+    --logfile               logfile location, default: $logfile
     
  Notification Options:
     --notify:               turn on notification, default: off.

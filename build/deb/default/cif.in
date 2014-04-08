@@ -1,8 +1,14 @@
 PATH=@prefix@/bin:/bin:/usr/bin:/sbin:/usr/sbin
 
-export PERLBREW_ROOT=@PERLBREW_ROOT@
-if [ -f @PERLBREW_ROOT@/etc/bashrc ]; then
-    source @PERLBREW_ROOT@/etc/bashrc
+if [ -d @siteperldir@ ]; then
+    export PERL5LIB=@siteperldir@
+fi
+
+if [ -d @PERLBREW_ROOT@ ]; then
+    export PERLBREW_ROOT=@PERLBREW_ROOT@
+    if [ -f @PERLBREW_ROOT@/etc/bashrc ]; then
+        source @PERLBREW_ROOT@/etc/bashrc
+    fi
 fi
 
 # Run as this user ID and group ID
@@ -13,12 +19,8 @@ CIF_GROUP=@CIF_GROUP@
 CIF_HOME=@prefix@
 
 # data directory
-DATA_DIR=@prefix@/var/
-LOG_DIR=@prefix@/var/log
-
-# work directory
-WORK_DIR=/tmp/
+DATA_DIR=@ext_localstatedir@
+LOG_DIR=@ext_localstatedir@/log
 
 # configuration directory
-CONF_DIR=@prefix@/etc
-
+CONF_DIR=@ext_sysconfdir@

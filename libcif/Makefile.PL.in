@@ -1,0 +1,29 @@
+use 5.011000;
+use ExtUtils::MakeMaker;
+
+sub MY::libscan {
+    my( $mm, $file ) = @_;
+    return if $file =~  /\.(swp|in)$/; # SKIP
+    return $file;
+}
+
+sub MY::postamble {
+    return <<'MAKE_FRAG';
+testdeps:
+	$(PERL) ./sbin/test-deps --verbose
+
+fixdeps:
+	cat .deps | while read mydep ; do \
+		cpanm $$mydep ; \
+	done
+
+MAKE_FRAG
+}
+
+WriteMakefile(
+    NAME            => 'CIF',
+    VERSION         => '@CIF_VERSION@',
+	EXE_FILES	    => ['bin/cif'],
+    NO_META         => 1,
+    NO_MYMETA       => 1,
+);

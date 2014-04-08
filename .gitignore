@@ -1,3 +1,13 @@
+libcif/CIF-*
+*/MANIFEST
+*/Makefile.PL
+*/*.tar.gz
+*/pm_to_blib
+*/blib/*
+*/*.bak
+*/Makefile.old
+MYMETA*
+smrt/testdata/*/*.log
 extern/elasticsearch/elasticsearch.yml
 build/deb/default/cif
 libcif/lib/CIF/Generated.pm

@@ -48,11 +48,11 @@ sub fetch {}
 sub process {
     my $self = shift;
     my $args = shift;
-
+    
     $Logger->debug('fetching...');
     my $ret = $self->get_fetcher()->process($args);
     return unless($ret);
-    
+
     $Logger->debug('determining mime-type');
     my $ftype = File::Type->new()->mime_type(@$ret[0]);
     
@@ -65,7 +65,7 @@ sub process {
 
     $Logger->debug('parsing...');
     $ret = $self->get_parser()->process({ content => $ret });
-    
+
     return $ret;
     
 }

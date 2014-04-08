@@ -92,7 +92,7 @@ sub conclude {
                     0, $module->{error} );
             }
         }
-        exit (-1);
+        exit 1;
     }
 }
 
@@ -103,8 +103,9 @@ sub text_to_hash {
     close(F);
     foreach my $line (@array) {
         chomp($line);
-        my($key, $value) = $line =~ /(\S+)\s*(\S*)/;
-        $value ||= '';
+        $line =~ /^([\w|::]+)([\s+|\~](\S+))?$/;
+        my ($key,$value) = ($1,$3);
+        $value ||= '0';
         $hash{$key} = $value;
     }
     return %hash;

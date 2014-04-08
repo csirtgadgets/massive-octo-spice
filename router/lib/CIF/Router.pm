@@ -5,7 +5,7 @@ use strict;
 use warnings;
 
 use Mouse;
-use CIF qw/$Logger/;
+use CIF qw/init_logging $Logger/;
 use CIF::Message;
 use CIF::Encoder::Json;
 use CIF::Router::RequestFactory;
@@ -91,6 +91,8 @@ around BUILDARGS => sub {
     
     $args->{'auth_handle'}      = CIF::Router::AuthFactory->new_plugin($args->{'auth'});
     $args->{'storage_handle'}   = CIF::StorageFactory->new_plugin($args->{'storage'});
+    
+    init_logging({ level => 'ERROR'}) unless($Logger);
     
     return $self->$orig($args);
 };
