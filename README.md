@@ -20,7 +20,7 @@ Using the latest version of perl can drastically improve performance. This is no
 
 ElasticSearch
 ===
-Make sure [Elastic Search](http://www.elasticsearch.org/overview/elasticsearch/) is [installed, configured and started](http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/setup.html). If you're running Ubuntu, this is likely taken care of with: ``$ sudo ./prep/operatingsyste.sh``.
+Make sure [Elastic Search](http://www.elasticsearch.org/overview/elasticsearch/) is [installed, configured and started](http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/setup.html). If you're running Ubuntu, this is likely already taken care of when you ran: ``$ sudo ./prep/operatingsyste.sh``.
 
 CIF
 ====
