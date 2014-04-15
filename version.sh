@@ -1,5 +1,7 @@
 #!/bin/sh
 
-VERSION=`cat .version`
+set -e
+
+VERSION=`git describe --tags`
 
 echo $VERSION | tr -d "\n"
