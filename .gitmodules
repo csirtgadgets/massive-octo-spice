@@ -1,0 +1,3 @@
+[submodule "smrt/rules"]
+	path = smrt/rules
+	url = https://github.com/csirtgadgets/cif-smrt-rules.git
