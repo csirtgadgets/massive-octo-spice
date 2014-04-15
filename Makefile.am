@@ -25,9 +25,6 @@ libcif-install:
 smrt:
 	( cd smrt && $(PERL) Makefile.PL && make manifest && $(PERL) Makefile.PL $(PERLOPTS) && make )
 
-smrt-testdeps:
-	( cd smrt && make testdeps )
-
 smrt-test:
 	(cd smrt && PERL5LIB=../libcif/lib CRITIC=$(PERL_CRITIC) make test )
 
@@ -85,7 +82,6 @@ reconf:
 	autoreconf -vf
 
 dist-hook:
-	rm -rf $(distdir)/libcif/extlib
 	rm -rf $(distdir)/puppet
 	rm -rf $(distdir)/prep
 	rm -rf $(distdir)/libcif/blib
