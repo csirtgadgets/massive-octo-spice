@@ -1,5 +1,8 @@
 #!/bin/bash
 
+##TODO -- build this as a package
+## this is just a helper for now
+
 set -e
 
 MYUSER=cif
