@@ -17,7 +17,7 @@ with 'CIF::Smrt::Fetcher';
 use constant DEFAULT_CAPACITY   => 5;
 use constant DEFAULT_TLS_VERIFY => 1;
 use constant DEFAULT_TIMEOUT    => 300;
-use constant DEFAULT_TMP        => '/tmp/cif/smrt/cache'; #todo, platform independent?
+use constant DEFAULT_TMP        => $CIF::VarPath.'/smrt/cache';
 
 has 'tmp'   => (
     is      => 'ro',

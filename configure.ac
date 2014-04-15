@@ -38,16 +38,16 @@ AC_PATH_PROG([PERL], [perl], [not found])
 if test "$PERL" = 'not found'; then
     AC_MSG_ERROR([cannot use $PACKAGE_NAME without perl])
 fi 
+
 AC_ARG_VAR([CPANM],[cpanminus app])
 AC_PATH_PROG([CPANM],[cpanm],[not found])
+AM_CONDITIONAL(HAVE_CPANM, test "x$CPANM" != 'not found')
 
-AC_ARG_VAR([PERLBREW_ROOT],[PerlBrew root location])
-AC_ARG_WITH(perlbrew-root,
-    AC_HELP_STRING([--with-perlbrew-root=PERLBREW_ROOT],
-        [perlbrew root location @<:@default=/opt/perl5@:>@]),
-    PERLBREW_ROOT=$withval,
-    PERLBREW_ROOT='/opt/perl5')
-AC_SUBST(PERLBREW_ROOT)
+AC_PATH_PROG([CURL],[curl],[not found])
+if test "$CURL" = 'not found'; then
+    AC_MSG_ERROR([curl required to configure elasticsearch...])
+fi
+
 AC_ARG_ENABLE(perl-critic, AC_HELP_STRING(--enable-perl-critic, Enable Perl::Critic in testing @<:@default=no@:>@),
     enable_perl_critic=$enableval, enable_perl_critic="no")
 
@@ -70,8 +70,6 @@ AC_CONFIG_FILES([
     router/Makefile.PL
     smrt/Makefile.PL
     schema/Makefile
-    build/Makefile
-    build/deb/default/cif
 ])
 
 #dnl CIF_USER
@@ -100,16 +98,16 @@ fi
 
 AC_SUBST(siteperldir, `eval "echo ${CIF_PATH}/lib/perl5"`)
 
-if test "x$sysconfdir" != 'xNONE/etc'; then
-    AC_SUBST(ext_sysconfdir, `eval "echo $sysconfdir"`)
-else
+if test "x$sysconfdir" == 'x${prefix}/etc'; then
     AC_SUBST(ext_sysconfdir, `eval "echo ${CIF_PATH}/etc"`)
+else
+    AC_SUBST(ext_sysconfdir, `eval "echo $sysconfdir"`)
 fi
 
-if test "x$localstatedir" != 'xNONE/var'; then
-    AC_SUBST(ext_localstatedir, `eval "echo $localstatedir"`)
-else
+if test "x$localstatedir" == 'x${prefix}/var'; then
     AC_SUBST(ext_localstatedir, `eval "echo ${CIF_PATH}/var"`)
+else
+    AC_SUBST(ext_localstatedir, `eval "echo $localstatedir"`)
 fi
 
 AC_OUTPUT

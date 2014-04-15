@@ -1,5 +1,6 @@
-use 5.011000;
+use 5.014002;
 use ExtUtils::MakeMaker;
+use ExtUtils::MakeMaker::CPANfile;
 
 sub MY::libscan {
     my( $mm, $file ) = @_;
@@ -9,13 +10,9 @@ sub MY::libscan {
 
 sub MY::postamble {
     return <<'MAKE_FRAG';
-testdeps:
-	$(PERL) ./sbin/test-deps --verbose
 
-fixdeps:
-	cat .deps | while read mydep ; do \
-		cpanm $$mydep ; \
-	done
+deps:
+	cpanm --installdeps .
 
 MAKE_FRAG
 }

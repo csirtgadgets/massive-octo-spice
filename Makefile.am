@@ -1,26 +1,21 @@
-SUBDIRS = schema build
-EXTRA_DIST = libcif smrt router sbin contrib .deps
+SUBDIRS = schema
+EXTRA_DIST = smrt router sbin contrib cpanfile libcif
 
 BUILD=$(shell git describe --tags)
 PERLOPTS=DESTDIR=$(DESTDIR) INSTALL_BASE=$(CIF_PATH) INSTALLPRIVLIB=${siteperldir}
 
-all: default
+# http://stackoverflow.com/questions/3931741/why-does-make-think-the-target-is-up-to-date
+.PHONY: libcif smrt router
 
+all: default
 default: libcif smrt router
 test: libcif-test smrt-test router-test
 
-# http://stackoverflow.com/questions/3931741/why-does-make-think-the-target-is-up-to-date
-.PHONY: libcif smrt router
+install: libcif-install router-install smrt-install smrt-install-rules
 
 libcif:
 	( cd libcif && $(PERL) Makefile.PL && make manifest && $(PERL) Makefile.PL $(PERLOPTS) && make )
 
-libcif-testdeps:
-	( cd libcif && make testdeps )
-
-libcif-fixdeps:
-	( cd libcif && make fixdeps )
- 
 libcif-test:
 	( cd libcif && CRITIC=$(PERL_CRITIC) make test )
 
@@ -48,14 +43,13 @@ smrt-install-rules:
 		$(INSTALL) -m 0660 "smrt/rules/$$file" "$(DESTDIR)$(sysconfdir)/rules/$$file" ; \
     done
 
+smrt-perms:
+	chmod 0770 $(DESTDIR)$(sysconfdir)/rules
+	chown -R $(CIF_USER) $(DESTDIR)$(sysconfdir)/rules
+	chgrp -R $(CIF_GROUP) $(DESTDIR)$(sysconfdir)/rules
+
 router:
 	( cd router && $(PERL) Makefile.PL && make manifest && $(PERL) Makefile.PL $(PERLOPTS) && make )
-
-router-testdeps:
-	( cd router && make testdeps )
-
-router-fixdeps:
-	( cd router && make fixdeps )
 
 router-test:
 	( cd router && PERL5LIB=../libcif/lib CRITIC=$(PERL_CRITIC) make test )
@@ -63,19 +57,15 @@ router-test:
 router-install:
 	( cd router && make install)
 
-fixdeps: libcif-fixdeps
-	cat .deps | while read mydep ; do \
-        @CPANM@ $$mydep ; \
-    done
-
-testdeps: libcif-testdeps
-	$(PERL) ./sbin/test-deps --verbose
-
-install-debian: install
-	( cd build && make install-debian )
-
-install: libcif-install router-install smrt-install
-
+deps:
+if HAVE_CPANM
+	$(CPANM) $(NOTESTS) --installdeps ./libcif
+	$(CPANM) $(NOTESTS) --installdeps ./smrt
+	$(CPANM) $(NOTESTS) --installdeps ./router
+else
+	@echo "missing App::cpanminus, please install with \"perl -MCPAN -e 'install App::cpanminus'\" and re-run ./configure"
+endif
+	
 initdb:
 	( cd schema && make initdb )
 
@@ -95,6 +85,7 @@ reconf:
 	autoreconf -vf
 
 dist-hook:
+	rm -rf $(distdir)/libcif/extlib
 	rm -rf $(distdir)/puppet
 	rm -rf $(distdir)/prep
 	rm -rf $(distdir)/libcif/blib

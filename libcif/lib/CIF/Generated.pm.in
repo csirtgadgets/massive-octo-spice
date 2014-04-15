@@ -15,22 +15,22 @@ use constant DEFAULT_BACKEND_PORT           => (DEFAULT_PORT() + 1);
 use constant DEFAULT_PUBLISHER_PORT         => (DEFAULT_PORT() + 2);
 use constant DEFAULT_STATS_PUBLISHER_PORT   => (DEFAULT_PORT() + 3);
 
-$CIF_USER = '@CIF_USER@';
-$CIF_GROUP = '@CIF_GROUP@';
+our $CIF_USER = '@CIF_USER@';
+our $CIF_GROUP = '@CIF_GROUP@';
 
-$BasePath = '@CIF_PATH@';
+our $BasePath = '@CIF_PATH@';
 
-$LibPath    = '@siteperldir@';
-$EtcPath    = '@ext_sysconfdir@';
-$VarPath    = '@ext_localstatedir@';
+our $LibPath    = '@siteperldir@';
+our $EtcPath    = '@ext_sysconfdir@';
+our $VarPath    = '@ext_localstatedir@';
 
-$BinPath    = $BasePath . '/bin';
-$SbinPath   = $BasePath . '/sbin';
+our $BinPath    = $BasePath . '/bin';
+our $SbinPath   = $BasePath . '/sbin';
 
 
-$SmrtRulesPath      = $EtcPath . '/rules';
-$SmrtRulesDefault   = $SmrtRulesPath . '/default';
-$SmrtRulesLocal     = $SmrtRulesPath . '/local';
-$SmrtRulesContrib   = $SmrtRulesPath . '/contrib';
+our $SmrtRulesPath      = $EtcPath . '/rules';
+our $SmrtRulesDefault   = $SmrtRulesPath . '/default';
+our $SmrtRulesLocal     = $SmrtRulesPath . '/local';
+our $SmrtRulesContrib   = $SmrtRulesPath . '/contrib';
 
 1;

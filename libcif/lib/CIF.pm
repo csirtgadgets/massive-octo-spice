@@ -125,7 +125,7 @@ sub LoadGeneratedData {
     my $class = shift;
     my $pm_path = ( File::Spec->splitpath( $INC{'CIF.pm'} ) )[1] || 'lib';
 
-    require "$pm_path/CIF/Generated.pm" || die "Couldn't load CIF::Generated: $@";
+    require $pm_path."/CIF/Generated.pm" || die "Couldn't load CIF::Generated: $@";
     $class->CanonicalizeGeneratedPaths();
 }
 

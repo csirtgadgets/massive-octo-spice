@@ -1,9 +1,12 @@
 #!perl
 
 BEGIN {
-	use local::lib qw(@CIF_PATH@); # this is more 'secure' by taint standards
+    use FindBin;
+    use local::lib "$FindBin::Bin/..";
 }
 
+use 5.014002;
+use feature 'say';
 use strict;
 use warnings;
 

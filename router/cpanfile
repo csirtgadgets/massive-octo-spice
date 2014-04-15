@@ -1,0 +1,5 @@
+requires 'Daemon::Control';
+requires 'Net::Patricia';
+requires 'Net::DNS::Match';
+requires 'Plack';
+requires 'Search::Elasticsearch';
