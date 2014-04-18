@@ -1,7 +1,6 @@
-SUBDIRS = schema
+SUBDIRS = es 
 EXTRA_DIST = smrt router sbin contrib cpanfile libcif
 
-BUILD=$(shell git describe --tags)
 PERLOPTS=DESTDIR=$(DESTDIR) INSTALL_BASE=$(CIF_PATH) INSTALLPRIVLIB=${siteperldir}
 
 # http://stackoverflow.com/questions/3931741/why-does-make-think-the-target-is-up-to-date
@@ -10,8 +9,8 @@ PERLOPTS=DESTDIR=$(DESTDIR) INSTALL_BASE=$(CIF_PATH) INSTALLPRIVLIB=${siteperldi
 all: default
 default: libcif smrt router
 test: libcif-test smrt-test router-test
-
-install: libcif-install router-install smrt-install smrt-install-rules
+install: libcif-install router-install smrt-install
+fix-perms: smrt-fix-perms
 
 libcif:
 	( cd libcif && $(PERL) Makefile.PL && make manifest && $(PERL) Makefile.PL $(PERLOPTS) && make )
@@ -29,21 +28,10 @@ smrt-test:
 	(cd smrt && PERL5LIB=../libcif/lib CRITIC=$(PERL_CRITIC) make test )
 
 smrt-install:
-	( cd smrt && make install )
+	( cd smrt && make install && make install-rules INSTALL="$(INSTALL)" sysconfdir=$(sysconfdir) CIF_USER=$(CIF_USER) CIF_GROUP=$(CIF_GROUP) )
 
-smrt-install-rules:
-	[ -d $(DESTDIR)$(sysconfdir)/rules ] || $(INSTALL) -m 0750 -d $(DESTDIR)$(sysconfdir)/rules
-	-( cd smrt/rules && find . -type d -print ) | while read dir ; do \
-		$(INSTALL) -m 0750 -d "$(DESTDIR)$(sysconfdir)/rules/$$dir" ; \
-	done
-	-( cd smrt/rules && find . -type f -print ) | while read file ; do \
-		$(INSTALL) -m 0660 "smrt/rules/$$file" "$(DESTDIR)$(sysconfdir)/rules/$$file" ; \
-    done
-
-smrt-perms:
-	chmod 0770 $(DESTDIR)$(sysconfdir)/rules
-	chown -R $(CIF_USER) $(DESTDIR)$(sysconfdir)/rules
-	chgrp -R $(CIF_GROUP) $(DESTDIR)$(sysconfdir)/rules
+smrt-fix-perms:
+	( cd smrt && make fix-perms sysconfdir=$(sysconfdir) CIF_USER=$(CIF_USER) CIF_GROUP=$(CIF_GROUP) )
 
 router:
 	( cd router && $(PERL) Makefile.PL && make manifest && $(PERL) Makefile.PL $(PERLOPTS) && make )
@@ -63,13 +51,14 @@ else
 	@echo "missing App::cpanminus, please install with \"perl -MCPAN -e 'install App::cpanminus'\" and re-run ./configure"
 endif
 	
-initdb:
-	( cd schema && make initdb )
+es-init:
+	( cd es && make init )
 
-dropdb:
-	( cd schema && make dropdb )
+es-deinit:
+	( cd es && make deinit )
 
-reloaddb: dropdb initdb
+es-reload:
+	(cd es && make reload )
 
 clean:
 	find . -name 'MANIFEST' -delete

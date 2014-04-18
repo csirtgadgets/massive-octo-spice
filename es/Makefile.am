@@ -8,14 +8,14 @@ INDICIES=cif-*
 all-am: default
 default:
 
-initdb:
+init:
 	$(CURLCMD) -XPUT $(HOST)/$(INDEX) -d @$(MAPPING)
 
-dropdb:
+deinit:
 	$(CURLCMD) -XDELETE $(HOST)/$(INDICIES) -w "\n"
 	$(CURLCMD) -XDELETE $(HOST)/$(INDEX) -w "\n"
 
-reloaddb: dropdb initdb
+reload: init deinit 
 
 list:
 	$(CURLCMD) -XGET $(HOST)/$(INDEX)/_mapping?pretty -w "\n"

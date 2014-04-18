@@ -10,6 +10,20 @@ sub MY::libscan {
 sub MY::postamble {
     return <<'MAKE_FRAG';
 
+fix-perms:
+	chmod 0770 $(DESTDIR)$(sysconfdir)/rules
+	chown -R $(CIF_USER) $(DESTDIR)$(sysconfdir)/rules
+	chgrp -R $(CIF_GROUP) $(DESTDIR)$(sysconfdir)/rules
+
+install-rules:
+	[ -d $(DESTDIR)$(sysconfdir)/rules ] || $(INSTALL) -m 0770 -d $(DESTDIR)$(sysconfdir)/rules
+	-( cd rules && find . -type d -print ) | while read dir ; do \
+		$(INSTALL) -m 0770 -d "$(DESTDIR)$(sysconfdir)/rules/$$dir" ; \
+	done
+	-( cd rules && find . -type f -print ) | while read file ; do \
+		$(INSTALL) -m 0660 "rules/$$file" "$(DESTDIR)$(sysconfdir)/rules/$$file" ; \
+	done
+
 clean-local:
 	find . -name '*.log' -delete
 

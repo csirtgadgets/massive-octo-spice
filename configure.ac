@@ -69,7 +69,7 @@ AC_CONFIG_FILES([
     libcif/lib/CIF/Generated.pm
     router/Makefile.PL
     smrt/Makefile.PL
-    schema/Makefile
+    es/Makefile
 ])
 
 #dnl CIF_USER
