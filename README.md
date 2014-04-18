@@ -88,10 +88,16 @@ Router
   ```
   $ sudo -u cif /opt/cif/bin/cif-router -D start
   ```
-1. test connectivity:
+1. test connectivity to the router:
 
   ```
-  $ cif -q example.com
+  $ cif -p
+pinging: tcp://localhost:4961...
+roundtrip: 0.332042 ms
+roundtrip: 0.345236 ms
+roundtrip: 0.391154 ms
+roundtrip: 0.371904 ms
+done...
   ```
 
 Smrt
