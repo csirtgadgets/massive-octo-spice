@@ -45,9 +45,6 @@ else
     ifdown eth0 && sudo ifup eth0
 fi
 
-update-rc.d elasticsearch defaults 95 10
-service elasticsearch start
-
 if [ `grep -l '\/opt\/cif\/bin' /home/cif/.profile` ]
     echo 'profile already set'
 else
