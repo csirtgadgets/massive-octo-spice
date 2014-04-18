@@ -6,10 +6,32 @@ Getting Involved
 
 [![Build Status](https://travis-ci.org/csirtgadgets/massive-octo-spice.png?branch=master)](https://travis-ci.org/csirtgadgets/massive-octo-spice)
 
+Notes
+====
+* this can be an EC2-like instance, but be ware of the network activity coming from the box, it could be flagged as malicious, check with your provider's policies
+* with post processing, these boxes make a lot of threaded DNS resoultion requests, make sure you understand your operating environment and work with your network team to address high volume dns queries
+
+Platform Requirements
+===
+Small Instance
+====
+* an x86-64bit platform (vm or bare-metal)
+* at-least 8GB ram
+* at-least 8 cores
+* at-least 100GB of free (after OS install) disk space
+
+Large Instance
+====
+* an x86-64bit platform (bare-metal)
+* at-least 32GB ram
+* at-least 32 cores
+* at-least 500GB of free (after OS install) disk space
+* RAID + LVM knowledge
+
 From Distribution
 ===
 * (unstable) [Debian](http://csirtgadgets.org/contribute)
-* (unstable) [Ubuntu](http://csirtgadgets.org/contribute)
+* (unstable) [Ubuntu](https://launchpad.net/~cif)
 * (unstable) [CentOS](http://csirtgadgets.org/contribute)
 * (unstable) [RHEL](http://csirtgadgets.org/contribute)
 * (unstable) [FreeBSD](http://csirtgadgets.org/contribute)
@@ -17,9 +39,9 @@ From Distribution
 
 From Source
 ===
-Prerequisites
+Operating System
 ====
-_([currently only debian/ubuntu supported this way](http://csirtgadgets.org/contribute))_
+_([currently only debian/ubuntu](http://csirtgadgets.org/contribute))_
 ```
 $ sudo bash ./prep/operatingsystem.sh
 ```
@@ -38,11 +60,15 @@ Installation
     $ sudo make deps
     $ make test
     $ sudo make install
-    $ make initdb
+    $ sudo make fix-perms
+    $ make es-init
     ```
     notes:  
         * ``configure.ac`` defaults to ``/opt/cif`` even without ``--prefix``  
-        * ``sudo make deps`` could take upwards of 30min or more on slower systems
+        * ``sudo make deps`` could take upwards of 30min or more on slower systems  
+        * to skip cpanm dep testing [faster, not recommended]: ``sudo make deps NOTESTS=-n``  
+        * ``make es-init`` should respond back with ``{"acknowledged":true}`` upon success  
+        * ``sudo fix-perms`` will default to the ``--with-user`` and ``--with-group`` and only affects ``${sysconfdir}/etc``
 
 1. configure your environment:
 
