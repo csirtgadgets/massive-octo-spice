@@ -57,7 +57,7 @@ Configure
 1. configure and install:
 
     ```
-    $ ./configure --prefix=/opt/cif --localstatedir=/var --sysconfdir=/etc/cif
+    $ ./configure --prefix=/opt/cif
     $ make
     $ sudo make deps
     $ make test
