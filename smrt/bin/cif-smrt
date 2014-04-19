@@ -79,8 +79,8 @@ GetOptions(
     'user|u=s'          => \$user,
     'group|g=s'         => \$group,
     'pidfile|p=s'       => \$pidfile,
-    'interval|i=i'      => \$interval,
-    'randomstart|R=i'   => \$randomstart,
+    '--interval'	    => \$interval,
+    '--randomstart'   	=> \$randomstart,
     
     # logging
     'logfile=s'     => \$logfile,
@@ -132,7 +132,11 @@ init_logging(
 die(usage()) if($help);
 die(usage()) unless($rule);
 
-die(usage()) unless(-f $rule || -d $rule);
+unless(-e $rule){
+	say (usage()."ERROR: $rule doesn't exist or cif-smrt doesn't have permission to access it");
+	exit(-1);
+}
+
 die(usage()) if((-f $rule) && !$feed);
 
 if($notbefore && $notbefore =~ /^\d+$/){
@@ -164,8 +168,8 @@ Usage: $0 [OPTIONS] [-D status|start|stop|restart|reload]
     -p, --pid               pidfile location, default: $pidfile
     --consolemode           run daemon in console mode (no-fork).
     
-    -r, --randomstart       random start delay, default: $randomstart min
-    -i, --interval          runtime interval, default: $interval min
+    --randomstart			random start delay, default: $randomstart min
+    --interval          	runtime interval, default: $interval min
     
     --logfile:              logfile location, default: $logfile
     --logging:              turn on logging [to file]
@@ -260,7 +264,7 @@ sub _main {
         opendir(F,$rule) || die('unable to open: '.$rule.'... '.$!);
         my $files = [ sort { $a cmp $b } grep (/.cfg$/,readdir(F)) ];
         foreach my $f (@$files){
-            my $t = Config::Simple->new($rule.'/'.$f);
+            my $t = Config::Simple->new("$rule/$f");
             my @sections = keys(%{$t->{'_DATA'}});
             next unless($t->param(-block => 'default')->{'enabled'});
             foreach my $section (@sections){
