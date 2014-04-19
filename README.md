@@ -117,6 +117,10 @@ Smrt
     notes:  
     * cif-smrt will not start right away, it will randomly start it's first pull sometime in the following 30min period and then continue randomly every hour after that. 
 
+Kibama
+===
+Install [Kibana](https://github.com/csirtgadgets/massive-octo-spice/wiki/Kibana) to get some basic, customizable dashboards.
+
 PerlBrew
 ====
 Using the latest version of perl can drastically improve performance. This is not required, but recommended. Perlbrew will compile the latest version of perl on your system, the process takes anywhere from 15-45min depending on system resources. A simplified version of the PerlBrew instructions can be found [here](https://github.com/csirtgadgets/massive-octo-spice/wiki/PerlBrew). This should be done before running ./configure so autoconf picks up the correct perl path before building the modules.
