@@ -30,7 +30,7 @@ has 'application' => (
 ##TODO
 has 'countrycode'   => (
     is      => 'ro',
-    isa     => 'CIF::Type::LowerCaseStr',
+    isa     => 'CIF::Type::UpperCaseStr',
     coerce  => 1,
     reader  => 'get_countrycode',
 );

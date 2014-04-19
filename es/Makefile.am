@@ -1,7 +1,7 @@
 CURLOPTS=-w "\n"
 CURLCMD=$(CURL) $(CURLOPTS)
 HOST=http://$(ES_HOST)
-MAPPING=map.json
+TEMPLATE=cif-template.json
 INDEX=cif
 INDICIES=cif-*
 
@@ -9,13 +9,12 @@ all-am: default
 default:
 
 init:
-	$(CURLCMD) -XPUT $(HOST)/$(INDEX) -d @$(MAPPING)
+	$(CURLCMD) -XPUT '$(HOST)/_template/template_cif/' -d @$(TEMPLATE)
 
 deinit:
 	$(CURLCMD) -XDELETE $(HOST)/$(INDICIES) -w "\n"
-	$(CURLCMD) -XDELETE $(HOST)/$(INDEX) -w "\n"
 
 reload: init deinit 
 
 list:
-	$(CURLCMD) -XGET $(HOST)/$(INDEX)/_mapping?pretty -w "\n"
+	$(CURLCMD) -XGET $(HOST)/$(INDICIES)/_mapping?pretty -w "\n"

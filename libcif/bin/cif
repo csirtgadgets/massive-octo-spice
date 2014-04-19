@@ -10,7 +10,7 @@ use strict;
 use warnings;
 use feature 'say';
 
-use CIF qw/debug hash_create_random/;
+use CIF qw/init_logging $Logger hash_create_random/;
 use CIF::Client;
 use JSON::XS;
 use Getopt::Long;
@@ -18,14 +18,13 @@ use Data::Dumper;
 use Carp;
 use Time::HiRes qw(tv_interval);
 
-our $debug      = 0;
-
+my $debug     	= 0;
+my $verbose		= 0;
 my $help;
 my $man;
 my $remote      = 'tcp://localhost';
 my $port        = CIF::DEFAULT_PORT();
 my $query;
-my $verbosity   = 0;
 my $group;
 my $token       = hash_create_random();
 my $limit       = 500;
@@ -36,6 +35,7 @@ my $tags;
 my $subscriber  = 0;
 my $nolog       = 0;
 my $submit		= 0;
+my $ping_ttl	= 4;
 
 my $config = $ENV{'HOME'}.'/.cif';
 
@@ -44,7 +44,7 @@ GetOptions(
     'help|h'        => \$help, 
     'config|C=s'    => \$config,
     'debug|d'       => \$debug,
-    'verbosity|v'   => \$verbosity,
+    'verbose|v'   	=> \$verbose,
     
     'remote|R=s'        => \$remote,
     'query|q=s'         => \$query,
@@ -59,10 +59,21 @@ GetOptions(
     'format|f=s'        => \$format,
     'subscriber|S'      => \$subscriber,
     'nolog|n'           => \$nolog,
+    'ttl=n'				=> \$ping_ttl,
 ) or die(usage());
 
 die(usage()) if($help);
 die(usage()) unless($query || $ping || $submit || $subscriber);
+
+$debug = ($debug) ? 'INFO' : 'ERROR';
+$debug = 'DEBUG' if($verbose);
+
+init_logging(
+    { 
+        level       => $debug,
+        #category	=> 'cif',
+    }, 
+);
 
 if($submit){
     $submit = [];
@@ -71,8 +82,6 @@ if($submit){
         push(@$submit,decode_json($_));
     }
 }
-
-$debug = $verbosity if($verbosity);
 
 sub usage {
     return <<EOF;
@@ -84,7 +93,7 @@ Usage: $0 [OPTION]
     -C, --config=FILE       specify cofiguration file, default: ~/.cif 
     -f, --format=FORMAT     specify the output format, default: $format
     -d, --debug             turn on debugging
-    -v, --verbosity         turn up debug verbosity [1-10]
+    -v, --verbose           turn up debug verbosity [1-10]
     -h, --help              this message       
     
 Advanced Options:
@@ -94,6 +103,10 @@ Advanced Options:
     -c, --confidence=INT        specify a default confidence, default: $confidence
     -t, --tags=STRING,STRING    specify tags to filter against
     -s, --submit                submit data via STDIN (json keypairs)
+
+Ping Options:
+	--ttl=INT				specify number of pings to send, default: $ping_ttl
+							(0 infinate, halt with CTRL+C)
 
  Examples:
     $0 -C $ENV{'HOME'}/.cif -q example.com
@@ -121,12 +134,15 @@ if($ping){
     say 'pinging: '.$remote.'...';
     my $d = 0;
     $SIG{'INT'} = sub { $d = 1; };
+    my ($x,$y) = (0, $ping_ttl);
     while(!$d){
         $ret = $cli->ping();
         say 'roundtrip: '.$ret.' ms';
         select(undef,undef,undef,1);
+        $x++ if($y); # increase if we're not going infinately
+        $d = 1 if($x && ($x == $y)); # done if we reach ttl
     }
-    say '';
+    say 'done...';
     exit(0);
 } elsif($query){
     ($err,$ret) = $cli->search({

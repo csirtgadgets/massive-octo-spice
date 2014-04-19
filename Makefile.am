@@ -9,8 +9,14 @@ PERLOPTS=DESTDIR=$(DESTDIR) INSTALL_BASE=$(CIF_PATH) INSTALLPRIVLIB=${siteperldi
 all: default
 default: libcif smrt router
 test: libcif-test smrt-test router-test
-install: libcif-install router-install smrt-install
-fix-perms: smrt-fix-perms
+install: libcif-install router-install smrt-install install-var
+fix-perms: smrt-fix-perms var-fix-perms
+
+install-var:
+	[ -d $(DESTDIR)$(localstatedir) ] || $(INSTALL) -m 0770 -d $(DESTDIR)$(localstatedir)
+
+var-fix-perms:
+	chown -R $(CIF_USER):$(CIF_GROUP) $(DESTDIR)$(localstatedir)
 
 libcif:
 	( cd libcif && $(PERL) Makefile.PL && make manifest && $(PERL) Makefile.PL $(PERLOPTS) && make )
@@ -41,6 +47,9 @@ router-test:
 
 router-install:
 	( cd router && make install)
+
+router-fix-perms:
+	( cd router && make fix-perms sysconfdir=$(sysconfdir) localstatedir=$(localstatedir) CIF_USER=$(CIF_USER) CIF_GROUP=$(CIF_GROUP) )
 
 deps:
 if HAVE_CPANM

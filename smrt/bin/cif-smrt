@@ -122,7 +122,8 @@ if($notify){
 
 init_logging(
     {
-        level       => $debug, 
+        level       => $debug,
+        category	=> 'cif-smrt',
         filename    => ($logging) ? $logfile : 0,
     },
     $notify,   

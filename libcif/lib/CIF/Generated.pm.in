@@ -31,6 +31,5 @@ our $SbinPath   = $BasePath . '/sbin';
 our $SmrtRulesPath      = $EtcPath . '/rules';
 our $SmrtRulesDefault   = $SmrtRulesPath . '/default';
 our $SmrtRulesLocal     = $SmrtRulesPath . '/local';
-our $SmrtRulesContrib   = $SmrtRulesPath . '/contrib';
 
 1;

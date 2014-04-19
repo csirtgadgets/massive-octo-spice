@@ -89,11 +89,15 @@ sub observable_type {
 sub init_logging {
     my $args        = shift;
     my $mail_args   = shift;
-
+	
     $args = { level => $args } unless(ref($args) && ref($args) eq 'HASH');
+	unless($args->{'category'}){
+		my ($funct,$bin,$line) = caller();
+		$args->{'category'} = $bin;
+	}
 
     $Logger = CIF::Logger->new($args);
-
+   
     if($args->{'filename'}){
         my $appender = Log::Log4perl::Appender->new(
             'Log::Log4perl::Appender::File', 

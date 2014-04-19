@@ -109,7 +109,7 @@ sub process {
     $Logger->info('building events: '.($#{$ret} + 1));
     my $ts;
     
-    ##TODO threading start here?
+    ##TODO bank-teller style threading start here?
     foreach (@$ret){
         $ts = $_->{'detecttime'} || $_->{'lasttime'} || $_->{'reporttime'} || MAX_DATETIME();
         $ts = normalize_timestamp($ts)->epoch();

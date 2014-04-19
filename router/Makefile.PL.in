@@ -10,21 +10,6 @@ sub MY::libscan {
 sub MY::postamble {
     return <<'MAKE_FRAG';
 
-FILES = \
-	cif-router.conf
-
-testdeps:
-	$(PERL) ./sbin/test-deps --verbose
-
-fixdeps:
-	cat .deps | while read mydep ; do \
-		cpanm $$mydep ; \
-	done
-
-etc-install:
-	for file in $(FILES); do \
-		$(INSTALL) -m 0640 "$$file" "$(DESTDIR)$(ext_sysconfdir)/$$file" ; \
-	done
 MAKE_FRAG
 }
 
