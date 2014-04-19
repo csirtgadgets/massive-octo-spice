@@ -6,7 +6,7 @@ There are many ways to get involved with the project. If you have a new and exci
 * [Project Page](http://csirtgadgets.org/cif/v2)
 * Master Build Status: [![Build Status](https://travis-ci.org/csirtgadgets/massive-octo-spice.png?branch=master)](https://travis-ci.org/csirtgadgets/massive-octo-spice)
 
-Notes
+Release Notes
 ===
 **Alpha / Beta releases should be considered HIGHLY UNSTABLE and not to be used in production environments. It's very likely you'll get little / no support if something breaks. USE AT YOUR OWN RISK!**  
 
