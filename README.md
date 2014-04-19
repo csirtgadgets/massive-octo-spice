@@ -8,6 +8,8 @@ Getting Involved
 
 Notes
 ===
+**Alpha / Beta releases should be considered HIGHLY UNSTABLE and not to be used in production environments. It's very likely you'll get little / no support if something breaks. USE AT YOUR OWN RISK!**  
+
 * this can be an EC2-like instance, but be ware of the network activity coming from the box, it could be flagged as malicious, check with your provider's policies
 * with post processing, these boxes make a lot of threaded DNS resoultion requests, make sure you understand your operating environment and work with your network team to address high volume dns queries
 
@@ -19,6 +21,7 @@ In order to get "the scaffolding" out, certain feature-sets are still [in the qu
 * tokens (apikeys) support is not yet built in
 * feed generation support is not yet built in
 * "smrt analytics" (eg: FQDN resolution, etc) is not yet built in, and will likely move from cif-smrt to a publishing pipeline hanging off cif-router.
+* currently, only some of the simplier feeds have been converted (mostly simple text parsing stuff), xml, json and other complex feeds have yet to be integrated.
 
 Platform Requirements
 ===
@@ -92,30 +95,52 @@ Configure
 
 Router
 ===
-1. start the router:
+1. test that the router is working:
+    ```
+    $ sudo -u cif /opt/cif/bin/cif-router -d
+    [2014-04-19T15:41:04,481Z][INFO]: frontend started on: tcp://*:4961
+    [2014-04-19T15:41:04,486Z][INFO]: publisher started on: tcp://*:4963
+    [2014-04-19T15:41:04,487Z][INFO]: router started...
+    ^C
+    ```
 
-  ```
-  $ sudo -u cif /opt/cif/bin/cif-router -D start
-  ```
+1. start the router as daemon:
+
+    ```
+    $ sudo -u cif /opt/cif/bin/cif-router -D start
+    ```
 1. test connectivity to the router:
 
-  ```
-  $ cif -p
-pinging: tcp://localhost:4961...
-roundtrip: 0.332042 ms
-roundtrip: 0.345236 ms
-roundtrip: 0.391154 ms
-roundtrip: 0.371904 ms
-done...
-  ```
+    ```
+    $ cif -p
+    pinging: tcp://localhost:4961...
+    roundtrip: 0.332042 ms
+    roundtrip: 0.345236 ms
+    roundtrip: 0.391154 ms
+    roundtrip: 0.371904 ms
+    done...
+    ```
 
 Smrt
 ===
 1. do a cif-smrt initial test run:
 
-  ```
-  $ sudo -u cif cif-smrt -R 0 --consolemode -v
-  ```
+    ```
+    $ sudo -u cif cif-smrt --randomstart 0 --consolemode -d -r /opt/cif/etc/rules/default
+    [2014-04-19T16:00:51,868Z][INFO]: cleaning up tmp...
+    [2014-04-19T16:00:52,012Z][INFO]: generating ping request...
+    [2014-04-19T16:00:52,077Z][INFO]: sending ping...
+    [2014-04-19T16:00:52,089Z][INFO]: ping returned
+    [2014-04-19T16:00:52,106Z][INFO]: processing: bin/cif-smrt -d -r /opt/cif/etc/rules/default/bruteforceblocker.cfg -f ssh
+    [2014-04-19T16:00:52,427Z][INFO]: starting at: 2014-04-19T00:00:00Z
+    [2014-04-19T16:00:52,431Z][INFO]: processing...
+    [2014-04-19T16:00:54,532Z][INFO]: building events: 1273
+    [2014-04-19T16:00:55,335Z][INFO]: sending: 78
+    [2014-04-19T16:00:55,955Z][INFO]: took: ~0.921849
+    [2014-04-19T16:00:55,956Z][INFO]: rate: ~84.6125558524227 o/s
+    [2014-04-19T16:00:55,956Z][INFO]: processing: bin/cif-smrt -d -r /opt/cif/etc/rules/default/drg.cfg -f ssh
+    ...
+    ```
 
 1. start cif-smrt daemon:
 
