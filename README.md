@@ -117,7 +117,7 @@ Smrt
     notes:  
     * cif-smrt will not start right away, it will randomly start it's first pull sometime in the following 30min period and then continue randomly every hour after that. 
 
-Kibama
+Kibana
 ===
 Install [Kibana](https://github.com/csirtgadgets/massive-octo-spice/wiki/Kibana) to get some basic, customizable dashboards.
 
