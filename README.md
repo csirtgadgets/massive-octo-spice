@@ -1,6 +1,6 @@
 Getting Involved
 ===
-There are many ways to get involved with the project. If you have a new and exciting feature, or even a simple bugfix, simply [fork](https://help.github.com/articles/fork-a-repo), create some simple test cases, [generate a pull-request](https://help.github.com/articles/using-pull-requests) and give yourself credit!
+There are many ways to get involved with the project. If you have a new and exciting feature, or even a simple bugfix, simply [fork the repo](https://help.github.com/articles/fork-a-repo), create some simple test cases, [generate a pull-request](https://help.github.com/articles/using-pull-requests) and give yourself credit!
 * [How To Contribute](http://csirtgadgets.org/contribute)  
 * [Mailing List](https://groups.google.com/forum/#!forum/ci-framework)
 * [Project Page](http://csirtgadgets.org/cif/v2)
