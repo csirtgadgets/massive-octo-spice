@@ -121,6 +121,8 @@ Kibama
 ===
 Install [Kibana](https://github.com/csirtgadgets/massive-octo-spice/wiki/Kibana) to get some basic, customizable dashboards.
 
+![so your managers can understand this.](https://cloud.githubusercontent.com/assets/474878/2748630/59642a20-c7cd-11e3-8ae6-fb6d3408b453.png)
+
 PerlBrew
 ====
 Using the latest version of perl can drastically improve performance. This is not required, but recommended. Perlbrew will compile the latest version of perl on your system, the process takes anywhere from 15-45min depending on system resources. A simplified version of the PerlBrew instructions can be found [here](https://github.com/csirtgadgets/massive-octo-spice/wiki/PerlBrew). This should be done before running ./configure so autoconf picks up the correct perl path before building the modules.
