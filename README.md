@@ -42,6 +42,12 @@ Large Instance
 
 From Distribution
 ===
+Ubuntu LTS is the operating system in which CIF is developed against and is the most commonly used. RHEL and CentOS are a derivative is the second most common platform used by the community, but lags in community support.
+
+In theory any current Unix/Linux operating system should be able to run CIF. The challenge may be installing the required applications and dependencies.
+
+**non 'LTS' type distro's, eg: release cycles less than 18months, Fedora, non-LTS ubuntu, etc... are even less supported**
+
 * (unstable) [Debian](http://csirtgadgets.org/contribute)
 * (unstable) [Ubuntu](https://launchpad.net/~cif)
 * (unstable) [CentOS](http://csirtgadgets.org/contribute)
