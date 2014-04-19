@@ -52,10 +52,12 @@ Make sure [Elastic Search](http://www.elasticsearch.org/overview/elasticsearch/)
 
 Installation
 ==
+Configure
+===
 1. configure and install:
 
     ```
-    $ ./configure --prefix=/opt/cif --localstatedir=/var --sysconfdir=/etc/cif
+    $ ./configure --prefix=/opt/cif
     $ make
     $ sudo make deps
     $ make test
@@ -63,12 +65,6 @@ Installation
     $ sudo make fix-perms
     $ make es-init
     ```
-    notes:  
-        * ``configure.ac`` defaults to ``/opt/cif`` even without ``--prefix``  
-        * ``sudo make deps`` could take upwards of 30min or more on slower systems  
-        * to skip cpanm dep testing [faster, not recommended]: ``sudo make deps NOTESTS=-n``  
-        * ``make es-init`` should respond back with ``{"acknowledged":true}`` upon success  
-        * ``sudo fix-perms`` will default to the ``--with-user`` and ``--with-group`` and only affects ``${sysconfdir}/etc``
 
 1. configure your environment:
 
@@ -77,15 +73,50 @@ Installation
     $ source ~/.profile
     $ cif -h
     ```
-1. start the router and smrt:
+
+    notes:  
+    * ``configure.ac`` defaults to ``/opt/cif`` even without ``--prefix``  
+    * ``sudo make deps`` could take upwards of 30min or more on slower systems  
+    * to skip cpanm dep testing [faster, not recommended]: ``sudo make deps NOTESTS=-n``  
+    * ``make es-init`` should respond back with ``{"acknowledged":true}`` upon success  
+    * ``sudo fix-perms`` will default to the ``--with-user`` and ``--with-group`` and only affects ``${sysconfdir}/etc``
+
+Router
+===
+1. start the router:
 
   ```
   $ sudo -u cif /opt/cif/bin/cif-router -D start
-  $ sudo -u cif /opt/cif/bin/cif-smrt -D start
+  ```
+1. test connectivity to the router:
+
+  ```
+  $ cif -p
+pinging: tcp://localhost:4961...
+roundtrip: 0.332042 ms
+roundtrip: 0.345236 ms
+roundtrip: 0.391154 ms
+roundtrip: 0.371904 ms
+done...
   ```
 
-Notes
-==
+Smrt
+===
+1. do a cif-smrt initial test run:
+
+  ```
+  $ sudo -u cif cif-smrt -R 0 --consolemode -v
+  ```
+
+1. start cif-smrt daemon:
+
+  ```
+  $ sudo /opt/cif/bin/cif-smrt -D start
+  ```
+  
+    notes:  
+    * cif-smrt will not start right away, it will randomly start it's first pull sometime in the following 30min period and then continue randomly every hour after that. 
+
 PerlBrew
 ====
 Using the latest version of perl can drastically improve performance. This is not required, but recommended. Perlbrew will compile the latest version of perl on your system, the process takes anywhere from 15-45min depending on system resources. A simplified version of the PerlBrew instructions can be found [here](https://github.com/csirtgadgets/massive-octo-spice/wiki/PerlBrew). This should be done before running ./configure so autoconf picks up the correct perl path before building the modules.
