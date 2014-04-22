@@ -2,9 +2,9 @@ Getting Involved
 ===
 There are many ways to get involved with the project. If you have a new and exciting feature, or even a simple bugfix, simply [fork the repo](https://help.github.com/articles/fork-a-repo), create some simple test cases, [generate a pull-request](https://help.github.com/articles/using-pull-requests) and give yourself credit!
 * [How To Contribute](contributing.md)  
-* [Mailing List](https://groups.google.com/forum/#!forum/ci-framework)
-* [Project Page](http://csirtgadgets.org/cif/v2)
-* Master Build Status: [![Build Status](https://travis-ci.org/csirtgadgets/massive-octo-spice.png?branch=master)](https://travis-ci.org/csirtgadgets/massive-octo-spice)
+* [Mailing List](https://groups.google.com/forum/#!forum/ci-framework)  
+
+[![Build Status](https://travis-ci.org/csirtgadgets/massive-octo-spice.png?branch=master)](https://travis-ci.org/csirtgadgets/massive-octo-spice)
 
 Installation
 ==
