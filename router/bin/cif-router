@@ -40,6 +40,7 @@ my $notify_level    = 'error';
 # logging
 my $debug           = 0;
 my $verbose         = 0;
+my $trace           = 0;
 my $logging         = 0;
 my $logfile         = $CIF::VarPath.'/log/cif-router.log';
 
@@ -67,6 +68,7 @@ GetOptions(
     # logging
     'verbosity|v'   => \$verbose,
     'debug|d'       => \$debug,
+    'trace'         => \$trace,
     'logging'       => \$logging,
     'logfile=s'     => \$logfile,
 ) or die(usage());
@@ -114,6 +116,7 @@ EOF
 
 $debug = ($debug) ? 'INFO' : 'ERROR';
 $debug = 'DEBUG' if($verbose);
+$debug = 'TRACE' if($trace);
 
 if($notify){
     $notify = { 

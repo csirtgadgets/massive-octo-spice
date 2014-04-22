@@ -115,7 +115,9 @@ sub process {
         $ts = normalize_timestamp($ts)->epoch();
 
         next unless($self->get_rule()->get_not_before() <= $ts );
+        $Logger->trace(Dumper($_));
         $self->get_rule()->process({ data => $_ });
+        $Logger->trace(Dumper($_));
         push(@array,$_);
     }
     return \@array;

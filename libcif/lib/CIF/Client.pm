@@ -102,8 +102,6 @@ sub decode {
     return $self->get_encoder_handle()->decode({ data => $data });
 }
 
-
-
 sub receive {
     my $self = shift;
     my $msg = $self->get_broker->receive();
@@ -145,7 +143,7 @@ sub ping {
         $Logger->info('ping returned');
         return tv_interval([split(/\./,$ts)]);
     } else {
-        $Logger->info('timeout...');
+        $Logger->warn('timeout...');
     }
     return 0;
 }
@@ -208,12 +206,16 @@ sub submit {
     $Logger->info('sending: '.($sent));
     my $t = gettimeofday();
     $msg = $self->send($msg);
-    $t = tv_interval([split(/\./,$t)]);
-    $Logger->info('took: ~'.$t);
-    $Logger->info('rate: ~'.($sent/$t).' o/s');
-    return $msg->{'Data'} if($msg->{'@stype'} eq 'failure');
-    
-    return (undef,$msg->{'Data'}->{'Results'});   
+    if($msg){
+        $t = tv_interval([split(/\./,$t)]);
+        $Logger->info('took: ~'.$t);
+        $Logger->info('rate: ~'.($sent/$t).' o/s');
+        return $msg->{'Data'} if($msg->{'@stype'} eq 'failure');
+        return (undef,$msg->{'Data'}->{'Results'});
+    } else {
+        $Logger->warn('send failed');
+        return -1;
+    }
 }
 
 sub format {

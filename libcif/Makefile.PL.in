@@ -14,6 +14,20 @@ sub MY::postamble {
 deps:
 	cpanm --installdeps .
 
+fix-perms:
+    chmod 0770 $(DESTDIR)$(localstatedir)
+    chown -R $(CIF_USER) $(DESTDIR)$(localstatedir)
+    chgrp -R $(CIF_GROUP) $(DESTDIR)$(localstatedir)
+
+install-var:
+	[ -d $(DESTDIR)$(localstatedir) ] || $(INSTALL) -m 770 -d $(DESTDIR)$(localstatedir)
+
+install-geoip: install-var
+	$(INSTALL) -m 660 "contrib/GeoLite2-Country.mmdb" "$(DESTDIR)$(localstatedir)/GeoLite2-Country.mmdb"
+
+install-geoip-city: install-var
+	$(INSTALL) -m 660 "contrib/GeoLite2-City.mmdb" "$(DESTDIR)$(localstatedir)/GeoLite2-City.mmdb"
+
 MAKE_FRAG
 }
 

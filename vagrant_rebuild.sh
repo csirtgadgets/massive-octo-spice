@@ -1,2 +1,2 @@
 #!/bin/bash
-sh autogen.sh && ./configure --with-user=vagrant --with-group=vagrant --prefix=/opt/cif
+sh autogen.sh && ./configure --with-user=vagrant --with-group=vagrant

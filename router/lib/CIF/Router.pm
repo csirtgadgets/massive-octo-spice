@@ -15,6 +15,7 @@ use Config::Simple;
 use ZMQx::Class;
 use JSON::XS;
 use Try::Tiny;
+use Data::Dumper;
 
 # constants
 use constant DEFAULT_FRONTEND_PORT          => CIF::DEFAULT_FRONTEND_PORT();
@@ -124,9 +125,12 @@ sub startup {
             sub {
                 while (my $msg = $self->frontend->receive()){
                     $Logger->debug('received message...');
+                    $Logger->trace(Dumper($msg));
                     
+                    $Logger->debug('publishing');
                     $self->publish($msg);
                     
+                    $Logger->debug('processing...');
                     try {
                         $msg = $self->process(@$msg);
                     } catch {
@@ -137,7 +141,7 @@ sub startup {
                         $ret = -1;
                         $Logger->error($err);
                     }
-                    $Logger->debug('sending msg back...');
+                    $Logger->debug('replying...');
                     $self->frontend->send($msg);
                 }
             }
@@ -147,6 +151,62 @@ sub startup {
     return 1;
 }
 
+##TODO refactor
+sub process {
+    my $self = shift;
+    my $msg = shift;
+    
+    ##TODO encoder factory?
+    $msg = JSON::XS::decode_json($msg);
+    $msg = @{$msg}[0] if(ref($msg) eq 'ARRAY');
+    
+    my $r = CIF::Message->new({
+        rtype   => $msg->{'@rtype'} || $msg->{'rtype'},
+        mtype   => 'response',
+        Token   => $msg->{'Token'},
+    });
+    
+    $Logger->debug('auth');
+    my $ret = $self->get_auth_handle()->process($msg);
+    if($ret){
+        $Logger->debug('auth passed');
+        my $req = CIF::Router::RequestFactory->new_plugin({ 
+            msg             => $msg,
+            auth_handle     => $self->get_auth_handle(),
+            storage_handle  => $self->get_storage_handle(),
+        });
+        if($req){
+            $Logger->debug('found request plugin, processing...');
+            my $rv = $req->process($msg);
+            if($rv < 0){
+                $Logger->debug('request plugin failure');
+                $r->set_stype('failure');
+                $r->set_Data('ERROR: contact administrator');
+            } else {
+                $r->set_Data($rv);
+                $r->set_stype('success');
+            }
+        } else {
+            $Logger->debug('request type not supported');
+            $r->set_stype('failure');
+            $r->set_Data('ERROR: not supported');
+        }
+    } else {
+        $Logger->debug('auth failed');
+        $r->set_stype('unauthorized');
+        delete($r->{'Data'});
+    }
+    
+    $Logger->debug('re-encoding...');
+    ##TODO encoder factory?
+    $r = CIF::Encoder::Json->encode({ 
+        encoder_pretty  => 1,
+        data            => $r 
+    });
+    return $r;
+}
+
+##TODO - publisher
 sub publish {
     my $self = shift;
     my $data = shift;
@@ -161,54 +221,6 @@ sub publish {
     #}
     #$m = undef;
     return 1;
-}
-
-##TODO refactor
-sub process {
-    my $self = shift;
-    my $msg = shift;
-    
-    ##todo encoder factory?
-    $msg = JSON::XS::decode_json($msg);
-    $msg = @{$msg}[0] if(ref($msg) eq 'ARRAY');
-    
-    my $r = CIF::Message->new({
-        rtype   => $msg->{'@rtype'} || $msg->{'rtype'},
-        mtype   => 'response',
-        Token   => $msg->{'Token'},
-    });
-    
-    my $ret = $self->get_auth_handle()->process($msg);
-    if($ret){
-        my $req = CIF::Router::RequestFactory->new_plugin({ 
-            msg             => $msg,
-            auth_handle     => $self->get_auth_handle(),
-            storage_handle  => $self->get_storage_handle(),
-        });
-        if($req){
-            my $rv = $req->process($msg);
-            if($rv < 0){
-                $r->set_stype('failure');
-                $r->set_Data('ERROR: contact administrator');
-            } else {
-                $r->set_Data($rv);
-                $r->set_stype('success');
-            }
-        } else {
-            $r->set_stype('failure');
-            $r->set_Data('ERROR: not supported');
-        }
-    } else {
-        $r->set_stype('unauthorized');
-        delete($r->{'Data'});
-    }
-    
-    ##todo encoder factory?
-    $r = CIF::Encoder::Json->encode({ 
-        encoder_pretty  => 1,
-        data            => $r 
-    });
-    return $r;
 }
 
 __PACKAGE__->meta->make_immutable();  

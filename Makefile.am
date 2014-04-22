@@ -27,6 +27,14 @@ libcif-test:
 libcif-install:
 	( cd libcif && make install )
 
+libcif-geoip:
+	$(CURL) http://geolite.maxmind.com/download/geoip/database/GeoLite2-Country.mmdb.gz -o libcif/contrib/GeoLite2-Country.mmdb.gz
+	$(GZIP) -d libcif/contrib/GeoLite2-Country.mmdb
+
+libcif-geoip-city:
+	$(CURL) http://geolite.maxmind.com/download/geoip/database/GeoLite2-City.mmdb.gz -o libcif/contrib/GeoLite2-City.mmdb.gz
+	$(GZIP) -d $(DESTDIR)$(localstatedir)/GeoLite2-City.mmdb
+
 smrt:
 	( cd smrt && $(PERL) Makefile.PL && make manifest && $(PERL) Makefile.PL $(PERLOPTS) && make )
 

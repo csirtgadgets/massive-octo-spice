@@ -17,6 +17,7 @@ use Config::Simple;
 use CIF qw/debug hash_create_random init_logging $Logger/;
 use CIF::Smrt;
 use Data::Dumper;
+use Carp qw/croak/;
 
 my $help;
 my $remote      = 'zmq+tcp://localhost:'.CIF::DEFAULT_PORT();
@@ -25,11 +26,11 @@ my $rule        = $CIF::SmrtRulesDefault;
 my $feed        = '';
 my $limit       = 0;
 my $refresh     = 0;
-my $meta        = 0;
 my $test_mode   = 0;
 my $clean       = 0;
 my $notbefore   = 'today';
 my $cache       = $CIF::VarPath.'/smrt/cache';
+my $meta            = 0;
 
 # daemon
 my $daemon      = 0;
@@ -53,6 +54,7 @@ my $verbose     = 0;
 my $logging     = 0;
 my $consolemode = 0;
 my $logfile     = $CIF::VarPath.'/log/cif-smrt.log';
+my $trace       = 0;
 
 my $today = DateTime->today()->ymd('');
 
@@ -86,21 +88,21 @@ GetOptions(
     'logfile=s'     => \$logfile,
     'debug|d'       => \$debug,
     'verbosity|v'   => \$verbose,
+    'trace'         => \$trace,
     'logging'       => \$logging,
-    'consolemode'   => \$consolemode,
     
     # advanced
-    'remote|R=s'    => \$remote,
-    'token|T=s'     => \$token,
-    'rule|r=s'      => \$rule,
-    'feed|f=s'      => \$feed,
-    'limit|L=i'     => \$limit,
-    'refresh|Z'     => \$refresh,
-    'meta|M'        => \$meta,
-    'test|x'        => \$test_mode,
-    'clean|c'       => \$clean,
-    'nbefore|N=s'   => \$notbefore,
-    'cache|P=s'     => \$cache,
+    'remote|R=s'        => \$remote,
+    'token|T=s'         => \$token,
+    'rule|r=s'          => \$rule,
+    'feed|f=s'          => \$feed,
+    'limit|L=i'         => \$limit,
+    'refresh|Z'         => \$refresh,
+    'meta|M'            => \$meta,
+    'test|x'            => \$test_mode,
+    'clean|c'           => \$clean,
+    'nbefore|N=s'       => \$notbefore,
+    'cache|P=s'         => \$cache,
     
     #notification
     'notify'        => \$notify,
@@ -108,26 +110,6 @@ GetOptions(
     'notify-subj=s' => \$notify_subj,
     'notify-from=s' => \$notify_from,
 ) or die(usage());
-
-$debug = ($debug) ? 'INFO' : 'ERROR';
-$debug = 'DEBUG' if($verbose);
-
-if($notify){
-    $notify = { 
-        to          => $notify_to, 
-        from        => $notify_from, 
-        subject     => $notify_subj, 
-        min_level   => lc($notify_level) }
-}
-
-init_logging(
-    {
-        level       => $debug,
-        category	=> 'cif-smrt',
-        filename    => ($logging) ? $logfile : 0,
-    },
-    $notify,   
-);
 
 die(usage()) if($help);
 die(usage()) unless($rule);
@@ -166,10 +148,9 @@ Usage: $0 [OPTIONS] [-D status|start|stop|restart|reload]
     -u, --user              run daemon as user, default: $user
     -g, --group             run daemon as group, default: $group
     -p, --pid               pidfile location, default: $pidfile
-    --consolemode           run daemon in console mode (no-fork).
     
-    --randomstart			random start delay, default: $randomstart min
-    --interval          	runtime interval, default: $interval min
+    --randomstart           random start delay, default: $randomstart min
+    --interval              runtime interval, default: $interval min
     
     --logfile:              logfile location, default: $logfile
     --logging:              turn on logging [to file]
@@ -196,32 +177,49 @@ Usage: $0 [OPTIONS] [-D status|start|stop|restart|reload]
 EOF
 }
 
-if($daemon){
-    $ARGV[0] = 'start' if($consolemode && !$ARGV); # default set run_command if we're in console mode
-                                                   # and forget to 'start'
+$debug = ($debug) ? 'INFO' : 'ERROR';
+$debug = 'DEBUG' if($verbose);
+$debug = 'TRACE' if($trace);
 
-    my $rv = Daemon::Control->new(
-        name    => 'cif-smrt',
-        program => sub { main() },
-        
-        pid_file    => $pidfile,
-        fork        => ($consolemode) ? 0 : 2,
-        
-        user        => $user,
-        group       => $group,
-    )->run();
-} else {
-    _main()
+if($notify){
+    $notify = { 
+        to          => $notify_to, 
+        from        => $notify_from, 
+        subject     => $notify_subj, 
+        min_level   => lc($notify_level) }
 }
+
+init_logging(
+    {
+        level       => $debug,
+        category	=> 'cif-smrt',
+        filename    => ($logging) ? $logfile : 0,
+    },
+    $notify,   
+);
+
+$ARGV[0] = 'start' unless($ARGV[0] && $daemon);
+
+my $rv = Daemon::Control->new(
+ 	name    => 'cif-smrt',
+    program => sub { main() },
+        
+    pid_file    => $pidfile,
+    fork        => ($daemon) ? 2 : 0,
+        
+    user        => $user,
+    group       => $group,
+)->run();
 
 $Logger->info('shutting down...');
 
 sub main {
     my $done = AnyEvent->condvar();
     
+    # play nice with feed providers, so we don't slam them all at once
     $randomstart = int(rand($randomstart)); # sometime in the next $randomstart
     $Logger->info('delaying start for: '.$randomstart.'min then running every '.$interval.'min there after...');
-    $Logger->info('to run immediately, set: -R 0');
+    $Logger->info('to run immediately, set: --randomstart 0');
     
     $randomstart    = (60 * $randomstart);
     $interval       = (60 * $interval);
@@ -252,6 +250,7 @@ sub _main {
 
     my ($err,$ret);
     
+    $Logger->info('checking for router...');
     $ret = $smrt->ping_router();
     unless($ret){
         $Logger->error('router unavailable... ping timeout');
@@ -306,6 +305,8 @@ sub _main {
                 Observables => $ret,
             });
             croak($err) if($err);
+        } elsif($ret < 0) {
+            exit(-1);
         } else {
             $Logger->info('nothing [new] to send...');
         }

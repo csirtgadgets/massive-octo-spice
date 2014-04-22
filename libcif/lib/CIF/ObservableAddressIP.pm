@@ -39,4 +39,37 @@ has 'prefix'    => (
     reader  => 'get_prefix',
 );
 
+## TODO -- array of location objs
+has 'citycode'   => (
+    is      => 'ro',
+    isa     => 'CIF::Type::UpperCaseStr',
+    coerce  => 1,
+    reader  => 'get_citycode',
+);
+
+has 'longitude' => (
+    is      => 'ro',
+    isa     => 'Num',
+    reader  => 'get_longitude',
+);
+
+has 'latitude' => (
+    is      => 'ro',
+    isa     => 'Num',
+    reader   => 'get_latitude',
+);
+
+has 'timezone' => (
+    is      => 'ro',
+    isa     => 'Str',
+    reader  => 'get_timezone',
+);
+
+has 'subdivision' => (
+    is      => 'ro',
+    isa     => 'Str',
+    coerce  => 1,
+    reader  => 'get_subdivision',
+);
+
 1;

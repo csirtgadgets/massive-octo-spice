@@ -8,7 +8,8 @@ use Log::Log4perl;
 use Log::Log4perl::Level;
 
 use constant LAYOUT_DEFAULT => "[%d{yyyy-MM-dd'T'HH:mm:ss,SSS}Z][%p]: %m%n";
-use constant LAYOUT_DEBUG   => "[%d{yyyy-MM-dd'T'HH:mm:ss,SSS}Z][%p][%F:%L]: %m%n"; 
+use constant LAYOUT_DEBUG   => "[%d{yyyy-MM-dd'T'HH:mm:ss,SSS}Z][%p][%C:%L]: %m%n";
+use constant LAYOUT_TRACE   => "[%d{yyyy-MM-dd'T'HH:mm:ss,SSS}Z][%p][%F:%L]: %m%n";
 
 has 'level' => (
     is      => 'ro',
@@ -50,6 +51,7 @@ sub _build_layout {
     my $self = shift;
     
     return LAYOUT_DEBUG() if($self->get_level() eq 'DEBUG');
+    return LAYOUT_TRACE() if($self->get_level() eq 'TRACE');
     return LAYOUT_DEFAULT()
 }
 

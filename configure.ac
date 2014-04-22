@@ -48,6 +48,11 @@ if test "$CURL" = 'not found'; then
     AC_MSG_ERROR([curl required to configure elasticsearch...])
 fi
 
+AC_PATH_PROG([GZIP],[gzip],[not found])
+if test "$GZIP" = 'not found'; then
+    AC_MSG_ERROR([gzip2 required to decompress geoip database])
+fi
+
 AC_ARG_ENABLE(perl-critic, AC_HELP_STRING(--enable-perl-critic, Enable Perl::Critic in testing @<:@default=no@:>@),
     enable_perl_critic=$enableval, enable_perl_critic="no")
 

@@ -15,7 +15,8 @@ with 'CIF::Client::Broker';
 
 use constant RE_REMOTE      => qr/^((zeromq|zmq)(\+))?(tcp|inproc|ipc|proc)\:\/{2}([[\S]+|\*])(\:(\d+))?$/;
 use constant SND_TIMEOUT    => 5000;
-use constant RCV_TIMEOUT    => 300000;
+use constant RCV_TIMEOUT    => 30000;
+use constant PING_TIMEOUT   => 5000; ##TODO seperate ping timeouts from SND/RCV timeouts
 
 has 'context' => (
     is      => 'rw',
@@ -96,13 +97,15 @@ sub send {
     };
     
     if($err){
-        $Logger->error($err);
+        
         for($err){
-            if(/Resource temporarily unavail/){
+            if(/Resource temporarily unavailable/){
+                $Logger->debug('cif-router timeout...');
                 # o/w queued msgs will hang the context thread
                 $self->get_socket()->set(ZMQ_LINGER,'int',0);
                 return 0;
             }
+            $Logger->error($err);
         }
     }
     

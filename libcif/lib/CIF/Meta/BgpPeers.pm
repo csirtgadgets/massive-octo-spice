@@ -1,11 +1,11 @@
-package CIF::Meta::BGP;
+package CIF::Meta::BgpPeers;
 
 use strict;
 use warnings;
 use namespace::autoclean;
 
 use Mouse;
-use Net::Abuse::Utils qw(get_as_description get_asn_info get_peer_info);
+use Net::Abuse::Utils qw(get_as_description get_peer_info);
 use CIF qw/is_ip $Logger/;
 use Try::Tiny;
 
@@ -28,15 +28,14 @@ sub process {
 
     $Logger->debug('checking: '.$o);
     
-    my ($asn,$prefix,$cc,$rir,$date) = get_asn_info($o);
-    my $asn_desc;
-    $asn_desc = get_as_description($asn) if($asn);
-    
-    $args->{'asn'}          = $asn if($asn);
-    $args->{'asn_desc'}     = $asn_desc if($asn_desc);
-    $args->{'prefix'}       = $prefix if($prefix);
-    $args->{'countrycode'}  = $cc if($cc && $cc ne '');
-    $args->{'rir'}          = $rir if($rir);
+    my $peers = get_peer_info($o);
+
+    foreach (@$peers){
+        $_->{'asn_description'} = get_as_description($_->{'asn'});
+    }
+
+    $args->{'peers'}        = $peers if($peers);
+
 }
 
 # aggregate our cache , we could miss a more specific route, 
