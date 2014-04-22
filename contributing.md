@@ -2,6 +2,8 @@ How We Work Together
 ==
 The CSIRT Gadgets Community uses the [C4 process](https://github.com/csirtgadgets/c4) for it's core projects. If you contribute a nice patch and you have some GitHub reputation we'll invite you to join the Maintainer's team. We strive to adopt most [if not all] of the wonderful outcomes the [ZMQ community](http://zguide.zeromq.org/page:all#toc130) has pionneered. If you're not familar with it, please read up on it's architecture and history, it's a great story!
 
+GitHub also has a [great piece](https://guides.github.com/activities/contributing-to-open-source) on the nuances associated with contributing to opensource projects. If you've never worked within a github project before, this is a great "where do i start?".
+
 Our Process
 ===
 
