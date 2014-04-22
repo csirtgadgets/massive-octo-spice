@@ -175,3 +175,5 @@ COPYRIGHT AND LICENCE
 Free use of this software is granted under the terms of the GNU Lesser General
 Public License (LGPLv3). For details see the files `COPYING` included with the
 distribution.
+
+This product includes GeoLite2 data created by MaxMind, available from <a href="http://www.maxmind.com">http://www.maxmind.com</a>.
