@@ -13,7 +13,6 @@ with 'CIF::Meta';
 
 ## http://dev.maxmind.com/geoip/geoip2/geolite2/
 use constant FILE_LOC       => $CIF::VarPath."/GeoLite2-Country.mmdb";
-use constant CITY_FILE_LOC  => $CIF::VarPath."/GeoLite2-City.mmdb"; ## TODO city file integration
 
 has 'handle' => (
     is          => 'ro',

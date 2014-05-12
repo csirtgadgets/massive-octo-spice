@@ -4,7 +4,6 @@
 AC_PREREQ([2.64])
 AC_INIT(cif, m4_esyscmd([./version.sh]), m4_esyscmd([( cat .issuetracker )| tr -d "\n"]))
 AM_INIT_AUTOMAKE
-#AC_PREFIX_DEFAULT([/opt/cif])
 
 AC_SUBST([cif_version_major],
     m4_bregexp(AC_PACKAGE_VERSION,[^\(\w+\)\.\(\w+\)\.\(\w+\)-?\(\w+\.\d+\)?],[\1]))
@@ -75,6 +74,7 @@ AC_CONFIG_FILES([
     router/Makefile.PL
     smrt/Makefile.PL
     es/Makefile
+    packaging/debian/default/cif
 ])
 
 #dnl CIF_USER

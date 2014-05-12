@@ -59,14 +59,18 @@ router-install:
 router-fix-perms:
 	( cd router && make fix-perms sysconfdir=$(sysconfdir) localstatedir=$(localstatedir) CIF_USER=$(CIF_USER) CIF_GROUP=$(CIF_GROUP) )
 
-deps:
+cpanm-test:
 if HAVE_CPANM
+		@echo 'found cpanm'
+else
+		@echo "missing App::cpanminus, please install with \"perl -MCPAN -e 'install App::cpanminus'\" and re-run ./configure"
+		exit -1
+endif
+
+deps: cpanm-test
 	$(CPANM) $(NOTESTS) --installdeps ./libcif
 	$(CPANM) $(NOTESTS) --installdeps ./smrt
 	$(CPANM) $(NOTESTS) --installdeps ./router
-else
-	@echo "missing App::cpanminus, please install with \"perl -MCPAN -e 'install App::cpanminus'\" and re-run ./configure"
-endif
 	
 es-init:
 	( cd es && make init )
@@ -88,8 +92,6 @@ reconf:
 	autoreconf -vf
 
 dist-hook:
-	rm -rf $(distdir)/puppet
-	rm -rf $(distdir)/prep
 	rm -rf $(distdir)/libcif/blib
 	rm -rf $(distdir)/smrt/blib
 	rm -rf $(distdir)/router/blib

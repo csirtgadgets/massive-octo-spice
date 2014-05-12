@@ -1,0 +1,19 @@
+# Directory where the binary distribution resides
+CIF_HOME=/usr/local
+
+PATH=$CIF_HOME/bin:$PATH
+
+if [ -d /usr/local/lib/perl5 ]; then
+    export PERL5LIB=/usr/local/lib/perl5
+fi
+
+# Run as this user ID and group ID
+CIF_USER=cif
+CIF_GROUP=cif
+
+# data directory
+DATA_DIR=/var
+LOG_DIR=/var/log
+
+# configuration directory
+CONF_DIR=/etc/cif

@@ -1,4 +1,6 @@
-#!/usr/bin/env perl
+#!perl
+
+die 'not working yet';
 
 ##TODO http://wiki.nginx.org/HttpPerlModule
 ##TODO http://mongrel2.org/wiki/quick_start.html
