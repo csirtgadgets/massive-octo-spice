@@ -1,1 +1,0 @@
-make reconf && make dist
