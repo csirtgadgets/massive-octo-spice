@@ -4,7 +4,7 @@
 AC_PREREQ([2.64])
 AC_INIT(cif, m4_esyscmd([./version.sh]), m4_esyscmd([( cat .issuetracker )| tr -d "\n"]))
 AM_INIT_AUTOMAKE
-AC_PREFIX_DEFAULT([/opt/cif])
+#AC_PREFIX_DEFAULT([/opt/cif])
 
 AC_SUBST([cif_version_major],
     m4_bregexp(AC_PACKAGE_VERSION,[^\(\w+\)\.\(\w+\)\.\(\w+\)-?\(\w+\.\d+\)?],[\1]))
@@ -28,7 +28,7 @@ AC_SUBST(CIF_VERSION_META,       ${cif_version_meta})
 
 AC_SUBST(CIF_PROTOCOL_VERSION,  m4_esyscmd([( cat .protocol_version ) | tr -d "\n"]))
 AC_SUBST(ORG,'csirtgadgets.org')
-AC_SUBST(DEFAULT_PORT, 4961)
+AC_SUBST(DEFAULT_PORT, m4_esyscmd([( cat .default_port ) | tr -d "\n"]))
 
 AC_PROG_INSTALL
 
