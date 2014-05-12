@@ -11,11 +11,11 @@ If you've never worked on a GitHub project, [this is a good piece](https://guide
 
 Installation
 ==
-See the [wiki](https://github.com/csirtgadgets/massive-octo-spice/wiki/Install).
+See the [wiki](https://github.com/csirtgadgets/massive-octo-spice/wiki).
 
 TODO's
 ===
-In order to get "the scaffolding" out, certain feature-sets are still [in the queue](https://github.com/csirtgadgets/massive-octo-spice).
+[the queue](https://github.com/csirtgadgets/massive-octo-spice).
 
 * by default there is currently no HTTP/JSON interface, libcif communicates to cif-router via [ZeroMQ](http://zeromq.org). these additional interfaces (SDK's) will be made available in upcoming releases (perl/python/ruby).
 * tokens (apikeys) support is not yet built in
@@ -26,8 +26,6 @@ In order to get "the scaffolding" out, certain feature-sets are still [in the qu
 COPYRIGHT AND LICENCE
 ==
 
-Free use of this software is granted under the terms of the GNU Lesser General
-Public License (LGPLv3). For details see the files `COPYING` included with the
-distribution.
+Free use of this software is granted under the terms of the GNU Lesser General Public License (LGPLv3). For details see the files `COPYING` included with the distribution.
 
 This product includes GeoLite2 data created by MaxMind, available from <a href="http://www.maxmind.com">http://www.maxmind.com</a>.
