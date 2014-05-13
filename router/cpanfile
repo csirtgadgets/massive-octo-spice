@@ -2,4 +2,5 @@ requires 'Daemon::Control';
 requires 'Net::Patricia';
 requires 'Net::DNS::Match';
 requires 'Plack';
+requires 'Plack::Middleware::REST';
 requires 'Search::Elasticsearch';
