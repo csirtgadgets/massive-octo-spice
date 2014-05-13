@@ -60,12 +60,12 @@ else
 fi
 
 echo 'copying init.d scripts...'
-cp init.d/cif-smrt /etc/init.d/
-cp init.d/cif-router /etc/init.d/
+cp ../../../packaging/debian/init.d/cif-smrt /etc/init.d/
+cp ../../../packaging/debian/init.d/cif-router /etc/init.d/
 
 if [ ! -f /etc/default/cif ]; then
     echo 'setting /etc/default/cif'
-    cp default/cif /etc/default/cif
+    cp ../../../packaging/debian/default/cif /etc/default/cif
 fi
 
 update-rc.d cif-router defaults 95 10
