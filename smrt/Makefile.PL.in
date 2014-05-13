@@ -10,7 +10,7 @@ sub MY::libscan {
 sub MY::postamble {
     return <<'MAKE_FRAG';
 
-fix-perms:
+fixperms:
 	chmod 0770 $(DESTDIR)$(sysconfdir)/rules
 	chown -R $(CIF_USER) $(DESTDIR)$(sysconfdir)/rules
 	chgrp -R $(CIF_GROUP) $(DESTDIR)$(sysconfdir)/rules
