@@ -151,13 +151,12 @@ sub startup {
     return 1;
 }
 
-##TODO refactor
 sub process {
-    my $self = shift;
-    my $msg = shift;
+    my $self    = shift;
+    my $msg     = shift;
     
-    ##TODO encoder factory?
     $msg = JSON::XS::decode_json($msg);
+
     $msg = @{$msg}[0] if(ref($msg) eq 'ARRAY');
     
     my $r = CIF::Message->new({
@@ -167,6 +166,7 @@ sub process {
     });
     
     $Logger->debug('auth');
+
     my $ret = $self->get_auth_handle()->process($msg);
     if($ret){
         $Logger->debug('auth passed');
@@ -179,7 +179,7 @@ sub process {
             $Logger->debug('found request plugin, processing...');
             my $rv = $req->process($msg);
             if($rv < 0){
-                $Logger->debug('request plugin failure');
+                $Logger->error('request plugin failure');
                 $r->set_stype('failure');
                 $r->set_Data('ERROR: contact administrator');
             } else {
@@ -187,18 +187,17 @@ sub process {
                 $r->set_stype('success');
             }
         } else {
-            $Logger->debug('request type not supported');
+            $Logger->error('request type not supported');
             $r->set_stype('failure');
-            $r->set_Data('ERROR: not supported');
+            $r->set_Data('ERROR: request type not supported');
         }
     } else {
-        $Logger->debug('auth failed');
+        $Logger->info('auth failed for: '.$msg->{'Token'});
         $r->set_stype('unauthorized');
         delete($r->{'Data'});
     }
     
     $Logger->debug('re-encoding...');
-    ##TODO encoder factory?
     $r = CIF::Encoder::Json->encode({ 
         encoder_pretty  => 1,
         data            => $r 

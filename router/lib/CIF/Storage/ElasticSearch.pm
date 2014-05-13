@@ -7,7 +7,7 @@ use warnings;
 use Mouse;
 use Search::Elasticsearch;
 use Search::Elasticsearch::Bulk;
-use CIF qw/observable_type hash_create_random debug/;
+use CIF qw/observable_type hash_create_random init_logging $Logger/;
 use Net::Patricia;
 use Net::DNS::Match;
 use DateTime;
@@ -83,6 +83,16 @@ sub _build_handle {
     );
 }
 
+around BUILDARGS => sub {
+    my $orig    = shift;
+    my $self    = shift;
+    my $args    = shift;
+    
+    init_logging({ level => 'ERROR'}) unless($Logger);
+    
+    return $self->$orig($args);
+};
+
 sub understands {
     my $self = shift;
     my $args = shift;
@@ -96,22 +106,21 @@ sub shutdown {}
 sub check_handle {
     my $self = shift;
 
+    $Logger->debug('checking handle...');
     my ($ret,$err);
     try {
         $self->get_handle->info();
     } catch {
         $err = shift;
     };
-
-    return 1 unless($err);
-    for($err){
-        if(/No nodes are available/){
-            debug('No nodes are available...');
-            last;
-        }
-        warn $err;
+    
+    if($err){
+        $Logger->fatal($err);
+        return 0;
+    } else {
+        $Logger->debug('handle check OK');
+        return 1;
     }
-    return 0;
 }
 
 sub ping {
@@ -130,9 +139,13 @@ sub process {
     
     my $ret;
     if($args->{'Query'}){
+        $Logger->debug('searching...');
         $ret = $self->_search($args);
     } elsif($args->{'Observables'}){
+        $Logger->debug('submitting...');
         $ret = $self->_submission($args);
+    } else {
+        $Logger->error('unknown type, skipping');
     }
     return $ret;
 }
@@ -201,14 +214,14 @@ sub _submission {
     my $self = shift;
     my $args = shift;
     
+    $Logger->debug(Dumper($args));
+    
     my @objs = @{$args->{'Observables'}};
     my @results;
-    
+
     ##TODO
     my $timestamp = DateTime->from_epoch(epoch => time());
     $timestamp = $timestamp->ymd().'T'.$timestamp->hms().'Z';
-    
-    return -1 unless($self->check_handle());
     
     my $id;
     my ($ret,$err);
@@ -220,6 +233,7 @@ sub _submission {
         verbose     => 1,
     );
 
+    $Logger->debug(Dumper($bulk));
     foreach (@objs){
         $_->{'@timestamp'}  = $timestamp;
         $_->{'@version'}    = 2;

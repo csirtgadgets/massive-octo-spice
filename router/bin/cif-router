@@ -15,6 +15,7 @@ use CIF::Router;
 use Getopt::Long;
 use AnyEvent;
 use Daemon::Control;
+use Try::Tiny;
 use Data::Dumper;
 
 my $help;

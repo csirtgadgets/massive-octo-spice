@@ -6,16 +6,22 @@ use namespace::autoclean;
 
 use Mouse;
 use CIF::Message::Search;
+use CIF::ObservableFactory;
+use CIF qw/hash_create_static $Logger/;
+use Data::Dumper;
 
 with 'CIF::Router::Request';
 
-use constant RE_BADCHARS    => qr/(\/?\.\.+\/?|;|\w+\(|=>)/;
-use constant RE_GOODQUERY   => qr/^[a-zA-Z0-9_\.\,\/\-@]+$/;
+use constant RE_BADCHARS        => qr/(\/?\.\.+\/?|;|\w+\(|=>)/;
+use constant RE_GOODQUERY       => qr/^[a-zA-Z0-9_\.\,\/\-@]+$/;
+use constant CONFIDENCE_DEFAULT => 25; ## TODO -- move to router
+use constant TLP_DEFAULT        => 'amber'; ## TODO
+use constant GROUP_DEFAULT      => 'everyone'; ## TODO
 
 sub check {
     my $self    = shift;
     my $q       = shift || return;
-    
+
     for($q){
         return 0 if(ref($_));
         return 0 if($_ =~ RE_BADCHARS());
@@ -27,31 +33,56 @@ sub check {
 sub understands {
     my $self = shift;
     my $args = shift;
-
+    
     return unless($args->{'@rtype'});
     return 1 if($args->{'@rtype'} eq 'search');
 }
 
+sub _log_search {
+    my $self    = shift;
+    my $data    = shift;
+    
+     $Logger->debug('logging search: '.$data->{'Data'}->{'Query'});
+    
+    my $obs = CIF::ObservableFactory->new_plugin({ 
+        observable  => $data->{'Data'}->{'Query'},
+        provider    => hash_create_static($data->{'Token'}),
+        confidence  => CONFIDENCE_DEFAULT(),
+        tlp         => TLP_DEFAULT(),
+        tags        => ['search'],
+        group       => GROUP_DEFAULT(),
+    })->TO_JSON();
+    
+    my $res = $self->get_storage_handle()->process({ Observables => [$obs] });
+    
+    $Logger->debug('search logged');
+    return $res;
+}
+
 sub process {
     my $self    = shift;
-    my $msg     = shift->{'Data'} || return -1;
-
-    return (-1) unless($self->check($msg->{'Query'}));
+    my $msg     = shift;
+    my $data    = $msg->{'Data'};
+    
+    return (-1) unless($self->check($data->{'Query'}));
     
     my $results = $self->get_storage_handle()->process({
-        Query       => $msg->{'Query'},
-        confidence  => $msg->{'@confidence'},
-        limit       => $msg->{'@limit'},
-        group       => $msg->{'@group'},
+        Query       => $data->{'Query'},
+        confidence  => $data->{'@confidence'},
+        limit       => $data->{'@limit'},
+        group       => $data->{'@group'},
     });
+    
+   
+    $self->_log_search($msg) unless($data->{'nolog'});
     
     return (-1) unless(ref($results) eq "ARRAY");
 
     my $resp = CIF::Message::Search->new({
-        limit       => $msg->{'@limit'},
-        confidence  => $msg->{'@confidence'},
-        group       => $msg->{'@group'},
-        Query       => $msg->{'Query'},
+        limit       => $data->{'@limit'},
+        confidence  => $data->{'@confidence'},
+        group       => $data->{'@group'},
+        Query       => $data->{'Query'},
         Results     => $results,
     });
     return $resp;
