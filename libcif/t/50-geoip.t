@@ -8,29 +8,24 @@ use Data::Dumper;
 BEGIN { 
     use_ok('CIF');
     use_ok('CIF::Meta::GeoIP');
-    use_ok('CIF::Meta::BGP');
-    use_ok('CIF::ObservableFactory');
 };
 
 use CIF qw/$Logger init_logging/;
 
-init_logging({ level => 'DEBUG' });
+init_logging({ level => 'ERROR' });
 
-my $r = CIF::Meta::GeoIP->new();
+my $r = CIF::Meta::GeoIP->new({
+    file    => 'contrib/GeoLite2-City.mmdb',
+});
+
 my $obs = {
     observable  => '128.205.1.1',
 };
 
-my $ret = $r->process($obs);
+ok($r->understands($obs), 'understands...');
 
-warn Dumper($obs);
-
-$r = CIF::Meta::BGP->new();
 $r->process($obs);
 
-warn Dumper($obs);
+ok($obs->{'countrycode'});
 
-my $o = CIF::ObservableFactory->new_plugin($obs);
-
-warn Dumper($o);
 done_testing();

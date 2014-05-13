@@ -3,7 +3,6 @@ package CIF::Encoder::Json;
 use warnings;
 use strict;
 
-
 use Mouse;
 require JSON::XS;
 use CIF::Observable;
@@ -27,7 +26,7 @@ sub encode {
     if($args->{'encoder_pretty'}){
         return JSON::XS->new->pretty->convert_blessed(1)->encode($args->{'data'});
     } else {
-        return JSON::XS->new->convert_blessed(1)->encode([{%{$args->{'data'}}}]);
+        return JSON::XS->new->convert_blessed(1)->encode($args->{'data'});
     }
 }
 

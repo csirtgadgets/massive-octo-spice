@@ -12,7 +12,14 @@ use Try::Tiny;
 with 'CIF::Meta';
 
 ## http://dev.maxmind.com/geoip/geoip2/geolite2/
-use constant FILE_LOC       => $CIF::VarPath."/GeoLite2-Country.mmdb";
+use constant FILE_LOC       => $CIF::VarPath."/GeoLite2-City.mmdb";
+
+has 'file'  => (
+    is      => 'ro',
+    isa     => 'Str',
+    default => FILE_LOC(),
+    reader  => 'get_file',
+);
 
 has 'handle' => (
     is          => 'ro',
@@ -23,14 +30,14 @@ has 'handle' => (
 
 sub _build_handle {
     my $self = shift;
-    return GeoIP2::Database::Reader->new(file => FILE_LOC());
+    return GeoIP2::Database::Reader->new(file => $self->get_file());
 }
 
 sub understands {
     my $self = shift;
     my $args = shift;
     
-    return unless(-e CITY_FILE_LOC || -e FILE_LOC());
+    return unless(-e $self->get_file());
 
     return unless($args->{'observable'});
     return unless(is_ip($args->{'observable'}));
@@ -78,6 +85,7 @@ sub process {
         $args->{'timezone'}         = $ret->location()->time_zone()                 if($ret->location()->time_zone());
         $args->{'metrocode'}        = $ret->location()->metro_code()                if($ret->location()->metro_code());
     }
+    return $args;
 }
 
 sub _strip {

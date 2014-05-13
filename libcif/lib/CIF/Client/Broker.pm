@@ -7,6 +7,7 @@ use Mouse::Role;
 
 use constant DEFAULT_AGENT_STRING => 'libcif/'.CIF::VERSION().' ('.CIF::ORG().')';
 use constant DEFAULT_TIMEOUT => 300;
+use constant REMOTE_DEFAULT => 'tcp://localhost:'.CIF::DEFAULT_PORT();
 
 requires qw(send receive get_fd shutdown);
 
@@ -28,6 +29,7 @@ has 'remote' => (
     is      => 'ro',
     isa     => 'Str',
     reader  => 'get_remote',
+    default => REMOTE_DEFAULT(),
 );
 
 has 'token' => (

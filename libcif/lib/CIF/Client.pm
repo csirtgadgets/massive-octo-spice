@@ -162,12 +162,14 @@ sub search {
         group       => $args->{'group'},
         Tags        => $args->{'Tags'},
     });
-    
+
     $msg = $self->send($msg);
     my $stype = $msg->{'stype'} || $msg->{'@stype'};
     return $msg->{'Data'} if($stype eq 'failure');
     
-    map { $_ = CIF::ObservableFactory->new_plugin($_) } (@{$msg->{'Data'}->{'Results'}});
+    unless($args->{'nodecode'}){
+        map { $_ = CIF::ObservableFactory->new_plugin($_) } (@{$msg->{'Data'}->{'Results'}});
+    }
     return (undef, $msg->{'Data'}->{'Results'});
 }
 
@@ -176,7 +178,9 @@ sub send {
     my $msg  = shift;
     
     $Logger->debug('encoding...');
+
     $msg = $self->encode({ data => $msg });
+
     $Logger->debug('sending upstream...');
     
     $msg = $self->get_broker()->send($msg);

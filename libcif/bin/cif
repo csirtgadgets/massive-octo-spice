@@ -71,7 +71,7 @@ $debug = 'DEBUG' if($verbose);
 init_logging(
     { 
         level       => $debug,
-        #category	=> 'cif',
+        category	=> 'cif',
     }, 
 );
 
