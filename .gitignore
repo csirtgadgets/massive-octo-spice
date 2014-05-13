@@ -1,3 +1,4 @@
+libcif/contrib
 *.tar.gz
 libcif/CIF-*
 */MANIFEST
