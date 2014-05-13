@@ -5,6 +5,8 @@ AC_PREREQ([2.64])
 AC_INIT(cif, m4_esyscmd([./version.sh]), m4_esyscmd([( cat .issuetracker )| tr -d "\n"]))
 AM_INIT_AUTOMAKE
 
+AC_PREFIX_DEFAULT([/opt/cif])
+
 AC_SUBST([cif_version_major],
     m4_bregexp(AC_PACKAGE_VERSION,[^\(\w+\)\.\(\w+\)\.\(\w+\)-?\(\w+\.\d+\)?],[\1]))
 AC_SUBST([cif_version_minor],
@@ -93,6 +95,12 @@ AC_ARG_WITH(group,
     CIF_GROUP=$CIF_USER
 )
 AC_SUBST(CIF_GROUP)
+
+AC_ARG_ENABLE(geoip,
+	AS_HELP_STRING(--enable-geoip, Enable Maxmind GeoIP @<:@default=no@:>@),
+	enable_geoip=$enableval, enable_geoip="no")
+
+AM_CONDITIONAL([HAVE_GEOIP], [test "x$enable_geoip" != "xno"])
 
 #TODO make this configurable
 if test "x$prefix" != xNONE; then
