@@ -13,6 +13,7 @@ use CIF qw/init_logging $Logger/;
 use CIF::Client;
 use HTTP::Request::Common qw(GET PUT POST DELETE HEAD);
 use HTTP::Status qw(status_message);
+use Time::HiRes qw(gettimeofday);
 
 use constant REMOTE_DEFAULT => 'tcp://localhost:'.CIF::DEFAULT_PORT();
 
@@ -28,7 +29,7 @@ around BUILDARGS => sub {
     my $self    = shift;
     my $args    = shift;
     
-    my $level = $args->{'loglevel'} || 'ERROR';
+    my $level = $args->{'loglevel'} || 'DEBUG';
     init_logging({ level => $level }) unless($Logger);
     
     return $self->$orig($args);
@@ -55,7 +56,7 @@ sub _build_client {
     
     return CIF::Client->new({
         remote  => $self->get_remote(),
-    })
+    });
 }
 
 ## helper method
@@ -63,8 +64,8 @@ sub _build_client {
 sub response {
     my $code = shift;
     my $body = @_ ? shift : status_message($code);
-    $body = 'ERROR: '.$body if($code >=400); 
-    $body = JSON::XS::encode_json([$body]);
+    $body = { message => $body } if($code >= 400);
+    $body = JSON::XS->new->convert_blessed(1)->encode($body);
     [ $code, [ 'Content-Type' => 'application/json', @_ ], [ $body ] ];
 }
 
@@ -74,13 +75,18 @@ sub get {
     my ($self,$env) = @_;
     my $req = Plack::Request->new($env);
     
+    ## auth is handled by cif-router
+    ## we're just a wrapper
     return response(400,'missing token') unless($req->param('token'));
-    return response(400,'missing query') unless(request_id($env));
+    
+    my $req_id = request_id($env);
+    return response(400,'missing query') unless($req_id);
+    return response(200, { timestamp => [gettimeofday()] }) if($req_id eq '_ping');
     
     my $resource = $self->get_client->search({
         nodecode    => 1,
         Token       => $req->param('token'),
-        Query       => request_id($env),
+        Query       => $req_id,
         limit       => $req->param('limit')         || 500,
         confidence  => $req->param('confidence')    || 0,
         ## TODO - group       => $req->param('group') || 'everyone',
@@ -110,10 +116,13 @@ sub create {
         Observables => $obs,
     });
     
-    $Logger->debug(Dumper($res));
-
-    my $uri = request_uri($env,'id/'.@{$res}[0]);
-    return response(201, $resource, Location => $uri); # or 204
+    if($#{$res} == 0){ # single
+        my $uri = request_uri($env,'id/'.@{$res}[0]);
+        return response(201, @$obs, 'X-Location' => $uri, 'X-Id' => @{$res}[0]);
+    } else { # bulk
+        $res = [ map { $_ = { id => $_ } } @$res ];
+        return response(201, $res);
+    }
 }
 
 sub _check_fields {

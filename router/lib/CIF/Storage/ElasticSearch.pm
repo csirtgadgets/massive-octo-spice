@@ -14,6 +14,7 @@ use DateTime;
 use Try::Tiny;
 use Carp::Assert;
 use CIF qw/hash_create_random is_hash_sha256/;
+use Data::Dumper;
 
 with 'CIF::Storage';
 
