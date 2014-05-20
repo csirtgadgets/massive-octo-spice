@@ -1,0 +1,250 @@
+After months of speculation, the creator of the Blackhole exploit kit can be demonstrated to be in custody.  As usual with all things Russian in the Cybercrime world, Brian Krebs broke the story in the US with <a href="http://krebsonsecurity.com/2013/12/meet-paunch-the-accused-author-of-the-blackhole-exploit-kit/#more-23059">Meet Paunch the Accused Author of the Blackhole Exploit Kit</A>, which provided photos of a character believed to be Paunch.  These photos in turn were posted by the leading cyber investigations firm in Russia, <a href="www.group-ib.com/index.php/7-novosti/790-group-ib-assists-to-suppress-the-activities-of-a-blackhole-exploit-kit-author-paunch-is-arrestedq">Group-IB</A>, who participated in the investigations with the Russian police, culminating in his arrest in the city of Togliatti on October 4, 2013.<P>
+
+<IMG SRC="http://www.group-ib.com/images/news/paunch/pounch9_gib_logo.jpg" WIDTH=40% HEIGHT=40%"><BR>
+(Image from Group-IB)<P>
+
+The MVD link, provided by Brian and <a href="http://translate.google.com/translate?hl=en&sl=ru&tl=en&u=mvd.ru%2Fnews%2Fitem%2F1387267%2F">Google Translated here</A>, shows that a group of 13 criminals were all arrested for violation of Russia's criminal code Article 1.2.210 "the creation of and participation in a criminal organization to jointly commit one or more serious crimes".  In other words, Paunch and friends have been charged with the Russian version of the RICO Act!   We've just recently seen the same TYPE of law used in the US in the case of David Camez, who was charged with racketeering and conspiracy charges for his role in the crimes at Carder.su (he is one of 55 defendants in the case, and the first to go to trial...)  <a href="http://www.reviewjournal.com/news/22-year-old-guilty-racketeering-online-identity-theft-scheme">More on Carder.su's David Camez's RICO case here</A>.<P>
+
+The speculations that something may have been up with Paunch began back in October.  The best early coverage we had was from Charlie Osborne, who posted over on ZDNet <a href="http://www.zdnet.com/blackhole-malware-toolkit-creator-paunch-arrested-7000021740/">Blackhole malware toolkit creator Paunch suspect arrested</A>, based off the single tip that every other source we had was also referring to -- a statement from Maarten Boone over at Fox-IT in the Netherlands.<P>
+
+At the time of the article in ZDNet, October 9th, Charlie quoted AVG as saying that "the Blackhole Exploit Kit is currently ranked 24th in the world of online malware, affecting 36,199 websites in 218 countries."  The same link provided in that article now shows that BEH is ranked 161st, falling from position 132 on the list last week.  To check the current status, use this link to AVG's <a href="http://www.avgthreatlabs.com/virus-and-malware-information/info/blackhole-exploit-kit/">AVG Info on Blackhole Exploit Kit</A>.<P>
+
+Paunch posted updates about his malicious code as recently as September 2013, on <a href="http://exploit.in/forum/index.php?showtopic=41662">Exploit.in</A> (sorry, login required!)  As usual, the authors shamelessly listed their contact information, which of course lead to their downfall:<P>
+
+<PRE>Our contacts:
+Author and a support Ð² 1 Ð»Ð¸ÑÐµ (time normalized):
+JID: paunch@jabber.no
+JID: paunch@thesecure.biz
+JID: paunch@neko.im
+ICQ: 343002
+
+A support (time from 9 to 19 on weekdays)
+JID: blackhole2@jabber.ru
+ICQ: 530082 </PRE>
+
+The pricing at this time was given as:<P><PRE>
+happy to announce that prices have remained the same:
+Rent on our server:
+-Day rental - $ 50 (limit traffic 50k hits)
+-Week rent - $ 200 (limit traffic 70k hits a day)
+-Month lease - $ 500 (limit traffic 70k hits a day) if need traffic limit can be increased for an additional fee
+
+License on your server:
+-License for 3 months $ 700
+License-half year $ 1,000
+-Year license for $ 1500
+multi-domain version of the bunch - $ 200 one-time fee for the entire term of the license (not binding on the domain and on the ip)
+change of the domain on the standard version of the bunch - $ 20
+change ip on multidomain version bundles - $ 50
+single cleaning - $ 50
+Autoclean a month - $ 300</PRE>
+
+Kafeine has the original post on his excellent malware analysis blog <a href="http://malware.dontneedcoffee.com/2012/09/blackhole2.0.html">Malware don't need Coffee</A>.<P>
+
+The new version offered many options, including statistics about Windows 8 and Mobile Device infection, an option to have "less obvious" URLs for your Blackhole Exploit address, and the ability to automatically regenerate your .exe files in ways that would not be detected by AV engines.  (This feature is the "Autoclean" offered for $300 per month.)<P>
+
+Many security features of the "auto-ban" variety were included to prevent the malware from functioning for "Reversers".  These included:
+<PRE>
+11. Completely updated section "Security" on it can shine even a sub category:
+a) an opportunity to block traffic without referrer (we recommend always keep it turned on)
+b) the opportunity to ban unnecessary referrers
+c) an opportunity to ban all referrers except your own
+d) an opportunity to ban bots on the basis of a pre-arranged IP address list
+d) an opportunity to ban TOR network Types which are dynamically updated as the practice most reverser work from there (we recommend always keep it turned on)
+e) there was a recording mode, let you stop and wait for traffic traffic from where you do not, put the record mode, and all reversers and bots that go on your link after stopping cores go straight to the ban list)
+12. Since section 11 we had a lot of opportunities for Bans, selecting at least one embodiment of the ban appears in the menu "Ban Statistics", in which you can see the number of blocked traffic, and the reason for blocking 
+</PRE>
+
+I can tell you that those banning practices were creating quite a bit of chaos on "Reversers"!  Fortunately, my lead malware analyst at Malcovery Security had found a fairly reliable (if time-consuming) way to defeat Paunch.  To show the ease of identifying his previous URL pattern, look at this list of reports Malcovery generated in the past six months where BlackHole was found just using the URL path of a "/forum/viewtopic.php" URL!<P>
+
+<IMG SRC="http://www.cis.uab.edu/forensics/blog/Malcovery.Paunch.BlackHoles.jpg" WIDTH="60%" HEIGHT="60%"><BR>
+(Right-Click, "View Image" for larger version)<P>
+
+Much, much more data is available in the several-times daily "Malcovery T3 Reports" and additional analysis is available for interested parties.  This data is ONLY showing the "/forum/viewtopic.php" aspects of this malware.<P>
+
+
+In the first column, the date of the spam campaign and the "imitated brand" is listed<P>
+
+<TABLE><TR><TD>2013-05-13</TD><TD>ADP</TD><TD> hxxp://116.122.158.195:8080   /forum/viewtopic.php </TD></TR>
+<TR><TD>2013-05-13</TD><TD>ADP</TD><TD> hxxp://mail.yaklasim.com:8080   /forum/viewtopic.php </TD></TR>
+<TR><TD>2013-05-13</TD><TD>ADP</TD><TD> hxxp://vulcantire.net   /forum/viewtopic.php </TD></TR>
+<TR><TD>2013-05-13</TD><TD>ADP</TD><TD> hxxp://westautorepair.com   /forum/viewtopic.php </TD></TR>
+<TR><TD>2013-05-13</TD><TD>AmericanExpress</TD><TD>hxxp://116.122.158.195:8080   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-05-13</TD><TD>AmericanExpress</TD><TD>hxxp://mail.yaklasim.com:8080   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-05-13</TD><TD>AmericanExpress</TD><TD>hxxp://vulcantire.net   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-05-13</TD><TD>AmericanExpress</TD><TD>hxxp://westautorepair.com   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-05-13</TD><TD>Citibank</TD><TD> hxxp://116.122.158.195:8080   /forum/viewtopic.php </TD></TR>
+<TR><TD>2013-05-13</TD><TD>Citibank</TD><TD> hxxp://mail.yaklasim.com:8080   /forum/viewtopic.php </TD></TR>
+<TR><TD>2013-05-13</TD><TD>Citibank</TD><TD> hxxp://vulcantire.net   /forum/viewtopic.php </TD></TR>
+<TR><TD>2013-05-13</TD><TD>Citibank</TD><TD> hxxp://westautorepair.com   /forum/viewtopic.php </TD></TR>
+<TR><TD>2013-05-21</TD><TD>eFax</TD><TD>hxxp://116.122.158.195:8080   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-05-21</TD><TD>eFax</TD><TD>hxxp://debthelpsmart.org   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-05-21</TD><TD>eFax</TD><TD>hxxp://debtsmartretirement.com   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-05-21</TD><TD>eFax</TD><TD>hxxp://mail.yaklasim.com:8080   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-05-24</TD><TD>ADP</TD><TD> hxxp://116.122.158.195:8080   /forum/viewtopic.php </TD></TR>
+<TR><TD>2013-05-24</TD><TD>ADP</TD><TD> hxxp://monteazul.clicken1.com:81   /forum/viewtopic.php </TD></TR>
+<TR><TD>2013-05-24</TD><TD>ADP</TD><TD> hxxp://panama.clicken1.com:81   /forum/viewtopic.php </TD></TR>
+<TR><TD>2013-05-24</TD><TD>ADP</TD><TD> hxxp://talentos.clicken1.com:81   /forum/viewtopic.php </TD></TR>
+<TR><TD>2013-05-29</TD><TD>WesternUnion</TD><TD> hxxp://199.168.184.198:81   /forum/viewtopic.php </TD></TR>
+<TR><TD>2013-05-29</TD><TD>WesternUnion</TD><TD> hxxp://monteazul.clicken1.com:81   /forum/viewtopic.php </TD></TR>
+<TR><TD>2013-05-29</TD><TD>WesternUnion</TD><TD> hxxp://panama.clicken1.com:81   /forum/viewtopic.php </TD></TR>
+<TR><TD>2013-05-29</TD><TD>WesternUnion</TD><TD> hxxp://talentos.clicken1.com:81   /forum/viewtopic.php </TD></TR>
+<TR><TD>2013-05-24</TD><TD>Chase</TD><TD>hxxp://116.122.158.195:8080   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-05-24</TD><TD>Chase</TD><TD>hxxp://monteazul.clicken1.com:81   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-05-24</TD><TD>Chase</TD><TD>hxxp://panama.clicken1.com:81   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-05-24</TD><TD>Chase</TD><TD>hxxp://talentos.clicken1.com:81   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-06-05</TD><TD>WesternUnion</TD><TD> hxxp://116.122.158.195:8080   /forum/viewtopic.php </TD></TR>
+<TR><TD>2013-06-05</TD><TD>WesternUnion</TD><TD> hxxp://199.168.184.198:81   /forum/viewtopic.php </TD></TR>
+<TR><TD>2013-06-05</TD><TD>WesternUnion</TD><TD> hxxp://verybestblueberry.com   /forum/viewtopic.php </TD></TR>
+<TR><TD>2013-06-05</TD><TD>WesternUnion</TD><TD> hxxp://wildmaineblues.com   /forum/viewtopic.php </TD></TR>
+<TR><TD>2013-07-08</TD><TD>Citi</TD><TD>hxxp://2ndtimearoundweddingphotography.com   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-07-08</TD><TD>Citi</TD><TD>hxxp://bobkahnvideo.com   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-07-08</TD><TD>Citi</TD><TD>hxxp://gfpmenusonline.com   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-07-08</TD><TD>Citi</TD><TD>hxxp://gfponlineordering.com   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-07-10</TD><TD>eFax</TD><TD>hxxp://gfpshoppingcarts.net   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-07-10</TD><TD>eFax</TD><TD>hxxp://greatstockfoodimages.com   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-07-10</TD><TD>eFax</TD><TD>hxxp://imhungrynow.com   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-07-10</TD><TD>eFax</TD><TD>hxxp://one2onebiznet.com   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-07-12</TD><TD>UPS</TD><TD>hxxp://buzztag.com   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-07-12</TD><TD>UPS</TD><TD>hxxp://customkids.com   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-07-12</TD><TD>UPS</TD><TD>hxxp://webersmokeymountaincookerreview.com   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-07-12</TD><TD>UPS</TD><TD>hxxp://wiiunlockplusreview.com   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-07-25</TD><TD>CNN</TD><TD>hxxp://198.57.130.35:8080   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-07-25</TD><TD>CNN</TD><TD>hxxp://alsultantravel.com:8080   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-07-25</TD><TD>CNN</TD><TD>hxxp://webmail.alsultantravel.com:8080   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-07-25</TD><TD>CNN</TD><TD>hxxp://webmail.alsultantravel.info:8080   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-07-25</TD><TD>Facebook</TD><TD>hxxp://198.57.130.35:8080   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-07-25</TD><TD>Facebook</TD><TD>hxxp://alsultantravel.com:8080   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-07-25</TD><TD>Facebook</TD><TD>hxxp://webmail.alsultantravel.com:8080   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-07-25</TD><TD>Facebook</TD><TD>hxxp://webmail.alsultantravel.info:8080   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-08-02</TD><TD>Moneygram</TD><TD>h00p://50.57.185.72:8080   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-08-02</TD><TD>Moneygram</TD><TD>h00p://arki.com:8080   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-08-02</TD><TD>Moneygram</TD><TD>h00p://northernforestcanoetrail.com   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-08-02</TD><TD>Moneygram</TD><TD>h00p://www.arki.com:8080   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-08-14</TD><TD>BankofAmerica</TD><TD>hxxp://gutterglovegutterprotection.com   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-08-14</TD><TD>BankofAmerica</TD><TD>hxxp://gutterguardbuyersguide.com   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-08-14</TD><TD>BankofAmerica</TD><TD>hxxp://gutterhelmetleafguardgutterprotection.com   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-08-14</TD><TD>BankofAmerica</TD><TD>hxxp://gutterprosmaryland.com   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-08-14</TD><TD>WellsFargo</TD><TD>hxxp://gutterglovegutterprotection.com   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-08-14</TD><TD>WellsFargo</TD><TD>hxxp://gutterguardbuyersguide.com   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-08-14</TD><TD>WellsFargo</TD><TD>hxxp://gutterhelmetleafguardgutterprotection.com   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-08-14</TD><TD>WellsFargo</TD><TD>hxxp://gutterprosmaryland.com   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-08-15</TD><TD>FAX</TD><TD>hxxp://1800callabe.com   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-08-15</TD><TD>FAX</TD><TD>hxxp://1866callabe.com   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-08-15</TD><TD>FAX</TD><TD>hxxp://abemoussa.com   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-08-15</TD><TD>FAX</TD><TD>hxxp://abemuggs.com   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-08-16</TD><TD>ADP</TD><TD>hxxp://hubbywifeco.com   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-08-16</TD><TD>ADP</TD><TD>hxxp://hubbywifedesigns.com   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-08-16</TD><TD>ADP</TD><TD>hxxp://hubbywifedesserts.com   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-08-16</TD><TD>ADP</TD><TD>hxxp://hubbywifefoods.com   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-08-16</TD><TD>WellsFargo</TD><TD>hxxp://hubbywifeco.com   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-08-16</TD><TD>WellsFargo</TD><TD>hxxp://hubbywifedesigns.com   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-08-16</TD><TD>WellsFargo</TD><TD>hxxp://hubbywifedesserts.com   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-08-16</TD><TD>WellsFargo</TD><TD>hxxp://hubbywifefoods.com   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-08-19</TD><TD>ADP</TD><TD>hxxp://hubbywifewines.com   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-08-19</TD><TD>ADP</TD><TD>hxxp://ipodwalla.com   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-08-19</TD><TD>ADP</TD><TD>hxxp://jerseycitybags.com   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-08-19</TD><TD>ADP</TD><TD>hxxp://jerseyluggage.com   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-08-19</TD><TD>Facebook</TD><TD>hxxp://frankcremascocabinets.com   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-08-19</TD><TD>Facebook</TD><TD>hxxp://giuseppepiruzza.com   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-08-19</TD><TD>Facebook</TD><TD>hxxp://gordonpoint.biz   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-08-19</TD><TD>Facebook</TD><TD>hxxp://gordonpoint.info   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-08-20</TD><TD>UKLandRegistry</TD><TD>hxxp://giuseppepiruzza.com   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-08-20</TD><TD>UKLandRegistry</TD><TD>hxxp://gordonpoint.biz   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-08-20</TD><TD>UKLandRegistry</TD><TD>hxxp://gordonpoint.info   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-08-20</TD><TD>UKLandRegistry</TD><TD>hxxp://gordonpoint.org   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-08-26</TD><TD>UPS</TD><TD>hxxp://gordonpoint.org   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-08-26</TD><TD>UPS</TD><TD>hxxp://hitechcreature.com   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-08-26</TD><TD>UPS</TD><TD>hxxp://industryseeds.ca   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-08-26</TD><TD>UPS</TD><TD>hxxp://infocreature.com   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-09-06</TD><TD>CitizensBank-KeyBank</TD><TD>hxxp://luggagepoint.de   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-09-06</TD><TD>CitizensBank-KeyBank</TD><TD>hxxp://luggagepreview.com   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-09-06</TD><TD>CitizensBank-KeyBank</TD><TD>hxxp://luggagewalla.com   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-09-06</TD><TD>CitizensBank-KeyBank</TD><TD>hxxp://luxluggage.com   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-09-09</TD><TD>FedEx</TD><TD>hxxp://luxurybrandswalla.com   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-09-09</TD><TD>FedEx</TD><TD>hxxp://mickmicheyl.biz   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-09-09</TD><TD>FedEx</TD><TD>hxxp://mickmicheyl.ca   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-09-09</TD><TD>FedEx</TD><TD>hxxp://mickmicheyl.com   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-09-10</TD><TD>FedEx</TD><TD>hxxp://actorbell.com   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-09-10</TD><TD>FedEx</TD><TD>hxxp://facebookfansincrease.com   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-09-10</TD><TD>FedEx</TD><TD>hxxp://fillmaka.com   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-09-10</TD><TD>FedEx</TD><TD>hxxp://fillmmaka.com   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-09-11</TD><TD>FedEx</TD><TD>hxxp://actorbell.com   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-09-11</TD><TD>FedEx</TD><TD>hxxp://facebookfansincrease.com   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-09-11</TD><TD>FedEx</TD><TD>hxxp://fillmaka.com   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-09-11</TD><TD>FedEx</TD><TD>hxxp://fillmmaka.com   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-09-11</TD><TD>FedEx</TD><TD>hxxp://filmaka.biz   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-09-11</TD><TD>FedEx</TD><TD>hxxp://filmaka.co.uk   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-09-12</TD><TD>FedEx</TD><TD>hxxp://fillmmaka.com   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-09-12</TD><TD>FedEx</TD><TD>hxxp://filmaka.biz   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-09-12</TD><TD>FedEx</TD><TD>hxxp://filmaka.co.uk   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-09-12</TD><TD>FedEx</TD><TD>hxxp://filmaka.info   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-09-13</TD><TD>FedEx</TD><TD>hxxp://filmaka.org   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-09-13</TD><TD>FedEx</TD><TD>hxxp://filmaka.us   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-09-13</TD><TD>FedEx</TD><TD>hxxp://filmmaka.com   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-09-13</TD><TD>FedEx</TD><TD>hxxp://filmpunjab.com   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-09-16</TD><TD>FedEx</TD><TD>hxxp://rockims.com   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-09-16</TD><TD>FedEx</TD><TD>hxxp://swingingwiththefinkelsthemovie.com   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-09-16</TD><TD>FedEx</TD><TD>hxxp://taxipunjab.com   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-09-16</TD><TD>FedEx</TD><TD>hxxp://taxisamritsar.com   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-09-17</TD><TD>FedEx</TD><TD>hxxp://defeat-autism.com   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-09-17</TD><TD>FedEx</TD><TD>hxxp://defeat-autism.org   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-09-17</TD><TD>FedEx</TD><TD>hxxp://saltlakecityutahcommercialrealestate.com   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-09-17</TD><TD>FedEx</TD><TD>hxxp://utahbankownedhomesonline.info   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-09-17</TD><TD>FedEx</TD><TD>hxxp://utahonlinerealestate.com   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-09-18</TD><TD>FedEx</TD><TD>hxxp://defeat-autism.com   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-09-18</TD><TD>FedEx</TD><TD>hxxp://defeat-autism.org   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-09-18</TD><TD>FedEx</TD><TD>hxxp://glgkorea.com   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-09-18</TD><TD>FedEx</TD><TD>hxxp://jadecreditdesign.com   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-09-19</TD><TD>FedEx</TD><TD>hxxp://louievozza.com   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-09-19</TD><TD>FedEx</TD><TD>hxxp://louvozza.com   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-09-19</TD><TD>FedEx</TD><TD>hxxp://lvconcordecontracting.com   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-09-19</TD><TD>FedEx</TD><TD>hxxp://lv-contracting.com   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-09-20</TD><TD>FedEx</TD><TD>hxxp://lvconcordecontracting.com   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-09-20</TD><TD>FedEx</TD><TD>hxxp://mcbelectrical.ca   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-09-20</TD><TD>FedEx</TD><TD>hxxp://oliviagurun.com   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-09-20</TD><TD>FedEx</TD><TD>hxxp://onecable.ca   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-09-23</TD><TD>FedEx</TD><TD>hxxp://dsostermanlaw.com   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-09-23</TD><TD>FedEx</TD><TD>hxxp://nefcapital.com   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-09-23</TD><TD>FedEx</TD><TD>hxxp://simpacswings.com   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-09-23</TD><TD>FedEx</TD><TD>hxxp://wetalkbb.net   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-09-24</TD><TD>FedEx</TD><TD>hxxp://acedataintelligence.com   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-09-24</TD><TD>FedEx</TD><TD>hxxp://acedataintelligence.net   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-09-24</TD><TD>FedEx</TD><TD>hxxp://dsostermanlaw.com   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-09-24</TD><TD>FedEx</TD><TD>hxxp://nefcapital.com   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-09-27</TD><TD>Facebook</TD><TD>hxxp://directgrid.org   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-09-27</TD><TD>Facebook</TD><TD>hxxp://directgrid.us   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-09-27</TD><TD>Facebook</TD><TD>hxxp://integra-inspection.ca   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-09-27</TD><TD>Facebook</TD><TD>hxxp://watttrack.com   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-09-27</TD><TD>LinkedIn</TD><TD>hxxp://directgrid.org   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-09-27</TD><TD>LinkedIn</TD><TD>hxxp://directgrid.us   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-09-27</TD><TD>LinkedIn</TD><TD>hxxp://integra-inspection.ca   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-09-27</TD><TD>LinkedIn</TD><TD>hxxp://watttrack.com   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-10-01</TD><TD>FedEx</TD><TD>hxxp://smartstartfinancial.com   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-10-01</TD><TD>FedEx</TD><TD>hxxp://thewalletslip.com   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-10-01</TD><TD>FedEx</TD><TD>hxxp://tootle.us   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-10-01</TD><TD>FedEx</TD><TD>hxxp://tungstenrents.com   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-10-09</TD><TD>WellsFargo</TD><TD>hxxp://integrainspection.co   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-10-09</TD><TD>WellsFargo</TD><TD>hxxp://integrainspection.info   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-10-09</TD><TD>WellsFargo</TD><TD>hxxp://integrainspection.net   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-10-09</TD><TD>WellsFargo</TD><TD>hxxp://integrainspection.org   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-10-10</TD><TD>FedEx</TD><TD>hxxp://denisemoussa.com   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-10-10</TD><TD>FedEx</TD><TD>hxxp://integrainspection.net   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-10-10</TD><TD>FedEx</TD><TD>hxxp://integrainspection.org   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-10-10</TD><TD>FedEx</TD><TD>hxxp://integrainspections.ca   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-10-11</TD><TD>FedEx</TD><TD>hxxp://integrainspection.net   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-10-11</TD><TD>FedEx</TD><TD>hxxp://integrainspection.org   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-10-11</TD><TD>FedEx</TD><TD>hxxp://integrainspections.ca   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-10-11</TD><TD>FedEx</TD><TD>hxxp://integrainspections.co   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-10-14</TD><TD>WellsFargo</TD><TD>hxxp://integrainspection.org   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-10-14</TD><TD>WellsFargo</TD><TD>hxxp://integrainspections.ca   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-10-14</TD><TD>WellsFargo</TD><TD>hxxp://integrainspections.co   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-10-14</TD><TD>WellsFargo</TD><TD>hxxp://stratuscomputing.com   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-10-15</TD><TD>WellsFargo</TD><TD>hxxp://integrainspection.org   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-10-15</TD><TD>WellsFargo</TD><TD>hxxp://integrainspections.ca   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-10-15</TD><TD>WellsFargo</TD><TD>hxxp://integrainspections.co   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-10-15</TD><TD>WellsFargo</TD><TD>hxxp://stratuscomputing.com   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-10-23</TD><TD>VoiceMessage</TD><TD>hxxp://bernaandthebern-outs.com   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-10-23</TD><TD>VoiceMessage</TD><TD>hxxp://sayitwithpower.com   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-10-23</TD><TD>VoiceMessage</TD><TD>hxxp://thewinewars.com   /forum/viewtopic.php</TD></TR>
+<TR><TD>2013-10-23</TD><TD>VoiceMessage</TD><TD>hxxp://www.benfrederick.com:8080   /forum/viewtopic.php</TD></TR></TABLE>

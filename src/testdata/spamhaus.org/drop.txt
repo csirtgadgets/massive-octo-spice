@@ -1,0 +1,14 @@
+; Spamhaus DROP List 2013/12/17 - (c) 2013 The Spamhaus Project
+; http://www.spamhaus.org/drop/drop.txt
+; Last-Modified: Tue, 17 Dec 2013 08:27:12 GMT
+; Expires: Tue, 17 Dec 2013 10:00:02 GMT
+1.32.0.0/16 ; SBL204516
+2.56.0.0/14 ; SBL102988
+5.34.242.0/23 ; SBL194796
+5.72.0.0/14 ; SBL167293
+5.180.0.0/14 ; SBL169697
+14.129.0.0/16 ; SBL192262
+14.192.48.0/21 ; SBL131019
+14.192.56.0/22 ; SBL131020
+31.11.43.0/24 ; SBL113323
+31.222.200.0/21 ; SBL111681

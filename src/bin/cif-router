@@ -1,0 +1,172 @@
+#!perl
+
+BEGIN {
+    use FindBin;
+    use local::lib "$FindBin::Bin/..";
+}
+
+use 5.014002;
+use strict;
+use warnings;
+use feature 'say';
+
+use CIF qw/init_logging $Logger/;
+use CIF::Router;
+use Getopt::Long;
+use AnyEvent;
+use Daemon::Control;
+use Try::Tiny;
+use Data::Dumper;
+
+my $help;
+my $frontend        = CIF::Router::DEFAULT_FRONTEND_LISTEN();
+my $backend         = CIF::Router::DEFAULT_BACKEND_LISTEN();
+my $storage         = 'elasticsearch';
+my $auth            = 'dummy',
+my $config          = "$CIF::EtcPath/cif-router.conf";
+
+# daemon
+my $daemon          = 0;
+my $pidfile         = $CIF::VarPath.'/run/cif-router.pid';
+my $user            = $CIF::CIF_USER;
+my $group           = $CIF::CIF_GROUP;
+
+# notification
+my $notify;
+my $notify_to       = 'root@localhost';
+my $notify_subj     = '[cif-router] ERROR';
+my $notify_from     = 'cif';
+my $notify_level    = 'error';
+
+# logging
+my $debug           = 0;
+my $verbose         = 0;
+my $trace           = 0;
+my $logging         = 0;
+my $logfile         = $CIF::VarPath.'/log/cif-router.log';
+
+Getopt::Long::Configure ("bundling");
+GetOptions(
+    'help|h'        => \$help, 
+    'config|C=s'    => \$config,
+    'frontend|F=s'  => \$frontend,
+    'backend|B=s'   => \$backend,
+    'auth|a=s'      => \$auth,
+    'storage|s=s'   => \$storage,
+    
+    # daemon opts
+    'daemon|D'      => \$daemon,
+    'pidfile|p=s'   => \$pidfile,
+    'user|u=s'      => \$user,
+    'group|g=s'     => \$group,
+    
+    #notification
+    'notify'        => \$notify,
+    'notify-to=s'   => \$notify_to,
+    'notify-subj=s' => \$notify_subj,
+    'notify-from=s' => \$notify_from,
+    
+    # logging
+    'verbosity|v'   => \$verbose,
+    'debug|d'       => \$debug,
+    'trace'         => \$trace,
+    'logging'       => \$logging,
+    'logfile=s'     => \$logfile,
+) or die(usage());
+
+die(usage()) if($help);
+
+sub usage {
+    return <<EOF;
+
+Usage: $0 [OPTIONS] [status|start|stop|restart|reload]
+
+ Options:
+    -F, --frontend=STRING   specify the frontend binding, default: $frontend
+    -B, --backend=STRING    specify the backend binding, default: $backend
+    -C, --config=FILE       specify cofiguration file, default: $config
+    -d, --debug             turn on debugging [INFO]
+    -v, --verbose           turn up debug verbosity [DEBUG]
+    -h, --help              this message
+    
+ Daemon Options:
+    -D, --daemon            run as daemon
+    -u, --user              run daemon as user, default: $user
+    -g, --group             run daemon as group, default: $group
+    -p, --pid               pidfile location, default: $pidfile
+    --logging               turn on logging [to file]
+    --logfile               logfile location, default: $logfile
+    
+ Notification Options:
+    --notify:               turn on notification, default: off.
+    --notify-to:            default: $notify_to
+    --notify-from:          default: $notify_from
+    --notify-subj:          default: $notify_subj
+    --notify-level:         default: $notify_level
+    
+ Advanced Options:
+    -A, --auth              specify authorization plugin, default: $auth
+    -S, --storage           specify storage plugin, default: $storage
+
+ Examples:
+    $0 -C $config
+    $0 -D start -C $config -p $pidfile
+
+EOF
+}
+
+$debug = ($debug) ? 'INFO' : 'ERROR';
+$debug = 'DEBUG' if($verbose);
+$debug = 'TRACE' if($trace);
+
+if($notify){
+    $notify = { 
+        to          => $notify_to, 
+        from        => $notify_from, 
+        subject     => $notify_subj, 
+        min_level   => lc($notify_level) }
+}
+
+init_logging(
+    { 
+        level       => $debug,
+        catagory	=> 'cif-router',
+        filename    => ($logging) ? $logfile : 0,
+    },
+    $notify,   
+);
+
+unless($daemon){
+    $ARGV[0] = 'start' unless($ARGV);
+}
+
+my $r = Daemon::Control->new(
+    name    => 'cif-router',
+    program => sub { _main() },
+    
+    pid_file    => $pidfile,
+    fork        => ($daemon) ? 2 : 0,
+    
+    user         => $user,
+    group        => $group,
+)->run();
+
+$Logger->info('shutting down...');
+
+sub _main {
+    my $done    = AnyEvent->condvar();
+    
+    my $router  = CIF::Router->new({
+        frontend_listen     => $frontend,
+        backend_listen      => $backend,
+        storage             => {
+            plugin  => $storage,
+        },
+        auth                => {
+            plugin  => $auth,
+        },
+    });
+    $router->startup();
+    
+    $done->recv();
+}

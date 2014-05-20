@@ -1,0 +1,33 @@
+# mpatriol recently changed their business model
+# see: https://www.malwarepatrol.net/lists.shtml
+
+# these top-level configs are the defaults applied to each section
+confidence = 85
+restriction = 'need-to-know'
+guid = everyone
+source = malware.com.br
+alternativeid_restriction = public
+assessment = malware
+
+[md5]
+feed = 'http://www.malware.com.br/cgi/submit?action=list_hashes'
+regex = '^(\S+)[\t]+([a-f0-9]{32})[\t]+[a-f0-9]{40}$'
+regex_values = 'description,malware_md5'
+confidence = 95
+severity = high
+alternativeid = 'http://www.malware.com.br/cgi/submit?action=list_hashes'
+
+[sha1]
+feed = 'http://www.malware.com.br/cgi/submit?action=list_hashes'
+regex = '^(\S+)[\t]+[a-f0-9]{32}[\t]+([a-f0-9]{40})$'
+regex_values = 'description,malware_sha1'
+confidence = 95
+severity = high
+alternativeid = 'http://www.malware.com.br/cgi/submit?action=list_hashes'
+
+[urls]
+feed = 'http://www.malware.com.br/cgi/submit?action=list_xml'
+node = 'url'
+elements = 'uri,id,date,av_info'
+elements_map = 'address,id,detecttime,description'
+alternativeid = 'http://www.malware.com.br/cgi/search.pl?id=<id>'

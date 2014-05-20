@@ -1,0 +1,17 @@
+confidence = 50
+guid = everyone
+severity = low
+source = pastebin.com
+restriction = need-to-know
+alternativeid_restriction = public
+
+[rsa_dump]
+feed = 'http://pastebin.com/raw.php?i=yKSQd5Z5'
+period = daily
+assessment = 'botnet'
+description = 'suspected apt'
+confidence = 75
+severity = high
+regex = '^([a-zA-Z-\.]+\.[a-z]{2,3})'
+regex_values = 'address'
+alternativeid = http://pastebin.com/raw.php?i=yKSQd5Z5
