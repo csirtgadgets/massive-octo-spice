@@ -24,7 +24,7 @@ sub process {
     return [];
 }
 
-sub check_handle {}
+sub check_handle { return 1; }
 
 __PACKAGE__->meta()->make_immutable();
 
