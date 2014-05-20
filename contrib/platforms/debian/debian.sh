@@ -18,20 +18,24 @@ apt-get install -qq python-software-properties
 echo "yes" | sudo add-apt-repository "ppa:chris-lea/zeromq"
 wget -O - http://packages.elasticsearch.org/GPG-KEY-elasticsearch | apt-key add -
 
-if [ -f /etc/apt/sources.list.d/elasticsearch ]; then
-    echo "sources.list.d/elasticsearch already exists, skipping..."
+if [ -f /etc/apt/sources.list.d/elasticsearch.list ]; then
+    echo "sources.list.d/elasticsearch.list already exists, skipping..."
 else
-    echo "deb http://packages.elasticsearch.org/elasticsearch/1.0/debian stable main" >> /etc/apt/sources.list.d/elasticsearch
+    echo "deb http://packages.elasticsearch.org/elasticsearch/1.0/debian stable main" >> /etc/apt/sources.list.d/elasticsearch.list
 fi
 
 apt-get update
-apt-get install -y curl mailutils build-essential git-core automake cpanminus rng-tools openjdk-7-jre-headless libtool pkg-config vim htop bind9 libzmq3-dev libffi6 libmoose-perl libmouse-perl libanyevent-perl liblwp-protocol-https-perl libxml2-dev libexpat-dev nginx libgeoip-dev geoip-bin
+apt-get install -y apache2 libapache2-mod-perl2 curl mailutils build-essential git-core automake cpanminus rng-tools openjdk-7-jre-headless libtool pkg-config vim htop bind9 libzmq3-dev libffi6 libmoose-perl libmouse-perl libanyevent-perl liblwp-protocol-https-perl libxml2-dev libexpat-dev nginx libgeoip-dev geoip-bin
 
 echo 'HRNGDEVICE=/dev/urandom' >> /etc/default/rng-tools
 service rng-tools restart
 
-useradd $MYUSER
-adduser www-data $MYUSER
+if [ -z (getent passwd $MYUSER) ]; then
+	echo 'cif user already exists...'
+else
+	useradd $MYUSER
+	adduser www-data $MYUSER
+fi
 
 if [ `grep -l 'spamhaus.org' /etc/bind/named.conf.local` ]; then
     echo 'zone bypass already setup'
@@ -50,7 +54,7 @@ else
     ifdown eth0 && sudo ifup eth0
 fi
 
-if [ `grep -l '\/opt\/cif\/bin' /home/cif/.profile` ]
+if [ `grep -l '\/opt\/cif\/bin' /home/cif/.profile` ]; then
     echo 'profile already set'
 else
     MYPROFILE=/home/$MYUSER/.profile

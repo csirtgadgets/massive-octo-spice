@@ -11,7 +11,7 @@ libcif/CIF-*
 */Makefile.old
 MYMETA*
 smrt/testdata/*/*.log
-libcif/lib/CIF/Generated.pm
+src/lib/CIF/Generated.pm
 
 */_Inline/*
 *.swp
