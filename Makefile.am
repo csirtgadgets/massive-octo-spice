@@ -74,13 +74,10 @@ clean-local:
 	find . -name '*.log' -delete
 	
 elasticsearch:
-	( cd es && make init )
+	( cd elasticsearch && make )
 
-es-deinit:
-	( cd es && make deinit )
-
-es-reload:
-	(cd es && make reload )
+elasticsearch-reload:
+	(cd elasticsearch && make reload )
 
 clean:
 	find . -name 'MANIFEST' -delete
