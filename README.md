@@ -1,5 +1,5 @@
 ## Quick Start
-See the [QuickStart Guide](https://github.com/csirtgadgets/massive-octo-spice/wiki/QuickStart).
+See the [Main Wiki](https://github.com/csirtgadgets/massive-octo-spice/wiki).
 
 ## Getting Involved
 There are many ways to get involved with the project. If you have a new and exciting feature, or even a simple bugfix, simply [fork the repo](https://help.github.com/articles/fork-a-repo), create some simple test cases, [generate a pull-request](https://help.github.com/articles/using-pull-requests) and give yourself credit!
