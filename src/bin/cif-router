@@ -136,7 +136,6 @@ if($verbosity){
     unless($debug){ # we're already at TRACE
         $Logger->more_logging($verbosity);
     }
-    $Logger->warn('current log level: '.Log::Log4perl::Level::to_LogDispatch_string($Logger->level()).', increase verbosity with -v+');
 }
 
 unless($daemon){

@@ -29,7 +29,7 @@ my $refresh     = 0;
 my $test_mode   = 0;
 my $clean       = 0;
 my $notbefore   = 'today';
-my $cache       = $CIF::VarPath.'/smrt/cache';
+my $cache       = $CIF::VarPath.'/cache/smrt';
 my $meta            = 0;
 
 # daemon
@@ -187,7 +187,7 @@ if($notify){
         min_level   => lc($notify_level) }
 }
 
-my $loglevel = ($debug) ? 'TRACE' : 'ERROR';
+my $loglevel = ($debug) ? 'TRACE' : 'FATAL';
 
 init_logging(
     {
@@ -202,7 +202,6 @@ if($verbosity){
     unless($debug){ # we're already at TRACE
         $Logger->more_logging($verbosity);
     }
-    $Logger->warn('current log level: '.Log::Log4perl::Level::to_LogDispatch_string($Logger->level()).', increase verbosity with -v+');
 }
 
 $ARGV[0] = 'start' unless($ARGV[0] && $daemon);

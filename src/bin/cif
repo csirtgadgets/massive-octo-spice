@@ -65,7 +65,7 @@ GetOptions(
 die(usage()) if($help);
 die(usage()) unless($query || $ping || $submit || $subscriber);
 
-my $loglevel = ($debug) ? 'TRACE' : 'ERROR';
+my $loglevel = ($debug) ? 'TRACE' : 'FATAL';
 
 init_logging(
     { 
@@ -78,7 +78,6 @@ if($verbosity){
     unless($debug){ # we're already at TRACE
         $Logger->more_logging($verbosity);
     }
-    $Logger->warn('current log level: '.Log::Log4perl::Level::to_LogDispatch_string($Logger->level()).', increase verbosity with -v+');
 }
 
 if($submit){

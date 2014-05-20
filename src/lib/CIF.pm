@@ -69,6 +69,8 @@ use vars qw(
     $SmrtRulesLocal
     $CIF_USER
     $CIF_GROUP
+    $PidPath
+    $LogPath
 );
 
 # Preloaded methods go here.

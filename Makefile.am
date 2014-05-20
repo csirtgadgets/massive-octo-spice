@@ -3,6 +3,7 @@ EXTRA_DIST = contrib cpanfile src
 
 PERLOPTS=DESTDIR=$(DESTDIR) INSTALL_BASE=$(CIF_PATH) INSTALLPRIVLIB=${siteperldir}
 PERL_INSTALLOPTS=INSTALL="$(INSTALL)" sysconfdir=$(sysconfdir) localstatedir=$(localstatedir) CIF_USER=$(CIF_USER) CIF_GROUP=$(CIF_GROUP)
+CPANMOPTS=-n
 
 .PHONY: src
 
@@ -15,7 +16,7 @@ test:
 
 deps: geoip
 if HAVE_CPANM
-	$(CPANM) $(NOTESTS) --installdeps ./src
+	$(CPANM) $(CPANMOPTS) --installdeps ./src
 else
 	@echo "missing App::cpanminus, please install with \"perl -MCPAN -e 'install App::cpanminus'\" and re-run ./configure"
 	exit -1
