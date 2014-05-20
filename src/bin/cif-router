@@ -168,7 +168,11 @@ sub _main {
             plugin  => $auth,
         },
     });
-    $router->startup();
+    my $rv = $router->startup();
+    unless($rv){
+        $done->send();
+        exit(0);
+    }
     
     $done->recv();
 }

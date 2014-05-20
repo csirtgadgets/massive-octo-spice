@@ -215,8 +215,6 @@ sub _submission {
     my $self = shift;
     my $args = shift;
     
-    $Logger->debug(Dumper($args));
-    
     my @objs = @{$args->{'Observables'}};
     my @results;
 
@@ -234,7 +232,6 @@ sub _submission {
         verbose     => 1,
     );
 
-    $Logger->debug(Dumper($bulk));
     foreach (@objs){
         $_->{'@timestamp'}  = $timestamp;
         $_->{'@version'}    = 2;

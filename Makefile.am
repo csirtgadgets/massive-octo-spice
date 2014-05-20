@@ -73,7 +73,7 @@ fixperms-rules:
 clean-local:
 	find . -name '*.log' -delete
 	
-es-init:
+elasticsearch:
 	( cd es && make init )
 
 es-deinit:

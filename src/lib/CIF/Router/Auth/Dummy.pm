@@ -17,6 +17,8 @@ sub understands {
 
 sub process { return 1; }
 
+sub check_handle { return 1; }
+
 __PACKAGE__->meta()->make_immutable();
 
 1;

@@ -7,14 +7,12 @@ INDICIES=cif-*
 
 all-am: default
 default:
-
-init:
 	$(CURLCMD) -XPUT '$(HOST)/_template/template_cif/' -d @$(TEMPLATE)
 
-deinit:
+remove:
 	$(CURLCMD) -XDELETE $(HOST)/$(INDICIES) -w "\n"
 
-reload: init deinit 
+reload: remove default
 
 list:
 	$(CURLCMD) -XGET $(HOST)/$(INDICIES)/_mapping?pretty -w "\n"

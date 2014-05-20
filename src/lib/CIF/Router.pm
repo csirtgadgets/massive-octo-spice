@@ -102,6 +102,16 @@ sub startup {
     my $self = shift;
     my $args = shift;
     
+    unless($self->get_auth_handle()->check_handle()){
+        $Logger->fatal('unable to start router, no auth handle...');
+        return 0;
+    }
+    
+    unless($self->get_storage_handle()->check_handle()){
+        $Logger->fatal('unable to start router, no storage handle...');
+        return 0;
+    }
+    
     $self->frontend(
         ZMQx::Class->socket(
             'REP',
