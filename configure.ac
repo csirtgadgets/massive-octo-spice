@@ -71,10 +71,8 @@ AC_SUBST(ES_HOST)
 
 AC_CONFIG_FILES([
     Makefile
-    libcif/Makefile.PL
-    libcif/lib/CIF/Generated.pm
-    router/Makefile.PL
-    smrt/Makefile.PL
+    src/Makefile.PL
+    src/lib/CIF/Generated.pm
     es/Makefile
     packaging/debian/default/cif
 ])

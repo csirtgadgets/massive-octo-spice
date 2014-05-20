@@ -1,87 +1,76 @@
-SUBDIRS = es 
-EXTRA_DIST = smrt router sbin contrib cpanfile libcif
+SUBDIRS = es
+EXTRA_DIST = contrib cpanfile src 
 
 PERLOPTS=DESTDIR=$(DESTDIR) INSTALL_BASE=$(CIF_PATH) INSTALLPRIVLIB=${siteperldir}
 PERL_INSTALLOPTS=INSTALL="$(INSTALL)" sysconfdir=$(sysconfdir) localstatedir=$(localstatedir) CIF_USER=$(CIF_USER) CIF_GROUP=$(CIF_GROUP)
 
-# http://stackoverflow.com/questions/3931741/why-does-make-think-the-target-is-up-to-date
-.PHONY: libcif smrt router
+.PHONY: src
 
 all: default
-default: libcif smrt router
-test: libcif-test smrt-test router-test
-install: libcif-install router-install smrt-install install-var
-fixperms: smrt-fixperms var-fixperms
+default:
+	( cd src && $(PERL) Makefile.PL && make manifest && $(PERL) Makefile.PL $(PERLOPTS) && make )
 
-install-var:
-	[ -d $(DESTDIR)$(localstatedir) ] || $(INSTALL) -m 0770 -d $(DESTDIR)$(localstatedir)
+test:
+	( cd src && CRITIC=$(PERL_CRITIC) make test )
 
-var-fixperms:
-	chown -R $(CIF_USER):$(CIF_GROUP) $(DESTDIR)$(localstatedir)
+deps: geoip
+if HAVE_CPANM
+	$(CPANM) $(NOTESTS) --installdeps ./src
+else
+	@echo "missing App::cpanminus, please install with \"perl -MCPAN -e 'install App::cpanminus'\" and re-run ./configure"
+	exit -1
+endif
 
-libcif: libcif-geoip
-	( cd libcif && $(PERL) Makefile.PL && make manifest && $(PERL) Makefile.PL $(PERLOPTS) && make )
-
-libcif-test:
-	( cd libcif && CRITIC=$(PERL_CRITIC) make test )
-
-libcif-install: libcif-install-files libcif-install-geoip
-
-libcif-install-files:
-	( cd libcif && make install )
-
-libcif-geoip:
+geoip:
 if HAVE_GEOIP
-	if [ ! -f libcif/contrib/GeoLite2-City.mmdb ]; then \
-		$(CURL) http://geolite.maxmind.com/download/geoip/database/GeoLite2-City.mmdb.gz -o libcif/contrib/GeoLite2-City.mmdb.gz; \
-		$(GZIP) -d libcif/contrib/GeoLite2-City.mmdb.gz; \
+	if [ ! -f contrib/GeoLite2-City.mmdb ]; then \
+		$(CURL) http://geolite.maxmind.com/download/geoip/database/GeoLite2-City.mmdb.gz -o contrib/GeoLite2-City.mmdb.gz; \
+		$(GZIP) -d contrib/GeoLite2-City.mmdb.gz; \
 	else \
-		echo 'libcif/contrib/GeoLite2-City.mmdb already exists... skipping.'; \
+		echo 'contrib/GeoLite2-City.mmdb already exists... skipping.'; \
 	fi;
 else
 	@echo 'geoip not enabled, skipping...'
 endif
 
-libcif-install-geoip:
+install: install-files install-rules install-var install-geoip
+
+install-geoip:
 if HAVE_GEOIP
-	( cd libcif && make install-geoip $(PERL_INSTALLOPTS) )
+	$(INSTALL) -m 660 "contrib/GeoLite2-City.mmdb" "$(DESTDIR)$(localstatedir)/GeoLite2-City.mmdb"
 else
 	@echo 'geoip not enabled, skipping...'
 endif
 
-smrt:
-	( cd smrt && $(PERL) Makefile.PL && make manifest && $(PERL) Makefile.PL $(PERLOPTS) && make )
+install-files:
+	( cd src && make install )
 
-smrt-test:
-	(cd smrt && PERL5LIB=../libcif/lib CRITIC=$(PERL_CRITIC) make test )
+install-rules:
+	[ -d $(DESTDIR)$(sysconfdir)/rules ] || $(INSTALL) -m 0770 -d $(DESTDIR)$(sysconfdir)/rules
+	-( cd src/rules && find . -type d -print ) | while read dir ; do \
+		$(INSTALL) -m 0770 -d "$(DESTDIR)$(sysconfdir)/rules/$$dir" ; \
+	done
+	-( cd src/rules && find . -type f -print ) | while read file ; do \
+		$(INSTALL) -m 0660 "src/rules/$$file" "$(DESTDIR)$(sysconfdir)/rules/$$file" ; \
+	done
 
-smrt-install:
-	( cd smrt && make install && make install-rules $(PERL_INSTALLOPTS) )
+install-var:
+	[ -d $(DESTDIR)$(localstatedir) ] || $(INSTALL) -m 0770 -d $(DESTDIR)$(localstatedir)
 
-smrt-fixperms:
-	( cd smrt && make fixperms $(PERL_INSTALLOPTS) )
+fixperms: fixperms-var fixperms-rules
 
-router:
-	( cd router && $(PERL) Makefile.PL && make manifest && $(PERL) Makefile.PL $(PERLOPTS) && make )
+fixperms-var:
+	chmod 0770 $(DESTDIR)$(localstatedir)
+	chown -R $(CIF_USER) $(DESTDIR)$(localstatedir)
+	chgrp -R $(CIF_GROUP) $(DESTDIR)$(localstatedir)
+	
+fixperms-rules:
+	chmod 0770 $(DESTDIR)$(sysconfdir)/rules
+	chown -R $(CIF_USER) $(DESTDIR)$(sysconfdir)/rules
+	chgrp -R $(CIF_GROUP) $(DESTDIR)$(sysconfdir)/rules
 
-router-test:
-	( cd router && PERL5LIB=../libcif/lib CRITIC=$(PERL_CRITIC) make test )
-
-router-install:
-	( cd router && make install)
-
-router-fixperms:
-	( cd router && make fixperms $(PERL_INSTALLOPTS) )
-
-deps:
-if HAVE_CPANM
-	$(CPANM) $(NOTESTS) --installdeps ./libcif
-	$(CPANM) $(NOTESTS) --installdeps ./smrt
-	$(CPANM) $(NOTESTS) --installdeps ./router
-else
-	@echo "missing App::cpanminus, please install with \"perl -MCPAN -e 'install App::cpanminus'\" and re-run ./configure"
-	exit -1
-endif
+clean-local:
+	find . -name '*.log' -delete
 	
 es-init:
 	( cd es && make init )
@@ -95,20 +84,16 @@ es-reload:
 clean:
 	find . -name 'MANIFEST' -delete
 	find . -name 'MANIFEST.bak' -delete
-	( cd libcif && $(PERL) Makefile.PL && make realclean )
-	( cd smrt && $(PERL) Makefile.PL && make realclean )
-	( cd router && $(PERL) Makefile.PL && make realclean )
+	( cd src && $(PERL) Makefile.PL && make realclean )
 
 reconf:
 	autoreconf -vf
 
 dist-hook:
-	rm -rf $(distdir)/libcif/blib
+	rm -rf $(distdir)/src/blib
 	find $(distdir) -name "*.gz" -delete
 	find $(distdir) -name "*.mmdb" -delete
-	rm -rf $(distdir)/smrt/blib
-	rm -rf $(distdir)/router/blib
-	find $(distdir)/smrt/testdata -name '*.log' -delete
+	find $(distdir)/src/testdata -name '*.log' -delete
 	find $(distdir) -name 'Makefile' -delete
 	find $(distdir) -name 'pm_to_blib' -delete
 	find $(distdir) -name 'CIF-.tar.gz' -delete

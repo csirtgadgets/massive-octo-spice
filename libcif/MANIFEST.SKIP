@@ -1,9 +1,0 @@
-extlib/
-blib/*
-^CIF-*/*
-.swp$
-.in$
-.tar.gz$
-.old
-.bak
-Makefile$

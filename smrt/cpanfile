@@ -1,8 +1,0 @@
-requires 'Daemon::Control';
-requires 'File::Type';
-requires 'LWP::UserAgent';
-requires 'LWPx::ParanoidAgent';
-requires 'Net::SSL';
-requires 'String::Tokenizer';
-requires 'XML::LibXML';
-requires 'XML::RSS';
