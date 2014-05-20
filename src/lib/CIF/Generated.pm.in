@@ -24,6 +24,9 @@ our $LibPath    = '@siteperldir@';
 our $EtcPath    = '@ext_sysconfdir@';
 our $VarPath    = '@ext_localstatedir@';
 
+our $LogPath 	= $VarPath.'/log';
+our $PidPath 	= $VarPath.'/run';
+
 our $BinPath    = $BasePath . '/bin';
 our $SbinPath   = $BasePath . '/sbin';
 

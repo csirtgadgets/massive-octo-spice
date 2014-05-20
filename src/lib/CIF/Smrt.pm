@@ -103,7 +103,7 @@ sub process {
     
     $Logger->info('processing...');
     my $ret = $self->get_handler()->process($self->get_rule());
-    return unless($ret);
+    return 0 unless($ret);
 
     my @array;  
     $Logger->info('building events: '.($#{$ret} + 1));

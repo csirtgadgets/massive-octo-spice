@@ -5,7 +5,7 @@ BEGIN {
     use local::lib "$FindBin::Bin/..";
 }
 
-use 5.014002;
+use 5.011;
 use strict;
 use warnings;
 use feature 'say';
@@ -27,7 +27,7 @@ my $config          = "$CIF::EtcPath/cif-router.conf";
 
 # daemon
 my $daemon          = 0;
-my $pidfile         = $CIF::VarPath.'/run/cif-router.pid';
+my $pidfile         = $CIF::PidPath.'/cif-router.pid';
 my $user            = $CIF::CIF_USER;
 my $group           = $CIF::CIF_GROUP;
 
@@ -41,9 +41,8 @@ my $notify_level    = 'error';
 # logging
 my $debug           = 0;
 my $verbose         = 0;
-my $trace           = 0;
 my $logging         = 0;
-my $logfile         = $CIF::VarPath.'/log/cif-router.log';
+my $logfile         = $CIF::LogPath.'/cif-router.log';
 
 Getopt::Long::Configure ("bundling");
 GetOptions(
@@ -67,9 +66,8 @@ GetOptions(
     'notify-from=s' => \$notify_from,
     
     # logging
-    'verbosity|v'   => \$verbose,
+    'verbosity|v+'  => \$verbose,
     'debug|d'       => \$debug,
-    'trace'         => \$trace,
     'logging'       => \$logging,
     'logfile=s'     => \$logfile,
 ) or die(usage());
@@ -82,12 +80,12 @@ sub usage {
 Usage: $0 [OPTIONS] [status|start|stop|restart|reload]
 
  Options:
-    -F, --frontend=STRING   specify the frontend binding, default: $frontend
-    -B, --backend=STRING    specify the backend binding, default: $backend
-    -C, --config=FILE       specify cofiguration file, default: $config
-    -d, --debug             turn on debugging [INFO]
-    -v, --verbose           turn up debug verbosity [DEBUG]
-    -h, --help              this message
+    -F,  --frontend=STRING   specify the frontend binding, default: $frontend
+    -B,  --backend=STRING    specify the backend binding, default: $backend
+    -C,  --config=FILE       specify cofiguration file, default: $config
+    -d,  --debug             turn on debugging (max verbosity)
+    -v+, --verbosity         turn up verbosity
+    -h,  --help              this message
     
  Daemon Options:
     -D, --daemon            run as daemon
@@ -115,9 +113,7 @@ Usage: $0 [OPTIONS] [status|start|stop|restart|reload]
 EOF
 }
 
-$debug = ($debug) ? 'INFO' : 'ERROR';
-$debug = 'DEBUG' if($verbose);
-$debug = 'TRACE' if($trace);
+my $loglevel = ($debug) ? 'TRACE' : 'FATAL';
 
 if($notify){
     $notify = { 
@@ -129,12 +125,19 @@ if($notify){
 
 init_logging(
     { 
-        level       => $debug,
+        level       => $loglevel,
         catagory	=> 'cif-router',
         filename    => ($logging) ? $logfile : 0,
     },
     $notify,   
 );
+
+if($verbosity){
+    unless($debug){ # we're already at TRACE
+        $Logger->more_logging($verbosity);
+    }
+    $Logger->warn('current log level: '.Log::Log4perl::Level::to_LogDispatch_string($Logger->level()).', increase verbosity with -v+');
+}
 
 unless($daemon){
     $ARGV[0] = 'start' unless($ARGV);

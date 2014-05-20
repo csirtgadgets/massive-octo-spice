@@ -44,7 +44,7 @@ GetOptions(
     'help|h'        => \$help, 
     'config|C=s'    => \$config,
     'debug|d'       => \$debug,
-    'verbose|v'   	=> \$verbose,
+    'verbosity|v+'  => \$verbose,
     
     'remote|R=s'        => \$remote,
     'query|q=s'         => \$query,
@@ -65,15 +65,21 @@ GetOptions(
 die(usage()) if($help);
 die(usage()) unless($query || $ping || $submit || $subscriber);
 
-$debug = ($debug) ? 'INFO' : 'ERROR';
-$debug = 'DEBUG' if($verbose);
+my $loglevel = ($debug) ? 'TRACE' : 'ERROR';
 
 init_logging(
     { 
-        level       => $debug,
+        level       => $loglevel,
         category	=> 'cif',
     }, 
 );
+
+if($verbosity){
+    unless($debug){ # we're already at TRACE
+        $Logger->more_logging($verbosity);
+    }
+    $Logger->warn('current log level: '.Log::Log4perl::Level::to_LogDispatch_string($Logger->level()).', increase verbosity with -v+');
+}
 
 if($submit){
     $submit = [];
@@ -89,12 +95,12 @@ sub usage {
 Usage: $0 [OPTION]
 
  Options:
-    -R, --remote=STRING     specify the remote, default: $remote
-    -C, --config=FILE       specify cofiguration file, default: ~/.cif 
-    -f, --format=FORMAT     specify the output format, default: $format
-    -d, --debug             turn on debugging
-    -v, --verbose           turn up debug verbosity [1-10]
-    -h, --help              this message       
+    -R,  --remote=STRING     specify the remote, default: $remote
+    -C,  --config=FILE       specify cofiguration file, default: ~/.cif 
+    -f,  --format=FORMAT     specify the output format, default: $format
+    -d,  --debug             turn on debugging (max verbosity)
+    -v+, --verbosity         turn up debug verbosity
+    -h,  --help              this message       
     
 Advanced Options:
     -T, --token=STRING          specify an access token

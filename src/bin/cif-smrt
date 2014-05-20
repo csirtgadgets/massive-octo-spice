@@ -5,7 +5,7 @@ BEGIN {
     use local::lib "$FindBin::Bin/..";
 }
 
-use 5.014002;
+use 5.011;
 use feature 'say';
 use strict;
 use warnings;
@@ -35,11 +35,12 @@ my $meta            = 0;
 # daemon
 my $daemon      = 0;
 my $config      = $CIF::EtcPath.'/cif-smrt.conf';
-my $pidfile     = $CIF::VarPath.'/smrt.pid';
+my $pidfile     = $CIF::PidPath.'/smrt.pid';
 my $user        = $CIF::CIF_USER;
 my $group       = $CIF::CIF_GROUP;
 my $interval    = 60; #min
 my $randomstart = 30; #min
+my $testmode    = 0;
 
 # notification
 my $notify;
@@ -50,11 +51,10 @@ my $notify_level    = 'error';
 
 # logging
 my $debug       = 0;
-my $verbose     = 0;
+my $verbosity   = 0;
 my $logging     = 0;
 my $consolemode = 0;
-my $logfile     = $CIF::VarPath.'/log/cif-smrt.log';
-my $trace       = 0;
+my $logfile     = $CIF::LogPath.'/cif-smrt.log';
 
 my $today = DateTime->today()->ymd('');
 
@@ -83,12 +83,12 @@ GetOptions(
     'pidfile|p=s'       => \$pidfile,
     '--interval'	    => \$interval,
     '--randomstart'   	=> \$randomstart,
+    '--testmode'        => \$testmode,
     
     # logging
     'logfile=s'     => \$logfile,
     'debug|d'       => \$debug,
-    'verbosity|v'   => \$verbose,
-    'trace'         => \$trace,
+    'verbosity|v+'  => \$verbosity,
     'logging'       => \$logging,
     
     # advanced
@@ -133,10 +133,10 @@ sub usage {
 Usage: $0 [OPTIONS] [-D status|start|stop|restart|reload]
 
  Options:
-    -C, --config=FILE       specify cofiguration file, default: $config
-    -d, --debug             turn on debugging [INFO]
-    -v, --verbosity         turn up debug verbosity [DEBUG]
-    -h, --help              this message
+    -C,  --config=FILE       specify cofiguration file, default: $config
+    -d,  --debug             turn on debugging (max verbosity)
+    -v+, --verbosity         turn up verbosity
+    -h,  --help              this message
      
     -r, --rule=STRING       specify a rule or a rules directory, default: $rule
     -f, --feed=STRING       specify a feed (within a rule)
@@ -151,6 +151,8 @@ Usage: $0 [OPTIONS] [-D status|start|stop|restart|reload]
     
     --randomstart           random start delay, default: $randomstart min
     --interval              runtime interval, default: $interval min
+    
+    --testmode              run now, overrides randomstart
     
     --logfile:              logfile location, default: $logfile
     --logging:              turn on logging [to file]
@@ -177,10 +179,6 @@ Usage: $0 [OPTIONS] [-D status|start|stop|restart|reload]
 EOF
 }
 
-$debug = ($debug) ? 'INFO' : 'ERROR';
-$debug = 'DEBUG' if($verbose);
-$debug = 'TRACE' if($trace);
-
 if($notify){
     $notify = { 
         to          => $notify_to, 
@@ -189,14 +187,23 @@ if($notify){
         min_level   => lc($notify_level) }
 }
 
+my $loglevel = ($debug) ? 'TRACE' : 'ERROR';
+
 init_logging(
     {
-        level       => $debug,
+        level       => $loglevel,
         category	=> 'cif-smrt',
         filename    => ($logging) ? $logfile : 0,
     },
     $notify,   
 );
+
+if($verbosity){
+    unless($debug){ # we're already at TRACE
+        $Logger->more_logging($verbosity);
+    }
+    $Logger->warn('current log level: '.Log::Log4perl::Level::to_LogDispatch_string($Logger->level()).', increase verbosity with -v+');
+}
 
 $ARGV[0] = 'start' unless($ARGV[0] && $daemon);
 
@@ -217,7 +224,7 @@ sub main {
     my $done = AnyEvent->condvar();
     
     # play nice with feed providers, so we don't slam them all at once
-    $randomstart = int(rand($randomstart)); # sometime in the next $randomstart
+    $randomstart = ($testmode) ? 0 : int(rand($randomstart)); # sometime in the next $randomstart
     $Logger->info('delaying start for: '.$randomstart.'min then running every '.$interval.'min there after...');
     $Logger->info('to run immediately, set: --randomstart 0');
     
@@ -228,7 +235,8 @@ sub main {
         after       => $randomstart, 
         interval    => $interval, # once an hour
         cb          => sub { 
-            _main(); 
+            _main();
+            $done->send() if($testmode);
             $Logger->info('sleeping: '.($interval/60).'min'); 
         }
     );
@@ -316,7 +324,7 @@ sub _main {
 
 ##TODO re-factor
 sub _clean_tmp {
-    $Logger->info('cleaning up tmp...');
+    $Logger->info('cleaning up tmp: '.$cache);
     opendir(F,$cache) || return;
     my $tmp = [ sort { $a cmp $b } grep (/^\d+\.log$/,readdir(F)) ];
     foreach (@$tmp){
