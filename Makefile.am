@@ -1,11 +1,11 @@
-SUBDIRS = es
-EXTRA_DIST = contrib cpanfile src 
+SUBDIRS = elasticsearch
+EXTRA_DIST = contrib src hacking
 
 PERLOPTS=DESTDIR=$(DESTDIR) INSTALL_BASE=$(CIF_PATH) INSTALLPRIVLIB=${siteperldir}
 PERL_INSTALLOPTS=INSTALL="$(INSTALL)" sysconfdir=$(sysconfdir) localstatedir=$(localstatedir) CIF_USER=$(CIF_USER) CIF_GROUP=$(CIF_GROUP)
 CPANMOPTS=-n
 
-.PHONY: src
+.PHONY: src elasticsearch
 
 all: default
 default:
@@ -74,10 +74,22 @@ clean-local:
 	find . -name '*.log' -delete
 	
 elasticsearch:
-	( cd elasticsearch && make )
+	( cd elasticsearch && make init )
 
 elasticsearch-reload:
 	(cd elasticsearch && make reload )
+
+debian7:
+	@echo 'not yet supported, try make ubuntu14'
+
+ubuntu12:
+	( cd hacking/platforms/ubuntu && sudo ./ubuntu12.sh )
+
+ubuntu14:
+	( cd hacking/platforms/ubuntu && sudo ./ubuntu14.sh )
+
+rhel:
+	@echo 'not yet supported'
 
 clean:
 	find . -name 'MANIFEST' -delete

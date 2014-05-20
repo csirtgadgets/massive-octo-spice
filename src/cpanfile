@@ -1,4 +1,5 @@
 requires 'Carp::Assert';
+requires 'Compress::Snappy';
 requires 'Config::Simple','4.59';
 requires 'Crypt::Random::Source';
 requires 'Daemon::Control';

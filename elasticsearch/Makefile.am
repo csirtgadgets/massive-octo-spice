@@ -1,3 +1,5 @@
+EXTRA_DIST = cif-template.json
+
 CURLOPTS=-w "\n"
 CURLCMD=$(CURL) $(CURLOPTS)
 HOST=http://$(ES_HOST)
@@ -7,6 +9,9 @@ INDICIES=cif-*
 
 all-am: default
 default:
+	@echo 'nothing to do'
+	
+init:
 	$(CURLCMD) -XPUT '$(HOST)/_template/template_cif/' -d @$(TEMPLATE)
 
 remove:

@@ -73,7 +73,7 @@ AC_CONFIG_FILES([
     Makefile
     src/Makefile.PL
     src/lib/CIF/Generated.pm
-    es/Makefile
+    elasticsearch/Makefile
     hacking/packaging/debian/default/cif
 ])
 
