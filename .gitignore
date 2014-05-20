@@ -1,5 +1,4 @@
-libcif/contrib
-packaging/debian/default/cif
+hacking/packaging/debian/default/cif
 *.tar.gz
 libcif/CIF-*
 */MANIFEST
