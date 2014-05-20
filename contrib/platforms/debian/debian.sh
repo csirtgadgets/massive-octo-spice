@@ -45,7 +45,7 @@ fi
 
 if [ -z `getent passwd $MYUSER` ]; then
 	echo "adding user: $MYUSER"
-	useradd $MYUSER -m
+	useradd $MYUSER -m -s /bin/bash
 	adduser www-data $MYUSER
 fi
 
