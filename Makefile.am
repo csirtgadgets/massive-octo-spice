@@ -90,6 +90,7 @@ reconf:
 	autoreconf -vf
 
 dist-hook:
+	sh ./version.sh > $(distdir)/.version
 	rm -rf $(distdir)/src/blib
 	find $(distdir) -name "*.gz" -delete
 	find $(distdir) -name "*.mmdb" -delete

@@ -10,7 +10,7 @@ libcif/CIF-*
 */*.bak
 */Makefile.old
 MYMETA*
-smrt/testdata/*/*.log
+src/testdata/*/*.log
 src/lib/CIF/Generated.pm
 
 */_Inline/*

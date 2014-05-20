@@ -30,9 +30,7 @@ apt-get install -y apache2 libapache2-mod-perl2 curl mailutils build-essential g
 echo 'HRNGDEVICE=/dev/urandom' >> /etc/default/rng-tools
 service rng-tools restart
 
-if [ -z (getent passwd $MYUSER) ]; then
-	echo 'cif user already exists...'
-else
+if [ -z `getent passwd $MYUSER` ]; then
 	useradd $MYUSER
 	adduser www-data $MYUSER
 fi
