@@ -1,6 +1,6 @@
-hacking/packaging/debian/default/cif
+contrib/GeoLite2-City.mmdb
+hacking/packaging/ubuntu/default/cif
 *.tar.gz
-libcif/CIF-*
 */MANIFEST
 */Makefile.PL
 */*.tar.gz

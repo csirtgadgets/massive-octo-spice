@@ -37,6 +37,7 @@ sub understands {
     my $self = shift;
     my $args = shift;
     
+    $Logger->debug($self->get_file());
     return unless(-e $self->get_file());
 
     return unless($args->{'observable'});

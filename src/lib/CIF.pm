@@ -44,10 +44,6 @@ use Cwd ();
 
 __PACKAGE__->LoadGeneratedData();
 
-use constant DEFAULT_CONFIG         => $ENV{'HOME'}.'/.cif';
-use constant DEFAULT_QUERY_LIMIT    => 500;
-use constant DEFAULT_GROUP          => 'everyone';
-
 use vars qw(
     $Logger
     $BasePath

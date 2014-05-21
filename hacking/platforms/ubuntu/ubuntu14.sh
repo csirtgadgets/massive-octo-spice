@@ -30,6 +30,14 @@ apt-get install -y elasticsearch apache2 libapache2-mod-perl2 curl mailutils bui
 echo 'HRNGDEVICE=/dev/urandom' >> /etc/default/rng-tools
 service rng-tools restart
 
+echo 'setting up bind...'
+
+if [ -z `grep -l '8.8.8.8' /etc/bind/named.conf.options` ]; then
+	echo 'overwriting bind config'
+	mv /etc/bind/named.conf.options /etc/bind/named.conf.options.orig
+	cp named.conf.options /etc/bind/named.conf.options
+fi
+
 if [ -z `grep -l 'spamhaus.org' /etc/bind/named.conf.local` ]; then
     cat ./named.conf.local >> /etc/bind/named.conf.local
 fi
@@ -42,6 +50,16 @@ if [ -z `grep -l '127.0.0.1' /etc/resolvconf/resolv.conf.d/base` ]; then
     echo "restarting network..."
     ifdown eth0 && sudo ifup eth0
 fi
+
+echo 'setting up apache'
+cp cif.conf /etc/apache2/
+cp /etc/apache2/sites-available/default-ssl /etc/apache2/sites-available/default-ssl.orig
+cp default-ssl /etc/apache2/sites-available
+a2dissite default
+a2ensite default-ssl
+a2enmod ssl
+
+service apache2 restart
 
 if [ -z `getent passwd $MYUSER` ]; then
 	echo "adding user: $MYUSER"
