@@ -74,7 +74,7 @@ AC_CONFIG_FILES([
     src/Makefile.PL
     src/lib/CIF/Generated.pm
     elasticsearch/Makefile
-    hacking/packaging/debian/default/cif
+    hacking/packaging/ubuntu/default/cif
 ])
 
 #dnl CIF_USER

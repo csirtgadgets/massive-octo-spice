@@ -25,7 +25,7 @@ else
 fi
 
 apt-get update
-apt-get install -y elasticsearch apache2 libapache2-mod-perl2 curl mailutils build-essential git-core automake cpanminus rng-tools openjdk-7-jre-headless libtool pkg-config vim htop bind9 libzmq3-dev libffi6 libmoose-perl libmouse-perl libanyevent-perl liblwp-protocol-https-perl libxml2-dev libexpat-dev nginx libgeoip-dev geoip-bin
+apt-get install -y libssl-dev elasticsearch apache2 libapache2-mod-perl2 curl mailutils build-essential git-core automake cpanminus rng-tools openjdk-7-jre-headless libtool pkg-config vim htop bind9 libzmq3-dev libffi6 libmoose-perl libmouse-perl libanyevent-perl liblwp-protocol-https-perl libxml2-dev libexpat-dev libgeoip-dev geoip-bin
 
 echo 'HRNGDEVICE=/dev/urandom' >> /etc/default/rng-tools
 service rng-tools restart
@@ -53,10 +53,10 @@ fi
 
 echo 'setting up apache'
 cp cif.conf /etc/apache2/
-cp /etc/apache2/sites-available/default-ssl /etc/apache2/sites-available/default-ssl.orig
-cp default-ssl /etc/apache2/sites-available
-a2dissite default
-a2ensite default-ssl
+cp /etc/apache2/sites-available/default-ssl.conf /etc/apache2/sites-available/default-ssl.conf.orig
+cp default-ssl /etc/apache2/sites-available/default-ssl.conf
+a2dissite 000-default.conf
+a2ensite default-ssl.conf
 a2enmod ssl
 
 service apache2 restart
@@ -69,6 +69,7 @@ fi
 
 if [ ! -f /home/cif/.profile ]; then
 	touch /home/cif/.profile
+	chown $MYUSER:$MYGROUP /home/cif/.profile
 fi
 
 if [ -z `grep -l '/opt/cif/bin' /home/cif/.profile` ]; then
@@ -90,3 +91,5 @@ fi
 update-rc.d elasticsearch defaults 95 10
 update-rc.d cif-router defaults 95 10
 update-rc.d cif-smrt defaults 95 10
+
+service elasticsearch start

@@ -58,7 +58,7 @@ install-rules:
 install-var:
 	[ -d $(DESTDIR)$(localstatedir) ] || $(INSTALL) -m 0770 -d $(DESTDIR)$(localstatedir)
 
-fixperms: fixperms-var fixperms-rules
+fixperms: fixperms-rules
 
 fixperms-var:
 	chmod 0770 $(DESTDIR)$(localstatedir)
