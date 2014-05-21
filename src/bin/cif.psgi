@@ -3,14 +3,12 @@
 # http://www.matt-peters.com/blog/?p=35
 # https://github.com/spiritloose/mod_psgi/
 
-use lib '/vagrant/src/lib';
-
 BEGIN {
     use FindBin;
     use local::lib "$FindBin::Bin/..";
 }
 
-use 5.014002;
+use 5.011;
 use strict;
 use warnings;
 

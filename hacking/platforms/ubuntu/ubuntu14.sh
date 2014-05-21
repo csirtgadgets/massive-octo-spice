@@ -79,12 +79,12 @@ if [ -z `grep -l '/opt/cif/bin' /home/cif/.profile` ]; then
 fi
 
 echo 'copying init.d scripts...'
-cp ../../packaging/debian/init.d/cif-smrt /etc/init.d/
-cp ../../packaging/debian/init.d/cif-router /etc/init.d/
+cp ../../packaging/ubuntu/init.d/cif-smrt /etc/init.d/
+cp ../../packaging/ubuntu/init.d/cif-router /etc/init.d/
 
 if [ ! -f /etc/default/cif ]; then
     echo 'setting /etc/default/cif'
-    cp ../../packaging/debian/default/cif /etc/default/cif
+    cp ../../packaging/ubuntu/default/cif /etc/default/cif
 fi
 
 update-rc.d elasticsearch defaults 95 10
