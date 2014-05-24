@@ -8,7 +8,6 @@ BEGIN {
     use local::lib "$FindBin::Bin/..";
 }
 
-use 5.011;
 use strict;
 use warnings;
 
