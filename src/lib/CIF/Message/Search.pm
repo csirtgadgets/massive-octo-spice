@@ -4,7 +4,6 @@ use strict;
 use warnings;
 
 use Mouse;
-use CIF::Type;
 
 has 'confidence'    => (
     is      => 'ro',

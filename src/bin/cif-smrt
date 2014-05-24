@@ -87,7 +87,7 @@ GetOptions(
     
     # logging
     'logfile=s'     => \$logfile,
-    'debug|d'       => \$debug,
+    'debug|d+'      => \$debug,
     'verbosity|v+'  => \$verbosity,
     'logging'       => \$logging,
     
@@ -187,7 +187,7 @@ if($notify){
         min_level   => lc($notify_level) }
 }
 
-my $loglevel = ($debug) ? 'TRACE' : 'FATAL';
+my $loglevel = ($debug) ? 'DEBUG' : 'FATAL';
 
 init_logging(
     {

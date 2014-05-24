@@ -2,10 +2,10 @@ package CIF::Encoder::Json;
 
 use warnings;
 use strict;
+use namespace::autoclean;
 
 use Mouse;
-require JSON::XS;
-use CIF::Observable;
+use JSON::XS;
 
 with 'CIF::Encoder';
 
@@ -35,7 +35,7 @@ sub decode {
     my $args = shift;
 
     return unless($args->{'data'});
-    return JSON::XS::decode_json($args->{'data'});
+    return JSON::XS->new->decode($args->{'data'});
 }
 
 __PACKAGE__->meta->make_immutable();

@@ -6,7 +6,7 @@ use warnings;
 use Module::PluginFinder;
 
 my $finder = Module::PluginFinder->new(
-    search_path => ['CIF::Observable','CIFx::Observable'],
+    search_path => ['CIF::Observable'],
     filter      => sub {
         my ($class,$data) = @_;
         $class->understands($data);

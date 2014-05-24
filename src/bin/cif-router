@@ -113,7 +113,7 @@ Usage: $0 [OPTIONS] [status|start|stop|restart|reload]
 EOF
 }
 
-my $loglevel = ($debug) ? 'TRACE' : 'FATAL';
+my $loglevel = ($debug) ? 'DEBUG' : 'FATAL';
 
 if($notify){
     $notify = { 

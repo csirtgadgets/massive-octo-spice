@@ -1,6 +1,5 @@
 package CIF::Router;
 
-use 5.011;
 use strict;
 use warnings;
 

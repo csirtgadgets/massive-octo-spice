@@ -1,8 +1,8 @@
 package CIF::Client;
 
-use 5.011;
 use strict;
 use warnings;
+use namespace::autoclean;
 
 use CIF qw/init_logging $Logger/;
 use CIF::Message;

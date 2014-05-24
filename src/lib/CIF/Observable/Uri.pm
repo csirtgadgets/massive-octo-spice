@@ -2,7 +2,7 @@ package CIF::Observable::Uri;
 
 use strict;
 use warnings;
-
+use namespace::autoclean;
 
 use Mouse;
 use CIF qw/is_url/;
@@ -23,7 +23,7 @@ sub understands {
     my $args = shift;
     
     return unless($args->{'observable'});
-    return unless(is_url($args->{'observable'}));
+    #return unless(is_url($args->{'observable'}));
     return 1;
 }
 

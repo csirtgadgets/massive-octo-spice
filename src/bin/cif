@@ -5,7 +5,7 @@ BEGIN {
     use local::lib "$FindBin::Bin/..";
 }
 
-use 5.014002;
+use 5.011;
 use strict;
 use warnings;
 use feature 'say';
@@ -19,7 +19,7 @@ use Carp;
 use Time::HiRes qw(tv_interval);
 
 my $debug     	= 0;
-my $verbose		= 0;
+my $verbosity	= 0;
 my $help;
 my $man;
 my $remote      = 'tcp://localhost';
@@ -44,7 +44,7 @@ GetOptions(
     'help|h'        => \$help, 
     'config|C=s'    => \$config,
     'debug|d'       => \$debug,
-    'verbosity|v+'  => \$verbose,
+    'verbosity|v+'  => \$verbosity,
     
     'remote|R=s'        => \$remote,
     'query|q=s'         => \$query,
