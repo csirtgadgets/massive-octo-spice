@@ -1,6 +1,5 @@
 package CIF;
 
-use 5.011;
 use strict;
 use warnings;
 
@@ -31,24 +30,6 @@ our @EXPORT = qw(
     $Logger 
 );
 
-# push these out to make this code simpler to read
-# we still export the symbols though
-use CIF::Plugin::Address qw(:all);
-use CIF::Plugin::Hash qw(:all);
-use CIF::Plugin::Binary qw(:all);
-use CIF::Plugin::DateTime qw(:all);
-
-use CIF::Logger;
-use File::Spec ();
-use Cwd ();
-
-__PACKAGE__->LoadGeneratedData();
-
-##TODO fix this
-use constant DEFAULT_CONFIG         => ($ENV{'HOME'}) ? $ENV{'HOME'}.'/.cif' : '';
-use constant DEFAULT_QUERY_LIMIT    => 500;
-use constant DEFAULT_GROUP          => 'everyone';
-
 use vars qw(
     $Logger
     $BasePath
@@ -73,6 +54,22 @@ use vars qw(
     $PidPath
     $LogPath
 );
+
+use CIF::Generated;
+
+# push these out to make this code simpler to read
+# we still export the symbols though
+use CIF::Plugin::Address qw(:all);
+use CIF::Plugin::Hash qw(:all);
+use CIF::Plugin::Binary qw(:all);
+use CIF::Plugin::DateTime qw(:all);
+
+use CIF::Logger;
+
+##TODO fix this
+use constant DEFAULT_CONFIG         => ($ENV{'HOME'}) ? $ENV{'HOME'}.'/.cif' : '';
+use constant DEFAULT_QUERY_LIMIT    => 500;
+use constant DEFAULT_GROUP          => 'everyone';
 
 # Preloaded methods go here.
 
@@ -128,45 +125,5 @@ sub init_logging {
     $Logger = $Logger->get_logger();
 }
 
-sub LoadGeneratedData {
-    my $class = shift;
-    my $pm_path = ( File::Spec->splitpath( $INC{'CIF.pm'} ) )[1] || 'lib';
-
-    require $pm_path."/CIF/Generated.pm" || die "Couldn't load CIF::Generated: $@";
-    $class->CanonicalizeGeneratedPaths();
-}
-
-sub CanonicalizeGeneratedPaths {
-    my $class = shift;
-    
-    unless ( File::Spec->file_name_is_absolute($EtcPath) ) {
-    
-        # if BasePath exists and is absolute, we won't infer it from $INC{'CIF.pm'}.
-        # otherwise CIF.pm will make the source dir(where we configure CIF) be the
-        # BasePath instead of the one specified by --prefix
-        unless ($BasePath &&  -d $BasePath && File::Spec->file_name_is_absolute($BasePath) ) {
-                my $pm_path = ( File::Spec->splitpath( $INC{'CIF.pm'} ) )[1];
-    
-            # need rel2abs here is to make sure path is absolute, since $INC{'CIF.pm'}
-            # is not always absolute
-            $BasePath = File::Spec->rel2abs(
-                File::Spec->catdir( $pm_path, File::Spec->updir ) 
-            );
-        }
-    
-        $BasePath = Cwd::realpath($BasePath);
-    
-        for my $path (qw/EtcPath BinPath SbinPath 
-                            VarPath LocalPath LocalEtcPath
-                            LocalLibPath
-                            RouterPath RouterLibPath SmrtPath SmrtLibPath/) 
-        {
-            no strict 'refs';
-            # just change relative ones
-            $$path = File::Spec->catfile( $BasePath, $$path ) unless File::Spec->file_name_is_absolute($$path);
-        }
-    }
-
-}
 
 1;

@@ -1,14 +1,16 @@
-#!perl
+#!/usr/bin/perl
+
+eval 'exec /usr/bin/perl  -S $0 ${1+"$@"}'
+    if 0; # not running under some shell
+
 
 BEGIN {
     use FindBin;
     use local::lib "$FindBin::Bin/..";
 }
 
-use 5.011;
 use strict;
 use warnings;
-use feature 'say';
 
 use CIF qw/init_logging $Logger/;
 use CIF::Router;

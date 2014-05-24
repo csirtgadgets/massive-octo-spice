@@ -51,7 +51,11 @@ sub _log_search {
         tlp         => TLP_DEFAULT(),
         tags        => ['search'],
         group       => GROUP_DEFAULT(),
-    })->TO_JSON();
+    });
+    
+    warn ::Dumper($obs);
+    
+    $obs = $obs->TO_JSON();
     
     my $res = $self->get_storage_handle()->process({ Observables => [$obs] });
     

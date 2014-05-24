@@ -30,4 +30,6 @@ subtype "CIF::Type::PortList",
             }
         return 1;
     };
+
+no Mouse::Util::TypeConstraints;
 1;

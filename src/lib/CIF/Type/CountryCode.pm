@@ -2,7 +2,6 @@ package CIF::Type::CountryCode;
 
 use strict;
 use warnings;
-use namespace::autoclean;
 
 use Mouse::Util::TypeConstraints;
 
@@ -14,5 +13,7 @@ subtype "CIF::Type::CountryCode",
 coerce 'CIF::Type::CountryCode',
     from 'Str',
     via { uc };
+    
+no Mouse::Util::TypeConstraints;
 
 1;

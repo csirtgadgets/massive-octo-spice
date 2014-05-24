@@ -3,7 +3,6 @@ package CIF::Type::Tlp;
 use strict;
 use warnings;
 
-
 use Mouse::Util::TypeConstraints;
 
 subtype 'CIF::Type::Tlp',
@@ -14,7 +13,8 @@ subtype 'CIF::Type::Tlp',
 coerce 'CIF::Type::Tlp',
     from 'Str',
     via { lc() };
-    
+
+no Mouse::Util::TypeConstraints;    
 1;
 
 

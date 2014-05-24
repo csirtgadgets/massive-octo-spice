@@ -1,6 +1,5 @@
 package CIF::Format::Json;
 
-use 5.011;
 use strict;
 use warnings;
 

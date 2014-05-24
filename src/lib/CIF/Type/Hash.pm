@@ -3,7 +3,6 @@ package CIF::Type::Hash;
 use strict;
 use warnings;
 
-
 use Mouse::Util::TypeConstraints;
 use CIF qw/is_hash/;
 
@@ -15,5 +14,6 @@ subtype 'CIF::Type::Hash',
 coerce 'CIF::Type::Hash',
     from 'Str',
     via { lc() };
-    
+
+no Mouse::Util::TypeConstraints;
 1;

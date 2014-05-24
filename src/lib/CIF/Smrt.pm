@@ -1,6 +1,5 @@
 package CIF::Smrt;
 
-use 5.011;
 use strict;
 use warnings;
 

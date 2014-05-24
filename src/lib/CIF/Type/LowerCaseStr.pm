@@ -14,4 +14,6 @@ coerce 'CIF::Type::LowerCaseStr',
     from 'Str',
     via { lc };
 
+no Mouse::Util::TypeConstraints;
+
 1;

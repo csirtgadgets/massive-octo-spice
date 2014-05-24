@@ -18,7 +18,7 @@ our $RE_ALLOWED_SCHEMES = qr/^($RESTR_ALLOWED_SCHEMES)$/;
 
 # We want an absolute URL
 subtype 'CIF::Type::Uri',
-    as 'CIF::Type::LowerCaseStr',
+    as 'Str',
     where { 
         my $url_text = shift;
         $url_text = lc($url_text);
@@ -32,4 +32,5 @@ subtype 'CIF::Type::Uri',
     },
     message { "Invalid URL '" . ($_ || '(undef)') . "'"} ;
 
+no Mouse::Util::TypeConstraints;
 1;

@@ -1,15 +1,12 @@
 package CIF::Smrt::Broker;
 
-use 5.011;
 use warnings;
 use strict;
 use namespace::autoclean;
 
-use Moose;
-use MooseX::FollowPBP;
+use Mouse;
 
 use CIF::Client;
-use Data::Dumper;
 
 has 'client' => (
     is          => 'ro',

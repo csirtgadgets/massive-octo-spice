@@ -3,7 +3,6 @@ package CIF::Type::UpperCaseStr;
 use strict;
 use warnings;
 
-
 use Mouse::Util::TypeConstraints;
 
 subtype "CIF::Type::UpperCaseStr", 
@@ -14,5 +13,7 @@ subtype "CIF::Type::UpperCaseStr",
 coerce 'CIF::Type::UpperCaseStr',
     from 'Str',
     via { uc };
+    
+no Mouse::Util::TypeConstraints;
 
 1;

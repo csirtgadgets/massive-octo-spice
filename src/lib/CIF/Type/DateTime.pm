@@ -3,7 +3,6 @@ package CIF::Type::DateTime;
 use strict;
 use warnings;
 
-
 use Mouse::Util::TypeConstraints;
 use CIF qw/normalize_timestamp is_datetime/;
 
@@ -29,5 +28,7 @@ subtype 'CIF::Type::DateTimeHiRes',
     as 'Num',
     where { $_ =~ /^([0-9]*\.[0-9]+)$/ },
     message { "Must be of the format 1234566.123123123" };
+
+no Mouse::Util::TypeConstraints;
 
 1;

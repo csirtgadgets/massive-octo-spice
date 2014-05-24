@@ -4,9 +4,11 @@ use strict;
 use warnings;
 
 use Module::PluginFinder;
+use Try::Tiny;
+use Carp;
 
 my $finder = Module::PluginFinder->new(
-    search_path => ['CIF::Observable'],
+    search_path => 'CIF::Observable',
     filter      => sub {
         my ($class,$data) = @_;
         $class->understands($data);
@@ -15,7 +17,15 @@ my $finder = Module::PluginFinder->new(
 
 sub new_plugin {
     my ($self,$args) = @_;
-    return $finder->construct($args,%{$args}) or die "I don't know how to create this type of Plugin";
+    my ($ret,$err);
+    try {
+        $ret = $finder->construct($args,%{$args});
+    } catch {
+        $err = shift;
+    };
+    return $ret if($ret);
+    croak($err) if($err);
+    
 }
 
 1;

@@ -5,7 +5,6 @@ BEGIN {
     use local::lib "$FindBin::Bin/..";
 }
 
-use 5.011;
 use feature 'say';
 use strict;
 use warnings;

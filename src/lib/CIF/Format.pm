@@ -3,7 +3,6 @@ package CIF::Format;
 use strict;
 use warnings;
 
-
 use Mouse::Role;
 
 requires qw/understands process/;

@@ -2,7 +2,6 @@ package CIF::Type::RIR;
 
 use strict;
 use warnings;
-use namespace::autoclean;
 
 use Mouse::Util::TypeConstraints;
 
@@ -14,5 +13,6 @@ subtype 'CIF::Type::RIR',
 coerce 'CIF::Type::RIR',
     from 'Str',
     via { lc() };
-    
+
+no Mouse::Util::TypeConstraints;
 1;
