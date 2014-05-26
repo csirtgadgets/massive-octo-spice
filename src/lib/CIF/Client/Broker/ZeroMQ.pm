@@ -14,7 +14,7 @@ use Try::Tiny;
 with 'CIF::Client::Broker';
 
 use constant RE_REMOTE      => qr/^((zeromq|zmq)(\+))?(tcp|inproc|ipc|proc)\:\/{2}([[\S]+|\*])(\:(\d+))?$/;
-use constant SND_TIMEOUT    => 5000;
+use constant SND_TIMEOUT    => 120000;
 use constant RCV_TIMEOUT    => 30000;
 use constant PING_TIMEOUT   => 5000; ##TODO seperate ping timeouts from SND/RCV timeouts
 

@@ -1,6 +1,4 @@
 use strict;
-use warnings;
-use 5.011;
 
 use Test::More;
 
@@ -16,11 +14,7 @@ BEGIN {
     }
 };
 
-use Data::Dumper;
 use AnyEvent;
-use CIF qw/init_logging $Logger hash_create_random/;
-
-init_logging({ level => 'ERROR' });
 
 my $storage = 'dummy';
 my $auth = 'dummy';
@@ -29,14 +23,14 @@ my $t = threads->create('start_router');
 
 my $cli = CIF::Client->new({
     remote          => 'tcp://localhost:'.CIF::DEFAULT_PORT(),
-    Token           => hash_create_random(),
+    Token           => '1234',
     encoder_pretty  => 1,
 });
 
 my $ret = $cli->ping();
 ok($ret > 0, 'running ping...');
 
-say 'killing router...';
+diag('killing router...');
 $t->kill('KILL')->detach();
 
 sub start_router {

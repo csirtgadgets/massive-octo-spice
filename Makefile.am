@@ -38,7 +38,7 @@ install: install-files install-rules install-var install-geoip
 
 install-geoip:
 if HAVE_GEOIP
-	$(INSTALL) -m 660 "contrib/GeoLite2-City.mmdb" "$(DESTDIR)$(localstatedir)/GeoLite2-City.mmdb"
+	$(INSTALL) -m 666 "contrib/GeoLite2-City.mmdb" "$(DESTDIR)$(localstatedir)/cache/GeoLite2-City.mmdb"
 else
 	@echo 'geoip not enabled, skipping...'
 endif

@@ -68,6 +68,10 @@ around BUILDARGS => sub {
     my $self    = shift;
     my $args    = shift;
     
+    unless($Logger){
+        init_logging({ level => 'WARN' });
+    }
+    
     _init_config($args);
     
     $args->{'broker'}           = CIF::Client::BrokerFactory->new_plugin({ config => $args });

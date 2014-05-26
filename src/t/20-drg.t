@@ -1,22 +1,13 @@
 use strict;
-use warnings;
-use 5.011;
 
 use Test::More;
-use Data::Dumper;
 
 BEGIN { 
     use_ok('CIF');
     use_ok('CIF::Smrt');
 };
 
-use CIF qw/init_logging $Logger hash_create_random/;
-#init_logging({ level => 'DEBUG' });
-
 # clean up rule, set defaults vs the processing rules, 
-
-use Data::Dumper;
-say 'creating new...';
 
 my $rules = [
     {
@@ -40,7 +31,7 @@ my $rules = [
 my $smrt = CIF::Smrt->new({
     client_config => {
         remote          => 'dummy',
-        Token           => hash_create_random(),
+        Token           => '1234',
     },
 });
 

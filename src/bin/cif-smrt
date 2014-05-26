@@ -2,7 +2,6 @@
 
 BEGIN {
     use FindBin;
-    use lib "$FindBin::Bin/../lib";
     use local::lib "$FindBin::Bin/..";
 }
 
@@ -29,7 +28,7 @@ my $refresh     = 0;
 my $test_mode   = 0;
 my $clean       = 0;
 my $notbefore   = 'today';
-my $cache       = $CIF::VarPath.'/cache/smrt';
+my $cache       = $CIF::VarPath.'/smrt/cache';
 my $meta            = 0;
 
 # daemon

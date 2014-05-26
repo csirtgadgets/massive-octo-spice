@@ -12,7 +12,7 @@ use Try::Tiny;
 with 'CIF::Meta';
 
 ## http://dev.maxmind.com/geoip/geoip2/geolite2/
-use constant FILE_LOC       => $CIF::VarPath."/GeoLite2-City.mmdb";
+use constant FILE_LOC       => $CIF::VarPath."/cache/GeoLite2-City.mmdb";
 
 has 'file'  => (
     is      => 'ro',
@@ -37,7 +37,7 @@ sub understands {
     my $self = shift;
     my $args = shift;
     
-    return unless(-e $self->get_file());
+    return unless(-e FILE_LOC()); ## TODO fixme
 
     return unless($args->{'observable'});
     return unless(is_ip($args->{'observable'}));
