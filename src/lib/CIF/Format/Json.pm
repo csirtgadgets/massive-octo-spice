@@ -12,8 +12,8 @@ sub understands {
     my $self = shift;
     my $args = shift;
 
-    return unless($args->{'format'});
-    return 1 if($args->{'format'} eq 'json');
+    return unless($args);
+    return 1 if($args eq 'json');
 }
 
 sub process {

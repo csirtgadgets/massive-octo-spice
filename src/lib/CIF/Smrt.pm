@@ -16,20 +16,22 @@ use Carp::Assert;
 
 use constant MAX_DATETIME => 999999999999999999;
 
+has 'client_config' => (
+    is      => 'ro',
+    isa     => 'HashRef',
+    reader  => 'get_client_config',
+);
+
 has 'config'    => (
     is      => 'ro',
     isa     => 'HashRef',
 );
 
-has 'client_config' => (
-    is      => 'ro',
-    isa     => 'HashRef',
-);
-
 has 'client' => (
-    is      => 'ro',
-    isa     => 'CIF::Client',
-    reader  => 'get_client',
+    is          => 'ro',
+    isa         => 'CIF::Client',
+    reader      => 'get_client',
+    lazy_build  => 1,
 );
 
 has 'is_test'   => (
@@ -60,26 +62,15 @@ has 'test_mode' => (
     reader  => 'get_test_mode',
 );
 
-around BUILDARGS => sub {
-    my $orig = shift;
+sub _build_client {
     my $self = shift;
-    my $args = shift;   
-
-    if($args->{'config'}){
-        die "config file doesn't exist: ".$args->{'config'} unless(-e $args->{'config'});
-        $args->{'client_config'} = Config::Simple->new($args->{'config'})->get_block('client');
-        $args->{'config'} = Config::Simple->new($args->{'config'})->get_block('smrt');
-        $args = { %{$args->{'config'}},  %$args };
-    }
+    return CIF::Client->new($self->get_client_config())
+}
     
-    if($args->{'client_config'}){
-        $args->{'client'} = CIF::Client->new($args->{'client_config'});   
-    }
-    
+sub BUILD {
+    my $self = shift;
     init_logging({ level => 'ERROR'}) unless($Logger);
- 
-    return $self->$orig($args);
-};
+}
 
 sub process {
     my $self = shift;
@@ -126,11 +117,6 @@ sub ping_router {
     
     my $ret = $self->get_client->ping();
     return $ret;
-}
-
-sub DESTROY {
-    my $self = shift;
-    $self->get_client->get_broker()->shutdown();
 }
 
 __PACKAGE__->meta->make_immutable(inline_destructor => 0);

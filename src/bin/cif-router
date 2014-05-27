@@ -160,14 +160,10 @@ sub main {
     my $done    = AnyEvent->condvar();
     
     my $router  = CIF::Router->new({
-        frontend_listen     => $frontend,
-        backend_listen      => $backend,
-        storage             => {
-            plugin  => $storage,
-        },
-        auth                => {
-            plugin  => $auth,
-        },
+        frontend_listen => $frontend,
+        backend_listen  => $backend,
+        auth            => $auth,
+        storage         => $storage,
     });
     my $rv = $router->startup();
     unless($rv){

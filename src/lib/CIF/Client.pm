@@ -17,9 +17,16 @@ use Config::Simple;
 use Data::Dumper;
 use Carp::Assert;
 
-has 'broker'    => (
+has 'remote'    => (
     is      => 'ro',
-    reader  => 'get_broker',
+    isa     => 'Str',
+    reader  => 'get_remote',
+);
+
+has 'broker_handle' => (
+    is          => 'ro',
+    reader      => 'get_broker_handle',
+    lazy_build  => 1,
 );
 
 has 'config'    => (
@@ -28,18 +35,18 @@ has 'config'    => (
     default => CIF::DEFAULT_CONFIG(),
 );
 
-has 'format_handle' => (
-    is      => 'rw',
-    reader  => 'get_format_handle',
-    writer  => 'set_format_handle',
-);
-
 has 'format' => (
     is      => 'rw',
     isa     => 'Str',
     default => 'table',
     reader  => 'get_format',
     writer  => 'set_format',
+);
+
+has 'format_handle' => (
+    is          => 'ro',
+    reader      => 'get_format_handle',
+    lazy_build  => 1,
 );
 
 has 'results'   => (
@@ -52,9 +59,16 @@ has 'Token' => (
     isa     => 'Str',
 );
 
-has 'encoder_handle' => (
+has 'encoder'   => (
     is      => 'ro',
-    reader  => 'get_encoder_handle',
+    isa     => 'Str',
+    reader  => 'get_encoder',
+);
+
+has 'encoder_handle' => (
+    is          => 'ro',
+    reader      => 'get_encoder_handle',
+    lazy_build  => 1,
 );
 
 has 'encoder_pretty'    => (
@@ -63,32 +77,38 @@ has 'encoder_pretty'    => (
     reader  => 'get_encoder_pretty',
 );
 
+sub _build_format_handle {
+    my $self = shift;
+    return CIF::FormatFactory->new_plugin($self->get_format());
+}
+
+sub _build_encoder_handle {
+    my $self = shift;
+    return CIF::EncoderFactory->new_plugin($self->get_encoder());
+}
+
+sub _build_broker_handle {
+    my $self = shift;
+    return CIF::Client::BrokerFactory->new_plugin($self->get_remote());
+}
+
+sub BUILD {
+    my $self = shift;
+    unless($Logger){
+        init_logging({ level => 'WARN' });
+    }
+}
+
+
+
 around BUILDARGS => sub {
     my $orig    = shift;
     my $self    = shift;
     my $args    = shift;
-    
-    unless($Logger){
-        init_logging({ level => 'WARN' });
-    }
-    
-    _init_config($args);
-    
+
     $args->{'broker'}           = CIF::Client::BrokerFactory->new_plugin({ config => $args });
-    $args->{'format_handle'}    = CIF::FormatFactory->new_plugin($args) if($args->{'format'});
-    $args->{'encoder_handle'}   = CIF::EncoderFactory->new_plugin($args);
     return $self->$orig($args);
 };
-
-sub _init_config {
-    my $args = shift;
-    
-    return unless($args->{'config'});
-    return if(ref($args->{'config'}) eq 'HASH');
-    die "config file doesn't exist: ".$args->{'config'} unless(-e $args->{'config'});
-    $args->{'config'} = Config::Simple->new($args->{'config'})->get_block('client');
-    $args = { %{$args->{'config'}},  %$args };
-}
 
 sub encode {
     my $self = shift;
@@ -108,7 +128,7 @@ sub decode {
 
 sub receive {
     my $self = shift;
-    my $msg = $self->get_broker->receive();
+    my $msg = $self->get_broker_handle()->receive();
     $msg = $self->decode($msg);
     map { $_ = CIF::ObservableFactory->new_plugin($_) } (@{$msg});
     return $msg;
@@ -119,7 +139,7 @@ sub subscribe {
 	my $cb = shift;
 	
 	return AnyEvent->io(
-	   fh      => $self->get_broker->get_fd(),
+	   fh      => $self->get_broker_handle()->get_fd(),
 	   poll    => 'r',
 	   cb      => $cb,
     );
@@ -127,7 +147,7 @@ sub subscribe {
 
 sub has_pollin {
     my $self = shift;
-    return $self->get_broker->get_socket->has_pollin();
+    return $self->get_broker_handle()->get_socket->has_pollin();
 }
 
 sub ping {
@@ -187,7 +207,7 @@ sub send {
 
     $Logger->debug('sending upstream...');
     
-    $msg = $self->get_broker()->send($msg);
+    $msg = $self->get_broker_handle()->send($msg);
     return 0 unless($msg);
 
     $Logger->debug('decoding...');
@@ -243,8 +263,8 @@ sub format {
 
 sub shutdown {
     my $self = shift;
-    if($self->get_broker()){
-        $self->get_broker->shutdown();
+    if($self->get_broker_handle()){
+        $self->get_broker_handle()->shutdown();
     }
     return 1;
 }    

@@ -37,8 +37,8 @@ sub understands {
     my $self = shift;
     my $args = shift;
 
-    return 0 unless($args->{'remote'});
-    return 1 if($args->{'remote'} =~ RE_REMOTE());
+    return 0 unless($args);
+    return 1 if($args =~ RE_REMOTE());
 
     return 0;
 }

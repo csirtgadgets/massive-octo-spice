@@ -61,14 +61,28 @@ has 'publisher_listen' => (
     reader  => 'get_publisher_listen',
 );
 
+has 'auth' => (
+    is          => 'ro',
+    isa         => 'Str',
+    reader      => 'get_auth',
+);
+
 has 'auth_handle' => (
-    is      => 'ro',
-    reader  => 'get_auth_handle',
+    is          => 'ro',
+    reader      => 'get_auth_handle',
+    lazy_build  => 1,
+);
+
+has 'storage'   => (
+    is          => 'ro',
+    isa         => 'Str',
+    reader      => 'get_storage',
 );
 
 has 'storage_handle'    => (
-    is      => 'ro',
-    reader  => 'get_storage_handle',
+    is          => 'ro',
+    reader      => 'get_storage_handle',
+    lazy_build  => 1,
 );
 
 has 'encoder_pretty'    => (
@@ -76,26 +90,21 @@ has 'encoder_pretty'    => (
     isa     => 'Bool',
 );
 
-around BUILDARGS => sub {
-    my $orig    = shift;
-    my $self    = shift;
-    my $args    = shift;
-    
-    # if we're passed a config file
-    if($args->{'config'}){
-        unless(ref($args->{'config'})){
-            $args->{'config'} = Config::Simple->new($args->{'config'});
-        }
-        %$args = %{$args->{'config'}->get_block('client')};
-    }
-    
-    $args->{'auth_handle'}      = CIF::Router::AuthFactory->new_plugin($args->{'auth'});
-    $args->{'storage_handle'}   = CIF::StorageFactory->new_plugin($args->{'storage'});
+sub _build_auth_handle {
+    my $self = shift;
+    return CIF::Router::AuthFactory->new_plugin({ plugin => $self->get_auth() });
+}
+
+sub _build_storage_handle {
+    my $self = shift;
+    return CIF::StorageFactory->new_plugin({ plugin => $self->get_storage() });
+}
+
+sub BUILD {
+    my $self = shift;
     
     init_logging({ level => 'ERROR'}) unless($Logger);
-    
-    return $self->$orig($args);
-};
+}
 
 sub startup {
     my $self = shift;
