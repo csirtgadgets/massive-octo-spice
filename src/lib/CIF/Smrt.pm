@@ -104,19 +104,17 @@ sub process {
     my $ret = $self->get_handler()->process($self->get_rule());
     return 0 unless($ret);
 
-    my @array;  
+    my @array;
     $Logger->info('building events: '.($#{$ret} + 1));
     my $ts;
-    
-    ##TODO bank-teller style threading start here?
+
+    ## TODO -- re-work me so with { data => $_ }, for some reason undef keeps popping up
     foreach (@$ret){
         $ts = $_->{'detecttime'} || $_->{'lasttime'} || $_->{'reporttime'} || MAX_DATETIME();
         $ts = normalize_timestamp($ts)->epoch();
 
         next unless($self->get_rule()->get_not_before() <= $ts );
-        $Logger->trace(Dumper($_));
-        $self->get_rule()->process({ data => $_ });
-        $Logger->trace(Dumper($_));
+        $_ = $self->get_rule()->process({ data => $_ });
         push(@array,$_);
     }
     return \@array;

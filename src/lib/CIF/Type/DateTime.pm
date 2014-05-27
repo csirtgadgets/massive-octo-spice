@@ -10,10 +10,10 @@ subtype 'CIF::Type::DateTimeString',
     as 'Str',
     where { is_datetime($_) eq 'dt_string' },
     message { "Must be of the format YYYY-MM-DDTHH:MM:SSZ" };
-    
+
 coerce 'CIF::Type::DateTimeString',
     from 'Str',
-    via { normalize_timestamp($_,,1) };
+    via { normalize_timestamp($_,undef,1); };
     
 subtype 'CIF::Type::DateTimeInt',
     as 'Int',

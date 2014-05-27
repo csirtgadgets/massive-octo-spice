@@ -55,10 +55,14 @@ sub normalize_timestamp {
     my $asString = shift;
 
     return DateTime::Format::DateParse->parse_datetime($dt) if(!$asString && $dt =~ /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/);
-    
-    # already epoch
-    return DateTime->from_epoch(epoch => $dt) if($dt =~ /^\d{10}$/);
 
+    # already epoch
+    if($dt =~ /^\d{10}+/){
+        return DateTime->from_epoch(epoch => $dt) unless($asString);
+        $dt = DateTime->from_epoch(epoch => $dt);
+        return $dt->ymd().'T'.$dt->hms().'Z';
+    } 
+    
     return DateTime->today() if(lc($dt) =~ /^today$/);
     # something else
     if($dt && ref($dt) ne 'DateTime'){
@@ -84,7 +88,7 @@ sub normalize_timestamp {
             $dt = DateTime::Format::DateParse->parse_datetime($dt);
             return unless($dt);
         }
-    }
+    }   
     return $dt->ymd().'T'.$dt->hms().'Z' if($asString);
     return $dt;
 }

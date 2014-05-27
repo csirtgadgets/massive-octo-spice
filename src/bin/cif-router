@@ -112,7 +112,7 @@ Usage: $0 [OPTIONS] [status|start|stop|restart|reload]
 EOF
 }
 
-my $loglevel = ($debug) ? 'DEBUG' : 'FATAL';
+my $loglevel = ($debug) ? 'DEBUG' : 'WARN';
 
 if($notify){
     $notify = { 
@@ -137,24 +137,26 @@ if($verbosity){
     }
 }
 
-unless($daemon){
+if($daemon){
     $ARGV[0] = 'start' unless($ARGV);
-}
 
-my $r = Daemon::Control->new(
-    name    => 'cif-router',
-    program => sub { _main() },
-    
-    pid_file    => $pidfile,
-    fork        => ($daemon) ? 2 : 0,
-    
-    user         => $user,
-    group        => $group,
-)->run();
+    my $r = Daemon::Control->new(
+        name    => 'cif-router',
+        program => sub { main() },
+        
+        pid_file    => $pidfile,
+        fork        => 2,
+        
+        user         => $user,
+        group        => $group,
+    )->run();
+} else {
+    main();
+}
 
 $Logger->info('shutting down...');
 
-sub _main {
+sub main {
     my $done    = AnyEvent->condvar();
     
     my $router  = CIF::Router->new({

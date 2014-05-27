@@ -56,8 +56,9 @@ sub process {
     	$start = ($start + 1);
     	$end = ($end+1);
     }
+
     my ($x,@y);
-    for (my $i = $start; $i < $end; $i++){
+    for (my $i = $start; $i <= $end; $i++){
         $x = @{$args->{'content'}}[$i];
         next if($x =~ $self->get_rule->get_comments());
         next unless($x =~ $pattern);

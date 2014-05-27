@@ -86,7 +86,8 @@ sub process_meta {
     
     foreach my $p (@{$self->get__meta()}){
         next unless($p->understands($args->{'data'}));
-        $p->new()->process($args->{'data'});
+        $p = $p->new();
+        $p->process($args->{'data'});
     }
 }
 

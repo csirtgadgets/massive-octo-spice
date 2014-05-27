@@ -71,7 +71,7 @@ has 'otype'   => (
 
 has [qw(reporttime firsttime lasttime)] => (
     is      => 'ro',
-    isa     => 'Int',
+    isa     => 'CIF::Type::DateTimeString',
     coerce  => 1,
     default => sub { time() },
 );

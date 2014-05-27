@@ -7,6 +7,7 @@ use Mouse::Role;
 use CIF qw/$Logger hash_create_static/;
 use File::Spec;
 
+use constant DEFAULT_TMP   => $CIF::VarPath.'/smrt/cache';
 use constant DEFAULT_AGENT => 'cif-smrt/'.CIF::VERSION().' ('.CIF::ORG().')';
 
 # http://stackoverflow.com/questions/10954827/perl-moose-how-can-i-dynamically-choose-a-specific-implementation-of-a-metho
@@ -31,6 +32,13 @@ has 'test_mode' => (
     reader  => 'get_test_mode',
 );
 
+has 'tmp'   => (
+    is      => 'ro',
+    reader  => 'get_tmp',
+    isa     => 'Str',
+    default => DEFAULT_TMP(),
+);
+
 sub process_file {
     my $self = shift;
     my $args = shift;
@@ -38,7 +46,7 @@ sub process_file {
     ##TODO - refactor
     my $ts = $args->{'ts'} || DateTime->today();
     my ($vol,$dir) = File::Spec->splitpath($args->{'file'});
-    my $log = File::Spec->catfile($dir,$ts->ymd('').'.log');
+    my $log = File::Spec->catfile($self->get_tmp(),$ts->ymd('').'.log');
     
     $Logger->debug('using log: '.$log);
    

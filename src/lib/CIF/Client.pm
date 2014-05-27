@@ -200,7 +200,7 @@ sub send {
 sub submit {
     my $self = shift;
     my $args = shift;
-    
+
     map { $_ = CIF::ObservableFactory->new_plugin($_) } (@{$args->{'Observables'}});
     
     my $msg = CIF::Message->new({

@@ -186,7 +186,7 @@ if($notify){
         min_level   => lc($notify_level) }
 }
 
-my $loglevel = ($debug) ? 'DEBUG' : 'FATAL';
+my $loglevel = ($debug) ? 'DEBUG' : 'WARN';
 
 init_logging(
     {
@@ -203,18 +203,24 @@ if($verbosity){
     }
 }
 
-$ARGV[0] = 'start' unless($ARGV[0] && $daemon);
-
-my $rv = Daemon::Control->new(
- 	name    => 'cif-smrt',
-    program => sub { main() },
-        
-    pid_file    => $pidfile,
-    fork        => ($daemon) ? 2 : 0,
-        
-    user        => $user,
-    group       => $group,
-)->run();
+if($daemon){
+    $ARGV[0] = 'start' unless($ARGV[0] && $daemon);
+    
+    my $rv = Daemon::Control->new(
+     	name    => 'cif-smrt',
+        program => sub { main() },
+            
+        pid_file    => $pidfile,
+        fork        => 2,
+            
+        user        => $user,
+        group       => $group,
+    )->run();
+} elsif($testmode) {
+    _main();
+} else {
+    main();
+}
 
 $Logger->info('shutting down...');
 

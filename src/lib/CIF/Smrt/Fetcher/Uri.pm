@@ -17,14 +17,6 @@ with 'CIF::Smrt::Fetcher';
 use constant DEFAULT_CAPACITY   => 5;
 use constant DEFAULT_TLS_VERIFY => 1;
 use constant DEFAULT_TIMEOUT    => 300;
-use constant DEFAULT_TMP        => $CIF::VarPath.'/smrt/cache';
-
-has 'tmp'   => (
-    is      => 'ro',
-    reader  => 'get_tmp',
-    isa     => 'Str',
-    default => DEFAULT_TMP(),
-);
 
 has 'handle' => (
     is              => 'rw',

@@ -35,7 +35,6 @@ sub process {
     }
 
     $args->{'peers'}        = $peers if($peers);
-
 }
 
 # aggregate our cache , we could miss a more specific route, 

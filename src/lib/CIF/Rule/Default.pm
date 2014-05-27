@@ -121,6 +121,7 @@ sub process {
 
     $self->_merge_defaults($args);
     $self->process_meta($args);
+    return $args->{'data'};
 }
 
 sub _merge_defaults {

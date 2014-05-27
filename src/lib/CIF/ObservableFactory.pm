@@ -17,6 +17,8 @@ my $finder = Module::PluginFinder->new(
 
 sub new_plugin {
     my ($self,$args) = @_;
+    return unless($args);
+    
     my ($ret,$err);
     try {
         $ret = $finder->construct($args,%{$args});

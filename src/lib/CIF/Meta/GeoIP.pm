@@ -8,6 +8,7 @@ use Mouse;
 use GeoIP2::Database::Reader;
 use CIF qw/is_ip $Logger/;
 use Try::Tiny;
+use Carp;
 
 with 'CIF::Meta';
 
@@ -73,9 +74,9 @@ sub process {
                 return;
             }
         }
-        die $err;
+        croak($err);
     }
-
+    
     if($ret){
         $args->{'countrycode'}      = $ret->country()->iso_code()                   if($ret->country()->iso_code() && !$args->{'countrycode'});
         $args->{'citycode'}         = $ret->city()->names->{'en'}                   if($ret->city()->names->{'en'}); ## TODO -- configurable
@@ -85,7 +86,6 @@ sub process {
         $args->{'timezone'}         = $ret->location()->time_zone()                 if($ret->location()->time_zone());
         $args->{'metrocode'}        = $ret->location()->metro_code()                if($ret->location()->metro_code());
     }
-    return $args;
 }
 
 sub _strip {
