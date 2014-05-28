@@ -11,6 +11,7 @@ before_install:
     - perl -V
 
 install:
+    - echo 'none'
 
 before_script:
     - sh autogen.sh
