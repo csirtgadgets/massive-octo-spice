@@ -18,7 +18,7 @@ before_script:
 script:
     - ./configure && make
     - time make deps NOTESTS=-n
-    - make test 
+    - CIF_PERL_NO_THREADS=1 make test 
 
 notifications:
     email:
