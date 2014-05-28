@@ -35,20 +35,6 @@ has 'config'    => (
     default => CIF::DEFAULT_CONFIG(),
 );
 
-has 'format' => (
-    is      => 'rw',
-    isa     => 'Str',
-    default => 'table',
-    reader  => 'get_format',
-    writer  => 'set_format',
-);
-
-has 'format_handle' => (
-    is          => 'ro',
-    reader      => 'get_format_handle',
-    lazy_build  => 1,
-);
-
 has 'results'   => (
     is      => 'rw',
     isa     => 'ArrayRef',
@@ -77,11 +63,6 @@ has 'encoder_pretty'    => (
     reader  => 'get_encoder_pretty',
 );
 
-sub _build_format_handle {
-    my $self = shift;
-    return CIF::FormatFactory->new_plugin($self->get_format());
-}
-
 sub _build_encoder_handle {
     my $self = shift;
     return CIF::EncoderFactory->new_plugin($self->get_encoder());
@@ -89,26 +70,13 @@ sub _build_encoder_handle {
 
 sub _build_broker_handle {
     my $self = shift;
-    return CIF::Client::BrokerFactory->new_plugin($self->get_remote());
+    return CIF::Client::BrokerFactory->new_plugin({ remote => $self->get_remote() });
 }
 
 sub BUILD {
     my $self = shift;
-    unless($Logger){
-        init_logging({ level => 'WARN' });
-    }
+    init_logging({ level => 'WARN' }) unless($Logger);
 }
-
-
-
-around BUILDARGS => sub {
-    my $orig    = shift;
-    my $self    = shift;
-    my $args    = shift;
-
-    $args->{'broker'}           = CIF::Client::BrokerFactory->new_plugin({ config => $args });
-    return $self->$orig($args);
-};
 
 sub encode {
     my $self = shift;
@@ -244,34 +212,6 @@ sub submit {
         $Logger->warn('send failed');
         return -1;
     }
-}
-
-sub format {
-    my $self = shift;
-    my $args = shift;
-    
-    return '' unless(ref($args->{'data'}) eq 'ARRAY');
-    return '' unless($#{$args->{'data'}} > -1);
-    
-    $Logger->info('formatting...');
-    unless($self->get_format_handle()){
-        assert($args->{'format'},'missing arg: format');
-        $self->set_format_handle(CIF::FormatFactory->new_plugin($args));
-    }
-    return $self->get_format_handle()->process($args->{'data'});
-}
-
-sub shutdown {
-    my $self = shift;
-    if($self->get_broker_handle()){
-        $self->get_broker_handle()->shutdown();
-    }
-    return 1;
-}    
-
-sub DESTROY {
-    my $self = shift;
-    $self->shutdown();
 }
 
 __PACKAGE__->meta->make_immutable(inline_destructor => 0);    

@@ -15,7 +15,9 @@ my $rules = [
         override    => {
             remote    => 'testdata/mirc.com/servers.ini',
             not_before  => '10000 days ago',
+             tmp => '/tmp',
         },
+         tmp => '/tmp',
     },
 ];
 
@@ -24,6 +26,7 @@ my $smrt = CIF::Smrt->new({
         remote          => 'dummy',
         Token           => '1234',
     },
+     tmp => '/tmp',
 });
 
 my $ret;
@@ -31,6 +34,7 @@ foreach my $r (@$rules){
     $ret = $smrt->process({ 
         rule        => $r,
         test_mode   => 1,
+         tmp => '/tmp',
     });
     ok($#{$ret},'testing for results...');
     $ret = $smrt->get_client->submit({

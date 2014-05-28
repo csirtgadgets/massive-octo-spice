@@ -25,7 +25,6 @@ my $rule        = $CIF::SmrtRulesDefault;
 my $feed        = '';
 my $limit       = 0;
 my $refresh     = 0;
-my $test_mode   = 0;
 my $clean       = 0;
 my $notbefore   = 'today';
 my $cache       = $CIF::VarPath.'/smrt/cache';
@@ -82,7 +81,7 @@ GetOptions(
     'pidfile|p=s'       => \$pidfile,
     '--interval'	    => \$interval,
     '--randomstart'   	=> \$randomstart,
-    '--testmode'        => \$testmode,
+    '--test'            => \$testmode,
     
     # logging
     'logfile=s'     => \$logfile,
@@ -98,7 +97,6 @@ GetOptions(
     'limit|L=i'         => \$limit,
     'refresh|Z'         => \$refresh,
     'meta|M'            => \$meta,
-    'test|x'            => \$test_mode,
     'clean|c'           => \$clean,
     'nbefore|N=s'       => \$notbefore,
     'cache|P=s'         => \$cache,
@@ -258,7 +256,7 @@ sub _main {
             Token           => $token,
             encoder_pretty  => ($debug ne 'ERROR') ? 1 : 0,
         },
-        test_mode   => $test_mode,
+        test_mode   => $testmode,
     });
     my ($err,$ret);
     

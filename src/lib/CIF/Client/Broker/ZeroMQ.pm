@@ -15,7 +15,7 @@ with 'CIF::Client::Broker';
 
 use constant RE_REMOTE      => qr/^((zeromq|zmq)(\+))?(tcp|inproc|ipc|proc)\:\/{2}([[\S]+|\*])(\:(\d+))?$/;
 use constant SND_TIMEOUT    => 120000;
-use constant RCV_TIMEOUT    => 30000;
+use constant RCV_TIMEOUT    => 120000;
 use constant PING_TIMEOUT   => 5000; ##TODO seperate ping timeouts from SND/RCV timeouts
 
 has 'context' => (
@@ -37,8 +37,8 @@ sub understands {
     my $self = shift;
     my $args = shift;
 
-    return 0 unless($args);
-    return 1 if($args =~ RE_REMOTE());
+    return 0 unless($args->{'remote'});
+    return 1 if($args->{'remote'} =~ RE_REMOTE());
 
     return 0;
 }
@@ -46,11 +46,11 @@ sub understands {
 around BUILDARGS => sub {
     my $orig    = shift;
     my $self    = shift;
-    my %args    = @_;
+    my $args    = shift;
     
-    $args{'remote'} =~ s/^(zeromq|zmq)\+?//g;
+    $args->{'remote'} =~ s/^(zeromq|zmq)\+?//g;
 
-    return $self->$orig(%args);
+    return $self->$orig($args);
 };
 
 sub _build_context {

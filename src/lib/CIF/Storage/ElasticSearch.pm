@@ -83,15 +83,10 @@ sub _build_handle {
     );
 }
 
-around BUILDARGS => sub {
-    my $orig    = shift;
-    my $self    = shift;
-    my $args    = shift;
-    
+sub BUILD {
+    my $self = shift;
     init_logging({ level => 'ERROR'}) unless($Logger);
-    
-    return $self->$orig($args);
-};
+}
 
 sub understands {
     my $self = shift;

@@ -19,7 +19,7 @@ sub understands {
     return 1 if($args->{'rule'}->{'parser'} =~ RE_SUPPORTED_PARSERS());
 }
 
-
+## TODO - refactor this out into a factory (csv, pipe, etc)
 sub process {
     my $self = shift;
     my $args = shift;
@@ -69,15 +69,9 @@ sub process {
         } else {
             @y = split($pattern,$x);
         }
-        ##TODO refactor
-        if($self->get_rule()->get_parser() eq 'default'){
-            
-        } else {
-            # if we're dealing with csv, strip the ""'s if they exist
-            if($self->get_rule()->get_parser() eq 'csv'){
-                s/"//g foreach(@y);
-            }
-            
+        
+        if($self->get_rule()->get_parser() eq 'csv'){
+             s/"//g foreach(@y);
         }
         my $z;
         foreach (0 ... $#{$cols}){

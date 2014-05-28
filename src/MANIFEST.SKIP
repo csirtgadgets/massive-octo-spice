@@ -6,3 +6,5 @@ blib/
 MYMETA
 Makefile$
 MANIFEST$
+.swp
+.gz

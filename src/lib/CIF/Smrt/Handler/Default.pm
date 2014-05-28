@@ -65,8 +65,6 @@ sub process {
 
     $Logger->debug('parsing...');
     $ret = $self->get_parser()->process({ content => $ret });
-    
-    
 
     return $ret;
     

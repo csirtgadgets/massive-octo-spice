@@ -33,6 +33,7 @@ my $smrt = CIF::Smrt->new({
         remote          => 'dummy',
         Token           => '1234',
     },
+    tmp => '/tmp',
 });
 
 my $ret;

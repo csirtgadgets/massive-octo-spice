@@ -40,12 +40,8 @@ sub start_router {
     diag('starting router...');
     my $obj = CIF::Router->new({
         encoder_pretty  => 1,
-        storage => {
-            plugin => $storage,
-        },
-        auth    => {
-            plugin => $auth,
-        }
+        storage         => $storage,
+        auth            => $auth,
     });
 
     my $ret = $obj->startup();

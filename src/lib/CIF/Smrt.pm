@@ -14,7 +14,8 @@ use Data::Dumper;
 use Config::Simple;
 use Carp::Assert;
 
-use constant MAX_DATETIME => 999999999999999999;
+use constant DEFAULT_TMP    => $CIF::VarPath.'/smrt/cache';
+use constant MAX_DATETIME   => '2100-12-31T23:59:59Z'; # if you're still using this by then, God save you.
 
 has 'client_config' => (
     is      => 'ro',
@@ -62,6 +63,13 @@ has 'test_mode' => (
     reader  => 'get_test_mode',
 );
 
+has 'tmp' => (
+    is      => 'ro',
+    isa     => 'Str',
+    reader  => 'get_tmp',
+    default => DEFAULT_TMP(),
+);
+
 sub _build_client {
     my $self = shift;
     return CIF::Client->new($self->get_client_config())
@@ -88,6 +96,7 @@ sub process {
         CIF::Smrt::HandlerFactory->new_plugin({
             rule        => $self->get_rule(),
             test_mode   => $self->get_test_mode(),
+            tmp         => $self->get_tmp(),
         }),
     );
     
