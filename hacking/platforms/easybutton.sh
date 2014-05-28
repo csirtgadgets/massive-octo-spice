@@ -7,6 +7,8 @@ if [ `whoami` != 'root' ]; then
 	exit 0
 fi
 
+cd hacking/platforms
+
 ARCH=$(uname -m | sed 's/x86_//;s/i[3-6]86/32/')
 
 if [ -f /etc/lsb-release ]; then
@@ -26,6 +28,7 @@ fi
 
 case $OS in
     "Ubuntu" )
+        cd ubuntu
 		case $VER in
 	    	"12.04" )
 				bash ./ubuntu12_helper.sh;;
