@@ -6,6 +6,7 @@ requires 'Daemon::Control';
 requires 'DateTime::Format::DateParse';
 requires 'Digest::SHA';
 requires 'File::Type';
+requires 'GeoIP2' => '0.040003';
 requires 'GeoIP2::Database::Reader';
 requires 'JSON::XS';
 requires 'LWP::UserAgent';
