@@ -15,7 +15,8 @@ my $rules = [
         override    => {
             remote    => 'testdata/mirc.com/servers.ini',
             not_before  => '10000 days ago',
-             tmp => '/tmp',
+            tmp => '/tmp',
+            id  => '1234',
         },
          tmp => '/tmp',
     },
@@ -37,11 +38,6 @@ foreach my $r (@$rules){
          tmp => '/tmp',
     });
     ok($#{$ret},'testing for results...');
-    $ret = $smrt->get_client->submit({
-        Observables => $ret,
-    });
-
-    ok($#{$ret},'testing subission results: '.(($#{$ret})+1));
 }
 
 done_testing();
