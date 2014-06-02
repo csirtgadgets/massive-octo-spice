@@ -5,7 +5,7 @@
  * [Known Issues](https://github.com/csirtgadgets/massive-octo-spice/issues?labels=bug&state=open)  
  * [Main Wiki](https://github.com/csirtgadgets/massive-octo-spice/wiki)
 
-## Guides
+# Guides
  * (stable) [Ubuntu 12/14 LTS](https://github.com/csirtgadgets/massive-octo-spice/wiki/PlatformUbuntu)
 
 # Getting Involved
