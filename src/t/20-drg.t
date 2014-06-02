@@ -16,6 +16,7 @@ my $rules = [
         override    => {
             remote      => 'testdata/dragonresearchgroup.org/sshpwauth_small.txt',
             not_before  => '10000 days ago',
+            id          => 1234,
         },
     },
     {
@@ -23,7 +24,8 @@ my $rules = [
         feed    => 'vnc',
         override    => {
             remote      => 'testdata/dragonresearchgroup.org/vncprobe.txt',
-            not_before  => '10000 days ago', 
+            not_before  => '10000 days ago',
+            id          => 1234,
         }
     },
 ];

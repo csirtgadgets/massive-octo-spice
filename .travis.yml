@@ -10,7 +10,6 @@ before_install:
 
 install:
     - sudo apt-get install -y curl mailutils build-essential git-core automake cpanminus rng-tools openjdk-7-jre-headless libtool pkg-config vim htop bind9 libzmq3-dev libffi6 libmoose-perl libmouse-perl libanyevent-perl liblwp-protocol-https-perl libxml2-dev libexpat-dev haveged
-    - sudo service haveged restart
     - cpanm Regexp::Common http://search.cpan.org/CPAN/authors/id/S/SH/SHERZODR/Config-Simple-4.59.tar.gz
 
 before_script:
@@ -19,7 +18,7 @@ before_script:
 script:
     - ./configure && make
     - time make deps NOTESTS=-n
-    - CIF_PERL_NO_THREADS=1 make test 
+    - CI_BUILD=1 make test 
 
 notifications:
     email:

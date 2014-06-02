@@ -13,6 +13,7 @@ BEGIN {
 my $ob = '10.0.0.1';
 
 my $obs = {
+    id          => 1234,
     observable  => $ob,
     tlp         => 'red',
     lang        => 'en',

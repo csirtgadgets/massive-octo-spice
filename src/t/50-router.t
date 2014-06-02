@@ -4,7 +4,7 @@ use Test::More;
 
 BEGIN {
     # travis-ci doesn't support threads
-    if($ENV{'CIF_PERL_NO_THREADS'}){
+    if($ENV{'CI_BUILD'}){
         plan( skip_all => 'no thread support');
     } else {
         use threads;
