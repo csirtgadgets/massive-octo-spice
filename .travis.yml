@@ -11,6 +11,7 @@ before_install:
 install:
     - sudo apt-get install -y curl mailutils build-essential git-core automake cpanminus rng-tools openjdk-7-jre-headless libtool pkg-config vim htop bind9 libzmq3-dev libffi6 libmoose-perl libmouse-perl libanyevent-perl liblwp-protocol-https-perl libxml2-dev libexpat-dev
     - sudo service rng-tools stop
+    - sudo ln -sf /dev/random /dev/urandom
     - sudo rngd -r /dev/urandom
     - cpanm Regexp::Common http://search.cpan.org/CPAN/authors/id/S/SH/SHERZODR/Config-Simple-4.59.tar.gz
 
