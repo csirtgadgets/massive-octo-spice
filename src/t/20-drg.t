@@ -46,11 +46,6 @@ foreach my $r (@$rules){
     });
     ok($#{$ret},'testing for results...');
     ok(@$ret[0]->{'observable'} =~ /(141.52.251.250|63.230.14.171)/, 'testing output...');
-    $ret = $smrt->get_client->submit({
-        Observables => $ret,
-    });
-
-    ok(($#{$ret}),'testing subission results: '.(($#{$ret})+1));
 }
 
 done_testing();
