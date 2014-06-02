@@ -1,11 +1,9 @@
-# Quick Start
-See the [Main Wiki](https://github.com/csirtgadgets/massive-octo-spice/wiki) for more info.  
-
+# Collective Intelligence Framework
 [![Build Status](https://travis-ci.org/csirtgadgets/massive-octo-spice.png?branch=master)](https://travis-ci.org/csirtgadgets/massive-octo-spice)
 
-## Getting Help
  * [FAQ](https://github.com/csirtgadgets/massive-octo-spice/wiki/FAQ)
  * [Known Issues](https://github.com/csirtgadgets/massive-octo-spice/issues?labels=bug&state=open)  
+ * [Main Wiki](https://github.com/csirtgadgets/massive-octo-spice/wiki)
 
 ## Guides
  * (stable) [Ubuntu 12/14 LTS](https://github.com/csirtgadgets/massive-octo-spice/wiki/PlatformUbuntu)
