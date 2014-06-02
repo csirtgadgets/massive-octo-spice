@@ -1,0 +1,54 @@
+{
+    "order" : 0,
+    "template" : "cif-*",
+    "settings" : {
+        "index.analysis.analyzer.default.stopwords" : "_none_",
+        "index.refresh_interval" : "5s",
+        "index.analysis.analyzer.default.type" : "standard",
+        "index" : {
+            "query" : { "default_field" : "@message" },
+            "store" : { "compress" : { "stored" : true, "tv": true } }
+        }
+    },
+    "mappings" : {
+        "_default_" : {
+            "dynamic_templates" : [ {
+                "string_fields" : {
+                    "mapping" : {
+                        "type" : "multi_field",
+                        "fields" : {
+                            "raw" : {
+                            "index" : "not_analyzed",
+                            "ignore_above" : 256,
+                            "type" : "string"
+                            },
+                            "{name}" : {
+                                "index" : "not_analyzed",
+                                "omit_norms" : true,
+                                "type" : "string"
+                            }
+                        }
+                    },
+                    "match_mapping_type" : "string",
+                    "match" : "*"
+                }
+            } ],
+            "_all" : { "enabled" : true },
+            "_source": { "compress": true }
+        },
+        "observables": {
+            "properties" : {
+                "@version" : { "index" : "not_analyzed", "type" : "string" },
+                "@timestamp": { "type": "date" },
+                "@group": { "type": "string", "index": "not_analyzed" },
+                "observable": { "type": "string" },
+                "confidence": { "type": "integer", "store": "yes" },
+                "detecttime": { "type": "date" },
+                "reporttime": { "type": "date" },
+                "provider": { "type": "string" },
+                "rdata": { "type": "string" },
+                "countrycode": { "type": "string", "index": "not_analyzed" }
+            }
+        }
+    }
+}

@@ -1,0 +1,10 @@
+.log
+pm_to_blib
+blib/
+.old
+.bak
+MYMETA
+Makefile$
+MANIFEST$
+.swp
+.gz

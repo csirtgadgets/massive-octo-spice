@@ -1,20 +1,21 @@
-massive-octo-spice
-==
-[![Build Status](https://travis-ci.org/csirtgadgets/massive-octo-spice.png?branch=master)](https://travis-ci.org/csirtgadgets/massive-octo-spice) [![Coverage Status](https://coveralls.io/repos/csirtgadgets/massive-octo-spice/badge.png?branch=master)](https://coveralls.io/r/csirtgadgets/massive-octo-spice?branch=master)
+# Collective Intelligence Framework
+[![Build Status](https://travis-ci.org/csirtgadgets/massive-octo-spice.png?branch=master)](https://travis-ci.org/csirtgadgets/massive-octo-spice)
 
-Building and installation
-===
-Coming soon...
+ * [FAQ](https://github.com/csirtgadgets/massive-octo-spice/wiki/FAQ)
+ * [Known Issues](https://github.com/csirtgadgets/massive-octo-spice/issues?labels=bug&state=open)  
+ * [Main Wiki](https://github.com/csirtgadgets/massive-octo-spice/wiki)
 
-Resources
-===
-[Getting Involved](http://csirtgadgets.org/contribute)  
-[Repository](https://github.com/csirtgadgets/massive-octo-spice)
+# Guides
+ * (stable) [Ubuntu 12/14 LTS](https://github.com/csirtgadgets/massive-octo-spice/wiki/PlatformUbuntu)
 
+# Getting Involved
+There are many ways to get involved with the project. If you have a new and exciting feature, or even a simple bugfix, simply [fork the repo](https://help.github.com/articles/fork-a-repo), create some simple test cases, [generate a pull-request](https://help.github.com/articles/using-pull-requests) and give yourself credit!
 
-COPYRIGHT AND LICENCE
-===
+If you've never worked on a GitHub project, [this is a good piece](https://guides.github.com/activities/contributing-to-open-source) for getting started.
 
-Free use of this software is granted under the terms of the GNU Lesser General
-Public License (LGPL). For details see the files `COPYING` included with the
-distribution.
+* [How To Contribute](contributing.md)  
+* [Mailing List](https://groups.google.com/forum/#!forum/ci-framework)  
+* [Project Page](http://docs.csirtgadgets.org/massive-octo-spice/)
+
+# COPYRIGHT AND LICENCE
+Free use of this software is granted under the terms of the GNU Lesser General Public License (LGPLv3). For details see the files `COPYING` included with the distribution.

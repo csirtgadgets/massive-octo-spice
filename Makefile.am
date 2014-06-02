@@ -1,71 +1,113 @@
-SUBDIRS = libcif router smrt extern
-EXTRA_DIST = sbin etc contrib config.layout .deps
+SUBDIRS = elasticsearch
+EXTRA_DIST = contrib src hacking
 
-BUILD=$(shell git describe --tags)
-CIF_LAYOUT = @cif_layout_name@
+PERLOPTS=DESTDIR=$(DESTDIR) INSTALL_BASE=$(CIF_PATH) INSTALLPRIVLIB=${siteperldir}
+PERL_INSTALLOPTS=INSTALL="$(INSTALL)" sysconfdir=$(sysconfdir) localstatedir=$(localstatedir) CIF_USER=$(CIF_USER) CIF_GROUP=$(CIF_GROUP)
+CPANMOPTS=-n
+
+.PHONY: src elasticsearch test
 
 all: default
-
 default:
+	( cd src && $(PERL) Makefile.PL && make manifest && $(PERL) Makefile.PL $(PERLOPTS) && make )
 
-fixdeps:
-	$(PERL) ./sbin/test-deps --verbose --install
+test:
+	( cd src && CRITIC=$(PERL_CRITIC) make test )
 
-testdeps:
-	$(PERL) ./sbin/test-deps --verbose
+deps: geoip
+if HAVE_CPANM
+	$(CPANM) $(CPANMOPTS) --installdeps ./src
+else
+	@echo "missing App::cpanminus, please install with \"perl -MCPAN -e 'install App::cpanminus'\" and re-run ./configure"
+	exit -1
+endif
 
-test: extern-test libcif-test router-test smrt-test
+geoip:
+if HAVE_GEOIP
+	if [ ! -f contrib/GeoLite2-City.mmdb ]; then \
+		$(CURL) http://geolite.maxmind.com/download/geoip/database/GeoLite2-City.mmdb.gz -o contrib/GeoLite2-City.mmdb.gz; \
+		$(GZIP) -d contrib/GeoLite2-City.mmdb.gz; \
+	else \
+		echo 'contrib/GeoLite2-City.mmdb already exists... skipping.'; \
+	fi;
+else
+	@echo 'geoip not enabled, skipping...'
+endif
 
-extern-test:
-	( cd extern && make test )
+install: install-files install-rules install-var install-geoip
 
-libcif-test:
-	( cd libcif && make test )
+install-geoip:
+if HAVE_GEOIP
+	$(INSTALL) -m 666 "contrib/GeoLite2-City.mmdb" "$(DESTDIR)$(localstatedir)/cache/GeoLite2-City.mmdb"
+else
+	@echo 'geoip not enabled, skipping...'
+endif
 
-router-test:
-	( cd router && make test )
+install-files:
+	( cd src && make install )
 
-smrt-test:
-	cd smrt && make test
+install-rules:
+	[ -d $(DESTDIR)$(sysconfdir)/rules ] || $(INSTALL) -m 0770 -d $(DESTDIR)$(sysconfdir)/rules
+	-( cd src/rules && find . -type d -print ) | while read dir ; do \
+		$(INSTALL) -m 0770 -d "$(DESTDIR)$(sysconfdir)/rules/$$dir" ; \
+	done
+	-( cd src/rules && find . -type f -print ) | while read file ; do \
+		$(INSTALL) -m 0660 "src/rules/$$file" "$(DESTDIR)$(sysconfdir)/rules/$$file" ; \
+	done
 
-install: files-install fixperms
+install-var:
+	[ -d $(DESTDIR)$(localstatedir) ] || $(INSTALL) -m 0770 -d $(DESTDIR)$(localstatedir)
 
-files-install: libcif-install router-install smrt-install var-install etc-install extern-install
+fixperms: fixperms-rules
 
-etc-install:
-	[ -d $(CIF_PATH)/$(sysconfdir) ] || $(INSTALL) -m 0750 -d $(CIF_PATH)/$(sysconfdir)
+fixperms-var:
+	chmod 0770 $(DESTDIR)$(localstatedir)
+	chown -R $(CIF_USER) $(DESTDIR)$(localstatedir)
+	chgrp -R $(CIF_GROUP) $(DESTDIR)$(localstatedir)
+	
+fixperms-rules:
+	chmod 0770 $(DESTDIR)$(sysconfdir)/rules
+	chown -R $(CIF_USER) $(DESTDIR)$(sysconfdir)/rules
+	chgrp -R $(CIF_GROUP) $(DESTDIR)$(sysconfdir)/rules
 
-var-install:
-	[ -d $(CIF_PATH)/$(localstatedir) ] || $(INSTALL) -m 0750 -d $(CIF_PATH)/$(localstatedir)
-	[ -d $(CIF_PATH)/$(localstatedir)/log ] || $(INSTALL) -m 0750 -d $(CIF_PATH)/$(localstatedir)/log
+clean-local:
+	find . -name '*.log' -delete
+	
+elasticsearch:
+	( cd elasticsearch && make init )
 
-libcif-install:
-	( cd libcif && make install )
+elasticsearch-reload:
+	(cd elasticsearch && make reload )
 
-router-install:
-	( cd router && make install )
+debian7:
+	@echo 'not yet supported, try make ubuntu14'
 
-smrt-install:
-	( cd smrt && make install )
+ubuntu12:
+	( cd hacking/platforms/ubuntu && sudo ./ubuntu12.sh )
 
-extern-install:
-	( cd extern && make install )
+ubuntu14:
+	( cd hacking/platforms/ubuntu && sudo ./ubuntu14.sh )
 
-fixperms:
-	chmod 0755 $(prefix)
-	chown -R $(CIF_USER) $(prefix)
-	chgrp -R $(CIF_GROUP) $(prefix)
+rhel:
+	@echo 'not yet supported'
 
 clean:
-	rm Makefile
-	rm config.log
-	rm config.status
-
-realclean:
-	clean
-	rm Makefile.in
-	rm configure
-	rm aclocal.m4
+	find . -name 'MANIFEST' -delete
+	find . -name 'MANIFEST.bak' -delete
+	( cd src && $(PERL) Makefile.PL && make realclean )
 
 reconf:
 	autoreconf -vf
+
+dist-hook:
+	sh ./version.sh > $(distdir)/.version
+	rm -rf $(distdir)/src/blib
+	find $(distdir) -name "*.gz" -delete
+	find $(distdir) -name "*.mmdb" -delete
+	find $(distdir)/src/testdata -name '*.log' -delete
+	find $(distdir) -name 'Makefile' -delete
+	find $(distdir) -name 'pm_to_blib' -delete
+	find $(distdir) -name 'CIF-.tar.gz' -delete
+	find $(distdir) -name '*.old' -delete
+	find $(distdir) -name '*.bak' -delete
+	find $(distdir) -name '.DS_Store' -delete

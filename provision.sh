@@ -2,6 +2,7 @@
 
 set -e
 
+BASEDIR=/vagrant/provision
 ARCH=$(uname -m | sed 's/x86_//;s/i[3-6]86/32/')
 
 if [ -f /etc/lsb-release ]; then
@@ -11,7 +12,6 @@ if [ -f /etc/lsb-release ]; then
 elif [ -f /etc/debian_version ]; then
     OS=Debian  # XXX or Ubuntu??
     VER=$(cat /etc/debian_version)
-    sh /vagrant/provision/ubuntu.sh
 elif [ -f /etc/redhat-release ]; then
     # TODO add code for Red Hat and CentOS here
     ...
@@ -20,10 +20,22 @@ else
     VER=$(uname -r)
 fi
 
-if [ $OS == 'Darwin' ]; then
-    echo 'Darwin not currently supported...'
-    exit
-fi
+case $OS in
+    "Ubuntu" )
+        bash $BASEDIR/debian.sh ;;
 
-sh /vagrant/provision/perlbrew.sh
-sh /vagrant/provision/cpanm.sh
+    "Debian" )
+        bash $BASEDIR/debian.sh ;;
+
+    "Darwin" )
+        echo 'Darwin not yet supported...' ;;
+
+    "Redhat" )
+        echo 'Redhat not yet supported...' ;;
+
+    "CentOS" )
+        echo 'CentOS not yet supported...' ;;
+
+esac
+bash /vagrant/provision/perlbrew.sh
+#bash /vagrant/provision/cpanm.sh
