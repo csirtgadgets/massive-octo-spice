@@ -1,14 +1,12 @@
 use strict;
 use warnings;
-use 5.011;
 
 use Test::More;
-use Data::Dumper;
 
 BEGIN {
     # travis-ci doesn't do random well yet
     if($ENV{'CI_BUILD'}){
-        plan( skip_all => 'very little entropy support');
+        plan( skip_all => 'skipping for CI build' );
     } else {
         use_ok('CIF');
     }

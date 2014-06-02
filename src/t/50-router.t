@@ -1,11 +1,12 @@
 use strict;
+use warnings;
 
 use Test::More;
 
 BEGIN {
     # travis-ci doesn't support threads
     if($ENV{'CI_BUILD'}){
-        plan( skip_all => 'no thread support');
+        plan( skip_all => 'skipping for CI build' );
     } else {
         use threads;
         use_ok('CIF');
