@@ -1,12 +1,12 @@
 # Quick Start
+See the [Main Wiki](https://github.com/csirtgadgets/massive-octo-spice/wiki) for more info.
+
 ## Getting Help
  * [FAQ](https://github.com/csirtgadgets/massive-octo-spice/wiki/FAQ)
  * [Known Issues](https://github.com/csirtgadgets/massive-octo-spice/issues?labels=bug&state=open)  
 
 ## Guides
  * (stable) [Ubuntu 12/14 LTS](https://github.com/csirtgadgets/massive-octo-spice/wiki/PlatformUbuntu)
-
-See the [Main Wiki](https://github.com/csirtgadgets/massive-octo-spice/wiki) for more info.
 
 # Getting Involved
 There are many ways to get involved with the project. If you have a new and exciting feature, or even a simple bugfix, simply [fork the repo](https://help.github.com/articles/fork-a-repo), create some simple test cases, [generate a pull-request](https://help.github.com/articles/using-pull-requests) and give yourself credit!
