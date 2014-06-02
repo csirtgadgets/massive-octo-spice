@@ -1,5 +1,7 @@
 # Quick Start
-See the [Main Wiki](https://github.com/csirtgadgets/massive-octo-spice/wiki) for more info.
+See the [Main Wiki](https://github.com/csirtgadgets/massive-octo-spice/wiki) for more info.  
+
+[![Build Status](https://travis-ci.org/csirtgadgets/massive-octo-spice.png?branch=master)](https://travis-ci.org/csirtgadgets/massive-octo-spice)
 
 ## Getting Help
  * [FAQ](https://github.com/csirtgadgets/massive-octo-spice/wiki/FAQ)
@@ -16,8 +18,6 @@ If you've never worked on a GitHub project, [this is a good piece](https://guide
 * [How To Contribute](contributing.md)  
 * [Mailing List](https://groups.google.com/forum/#!forum/ci-framework)  
 * [Project Page](http://docs.csirtgadgets.org/massive-octo-spice/)
-
-[![Build Status](https://travis-ci.org/csirtgadgets/massive-octo-spice.png?branch=master)](https://travis-ci.org/csirtgadgets/massive-octo-spice)
 
 # COPYRIGHT AND LICENCE
 Free use of this software is granted under the terms of the GNU Lesser General Public License (LGPLv3). For details see the files `COPYING` included with the distribution.
