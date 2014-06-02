@@ -1,17 +1,15 @@
 language: perl
 perl:
-    - 5.14
+    - 5.18
 
 before_install:
     - sudo apt-get install -qq python-software-properties
     - echo "yes" | sudo add-apt-repository "ppa:chris-lea/zeromq" 
     - sudo apt-get update -qq
-    - sudo apt-get install -y curl mailutils build-essential git-core automake cpanminus rng-tools openjdk-7-jre-headless libtool pkg-config vim htop bind9 libzmq3-dev libffi6 libmoose-perl libmouse-perl libanyevent-perl liblwp-protocol-https-perl libxml2-dev libexpat-dev
-    - perl --version
     - perl -V
 
 install:
-    - echo 'none'
+    - sudo apt-get install -y curl mailutils build-essential git-core automake cpanminus rng-tools openjdk-7-jre-headless libtool pkg-config vim htop bind9 libzmq3-dev libffi6 libmoose-perl libmouse-perl libanyevent-perl liblwp-protocol-https-perl libxml2-dev libexpat-dev
 
 before_script:
     - sh autogen.sh
