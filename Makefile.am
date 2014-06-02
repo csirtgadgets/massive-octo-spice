@@ -5,7 +5,7 @@ PERLOPTS=DESTDIR=$(DESTDIR) INSTALL_BASE=$(CIF_PATH) INSTALLPRIVLIB=${siteperldi
 PERL_INSTALLOPTS=INSTALL="$(INSTALL)" sysconfdir=$(sysconfdir) localstatedir=$(localstatedir) CIF_USER=$(CIF_USER) CIF_GROUP=$(CIF_GROUP)
 CPANMOPTS=-n
 
-.PHONY: src elasticsearch
+.PHONY: src elasticsearch test
 
 all: default
 default:
