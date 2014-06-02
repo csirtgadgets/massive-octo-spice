@@ -1,10 +1,10 @@
 # Quick Start
-## Guides
- * (stable) [Ubuntu 12/14 LTS](PlatformUbuntu)
-
 ## Getting Help
+ * [FAQ](https://github.com/csirtgadgets/massive-octo-spice/wiki/FAQ)
  * [Known Issues](https://github.com/csirtgadgets/massive-octo-spice/issues?labels=bug&state=open)  
- * [FAQ](FAQ)
+
+## Guides
+ * (stable) [Ubuntu 12/14 LTS](https://github.com/csirtgadgets/massive-octo-spice/wiki/PlatformUbuntu)
 
 See the [Main Wiki](https://github.com/csirtgadgets/massive-octo-spice/wiki) for more info.
 
@@ -21,5 +21,3 @@ If you've never worked on a GitHub project, [this is a good piece](https://guide
 
 # COPYRIGHT AND LICENCE
 Free use of this software is granted under the terms of the GNU Lesser General Public License (LGPLv3). For details see the files `COPYING` included with the distribution.
-
-_This product includes GeoLite2 data created by MaxMind, available from <a href="http://www.maxmind.com">http://www.maxmind.com</a>._
