@@ -4,9 +4,13 @@ use warnings;
 use Test::More;
 
 BEGIN {
-    use_ok('CIF');
-    use_ok('CIF::Router');
-    use_ok('CIF::Client');
+    if($ENV{'CI_BUILD'}){
+        plan( skip_all => 'skipping for CI build' );
+    } else {
+        use_ok('CIF');
+        use_ok('CIF::Router');
+        use_ok('CIF::Client');
+    }
 };
 
 use AnyEvent;
@@ -19,15 +23,15 @@ my $pid = fork();
 if($pid == 0){
     start_router();
 } else {
-    
+    diag('starting client');
     my $cli = CIF::Client->new({
         remote          => 'tcp://localhost:'.CIF::DEFAULT_PORT(),
         Token           => '1234',
         encoder_pretty  => 1,
     });
-    
+    diag('running ping...');
     my $ret = $cli->ping();
-    ok($ret > 0, 'running ping...');
+    ok($ret > 0, 'testing ping...');
     
     diag('killing router...');
     kill KILL => $pid;
