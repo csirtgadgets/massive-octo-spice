@@ -7,10 +7,12 @@ if [ `whoami` != 'root' ]; then
     exit 0
 fi
 
+cd ../../../
+
 apt-get install -y curl cpanminus build-essential
 cpanm Regexp::Common http://search.cpan.org/CPAN/authors/id/S/SH/SHERZODR/Config-Simple-4.59.tar.gz
 ./configure --enable-geoip --sysconfdir=/etc/cif --localstatedir=/var --prefix=/opt/cif
-make ubuntu14
+bash ./hacking/platforms/ubuntu14_os.sh
 make && make deps
 make test
 make install

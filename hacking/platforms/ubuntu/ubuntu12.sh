@@ -93,3 +93,5 @@ update-rc.d cif-router defaults 95 10
 update-rc.d cif-smrt defaults 95 10
 
 service elasticsearch start
+service cif-router start
+
