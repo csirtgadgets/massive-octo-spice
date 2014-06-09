@@ -9,11 +9,12 @@ before_install:
     - perl -V
 
 install:
-    - sudo apt-get install -y curl mailutils build-essential git-core automake cpanminus rng-tools openjdk-7-jre-headless libtool pkg-config vim htop bind9 libzmq3-dev libffi6 libmoose-perl libmouse-perl libanyevent-perl liblwp-protocol-https-perl libxml2-dev libexpat-dev haveged
-    - cpanm Regexp::Common http://search.cpan.org/CPAN/authors/id/S/SH/SHERZODR/Config-Simple-4.59.tar.gz
+    - sudo apt-get install -y curl mailutils build-essential git-core automake cpanminus rng-tools openjdk-7-jre-headless libtool pkg-config vim htop bind9 libzmq3-dev libffi6 libmoose-perl libmouse-perl libanyevent-perl liblwp-protocol-https-perl libxml2-dev libexpat-dev
+    - cpanm --self-upgrade --mirror http://cpan.metacpan.org
+    - cpanm Regexp::Common http://cpan.metacpan.org/CPAN/authors/id/S/SH/SHERZODR/Config-Simple-4.59.tar.gz http://cpan.metacpan.org/authors/id/N/NL/NLNETLABS/Net-DNS-0.76_2.tar.gz
 
 before_script:
-    - sh autogen.sh
+    - bash autogen.sh
 
 script:
     - ./configure && make
