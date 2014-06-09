@@ -2,9 +2,11 @@
 
 set -e
 
+. /etc/lsb-release
+
 MYUSER=cif
 MYGROUP=cif
-VER=$(cat /etc/debian_version)
+VER=$DISTRIB_RELEASE
 
 if [ `whoami` != 'root' ]; then
     echo 'this script must be run as root'
@@ -23,9 +25,17 @@ else
 fi
 
 apt-get update
-apt-get install -y curl cpanminus build-essential libmodule-build-perl libssl-dev elasticsearch apache2 libapache2-mod-perl2 curl mailutils build-essential git-core automake cpanminus rng-tools openjdk-7-jre-headless libtool pkg-config vim htop bind9 libzmq3-dev libffi6 libmoose-perl libmouse-perl libanyevent-perl liblwp-protocol-https-perl libxml2-dev libexpat-dev libgeoip-dev geoip-bin
+apt-get install -y curl cpanminus build-essential libmodule-build-perl libssl-dev elasticsearch apache2 libapache2-mod-perl2 curl mailutils build-essential git-core automake rng-tools openjdk-7-jre-headless libtool pkg-config vim htop bind9 libzmq3-dev libffi6 libmoose-perl libmouse-perl libanyevent-perl liblwp-protocol-https-perl libxml2-dev libexpat1-dev libgeoip-dev geoip-bin
 
-cpanm Regexp::Common http://cpan.metacpan.org/authors/id/S/SH/SHERZODR/Config-Simple-4.59.tar.gz http://cpan.metacpan.org/authors/id/N/NL/NLNETLABS/Net-DNS-0.76_2.tar.gz Mouse
+if [ $VER == "12.04" ]; then ## 14.04 has it built in and supports cpanfile
+	cpanm --self-upgrade --mirror http://cpan.metacpan.org
+fi
+
+# cpan.org has been less than reliable lately
+cpanm --mirror http://cpan.metacpan.org Regexp::Common \
+http://cpan.metacpan.org/authors/id/S/SH/SHERZODR/Config-Simple-4.59.tar.gz \
+http://cpan.metacpan.org/authors/id/N/NL/NLNETLABS/Net-DNS-0.76_2.tar.gz \
+Mouse
 
 echo 'HRNGDEVICE=/dev/urandom' >> /etc/default/rng-tools
 service rng-tools restart

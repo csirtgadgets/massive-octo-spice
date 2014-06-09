@@ -3,7 +3,6 @@ package CIF::Message::Ping;
 use strict;
 use warnings;
 
-
 use Mouse;
 use Time::HiRes qw(gettimeofday);
     

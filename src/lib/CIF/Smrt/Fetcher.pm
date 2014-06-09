@@ -77,7 +77,7 @@ sub process_file {
         push(@$array,$_);
     }
     $fh->close();
-    $wh->close();
+    $wh->close() if($wh);
     return $array;
 }
 

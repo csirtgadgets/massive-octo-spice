@@ -2,7 +2,6 @@ package CIF::Type;
 
 use strict;
 use warnings;
-use namespace::autoclean;
 
 use Carp;
 use Module::Pluggable search_path => 'CIF::Type', 

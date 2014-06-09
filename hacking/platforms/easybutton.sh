@@ -29,12 +29,7 @@ fi
 case $OS in
     "Ubuntu" )
         cd ubuntu
-		case $VER in
-	    	"12.04" )
-				bash ./ubuntu12_helper.sh;;
-			"14.04" )
-				bash ./ubuntu14_helper.sh;;
-		esac;;
+        bash ./ubuntu.sh;;
 
     "Debian" )
 		echo 'Debian not yet supported...';;

@@ -2,7 +2,6 @@ package CIF::Smrt::Parser;
 
 use strict;
 use warnings;
-use namespace::autoclean;
 
 use Mouse::Role;
 

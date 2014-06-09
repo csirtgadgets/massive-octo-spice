@@ -3,7 +3,6 @@ package CIF::Message::Token;
 use strict;
 use warnings;
 
-
 use Mouse;
 
 has [qw/token alias description/] => (

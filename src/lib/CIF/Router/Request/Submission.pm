@@ -2,7 +2,6 @@ package CIF::Router::Request::Submission;
 
 use strict;
 use warnings;
-use namespace::autoclean;
 
 use Mouse;
 use CIF::Message::Submission;

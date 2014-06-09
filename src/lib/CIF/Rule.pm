@@ -2,7 +2,6 @@ package CIF::Rule;
 
 use strict;
 use warnings;
-use namespace::autoclean;
 
 use Mouse::Role;
 use DateTime;

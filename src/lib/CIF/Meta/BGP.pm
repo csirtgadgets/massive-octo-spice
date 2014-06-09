@@ -2,7 +2,6 @@ package CIF::Meta::BGP;
 
 use strict;
 use warnings;
-use namespace::autoclean;
 
 use Mouse;
 use Net::Abuse::Utils qw(get_as_description get_asn_info get_peer_info);

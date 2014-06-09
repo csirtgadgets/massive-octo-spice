@@ -2,10 +2,8 @@ package CIF::Format::Csv;
 
 use strict;
 use warnings;
-use namespace::autoclean;
 
 use Mouse;
-#use Text::CSV;
 
 with 'CIF::Format';
 

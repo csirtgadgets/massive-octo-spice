@@ -2,7 +2,6 @@ package CIF::Smrt::Broker;
 
 use warnings;
 use strict;
-use namespace::autoclean;
 
 use Mouse;
 

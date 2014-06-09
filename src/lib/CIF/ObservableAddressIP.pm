@@ -2,7 +2,6 @@ package CIF::ObservableAddressIP;
 
 use strict;
 use warnings;
-use namespace::autoclean;
 
 use Mouse::Role;
 

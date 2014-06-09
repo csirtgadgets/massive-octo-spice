@@ -2,7 +2,6 @@ package CIF::Smrt::Decoder::Default;
 
 use strict;
 use warnings;
-use namespace::autoclean;
 
 use Mouse;
 

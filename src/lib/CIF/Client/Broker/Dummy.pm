@@ -2,7 +2,6 @@ package CIF::Client::Broker::Dummy;
 
 use strict;
 no warnings;
-use namespace::autoclean;
 
 use Mouse;
 use JSON::XS;

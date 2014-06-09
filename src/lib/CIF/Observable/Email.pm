@@ -3,7 +3,6 @@ package CIF::Observable::Email;
 use strict;
 use warnings;
 
-
 use Mouse;
 use CIF qw/is_email/;
 use Digest::SHA qw/sha256_hex/;

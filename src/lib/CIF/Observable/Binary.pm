@@ -3,7 +3,6 @@ package CIF::Observable::Binary;
 use strict;
 use warnings;
 
-
 use Mouse;
 use Digest::SHA qw/sha256_hex/;
 

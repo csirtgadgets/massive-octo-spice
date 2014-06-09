@@ -2,7 +2,6 @@ package CIF::Router::Request::Ping;
 
 use strict;
 use warnings;
-use namespace::autoclean;
 
 use Mouse;
 use Time::HiRes qw(gettimeofday);

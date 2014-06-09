@@ -2,7 +2,6 @@ package CIF::Smrt::Decoder::Zip;
 
 use strict;
 use warnings;
-use namespace::autoclean;
 
 use Mouse;
 use IO::Uncompress::Unzip qw(unzip $UnzipError);

@@ -2,7 +2,6 @@ package CIF::Meta::GeoIP;
 
 use strict;
 use warnings;
-use namespace::autoclean;
 
 use Mouse;
 use GeoIP2::Database::Reader;

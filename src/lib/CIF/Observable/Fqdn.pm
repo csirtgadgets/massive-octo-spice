@@ -3,7 +3,6 @@ package CIF::Observable::Fqdn;
 use strict;
 use warnings;
 
-
 use Mouse;
 use CIF qw/is_fqdn/;
 

@@ -2,7 +2,6 @@ package CIF::Smrt::Parser::Json;
 
 use strict;
 use warnings;
-use namespace::autoclean;
 
 use Mouse;
 use Carp::Assert;

@@ -4,8 +4,6 @@ use strict;
 use warnings;
 require XML::LibXML;
 
-use namespace::autoclean;
-
 use Mouse;
 
 with 'CIF::Smrt::Parser';

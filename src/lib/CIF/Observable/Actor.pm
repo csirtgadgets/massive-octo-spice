@@ -2,7 +2,6 @@ package CIF::Observable::Actor;
 
 use strict;
 use warnings;
-use namespace::autoclean;
 
 use Mouse;
 

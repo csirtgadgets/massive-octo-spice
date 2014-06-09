@@ -18,6 +18,7 @@ requires 'Mail::RFC822::Address';
 requires 'Module::PluginFinder';
 requires 'Mouse';
 requires 'Net::Abuse::Utils';
+requires 'Net::DNS','> 0.76';
 requires 'Net::DNS::Match';
 requires 'Net::Patricia';
 requires 'Net::SSL';

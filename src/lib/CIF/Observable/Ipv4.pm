@@ -2,7 +2,6 @@ package CIF::Observable::Ipv4;
 
 use strict;
 use warnings;
-use namespace::autoclean;
 
 use Mouse;
 use CIF qw/is_ip/;

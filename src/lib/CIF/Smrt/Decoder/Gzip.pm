@@ -2,7 +2,6 @@ package CIF::Smrt::Decoder::Gzip;
 
 use strict;
 use warnings;
-use namespace::autoclean;
 
 use Mouse;
 use Compress::Zlib;

@@ -3,7 +3,6 @@ package CIF::Smrt::Parser::Rss;
 use strict;
 use warnings;
 use XML::RSS;
-use namespace::autoclean;
 
 use Mouse;
 

@@ -25,7 +25,7 @@ else
 fi
 
 apt-get update
-apt-get install -y elasticsearch apache2 libapache2-mod-perl2 curl mailutils build-essential git-core automake cpanminus rng-tools openjdk-7-jre-headless libtool pkg-config vim htop bind9 libzmq3-dev libffi6 libmoose-perl libmouse-perl libanyevent-perl liblwp-protocol-https-perl libxml2-dev libexpat-dev libgeoip-dev geoip-bin
+apt-get install -y libmodule-build-perl elasticsearch apache2 libapache2-mod-perl2 curl mailutils build-essential git-core automake cpanminus rng-tools openjdk-7-jre-headless libtool pkg-config vim htop bind9 libzmq3-dev libffi6 libmoose-perl libmouse-perl libanyevent-perl liblwp-protocol-https-perl libxml2-dev libexpat-dev libgeoip-dev geoip-bin
 
 echo 'HRNGDEVICE=/dev/urandom' >> /etc/default/rng-tools
 service rng-tools restart
@@ -34,7 +34,7 @@ echo 'setting up bind...'
 
 if [ -z `grep -l '8.8.8.8' /etc/bind/named.conf.options` ]; then
 	echo 'overwriting bind config'
-	mv /etc/bind/named.conf.options /etc/bind/named.conf.options.orig
+	cp /etc/bind/named.conf.options /etc/bind/named.conf.options.orig
 	cp named.conf.options /etc/bind/named.conf.options
 fi
 
