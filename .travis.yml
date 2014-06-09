@@ -6,7 +6,6 @@ before_install:
     - sudo apt-get install -qq python-software-properties
     - echo "yes" | sudo add-apt-repository "ppa:chris-lea/zeromq" 
     - sudo apt-get update -qq
-    - perlbrew install-cpanm -y
     - perl -V
 
 install:
