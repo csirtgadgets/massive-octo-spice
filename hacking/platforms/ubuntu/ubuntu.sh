@@ -93,7 +93,7 @@ service elasticsearch start
 cd ../../../
 
 ./configure --enable-geoip --sysconfdir=/etc/cif --localstatedir=/var --prefix=/opt/cif
-make && make deps
+make && make deps NOTESTS=-n
 make test
 make install
 make fixperms

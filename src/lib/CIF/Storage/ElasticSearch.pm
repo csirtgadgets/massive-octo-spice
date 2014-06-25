@@ -201,7 +201,7 @@ sub _search {
     ##http://www.perlmonks.org/?node_id=743445
     ##http://search.cpan.org/dist/Perl-Critic/lib/Perl/Critic/Policy/ControlStructures/ProhibitMutatingListFunctions.pm
     $results = [ map { $_ = $_->{'_source'} } @$results ];
-
+    
     return $results;
 }
 

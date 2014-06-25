@@ -41,7 +41,7 @@ sub _log_search {
     my $self    = shift;
     my $data    = shift;
     
-     $Logger->debug('logging search: '.$data->{'Data'}->{'Query'});
+    $Logger->debug('logging search: '.$data->{'Data'}->{'Query'});
     
     my $obs = CIF::ObservableFactory->new_plugin({ 
         observable  => $data->{'Data'}->{'Query'},
@@ -51,8 +51,6 @@ sub _log_search {
         tags        => ['search'],
         group       => GROUP_DEFAULT(),
     });
-    
-    warn ::Dumper($obs);
     
     $obs = $obs->TO_JSON();
     
@@ -76,7 +74,7 @@ sub process {
         group       => $data->{'@group'},
     });
     
-   
+   ## TODO -- rip out datatype eg: /observable
     $self->_log_search($msg) unless($data->{'nolog'});
     
     return (-1) unless(ref($results) eq "ARRAY");
