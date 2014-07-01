@@ -22,7 +22,7 @@ sub process {
     my $self = shift;
     my $args = shift;
 
-    return $self->get_rule->get_remote() if($self->get_rule()->{'fetcher'} eq 'passthrough');
+    return $self->get_rule->get_remote() if($self->get_rule()->{'fetcher'} && $self->get_rule()->{'fetcher'} eq 'passthrough');
     return $self->process_file({ file => $self->get_rule()->get_remote() });
 }
 

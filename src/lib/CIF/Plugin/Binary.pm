@@ -31,6 +31,8 @@ use constant DEFAULT_MAX_BINARY_SIZE => 1048576; # arbitrary
 sub is_binary {
     my $binary = shift;
     
+    return if($binary =~ /[\.]+$/);
+    
     if(-e $binary){
         assert((-s $binary) <= DEFAULT_MAX_BINARY_SIZE(), 'file too large');
         open(F,$binary) or die('unable to open file: '.$binary.': '.$!);

@@ -1,0 +1,70 @@
+Microsoft's Digital Crimes Unit is claiming their 10th major botnet action, this time targeting the malware known as Bladabindi, or more popularly njRAT, and Jenxcus, better known as H-worm. To do so, Microsoft filed a lawsuit in Nevada against three parties:
+Naser Al Mutairi, a Kuwait City resident known to be the author of njRAT through his varias aliases, njq8, xnjq8x, njq8x, and njrat
+
+Mohamed Benabdellah, an Algerian living in or near Mila, Algeria, who uses the aliases Houdini, houdinisc, and houdini-fx
+
+and Vitalwerks Internet Solutions, LLC, d/b/a No-IP.com, with offices at 5905 South Virginia Street, Suite 200, Reno, Nevada 89502.
+
+The lawsuit is also filed against "John Does 1-500" who are supposedly the 500 priniciple operators of njRAT and H-Worm malware. (H-Worm is a closely related RAT software, likely based off the same source code). Because they do not yet know the identities of these RAT operators, the are assigned "John Doe" aliases, in hopes that the power of discovery granted by the lawsuit can help to reveal their true identities.
+
+On the other side of this Internet battle is Vitalwerks and their literally millions of service users. Vitalwerks provides the capability to host an Internet service despite the fact that your computer may be using DHCP-assigned IP address. Normally a webserver has to have a permanently assigned IP address which is listed by a DNS service so that computers on the Internet can find the service you are offering. With Dynamic DNS services, your computer can link to the service and constantly update its IP address so that even if your IP changes many times per day, your service users can find you. In Microsoft's lawsuit, they agree that "Dynamic DNS is a vital part of the Internet because it allows anyone to have a domain name even though they have a changing IP address." Their accusation is found in the next sentence, "However, if not properly managed, a Dynamic DNS service can be susceptible to abuse."
+
+The lawsuit points out that in April 2013, OpenDNS published an article online detailing its investigation into Dynamic DNS abuse. In that study,On the Trail of Malicious Dynamic DNS Domains by my friend Dhia Mahjoub, OpenDNS collected resolutions of various Dynamic DNS domains, and concluded that during their study some domains, such as "hopto.org" were used for malicious purposes as often as 56% of the time! Other highly malicious URLs included:
+
+hopto.org - 56.71%
+us.to - 49.45%
+myftp.org - 37.50%
+myvnc.com - 33.33%
+myftp.biz - 20.20%
+dlinkddns.com - 12.22%
+no-ip.info - 10.70%
+no-ip.org - 4.57%
+The lawsuit also discusses Symantec reporting about the malware being used on no-ip. One such Symantec report is: Simple njRAT fueld nascent middle east Cybercrime Scene. (Microsoft doesn't really mention that basically NOBODY calls the malware Bladabindi except Microsoft. Just call it njRAT like everyone else, please!) In that report, from March 2014, Symantec mentions one particular group that infects as many as 4500 computers per day using their C&C Servers at njratmoony.no-ip.biz and nrj.no-ip.biz.
+This blogger confirmed the complaint firsthand that is made by No-IP themselves. Although Microsoft was supposedly going to ensure that "legitimate" no-ip customers were not impacted, for a significant part of the day on June 30, 2014, large portions of the Internet (including three linux servers that this blogger uses on three separate networks) had no idea how to find the no-ip domains. The nameservers were not propagated in such a way that the changes were seamless. No-IP's Formal Statement on Microsoft Takedown can be found on their website. In that statement, No-IP claims that "billions of queries" from "millions of innocent users" were dropped "because of Microsoft's attempt to remediate hostnames associated with a few bad actors" and implies that Microsoft did not dedicate enough resources to handle the traffic.
+
+The primary purpose of the court orders was in fact to allow Microsoft to take matters into their own hands and filter the traffic for 130 pages worth (more than 18,000 3LDs) that were hosted by NO-IP and were associated with criminal activity and malware, primarily related to the two RATs, njRAT and H-Worm.
+
+Of course on the other side of that is the fact that Microsoft documents that in the past twelve months MORE THAN SEVEN MILLION WINDOWS USERS were impacted by malware hosted on NO-IP domains! If someone's infrastructure is routinely abused to harm seven million of your customers, don't you have a right to do something about it? While NO-IP can claim that they have an active abuse desk that deals with these complaints, dozens of criminal tutorials would not recommend that you host your malware by setting up a NO-IP address, many of which have lived on consistent names for MANY MONTHS (as in the names mentioned in the above Symantec link) unless there was a clear pattern of NOT terminating offending 3LD (third level domains).
+
+Cisco's fabulous cybercrime fighter, Levi Gundert, who I first worked with while he was working on the LA Electronic Crimes Task Force, as one of the most effective U.S. Secret Service cybercrime agents, and who later worked for Team Cymru, recently wrote a piece for Cisco's blog on Dynamic Detection of Malicious DDNS. Levi says that Free DDNS services "check all of the necessary attack boxes" that make the service desirable for criminals. As he explains:
+
+Free DDNS services, by comparison, check all of the necessary attack boxes. Sub-domains can be quickly and easily generated and DNS records are trivially changed. For the remote access Trojan (RAT) crowd that are typically attempting to spy on female victims and running servers from home, DDNS is a natural fit. In fact, searching the web for tutorials on using freely available RATs like Black Shades, Dark Comet, or Poison Ivy returns results that all instruct RAT attackers to first create DDNS sub-domains in order to properly configure the RAT, specifically enabling a “back connect” to the attacker. Naturally, one segment of RAT users tend to be less technical, relying on tutorials and point and click interfaces to actually launch the RAT, which likely contributes significantly to the overall metrics of malicious DDNS use.
+Levi provides this graph showing how often Cisco's Cloud Web Security blocks Dynamic DNS third level domains based on the reputation of that service in the following graph:
+
+
+
+(source: blogs.cisco.com/security/dynamic-detection-of-malicious-ddns/ click image to enlarge )
+zapto.org, one of the NO-IP domains, is blocked 100% of the time by users of Cisco's Cloud Web Service. no-ip.info, no-ip.org, and no-ip.biz are also all blocked between 50% and 100% of the time based on reputation. Levi next goes on to show of all the DDNS base domains, "what do the corresponding malware numbers look like for the DDNS domains most abused by threat actors?"
+
+
+
+(source: blogs.cisco.com/security/dynamic-detection-of-malicious-ddns/ click image to enlarge )
+Even after such widespread and published reports of NO-IP being used for malware abuse, Microsoft observed no significant change in their abuse practices, based on the malware analysis they performed. Following the February 2014 Cisco report, Microsoft "continues to see 2,000-3,000 new unique malware samples per month that are supported by No-IP."
+
+But that doesn't mean No-IP is not responsive. Brian Krebs reported on this conflict in his article today Microsoft Darkens 4mm Sites in Malware Fight where he quotes No-IP's Natalie Gogun as saying that of the 18,000 sites mentioned in the Temporary Restraining Order, only about 2,000 of them were actually still live. Krebs quotes Crowdstrike's Dmitri Alperovitch mentioning that No-IP has always been very responsive, and I've seen the same. In fact, immediately following the Cisco blog above, a member of the No-IP security team was observed by this blogged on a security researcher mailing list asking if anyone could help him get the full list so he could make sure they killed all of the domain names mentioned. (Hi, Kurt!)
+
+The problem here may be the nature of the malware used on these sites. While the security community regular sees and reports on financial crimes malware, such as Zeus, or malware that has significant and widespread distribution, in most cases njRat no-ip domains are being used by small-time botmasters to allow themselves to spy on a few dozen webcams. In fact, a review of more than 1800 recent URLs associated with delivering financial crimes malware observed by Malcovery Security's T3 product, NONE of the No-IP domains were seen to be used. Financial crime malware does not seem to be heavily associated with No-IP. While njRat certainly has the capability to be used for more significant crimes (including installing any additional malware desired by the criminals, and famously being used by the Syrian government to spy on the rebels) its primary reputation is as a tool for online perverts. Their typical victims tend to lack the Internet-savvy that allows corporate, industry, and government malware victims to report malware victimization to No-IP to receive a response. Sophisticated financial crimes malware criminals are very unlikely to link their malware back to dynamic DNS hosts that they personally control and are much more likely to use "more permanent" hosting in the form of hacked or leased servers.
+
+ The Microsoft complaint mentions YouTube, and we were able to quickly find many similar njRAT tutorials. There were also njRAT groups hosted on Facebook where botmasters were openly trading photographs of victims and offering to "trade slaves" (as they refer to the pretty girls whose webcams they control.) We reported three such groups to Facebook Security who took quick action to kill the groups which had a combined membership of more than 16,000 users!
+
+Some examples of these creeps work might help illustrate the type of crimes committed by the typical njRat botmaster:
+
+Farid shows a screenshot boasting of 200 simultaneously online njRAT victims.
+
+
+
+Farid frequently posts photos of his conquests:
+
+
+Others do the same:
+
+
+Here's the Before and After of Farid's njrat group . . .
+
+
+and after we reported the group to Facebook Security . . .
+
+
+Conclusions?
+
+I can't really take sides on this one. Do we need to do something more to help the victims of this kind of malware? Absolutely. Was it necessary to seize 22 domains at No-IP? I can't argue with Microsoft wanting to prevent infections to more than 7 million Windows victims, but I certainly can understand the great frustration experienced by the No-IP folks.

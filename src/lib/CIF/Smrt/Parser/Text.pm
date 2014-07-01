@@ -48,6 +48,7 @@ sub process {
     my $args = shift;
 
     my $rv = [];
+    my $otype;
     foreach (@{$args->{'content'}}){
         # skip comments
         next if($self->get_rule()->get_skip_comments() && $_ =~ $self->get_rule()->get_comments());
@@ -57,7 +58,12 @@ sub process {
         foreach my $t ($self->get_handle()->getTokens()){
             next if($self->get_rule()->_ignore($t));
             next unless(observable_type($t));
-            $t = { observable => $self->get_rule()->_replace($t) };
+            $otype = observable_type($t);
+            next unless($otype);
+            $t = { 
+            	observable => $self->get_rule()->_replace($t),
+            	otype      => $otype
+            };
             if($self->get_rule()->get_store_content()){
                 $t->{'additionaldata'} = [$_];
             }

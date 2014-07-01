@@ -12,7 +12,7 @@ use CIF::Observable;
 with 'CIF::Rule';
 
 #use constant RE_IGNORE => qw/(<.+?>|\/|\.[a-z]{2,})/;
-use constant RE_IGNORE => qw//;
+use constant RE_IGNORE => qw/[\.]$/;
 
 has 'pattern'   => (
     is  => 'ro',
@@ -54,11 +54,7 @@ has 'skip_first' => (
 has 'ignore'    => (
     is      => 'ro',
     isa     => 'ArrayRef',
-    default => sub { 
-        [
-            RE_IGNORE(),
-        ]
-    },
+    default => RE_IGNORE(),
     reader  => 'get_ignore',
 );
 
@@ -101,7 +97,11 @@ around BUILDARGS => sub {
         $args->{'override'} = {} unless($args->{'override'});
         $args = { %{$args->{'config'}}, %{$args->{'defaults'}}, %{$args->{'override'}}, feed => $args->{'feed'}, meta => $args->{'meta'} };
     }
-
+    
+    if($args->{'ignore'}){
+    	$args->{'ignore'} = [$args->{'ignore'}] unless(ref($args->{'ignore'}) eq 'ARRAY');
+    }
+    
     return $self->$orig($args);
 };
 
