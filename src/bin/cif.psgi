@@ -1,4 +1,4 @@
-#!/usr/env/perl
+#!/usr/bin/env perl
 
 # http://mojocasts.com/e3
 use strict;
@@ -28,11 +28,10 @@ helper auth => sub {
 };
 
 get '/' => sub {
-    shift->redirect_to('/help');
+    shift->redirect_to('/v2/help');
 } => 'help';
 
-get '/help' => sub {
-    
+get '/:version/help' => sub {
     shift->render('help');
 } => 'help';
 
@@ -59,15 +58,17 @@ get '/:version/observables' => sub {
     my $confidence = $self->param('confidence') || 0;
     my $id         = $self->param('id');
     my $group      = $self->param('group') || 'everyone';
-
-    my $resource = $cli->search({
+    
+    my $res = $cli->search({
         Token      => $token,
         Query      => $query,
+        Id         => $id,
         limit      => $limit,
         confidence => $confidence,
     });
 
-    $self->render( json => $resource );
+    $self->render( json => $res );
+    
 } => 'observables#index';
 
 put '/:version/observables' => sub {
@@ -107,12 +108,17 @@ __DATA__
             <table>
                 <tr>
                     <td class="striped value">
-                        <pre>GET /<%= $API_VERSION %>/ping?token=1234&q=example.com</pre>
+                        <pre>GET /<%= $API_VERSION %>/ping?token=1234</pre>
                     </td>
                 </tr>
                 <tr>
                     <td class="striped value">
                         <pre>GET /<%= $API_VERSION %>/observables?token=1234&q=example.com</pre>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="striped value">
+                        <pre>GET /<%= $API_VERSION %>/observables?token=1234&id=dd7610037ea0c3d68dd73634bee223bbdaedce14c707cbadbb1f90688d6312dd</pre>
                     </td>
                 </tr>
                 <tr>
@@ -140,6 +146,7 @@ __DATA__
                 % { param => 'limit', type => 'INT32', example => '500' },
                 % { param => 'confidence', type => 'INT32', example => '65' },
                 % { param => 'group', type => 'STRING', example => 'group2' },
+                % { param => 'id', type => 'STRING', example => 'dd7610037ea0c3d68dd73634bee223bbdaedce14c707cbadbb1f90688d6312dd' }
                 % ];
                 % foreach my $p (@{$enabled_params}){
                 <tr align="left">
