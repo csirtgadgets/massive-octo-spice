@@ -1,0 +1,12 @@
+confidence = 95
+tlp = green
+tags = 'passive'
+
+# https://github.com/gamelinux/passivedns
+[gamelinux]
+provider = localhost
+remote = testdata/gamelinux/passive.txt
+parser = delim
+pattern = '^(\d+\.\d+)\|\|[\w\.]+\|\|[\w\.]+\|\|[\w\.]+\|\|([\w\.]+)\.\|\|[A-Z]\|\|([\w\.]+)\|\|'
+values = 'firsttime,rdata,observable'
+lasttime = <firsttime>

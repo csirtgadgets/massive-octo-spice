@@ -57,12 +57,18 @@ sub normalize_timestamp {
     return DateTime::Format::DateParse->parse_datetime($dt) if(!$asString && $dt =~ /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/);
 
     # already epoch
-    if($dt =~ /^\d{10}+/){
+    if($dt =~ /^\d{10}+$/){
         return DateTime->from_epoch(epoch => $dt) unless($asString);
         $dt = DateTime->from_epoch(epoch => $dt);
         return $dt->ymd().'T'.$dt->hms().'Z';
-    } 
+    }
     
+    # high-res
+    if($dt =~ /^\d+\.\d+$/){
+    	my @a = split(/\./,$dt);
+        $dt = DateTime->from_epoch(epoch => $a[0]);
+        return $dt->ymd().'T'.$dt->hms().'Z' if($asString);
+    }
     return DateTime->today() if(lc($dt) =~ /^today$/);
     # something else
     if($dt && ref($dt) ne 'DateTime'){

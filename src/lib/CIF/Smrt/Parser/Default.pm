@@ -64,7 +64,7 @@ sub process {
         @y = ();
         if(ref($pattern) eq 'Regexp'){
         	$x =~ $pattern;
-        	push(@y,($1,$2));
+        	push(@y,($1,$2,$3)); ## TODO -- finish me
         } else {
             @y = split($pattern,$x);
         }

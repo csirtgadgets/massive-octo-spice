@@ -54,7 +54,7 @@ has 'skip_first' => (
 has 'ignore'    => (
     is      => 'ro',
     isa     => 'ArrayRef',
-    default => RE_IGNORE(),
+    default => sub { [RE_IGNORE()] },
     reader  => 'get_ignore',
 );
 

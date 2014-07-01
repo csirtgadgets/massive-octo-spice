@@ -38,6 +38,11 @@ has 'prefix'    => (
     reader  => 'get_prefix',
 );
 
+has 'rdata' => (
+    is      => 'ro',
+    reader  => 'get_rdata',
+);
+
 ## TODO -- array of location objs
 has 'citycode'   => (
     is      => 'ro',
