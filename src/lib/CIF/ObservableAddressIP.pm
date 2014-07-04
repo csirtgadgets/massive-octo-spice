@@ -7,6 +7,13 @@ use Mouse::Role;
 
 with 'CIF::ObservableAddress';
 
+# server/client?
+has 'orientation' => (
+    is      => 'ro',
+    isa     => 'Str',
+    reader  => 'get_orientation',
+);
+
 has 'asn'   => (
     is      => 'ro',
     isa     => 'Num',
