@@ -177,8 +177,10 @@ sub process {
 
     $msg = @{$msg}[0] if(ref($msg) eq 'ARRAY');
     
+    use Data::Dumper; warn Dumper($msg);
+    
     my $r = CIF::Message->new({
-        rtype   => $msg->{'@rtype'} || $msg->{'rtype'},
+        rtype   => $msg->{'rtype'},
         mtype   => 'response',
         Token   => $msg->{'Token'},
     });

@@ -12,7 +12,7 @@ use Data::Dumper;
 with 'CIF::Router::Request';
 
 use constant RE_BADCHARS        => qr/(\/?\.\.+\/?|;|\w+\(|=>)/;
-use constant RE_GOODQUERY       => qr/^[a-zA-Z0-9_\.\,\/\-@]+$/;
+use constant RE_GOODQUERY       => qr/^[a-zA-Z0-9_\.\,\/\-@\:]+$/;
 use constant CONFIDENCE_DEFAULT => 25; ## TODO -- move to router
 use constant TLP_DEFAULT        => 'amber'; ## TODO
 use constant GROUP_DEFAULT      => 'everyone'; ## TODO
@@ -33,8 +33,8 @@ sub understands {
     my $self = shift;
     my $args = shift;
     
-    return unless($args->{'@rtype'});
-    return 1 if($args->{'@rtype'} eq 'search');
+    return unless($args->{'rtype'});
+    return 1 if($args->{'rtype'} eq 'search');
 }
 
 sub _log_search {
@@ -65,27 +65,37 @@ sub process {
     my $msg     = shift;
     my $data    = $msg->{'Data'};
     
-    return (-1) unless($self->check($data->{'Query'}));
-    
+    if($data->{'Query'}){
+    	return -1 unless($self->check($data->{'Query'}));
+    } else {
+    	return -1 unless $data->{'Id'};
+    }
+   
     my $results = $self->get_storage_handle()->process({
         Query       => $data->{'Query'},
-        confidence  => $data->{'@confidence'},
-        limit       => $data->{'@limit'},
-        group       => $data->{'@group'},
+        Id			=> $data->{'Id'},
+        confidence  => $data->{'confidence'},
+        limit       => $data->{'limit'},
+        group       => $data->{'group'},
     });
-    
-   ## TODO -- rip out datatype eg: /observable
-    $self->_log_search($msg) unless($data->{'nolog'});
+   
+    if($data->{'Query'}){
+        $self->_log_search($msg) unless($data->{'nolog'});
+    }
     
     return (-1) unless(ref($results) eq "ARRAY");
 
     my $resp = CIF::Message::Search->new({
-        limit       => $data->{'@limit'},
-        confidence  => $data->{'@confidence'},
-        group       => $data->{'@group'},
-        Query       => $data->{'Query'},
+        limit       => $data->{'limit'},
+        confidence  => $data->{'confidence'},
+        group       => $data->{'group'},
         Results     => $results,
     });
+    if($data->{'Query'}){
+    	$resp->set_Query($data->{'Query'});
+    } else {
+    	$resp->set_Id($data->{'Id'});
+    }
     return $resp;
 }
 

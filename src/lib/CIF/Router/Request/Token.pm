@@ -12,8 +12,8 @@ sub understands {
     my $self = shift;
     my $args = shift;
 
-    return unless($args->{'@rtype'});
-    return 1 if($args->{'@rtype'} eq 'token');
+    return unless($args->{'rtype'});
+    return 1 if($args->{'rtype'} eq 'token');
 }
 
 sub process {

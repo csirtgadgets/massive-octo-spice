@@ -133,7 +133,7 @@ sub process {
     return -1 unless($self->check_handle());
     
     my $ret;
-    if($args->{'Query'}){
+    if($args->{'Query'} || $args->{'Id'}){
         $Logger->debug('searching...');
         $ret = $self->_search($args);
     } elsif($args->{'Observables'}){
@@ -158,27 +158,20 @@ sub _search {
         $_ = { "term" => { 'group' => $_ } };
     }
     
-    my $q = $args->{'Query'};
-    
-    $q = [ split(/\//,$q) ];
-    unshift(@{$q}, DEFAULT_SEARCH_FIELD()) unless($#{$q} > 0);
-    my ($f,$v) = @$q;
-    my $terms = [ split(/,/,$v) ];
-    foreach (@$terms){
-        $_ = { "term" => { $f => $_ } };
+    my $q;
+    if($args->{'Id'}){
+    	$q = { "term" => { 'id' => $args->{'Id'} } };
+    } else {
+	    $q = { "term" => { "observable" => $args->{'Query'} } };
     }
-    $q = {
-        query => {
-            filtered    => {
-                filter  => {
-                    "and"   => [
-                        @$terms,
-                    ],                      
-                },
-            },
-        }         
-    };
     
+    $q = {
+		query => {
+	    	filtered    => {
+	        	filter  => { "and" => [ $q ], }
+	        },
+	    }
+	};
     if($args->{'confidence'}){
         push(@{$q->{'query'}->{'filtered'}->{'filter'}->{'and'}},
             { range => { "confidence" => { 'from' => $args->{'confidence'}, 'to' => DEFAULT_MAX_CONFIDENCE() } } }

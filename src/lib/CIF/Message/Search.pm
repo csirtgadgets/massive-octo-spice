@@ -31,11 +31,24 @@ has 'Tags'  => (
     coerce  => 1,
 );
 
+has 'Id'	=> (
+	is		=> 'ro',
+	isa		=> 'Str',
+	reader	=> 'get_Id',
+);
+
 has 'Query' => (
-    is          => 'ro',
+    is          => 'rw',
     isa         => 'Str',
     reader      => 'get_Query',
-    coerce      => 1,
+    writer      => 'set_Query',
+);
+
+has 'Id' => (
+    is      => 'rw',
+    isa     => 'Str',
+    reader  => 'get_Id',
+    writer  => 'set_Id',
 );
 
 has 'Results'   => (
@@ -71,10 +84,11 @@ sub TO_JSON {
     my $self = shift;
 
     my $ret = {
-        '@confidence'   => $self->get_confidence(),
-        '@limit'        => $self->get_limit(),
-        '@group'        => $self->get_group(),
+        'confidence'   	=> $self->get_confidence(),
+        'limit'        	=> $self->get_limit(),
+        'group'        	=> $self->get_group(),
         'Query'         => $self->get_Query(),
+        'Id'			=> $self->get_Id(),
         'Results'       => $self->get_Results(),
     };
     return $ret;

@@ -143,16 +143,26 @@ sub search {
     my $self = shift;
     my $args = shift;
     
-    my $msg = CIF::Message->new({
-        rtype       => 'search',
-        mtype       => 'request',
-        Token       => $args->{'Token'} || $self->Token(),
-        Query       => $args->{'Query'},
-        confidence  => $args->{'confidence'},
-        limit       => $args->{'limit'},
-        group       => $args->{'group'},
-        Tags        => $args->{'Tags'},
-    });
+    my $msg;
+    if($args->{'Id'}){
+    	$msg = CIF::Message->new({
+    		rtype       => 'search',
+	        mtype       => 'request',
+	        Token       => $args->{'Token'} || $self->Token(),
+	        Id			=> $args->{'Id'},
+    	});
+    } else {
+    	$msg = CIF::Message->new({
+	        rtype       => 'search',
+	        mtype       => 'request',
+	        Token       => $args->{'Token'} || $self->Token(),
+	        Query       => $args->{'Query'},
+	        confidence  => $args->{'confidence'},
+	        limit       => $args->{'limit'},
+	        group       => $args->{'group'},
+	        Tags        => $args->{'Tags'},
+	    });
+    }
 
     $msg = $self->send($msg);
     my $stype = $msg->{'stype'} || $msg->{'@stype'};
@@ -196,7 +206,6 @@ sub submit {
         Token       => $args->{'Token'} || $self->Token(),
         Observables => $args->{'Observables'},
     });
-    
     my $sent = ($#{$args->{'Observables'}} + 1);
     $Logger->info('sending: '.($sent));
     my $t = gettimeofday();
@@ -205,7 +214,7 @@ sub submit {
         $t = tv_interval([split(/\./,$t)]);
         $Logger->info('took: ~'.$t);
         $Logger->info('rate: ~'.($sent/$t).' o/s');
-        return $msg->{'Data'} if($msg->{'@stype'} eq 'failure');
+        return $msg->{'Data'} if($msg->{'stype'} eq 'failure');
         return (undef,$msg->{'Data'}->{'Results'});
     } else {
         $Logger->warn('send failed');

@@ -19,8 +19,8 @@ sub understands {
     my $self = shift;
     my $args = shift;
 
-    return unless($args->{'@rtype'});
-    return 1 if($args->{'@rtype'} eq 'ping');
+    return unless($args->{'rtype'});
+    return 1 if($args->{'rtype'} eq 'ping');
 }
 
 sub process {

@@ -77,12 +77,12 @@ sub TO_JSON {
     my $self = shift;
 
     my $ret = {
-        '@version'      => $self->get_version(),
-        '@mtype'        => $self->get_mtype(),    
-        '@stype'        => $self->get_stype(),
-        '@rtype'        => $self->get_rtype(),
-        '@timestamp'    => $self->get_timestamp(),
-        '@id'           => $self->get_id(),
+        'version'      => $self->get_version(),
+        'mtype'        => $self->get_mtype(),    
+        'stype'        => $self->get_stype(),
+        'rtype'        => $self->get_rtype(),
+        'timestamp'    => $self->get_timestamp(),
+        'id'           => $self->get_id(),
         
         'Data'          => $self->get_Data(),
         'Token'         => $self->get_Token(), 
