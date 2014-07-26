@@ -18,6 +18,7 @@ requires 'Mail::RFC822::Address';
 requires 'Module::PluginFinder';
 requires 'Mouse';
 requires 'Net::Abuse::Utils';
+requires 'Net::Abuse::Utils::Spamhaus', '>= 0.06';
 requires 'Net::DNS','> 0.76';
 requires 'Net::DNS::Match';
 requires 'Net::Patricia';
