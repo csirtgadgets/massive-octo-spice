@@ -81,7 +81,7 @@ GetOptions(
     'pidfile|p=s'       => \$pidfile,
     '--interval'	    => \$interval,
     '--randomstart'   	=> \$randomstart,
-    '--test'            => \$testmode,
+    '--testmode'        => \$testmode,
     
     # logging
     'logfile=s'     => \$logfile,
