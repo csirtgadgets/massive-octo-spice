@@ -11,11 +11,11 @@ BEGIN {
 };
 
 my $rules = [
-#    {
-#        config  => 'rules/example/freeform.cfg.example',
-#        feed    => 'garwarn',
-#        tmp => '/tmp',
-#    },
+    {
+        config  => 'rules/example/freeform.cfg.example',
+        feed    => 'garwarn',
+        tmp => '/tmp',
+    },
     {
     	config => 'rules/example/freeform.cfg.example',
     	feed   => 'feye',
