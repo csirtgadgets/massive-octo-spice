@@ -4,9 +4,10 @@
 use strict;
 use warnings;
 
-use FindBin;
-
-use lib "$FindBin::Bin/../lib";
+BEGIN {
+    use FindBin;
+    use local::lib "$FindBin::Bin/..";
+}
 
 use CIF;
 require CIF::Client;
