@@ -38,7 +38,6 @@ foreach my $r (@$rules){
         test_mode   => 1,
         tmp => '/tmp',
     });
-    warn Dumper($ret);
     ok($#{$ret},'testing for results...');
 }
 
