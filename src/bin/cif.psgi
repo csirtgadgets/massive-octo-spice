@@ -49,6 +49,24 @@ get '/:version/ping' => sub {
     $self->render( json => { timestamp => [ gettimeofday() ] } );
 } => 'ping#index';
 
+get '/:version/observables/:observable' => sub {
+	my $self = shift;
+	
+	my $token      = $self->param('token');
+    my $query      = $self->param('observable');
+    my $limit      = $self->param('limit') || 500;
+    my $confidence = $self->param('confidence') || 0;
+    my $group      = $self->param('group') || 'everyone';
+    
+    my $res = $cli->search({
+        Token      => $token,
+        Id         => $query,
+    });
+
+    $self->render( json => $res );
+	
+} => 'observable#show';
+
 get '/:version/observables' => sub {
     my $self       = shift;
     
@@ -56,13 +74,11 @@ get '/:version/observables' => sub {
     my $query      = $self->param('q');
     my $limit      = $self->param('limit') || 500;
     my $confidence = $self->param('confidence') || 0;
-    my $id         = $self->param('id');
     my $group      = $self->param('group') || 'everyone';
     
     my $res = $cli->search({
         Token      => $token,
         Query      => $query,
-        Id         => $id,
         limit      => $limit,
         confidence => $confidence,
     });
@@ -71,13 +87,13 @@ get '/:version/observables' => sub {
     
 } => 'observables#index';
 
-put '/:version/observables' => sub {
+put '/:version/observables/new' => sub {
     my $self  = shift;
     my $token = $self->param('token');
 
     my $obs = $self->req->json();
     $obs = [$obs] unless ( ref($obs) eq 'ARRAY' );
-
+    
     my $res = $cli->submit({
             Token       => $token,
             Observables => $obs,
@@ -118,12 +134,12 @@ __DATA__
                 </tr>
                 <tr>
                     <td class="striped value">
-                        <pre>GET /<%= $API_VERSION %>/observables?token=1234&id=dd7610037ea0c3d68dd73634bee223bbdaedce14c707cbadbb1f90688d6312dd</pre>
+                        <pre>GET /<%= $API_VERSION %>/observables/dd7610037ea0c3d68dd73634bee223bbdaedce14c707cbadbb1f90688d6312dd?token=1234</pre>
                     </td>
                 </tr>
                 <tr>
                     <td class="striped value">
-                        <pre>PUT /<%= $API_VERSION %>/observables?token=1234 # body is JSON string</pre>
+                        <pre>PUT /<%= $API_VERSION %>/observables/new?token=1234 # body is JSON string</pre>
                     </td>
                 </tr>
             </table>
@@ -146,7 +162,6 @@ __DATA__
                 % { param => 'limit', type => 'INT32', example => '500' },
                 % { param => 'confidence', type => 'INT32', example => '65' },
                 % { param => 'group', type => 'STRING', example => 'group2' },
-                % { param => 'id', type => 'STRING', example => 'dd7610037ea0c3d68dd73634bee223bbdaedce14c707cbadbb1f90688d6312dd' }
                 % ];
                 % foreach my $p (@{$enabled_params}){
                 <tr align="left">
