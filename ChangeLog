@@ -1,4 +1,16 @@
 Revision history for massive-octo-spice
 
-2.00.00-alpha.0 2014-06-08
+2.00.00-alpha.2 2014-07-27
+    - misc travis-ci updates
+    - added passive dns example
+    - added freeform text parser example
+    - converted api to Mojo, added help / examples
+    - [giovino] added "orientation" to ObservableAddressIp (server vs client), testing.
+    - misc cleanp and re-factoring
+    - bugfixes to cif-smrt for testmode
+    - also:
+        - https://github.com/csirtgadgets/p5-cif-app-procmail
+        - https://github.com/csirtgadgets/p5-cif-app-bgpmon
+
+2.00.00-alpha.1 2014-06-08
     - initial alpha release
