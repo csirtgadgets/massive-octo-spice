@@ -25,7 +25,7 @@ requires 'Net::DNS::Match';
 requires 'Net::Patricia';
 requires 'Net::SSL';
 requires 'Mojolicious','5.09';
-requiers 'Plack', '1.0030';
+requires 'Plack', '1.0030';
 requires 'Regexp::Common';
 requires 'Regexp::Common::net';
 requires 'Regexp::IPv6';

@@ -34,7 +34,6 @@ fi
 # cpan.org has been less than reliable lately
 cpanm --mirror http://cpan.metacpan.org Regexp::Common \
 http://cpan.metacpan.org/authors/id/S/SH/SHERZODR/Config-Simple-4.59.tar.gz \
-http://cpan.metacpan.org/authors/id/N/NL/NLNETLABS/Net-DNS-0.76_2.tar.gz \
 Mouse
 
 echo 'HRNGDEVICE=/dev/urandom' >> /etc/default/rng-tools
