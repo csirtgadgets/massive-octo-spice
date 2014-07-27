@@ -5,10 +5,14 @@ use warnings FATAL => 'all';
 use Test::More;
 use Data::Dumper;
 
-BEGIN { 
-    use_ok('CIF');
-    use_ok('CIF::Smrt');
-    use_ok('CIF::ObservableFactory');
+BEGIN {
+    if($ENV{'CI_BUILD'}){
+        plan( skip_all => 'skipping for CI build' );
+    } else {
+        use_ok('CIF');
+        use_ok('CIF::Smrt');
+        use_ok('CIF::ObservableFactory');
+    }
 };
 
 my $rules = [
