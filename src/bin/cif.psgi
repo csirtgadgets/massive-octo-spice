@@ -57,9 +57,6 @@ get '/:version/observables/:observable' => sub {
 	
 	my $token      = $self->param('token');
     my $query      = $self->param('observable');
-    my $limit      = $self->param('limit') || 500;
-    my $confidence = $self->param('confidence') || 0;
-    my $group      = $self->param('group') || 'everyone';
     
     my $res = $cli->search({
         Token      => $token,
@@ -74,22 +71,21 @@ get '/:version/observables' => sub {
     my $self       = shift;
     
     my $token      	= $self->param('token');
-    my $query      	= $self->param('q');
-    my $limit      	= $self->param('limit') || 500;
-    my $confidence 	= $self->param('confidence') || 0;
-    my $group      	= $self->param('group') || 'everyone';
-    my $starttime	= $self->param('starttime');
-    my $endtime		= $self->param('endtime');
-    my $otype 		= $self->param('otype');
+    my $query      	= $self->param('q') || $self->param('observable');
     
     my $res = $cli->search({
         Token      	=> $token,
         Query      	=> $query,
-        limit      	=> $limit,
-        confidence 	=> $confidence,
-        StartTime	=> $starttime,
-        EndTime		=> $endtime,
-        otype		=> $otype,
+        Filters     => {
+        	otype      => $self->param('otype') || undef,
+        	cc         => $self->param('cc') || undef,
+        	confidence => $self->param('confidence') || 0,
+        	starttime  => $self->param('starttime') || undef,
+        	groups     => $self->param('groups') || undef,
+        	limit      => $self->param('limit') || undef,
+        	tags       => $self->param('tags') || undef,
+        	## TODO - TLP?
+        },
     });
 
     $self->render( json => $res );
@@ -118,33 +114,6 @@ put '/:version/observables/new' => sub {
     $self->render(json => $res, status => 201);
 } => 'observables#create';
 
-get '/:version/countries' => sub {
-	my $self = shift;
-	
-	my $token      = $self->param('token');
-	my $limit      = $self->param('limit') || 500;
-    my $confidence = $self->param('confidence') || 0;
-    my $group      = $self->param('group') || 'everyone';
-    my $query      = $self->param('q') || 'US';
-    my $starttime  = $self->param('starttime');
-    my $endtime    = $self->param('endtime');
-    my $otype		= $self->param('otype');
-    
-    $query = uc($query);
-    
-    my $res = $cli->search({
-        Token       => $token,
-        Country     => $query,
-        limit       => $limit,
-        confidence  => $confidence,
-        StartTime   => $starttime,
-        EndTime     => $endtime,
-        otype		=> $otype,
-    });
-
-    $self->render( json => $res );
-} => 'countries#index';
-
 app->start();
 
 __DATA__
@@ -170,17 +139,17 @@ __DATA__
                 </tr>
                 <tr>
                     <td class="striped value">
+                        <pre>GET /<%= $API_VERSION %>/observables?token=1234&cc=RU&tags=scanner,botnet</pre>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="striped value">
                         <pre>GET /<%= $API_VERSION %>/observables/dd7610037ea0c3d68dd73634bee223bbdaedce14c707cbadbb1f90688d6312dd?token=1234</pre>
                     </td>
                 </tr>
                 <tr>
                     <td class="striped value">
                         <pre>PUT /<%= $API_VERSION %>/observables/new?token=1234 # body is JSON string</pre>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="striped value">
-                        <pre>GET /<%= $API_VERSION %>/countries?q=US&token=1234</pre>
                     </td>
                 </tr>
                 
@@ -203,7 +172,10 @@ __DATA__
                 % { param => 'token', type => 'STRING', example => '1234' }, 
                 % { param => 'limit', type => 'INT32', example => '500' },
                 % { param => 'confidence', type => 'INT32', example => '65' },
-                % { param => 'group', type => 'STRING', example => 'group2' },
+                % { param => 'groups', type => 'STRING', example => 'group1,group2' },
+                % { param => 'cc', type => 'STRING', example => 'RU' },
+                % { param => 'tags', type => 'STRING', example => 'botnet,scanner' },
+                % { param => 'otype', type => 'STRING', example => 'ipv4,fqdn' },
                 % ];
                 % foreach my $p (@{$enabled_params}){
                 <tr align="left">
