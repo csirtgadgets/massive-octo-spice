@@ -14,6 +14,7 @@ use Try::Tiny;
 use Carp::Assert;
 use CIF qw/hash_create_random is_hash_sha256/;
 use Data::Dumper;
+use JSON qw(encode_json);
 
 with 'CIF::Storage';
 
@@ -133,7 +134,7 @@ sub process {
     return -1 unless($self->check_handle());
     
     my $ret;
-    if($args->{'Query'} || $args->{'Id'}){
+    if($args->{'Query'} || $args->{'Id'} || $args->{'Country'}){
         $Logger->debug('searching...');
         $ret = $self->_search($args);
     } elsif($args->{'Observables'}){
@@ -153,34 +154,61 @@ sub _search {
     
     my $groups = $args->{'groups'} || ['everyone'];
     $groups = [$groups] unless(ref($groups) && ref($groups) eq 'ARRAY');
-
-    foreach (@$groups) {
-        $_ = { "term" => { 'group' => $_ } };
+    
+    my ($q,$terms,$ranges);
+       
+    if($args->{'Id'}){
+    	$terms->{'id'} = [$args->{'Id'}];
+    } if($args->{'Country'}){
+    	$terms->{'countrycode'} = [$args->{'Country'}];
+    } else {
+    	if($args->{'Query'} ne 'all'){
+    		$terms->{'observable'} = [$args->{'Query'}];
+    	}
     }
     
-    my $q;
-    if($args->{'Id'}){
-    	$q = { "term" => { 'id' => $args->{'Id'} } };
-    } else {
-	    $q = { "term" => { "observable" => $args->{'Query'} } };
+    if($args->{'otype'}){
+    	$terms->{'otype'} = [$args->{'otype'}];
+	}
+    
+    if($args->{'confidence'}){
+    	$ranges->{'confidence'}->{'gte'} = $args->{'confidence'};
+    }
+    
+    if($args->{'StartTime'}){
+    	$ranges->{'reporttime'}->{'gte'} = $args->{'StartTime'};
+    }
+    
+    my @and;
+    
+    if($terms){
+		foreach (keys %$terms){
+			push(@and, { term => { $_ => $terms->{$_} } } );	
+		}
+	}
+    
+    if($ranges){
+    	foreach (keys %$ranges){
+    		push(@and, { range => { $_ => $ranges->{$_} } } );
+    	}
     }
     
     $q = {
 		query => {
 	    	filtered    => {
-	        	filter  => { "and" => [ $q ], }
+	        	filter  => {
+	        		'and' => \@and
+	        	}
 	        },
 	    }
 	};
-    if($args->{'confidence'}){
-        push(@{$q->{'query'}->{'filtered'}->{'filter'}->{'and'}},
-            { range => { "confidence" => { 'from' => $args->{'confidence'}, 'to' => DEFAULT_MAX_CONFIDENCE() } } }
-        );
-    }
-    
-    push(@{$q->{'query'}->{'filtered'}->{'filter'}->{'and'}},
-        filter => { "or" => $groups },
-    );
+	
+    ## TODO -- need to re-write terms a bit to account for this tag
+	#    push(@{$q->{'query'}->{'filtered'}->{'filter'}->{'and'}},
+	#        filter => { "or" => $groups },
+	#    );
+	my $j = JSON->new();
+    $Logger->debug($j->pretty->encode($q));
     
     my %search = (
         index   => $self->get_index_search(),

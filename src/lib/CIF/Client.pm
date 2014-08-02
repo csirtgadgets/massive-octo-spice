@@ -3,7 +3,7 @@ package CIF::Client;
 use strict;
 use warnings;
 
-use CIF qw/init_logging $Logger/;
+use CIF qw/init_logging $Logger normalize_timestamp/;
 use CIF::Message;
 use CIF::Client::BrokerFactory;
 use CIF::FormatFactory;
@@ -143,6 +143,13 @@ sub search {
     my $self = shift;
     my $args = shift;
     
+    if($args->{'StartTime'}){
+    	unless($args->{'StartTime'} =~ /^\d+$/){
+    		$args->{'StartTime'} = DateTime::Format::DateParse->parse_datetime($args->{'StartTime'});
+    		$args->{'StartTime'} = $args->{'StartTime'}->epoch.'000'; # ES expects millis
+    	}
+    }
+    
     my $msg;
     if($args->{'Id'}){
     	$msg = CIF::Message->new({
@@ -151,6 +158,20 @@ sub search {
 	        Token       => $args->{'Token'} || $self->Token(),
 	        Id			=> $args->{'Id'},
     	});
+    } elsif($args->{'Country'}) {
+    	$msg = CIF::Message->new({
+            rtype       => 'search',
+            mtype       => 'request',
+            Token       => $args->{'Token'} || $self->Token(),
+            Country     => $args->{'Country'},
+            confidence  => $args->{'confidence'},
+            limit       => $args->{'limit'},
+            group       => $args->{'group'},
+            Tags        => $args->{'Tags'},
+            StartTime	=> $args->{'StartTime'},
+	        EndTime		=> $args->{'EndTime'},
+	        otype		=> $args->{'otype'},
+        });
     } else {
     	$msg = CIF::Message->new({
 	        rtype       => 'search',
@@ -161,11 +182,14 @@ sub search {
 	        limit       => $args->{'limit'},
 	        group       => $args->{'group'},
 	        Tags        => $args->{'Tags'},
+	        StartTime	=> $args->{'StartTime'},
+	        EndTime		=> $args->{'EndTime'},
+	        otype		=> $args->{'otype'},
 	    });
     }
-
+	warn Dumper($msg);
     $msg = $self->send($msg);
-    my $stype = $msg->{'stype'} || $msg->{'@stype'};
+    my $stype = $msg->{'stype'} || $msg->{'stype'};
     return $msg->{'Data'} if($stype eq 'failure');
     
     unless($args->{'nodecode'}){
@@ -181,7 +205,7 @@ sub send {
     $Logger->debug('encoding...');
 
     $msg = $self->encode({ data => $msg });
-
+    
     $Logger->debug('sending upstream...');
     
     $msg = $self->get_broker_handle()->send($msg);

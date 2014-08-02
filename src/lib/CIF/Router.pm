@@ -90,6 +90,11 @@ has 'encoder_pretty'    => (
     isa     => 'Bool',
 );
 
+has 'refresh' => (
+	is	=> 'ro',
+	isa	=> 'Bool'
+);
+
 sub _build_auth_handle {
     my $self = shift;
     return CIF::Router::AuthFactory->new_plugin({ plugin => $self->get_auth() });
@@ -172,6 +177,13 @@ sub startup {
 sub process {
     my $self    = shift;
     my $msg     = shift;
+    
+    if($self->refresh()){
+    	$Logger->debug('refreshing...');
+    	require Module::Refresh;
+    	Module::Refresh->refresh;
+    	$Logger->debug('done..');
+    }
     
     $msg = JSON::XS::decode_json($msg);
 

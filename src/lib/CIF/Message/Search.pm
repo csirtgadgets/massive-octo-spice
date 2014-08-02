@@ -51,13 +51,37 @@ has 'Id' => (
     writer  => 'set_Id',
 );
 
+has 'Country' => (
+    is      => 'rw',
+    isa     => 'Str',
+    reader  => 'get_Country',
+    writer  => 'set_Country',
+);
+
 has 'Results'   => (
     is      => 'rw',
     isa     => 'ArrayRef',
     reader  => 'get_Results',
     writer  => 'set_Results',
 );
-   
+
+has 'StartTime' => (
+	is	=> 'rw',
+	reader	=> 'get_StartTime',
+	writer	=> 'set_StartTime',
+);
+
+has 'EndTime' => (
+	is	=> 'rw',
+	reader	=> 'get_EndTime',
+	writer	=> 'set_EndTime',
+);
+
+has 'otype' => (
+	is		=> 'ro',
+	reader	=> 'get_otype',
+);
+	   
 sub understands {
     my $self = shift;
     my $args = shift;
@@ -89,7 +113,11 @@ sub TO_JSON {
         'group'        	=> $self->get_group(),
         'Query'         => $self->get_Query(),
         'Id'			=> $self->get_Id(),
+        'Country'       => $self->get_Country(),
         'Results'       => $self->get_Results(),
+        'StartTime'		=> $self->get_StartTime(),
+        'EndTime'		=> $self->get_EndTime(),
+        'otype'			=> $self->get_otype(),
     };
     return $ret;
 }
