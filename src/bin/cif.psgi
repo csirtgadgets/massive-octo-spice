@@ -13,6 +13,7 @@ use CIF;
 require CIF::Client;
 use Mojolicious::Lite;
 use Time::HiRes qw(gettimeofday);
+use Module::Refresh;
 use Data::Dumper;
 
 use constant REMOTE_DEFAULT  => 'tcp://localhost:' . CIF::DEFAULT_PORT();
@@ -28,6 +29,7 @@ helper auth => sub {
         $self->param('token');
 };
 
+## TODO -- make this more dynamic (eg: /cif/v2...)
 get '/' => sub {
     shift->redirect_to('/v2/help');
 } => 'help';
@@ -71,17 +73,23 @@ get '/:version/observables/:observable' => sub {
 get '/:version/observables' => sub {
     my $self       = shift;
     
-    my $token      = $self->param('token');
-    my $query      = $self->param('q');
-    my $limit      = $self->param('limit') || 500;
-    my $confidence = $self->param('confidence') || 0;
-    my $group      = $self->param('group') || 'everyone';
+    my $token      	= $self->param('token');
+    my $query      	= $self->param('q');
+    my $limit      	= $self->param('limit') || 500;
+    my $confidence 	= $self->param('confidence') || 0;
+    my $group      	= $self->param('group') || 'everyone';
+    my $starttime	= $self->param('starttime');
+    my $endtime		= $self->param('endtime');
+    my $otype 		= $self->param('otype');
     
     my $res = $cli->search({
-        Token      => $token,
-        Query      => $query,
-        limit      => $limit,
-        confidence => $confidence,
+        Token      	=> $token,
+        Query      	=> $query,
+        limit      	=> $limit,
+        confidence 	=> $confidence,
+        StartTime	=> $starttime,
+        EndTime		=> $endtime,
+        otype		=> $otype,
     });
 
     $self->render( json => $res );
@@ -109,6 +117,33 @@ put '/:version/observables/new' => sub {
     }
     $self->render(json => $res, status => 201);
 } => 'observables#create';
+
+get '/:version/countries' => sub {
+	my $self = shift;
+	
+	my $token      = $self->param('token');
+	my $limit      = $self->param('limit') || 500;
+    my $confidence = $self->param('confidence') || 0;
+    my $group      = $self->param('group') || 'everyone';
+    my $query      = $self->param('q') || 'US';
+    my $starttime  = $self->param('starttime');
+    my $endtime    = $self->param('endtime');
+    my $otype		= $self->param('otype');
+    
+    $query = uc($query);
+    
+    my $res = $cli->search({
+        Token       => $token,
+        Country     => $query,
+        limit       => $limit,
+        confidence  => $confidence,
+        StartTime   => $starttime,
+        EndTime     => $endtime,
+        otype		=> $otype,
+    });
+
+    $self->render( json => $res );
+} => 'countries#index';
 
 app->start();
 
@@ -143,6 +178,12 @@ __DATA__
                         <pre>PUT /<%= $API_VERSION %>/observables/new?token=1234 # body is JSON string</pre>
                     </td>
                 </tr>
+                <tr>
+                    <td class="striped value">
+                        <pre>GET /<%= $API_VERSION %>/countries?q=US&token=1234</pre>
+                    </td>
+                </tr>
+                
             </table>
        </div>
        </div>
