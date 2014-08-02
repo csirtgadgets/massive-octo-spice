@@ -163,6 +163,7 @@ sub main {
         backend_listen  => $backend,
         auth            => $auth,
         storage         => $storage,
+        refresh			=> $debug,
     });
     my $rv = $router->startup();
     unless($rv){
