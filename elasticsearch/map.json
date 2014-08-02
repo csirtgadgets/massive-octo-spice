@@ -39,12 +39,14 @@
         "observables": {
             "properties" : {
                 "@version" : { "index" : "not_analyzed", "type" : "string" },
-                "@timestamp": { "type": "date" },
+                "@timestamp": { "type": "date_time" },
                 "@group": { "type": "string", "index": "not_analyzed" },
                 "observable": { "type": "string" },
+		"otype": { "type": "string" },
                 "confidence": { "type": "integer", "store": "yes" },
-                "detecttime": { "type": "date" },
-                "reporttime": { "type": "date" },
+                "firsttime": { "type": "date_time" },
+                "lasttime": { "type": "date_time" },
+                "reporttime": { "type": "date_time" },
                 "provider": { "type": "string" },
                 "rdata": { "type": "string" },
                 "countrycode": { "type": "string", "index": "not_analyzed" }
