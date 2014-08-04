@@ -68,22 +68,12 @@ sub process {
     if($data->{'Query'}){
     	return -1 unless($self->check($data->{'Query'}));
     } else {
-    	return -1 unless ($data->{'Id'} || $data->{'Country'});
+    	return -1 unless ($data->{'Id'} || $data->{'Filters'});
     }
     
     $Logger->debug(Dumper($msg));
    
-    my $results = $self->get_storage_handle()->process({
-        Query       => $data->{'Query'},
-        Id			=> $data->{'Id'},
-        Country     => $data->{'Country'},
-        confidence  => $data->{'confidence'},
-        limit       => $data->{'limit'},
-        group       => $data->{'group'},
-        StartTime	=> $data->{'StartTime'},
-        EndTime		=> $data->{'EndTime'},
-        otype		=> $data->{'otype'},
-    });
+    my $results = $self->get_storage_handle()->process($data);
    
     if($data->{'Query'} && $data->{'Query'} ne 'all'){
         $self->_log_search($msg) unless($data->{'nolog'});
@@ -92,15 +82,10 @@ sub process {
     return (-1) unless(ref($results) eq "ARRAY");
 
     my $resp = CIF::Message::Search->new({
-        limit       => $data->{'limit'},
-        confidence  => $data->{'confidence'},
-        group       => $data->{'group'},
         Results     => $results,
     });
     if($data->{'Query'}){
     	$resp->set_Query($data->{'Query'});
-    } elsif($data->{'Country'}) {
-    	$resp->set_Country($data->{'Country'});
     } else {
     	$resp->set_Id($data->{'Id'});
     }

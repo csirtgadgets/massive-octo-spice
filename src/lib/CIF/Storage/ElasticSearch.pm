@@ -134,7 +134,7 @@ sub process {
     return -1 unless($self->check_handle());
     
     my $ret;
-    if($args->{'Query'} || $args->{'Id'} || $args->{'Country'}){
+    if($args->{'Query'} || $args->{'Id'} || $args->{'Filters'}){
         $Logger->debug('searching...');
         $ret = $self->_search($args);
     } elsif($args->{'Observables'}){
@@ -159,31 +159,79 @@ sub _search {
        
     if($args->{'Id'}){
     	$terms->{'id'} = [$args->{'Id'}];
-    } if($args->{'Country'}){
-    	$terms->{'countrycode'} = [$args->{'Country'}];
-    } else {
+    } elsif($args->{'Query'}) {
     	if($args->{'Query'} ne 'all'){
     		$terms->{'observable'} = [$args->{'Query'}];
     	}
     }
     
-    if($args->{'otype'}){
-    	$terms->{'otype'} = [$args->{'otype'}];
+    my $filters = $args->{'Filters'};
+    
+    if($filters->{'otype'}){
+    	$terms->{'otype'} = [$filters->{'otype'}];
+	}
+	
+	if($filters->{'cc'}){
+		$terms->{'cc'} = [uc($filters->{'cc'})];
 	}
     
-    if($args->{'confidence'}){
-    	$ranges->{'confidence'}->{'gte'} = $args->{'confidence'};
+    if($filters->{'confidence'}){
+    	$ranges->{'confidence'}->{'gte'} = $filters->{'confidence'};
     }
     
-    if($args->{'StartTime'}){
-    	$ranges->{'reporttime'}->{'gte'} = $args->{'StartTime'};
+    if($filters->{'starttime'}){
+    	$ranges->{'reporttime'}->{'gte'} = $filters->{'starttime'};
     }
     
-    my @and;
+    if($filters->{'tags'}){
+    	$filters->{'tags'} = [$filters->{'tags'}] unless(ref($filters->{'tags'}) eq 'ARRAY');
+    	$terms->{'tags'} = $filters->{'tags'};
+    }
+    
+    if($filters->{'applications'}){
+    	$filters->{'applications'} = [$filters->{'applications'}] unless(ref($filters->{'applications'}) eq 'ARRAY');
+    	$terms->{'application'} = $filters->{'applications'};
+    }
+    
+    if($filters->{'asns'}){
+    	$filters->{'asns'} = [$filters->{'asns'}] unless(ref($filters->{'asns'}));
+    	$terms->{'asn'} = $filters->{'asns'}
+    }
+    
+    if($filters->{'providers'}){
+        $filters->{'providers'} = [$filters->{'providers'}] unless(ref($filters->{'providers'}));
+        $terms->{'provider'} = $filters->{'providers'}
+    }
+    
+    ## TODO asn_desc TERM => ***
+    
+    if($filters->{'groups'}){
+        $filters->{'groups'} = [$filters->{'groups'}] unless(ref($filters->{'groups'}) eq 'ARRAY');
+    } else {
+        $filters->{'groups'} = ['everyone'];
+    }
+    
+    $terms->{'group'} = $filters->{'groups'}; ## TODO re-create es.map with groups [] capable array (similar to peers?)
+    
+    my (@and,@or);
     
     if($terms){
 		foreach (keys %$terms){
-			push(@and, { term => { $_ => $terms->{$_} } } );	
+			if($_ eq 'tags'){
+				my @or;
+                foreach my $e (@{$terms->{$_}}){
+                    push(@or, { term => { $_ => [$e] } } );
+                 }
+                 push(@and,{ 'or' => \@or });
+            } elsif($_ eq 'group') { ##TODO
+                my @or;
+                foreach my $e (@{$terms->{$_}}){
+                	push(@or, { term => { $_ => [$e] } } );
+                }
+                push(@and, { 'or' => \@or });
+            } else {
+		      push(@and, { term => { $_ => $terms->{$_} } } );	
+            }
 		}
 	}
     
@@ -197,22 +245,18 @@ sub _search {
 		query => {
 	    	filtered    => {
 	        	filter  => {
-	        		'and' => \@and
+	        		'and' => \@and,
 	        	}
 	        },
 	    }
 	};
 	
-    ## TODO -- need to re-write terms a bit to account for this tag
-	#    push(@{$q->{'query'}->{'filtered'}->{'filter'}->{'and'}},
-	#        filter => { "or" => $groups },
-	#    );
 	my $j = JSON->new();
     $Logger->debug($j->pretty->encode($q));
     
     my %search = (
         index   => $self->get_index_search(),
-        size    => $args->{'limit'} || DEFAULT_LIMIT(),
+        size    => $filters->{'limit'} || DEFAULT_LIMIT(),
         body    => $q,
     );
     

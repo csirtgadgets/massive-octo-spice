@@ -77,13 +77,16 @@ get '/:version/observables' => sub {
         Token      	=> $token,
         Query      	=> $query,
         Filters     => {
-        	otype      => $self->param('otype') || undef,
-        	cc         => $self->param('cc') || undef,
-        	confidence => $self->param('confidence') || 0,
-        	starttime  => $self->param('starttime') || undef,
-        	groups     => $self->param('groups') || undef,
-        	limit      => $self->param('limit') || undef,
-        	tags       => $self->param('tags') || undef,
+        	otype          => $self->param('otype')        || undef,
+        	cc             => $self->param('cc')           || undef,
+        	confidence     => $self->param('confidence')   || 0,
+        	starttime      => $self->param('starttime')    || undef,
+        	groups         => $self->param('groups')       || undef,
+        	limit          => $self->param('limit')        || undef,
+        	tags           => $self->param('tags')         || undef,
+        	applications   => $self->param('applications') || undef,
+        	asns           => $self->param('asns')         || undef,
+        	providers      => $self->param('providers')    || undef,
         	## TODO - TLP?
         },
     });

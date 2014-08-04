@@ -143,11 +143,20 @@ sub search {
     my $self = shift;
     my $args = shift;
     
-    if($args->{'StartTime'}){
-    	unless($args->{'StartTime'} =~ /^\d+$/){
-    		$args->{'StartTime'} = DateTime::Format::DateParse->parse_datetime($args->{'StartTime'});
-    		$args->{'StartTime'} = $args->{'StartTime'}->epoch.'000'; # ES expects millis
+    my $filters = $args->{'Filters'};
+    if($filters->{'starttime'}){
+    	unless($filters->{'starttime'} =~ /^\d+$/){
+    		$filters->{'starttime'} =  DateTime::Format::DateParse->parse_datetime($filters->{'starttime'});
+    		$filters->{'starttime'} = $filters->{'starttime'}->epoch.'000'; #millis
     	}
+    }
+    
+    if($filters->{'tags'} && $filters->{'tags'} =~ /,/){
+    	$filters->{'tags'} = [split(/,/,$filters->{'tags'})];
+    }
+    
+    if($filters->{'groups'} && $filters->{'groups'} =~ /,/){
+    	$filters->{'groups'} = [split(/,/,$filters->{'groups'})];
     }
     
     my $msg;
@@ -158,37 +167,20 @@ sub search {
 	        Token       => $args->{'Token'} || $self->Token(),
 	        Id			=> $args->{'Id'},
     	});
-    } elsif($args->{'Country'}) {
-    	$msg = CIF::Message->new({
-            rtype       => 'search',
-            mtype       => 'request',
-            Token       => $args->{'Token'} || $self->Token(),
-            Country     => $args->{'Country'},
-            confidence  => $args->{'confidence'},
-            limit       => $args->{'limit'},
-            group       => $args->{'group'},
-            Tags        => $args->{'Tags'},
-            StartTime	=> $args->{'StartTime'},
-	        EndTime		=> $args->{'EndTime'},
-	        otype		=> $args->{'otype'},
-        });
     } else {
     	$msg = CIF::Message->new({
 	        rtype       => 'search',
 	        mtype       => 'request',
 	        Token       => $args->{'Token'} || $self->Token(),
 	        Query       => $args->{'Query'},
-	        confidence  => $args->{'confidence'},
-	        limit       => $args->{'limit'},
-	        group       => $args->{'group'},
-	        Tags        => $args->{'Tags'},
-	        StartTime	=> $args->{'StartTime'},
-	        EndTime		=> $args->{'EndTime'},
-	        otype		=> $args->{'otype'},
+	        Filters    => $filters,
 	    });
     }
-	warn Dumper($msg);
+
     $msg = $self->send($msg);
+    
+    #$Logger->debug(Dumper($msg));
+    
     my $stype = $msg->{'stype'} || $msg->{'stype'};
     return $msg->{'Data'} if($stype eq 'failure');
     
