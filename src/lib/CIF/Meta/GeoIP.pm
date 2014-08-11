@@ -77,7 +77,7 @@ sub process {
     }
     
     if($ret){
-        $args->{'countrycode'}      = $ret->country()->iso_code()                   if($ret->country()->iso_code() && !$args->{'countrycode'});
+        $args->{'cc'}      = $ret->country()->iso_code()                   if($ret->country()->iso_code() && !$args->{'countrycode'});
         $args->{'citycode'}         = $ret->city()->names->{'en'}                   if($ret->city()->names->{'en'}); ## TODO -- configurable
         $args->{'latitude'}         = $ret->location()->latitude()                  if($ret->location()->latitude());
         $args->{'longitude'}        = $ret->location()->longitude()                 if($ret->location()->longitude());

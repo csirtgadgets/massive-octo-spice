@@ -34,7 +34,7 @@ sub process {
     $args->{'asn'}          = $asn if($asn);
     $args->{'asn_desc'}     = $asn_desc if($asn_desc);
     $args->{'prefix'}       = $prefix if($prefix);
-    $args->{'countrycode'}  = $cc if($cc && $cc ne '');
+    $args->{'cc'}  = $cc if($cc && $cc ne '');
     $args->{'rir'}          = $rir if($rir);
 }
 

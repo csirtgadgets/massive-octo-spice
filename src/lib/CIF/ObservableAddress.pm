@@ -27,12 +27,11 @@ has 'application' => (
     reader  => 'get_application',
 );
 
-##TODO
-has 'countrycode'   => (
+has 'cc'   => (
     is      => 'ro',
     isa     => 'CIF::Type::UpperCaseStr',
     coerce  => 1,
-    reader  => 'get_countrycode',
+    reader  => 'get_cc',
 );
 
 1;
