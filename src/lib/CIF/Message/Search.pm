@@ -28,6 +28,10 @@ has 'Filters' => (
     is      => 'ro',
     reader  => 'get_Filters',
 );
+
+has 'feed' => (
+    is  => 'ro',
+);
 	   
 sub understands {
     my $self = shift;
@@ -45,6 +49,7 @@ sub TO_JSON {
         'Id'			=> $self->get_Id(),
         'Results'       => $self->get_Results(),
         'Filters'       => $self->get_Filters(),
+        'feed'          => $self->feed(),
     };
     return $ret;
 }
