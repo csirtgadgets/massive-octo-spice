@@ -1,3 +1,4 @@
+Vagrantfile.local
 contrib/GeoLite2-City.mmdb
 hacking/packaging/ubuntu/default/cif
 *.tar.gz
