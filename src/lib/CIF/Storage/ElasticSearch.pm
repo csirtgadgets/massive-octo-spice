@@ -18,17 +18,18 @@ use JSON qw(encode_json);
 
 with 'CIF::Storage';
 
-my $date = DateTime->from_epoch(epoch => time());
-$date = $date->ymd('.');
-
 use constant DEFAULT_NODE               => 'localhost:9200';
-use constant DEFAULT_INDEX_BASE         => 'cif';
-use constant DEFAULT_INDEX_SEARCH       => DEFAULT_INDEX_BASE().'-*';
-use constant DEFAULT_TYPE               => 'observables';
-use constant DEFAULT_LIMIT              => 500;
-use constant DEFAULT_SEARCH_FIELD       => 'observable';
-use constant DEFAULT_MAX_CONFIDENCE     => 100;
 use constant DEFAULT_MAX_FLUSH_COUNT    => 10000;
+
+use constant OBSERVABLES_BASE           => 'cif.observables';
+use constant FEEDS_BASE                 => 'cif.feeds';
+
+use constant {
+    OBSERVABLES_TYPE    => 'observables',
+    FEEDS_TYPE          => 'feeds',
+};
+
+use constant DEFAULT_LIMIT              => 5000;
 
 has 'handle' => (
     is          => 'rw',
@@ -40,35 +41,22 @@ has 'handle' => (
 
 has 'nodes' => (
     is      => 'ro',
-    isa     => 'ArrayRef',
     default => sub { [ DEFAULT_NODE() ] },
     reader  => 'get_nodes',
 );
 
-has 'index' => (
+has 'observables_index'  => (
     is      => 'ro',
-    isa     => 'Str',
-    default => sub { DEFAULT_INDEX_BASE().'-'.$date },
-    reader  => 'get_index',
+    default => sub { OBSERVABLES_BASE() },
 );
 
-has 'index_search'  => (
+has 'feeds_index' => (
     is      => 'ro',
-    isa     => 'Str',
-    default => sub { DEFAULT_INDEX_SEARCH() },
-    reader  => 'get_index_search',
-);
-
-has 'type'  => (
-    is      => 'ro',
-    isa     => 'Str',
-    default => sub { DEFAULT_TYPE() },
-    reader  => 'get_type',
+    default => sub { FEEDS_BASE() },
 );
 
 has 'max_flush' => (
     is      => 'ro',
-    isa     => 'Int',
     default => DEFAULT_MAX_FLUSH_COUNT(),
     reader  => 'get_max_flush',
 );
@@ -133,11 +121,16 @@ sub process {
     
     return -1 unless($self->check_handle());
     
+    warn ::Dumper($args);
+    
     my $ret;
-    if($args->{'Query'} || $args->{'Id'} || $args->{'Filters'}){
+    if($args->{'Query'} && $args->{'feed'}){
+    	$Logger->debug('searching for feed...');
+    	$ret = $self->_feed($args);
+    } elsif($args->{'Query'} || $args->{'Id'} || $args->{'Filters'}){
         $Logger->debug('searching...');
         $ret = $self->_search($args);
-    } elsif($args->{'Observables'}){
+    } elsif($args->{'Observables'} || $args->{'Feed'}){
         $Logger->debug('submitting...');
         $ret = $self->_submission($args);
     } else {
@@ -170,9 +163,14 @@ sub _search {
     if($filters->{'otype'}){
     	$terms->{'otype'} = [$filters->{'otype'}];
 	}
-	
+	my $missing;
+
 	if($filters->{'cc'}){
-		$terms->{'cc'} = [uc($filters->{'cc'})];
+		$terms->{'cc'} = [lc($filters->{'cc'})];
+	} else {
+	    if($args->{'feed'}){
+	        $missing = { 'field' => 'cc' };
+	    }
 	}
     
     if($filters->{'confidence'}){
@@ -241,6 +239,10 @@ sub _search {
     	}
     }
     
+    if($missing){
+        push(@and, { 'missing' => $missing } );
+    }
+    
     $q = {
 		query => {
 	    	filtered    => {
@@ -248,24 +250,41 @@ sub _search {
 	        		'and' => \@and,
 	        	}
 	        },
-	    }
+	    },
+	    'sort' =>  [
+            { '@timestamp' => { 'order' => 'desc'}},
+        ],
 	};
 	
-	my $j = JSON->new();
-    $Logger->debug($j->pretty->encode($q));
+	if($Logger->is_debug()){
+	    my $j = JSON->new();
+        $Logger->debug($j->pretty->encode($q)); ##TODO -- debugging
+	}
+	
+    my $index = $self->observables_index();
+    if($args->{'feed'}){
+        $filters->{'limit'} = 1;	
+        $index = $self->feeds_index();
+    }
+    
+    $index .= '-*';
+    
+    $Logger->debug('searching index: '.$index);
     
     my %search = (
-        index   => $self->get_index_search(),
-        size    => $filters->{'limit'} || DEFAULT_LIMIT(),
+        index   => $index,
+        size    => $filters->{'limit'} || 5000, ##TODO
         body    => $q,
     );
     
     my $results = $self->get_handle()->search(%search);
     $results = $results->{'hits'}->{'hits'};
     
-    ##http://www.perlmonks.org/?node_id=743445
-    ##http://search.cpan.org/dist/Perl-Critic/lib/Perl/Critic/Policy/ControlStructures/ProhibitMutatingListFunctions.pm
     $results = [ map { $_ = $_->{'_source'} } @$results ];
+    
+    if(defined($args->{'feed'})){
+        $results = @{$results}[0]->{'Observables'};
+    }
     
     return $results;
 }
@@ -274,26 +293,42 @@ sub _submission {
     my $self = shift;
     my $args = shift;
     
-    my @objs = @{$args->{'Observables'}};
-    my @results;
-
-    ##TODO
-    my $timestamp = DateTime->from_epoch(epoch => time());
+    my $timestamp = DateTime->from_epoch(epoch => time()); # this is for the record insertion ts
+    my $date = $timestamp->ymd('.'); # for the index
     $timestamp = $timestamp->ymd().'T'.$timestamp->hms().'Z';
+    
+    my ($things,$index,$type);
+    
+    warn Dumper($args);
+    
+    if($args->{'Observables'}){
+        $things = $args->{'Observables'};
+        $index = $self->observables_index();
+        $type = 'observables';
+    } else {
+        $type = 'feed';
+        $things = $args->{'Feed'};
+        $index = $self->feeds_index(),
+    }
+    
+    $index = $index.'-'.$date;
     
     my $id;
     my ($ret,$err);
+   
+    $Logger->debug('submitting to index: '.$index);
+    
     my $bulk = Search::Elasticsearch::Bulk->new(
         es  => $self->get_handle(),
-        index       => $self->get_index(),
-        type        => $self->get_type(),
+        index       => $index,
+        type        => $type,
         max_count   => $self->get_max_flush(),
         verbose     => 1,
     );
 
-    foreach (@objs){
+    foreach (@$things){
         $_->{'@timestamp'}  = $timestamp;
-        $_->{'@version'}    = 2;
+        $_->{'@version'}    = 2; ##TODO
         $_->{'id'}  = hash_create_random();
         $bulk->index({ 
             id      => $_->{'id'}, 
