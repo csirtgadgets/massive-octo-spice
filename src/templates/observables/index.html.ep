@@ -1,0 +1,30 @@
+% layout 'default';
+% my @header = ('observable','tlp','reporttime','provider','application');
+
+<div id="wrapperlicious">
+      <div id="routes" class="box infobox spaced">
+            <h3>Observables</h3>
+            <table>
+                <thead align="left">
+                    <tr>
+                    % foreach my $h (@header){
+                        <th class="value"><%= $h %></th>
+                    % }
+                    	<th class="value">Action</th>
+                    </tr>
+                </thead>
+                % foreach my $o (@{$observables}){
+                % my $id = $o->{'id'};
+                <tr>
+                	% foreach my $c (@header) {
+                    <td class="striped value">
+                        <%= $o->{$c} %>
+                    </td>
+                    % }
+                    <td class="value"><a href="/observables/<%= $id %>?token=<%= $token %>">Show</a></td>
+                </tr>
+                % }
+               
+            </table>
+    </div>
+</div>

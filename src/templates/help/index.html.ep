@@ -1,0 +1,134 @@
+% layout 'default';
+
+       <div id="helperlicious">
+      <div id="routes" class="box infobox spaced">
+            <h3><a href='https://github.com/csirtgadgets/p5-cif-sdk'>Perl SDK</a> :: <a href='https://github.com/csirtgadgets/py-cif-sdk'>Python SDK</a> :: <a href='https://github.com/csirtgadgets/rb-cif-sdk'>Ruby SDK</a></h3>
+            <h3>Examples</h3>
+            <table>
+                <tr>
+                    <td class="striped value">
+                        <pre>GET /ping?token=1234</pre>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="striped value">
+                        <pre>GET /observables?token=1234&q=example.com</pre>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="striped value">
+                        <pre>GET /observables?token=1234&cc=RU&tags=scanner,botnet</pre>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="striped value">
+                        <pre>GET /observables/dd7610037ea0c3d68dd73634bee223bbdaedce14c707cbadbb1f90688d6312dd?token=1234</pre>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="striped value">
+                        <pre>PUT /observables/new?token=1234 # body is JSON string</pre>
+                    </td>
+                </tr>
+                
+            </table>
+       </div>
+       </div>
+       <div id="helperlicious">
+      <div id="routes" class="box infobox spaced">
+            <h3>Headers</h3>
+            The default version of the API may change in the future. If you're building an application and care about the stability of the API, be sure to request a specific version in the Accept header as shown in the examples below.
+            <table>
+                <thead align="left">
+                    <tr>
+                        <th>Example</th>
+                    </tr>
+                </thead>
+                % my $enabled = [ 
+                % { header => 'Accept: application/vnd.cif.v2+json' },
+                % ];
+                % foreach my $p (@{$enabled}){
+                <tr align="left">
+                    <td class="striped value">
+                        <pre><%= $p->{'header'} %></pre>
+                    </td>
+                </tr>
+                % }
+            </table>
+       </div>
+       </div>
+    <div id="helperlicious">
+      <div id="routes" class="box infobox spaced">
+            <h3>Parameters</h3>
+            <table>
+                <thead align="left">
+                    <tr>
+                        <th>Param</th>
+                        <th>Type</th>
+                        <th>Examples</th>
+                    </tr>
+                </thead>
+                % my $enabled_params = [ 
+                % { param => 'q', type => 'STRING', example => 'example.com, 1.2.3.4, 1.2.3.0/24' },
+                % { param => 'token', type => 'STRING', example => '1234' }, 
+                % { param => 'limit', type => 'INT32', example => '500' },
+                % { param => 'confidence', type => 'INT32', example => '65' },
+                % { param => 'group', type => 'STRING', example => 'group1,group2' },
+                % { param => 'cc', type => 'STRING', example => 'RU' },
+                % { param => 'tag', type => 'STRING', example => 'botnet,scanner' },
+                % { param => 'otype', type => 'STRING', example => 'ipv4,fqdn' },
+                % { param => 'application', type => 'STRING', example => 'vnc,ssh' },
+                % { param => 'asn', type => 'STRING', example => '1234,3345' },
+                % ];
+                % foreach my $p (@{$enabled_params}){
+                <tr align="left">
+                    <td class="striped value">
+                        <pre><%= $p->{'param'} %></pre>
+                    </td>
+                    <td class="striped value">
+                        <pre><%= $p->{'type'} %></pre>
+                    </td>
+                    <td class="striped value">
+                       <pre><%= $p->{'example'} %></pre>
+                    </td>
+                </tr>
+                % }
+            </table>
+       </div>
+       </div>
+       
+       <div id="helperlicious">
+      <div id="routes" class="box infobox spaced">
+      <h3>Routes</h3>
+          % my $walk = begin
+            % my ($walk, $route, $depth) = @_;
+            <tr>
+              <td class="striped value">
+                % my $pattern = $route->pattern->pattern || '/';
+                % $pattern = "+$pattern" if $depth;
+                <pre><%= '  ' x $depth %><%= $pattern %></pre>
+              </td>
+              <td class="striped value">
+                <pre><%= uc(join ',', @{$route->via || []}) || '*' %></pre>
+              </td>
+              <td class="striped value">
+                % my $name = $route->name;
+                <pre><%= $route->has_custom_name ? qq{"$name"} : $name %></pre>
+              </td>
+            </tr>
+            % $depth++;
+            %= $walk->($walk, $_, $depth) for @{$route->children};
+            % $depth--;
+          % end
+          <table>
+            <thead align="left">
+              <tr>
+                <th>Pattern</th>
+                <th>Methods</th>
+                <th>Name</th>
+              </tr>
+            </thead>
+            %= $walk->($walk, $_, 0) for @{app->routes->children};
+          </table>
+        </div>
+    </div>

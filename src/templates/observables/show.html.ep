@@ -1,0 +1,30 @@
+% layout 'default';
+% my @header = ('observable','tlp','reporttime','provider','application','portlist','protocol','cc','asn','tags');
+
+<div id="wrapperlicious">
+      <div id="routes" class="box infobox spaced">
+            <h3>Observables</h3>
+            <table>
+                <thead align="left">
+                    <tr>
+                    % foreach my $h (@header){
+                        <th class="value"><%= $h %></th>
+                    % }
+                    </tr>
+                </thead>
+                % foreach my $o (@{$observables}){
+                % my $id = $o->{'id'};
+                <tr>
+                	% foreach my $c (@header) {
+                    <td class="striped value">
+                    	% my $v = $o->{$c};
+                    	% if(ref($v) && ref($v) eq 'ARRAY'){ $v = join(',',@$v); }
+                        <%= $v %>
+                    </td>
+                    % }
+                </tr>
+                % }
+               
+            </table>
+    </div>
+</div>
