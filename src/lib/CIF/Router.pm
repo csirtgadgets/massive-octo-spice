@@ -6,7 +6,6 @@ use warnings;
 use Mouse;
 use CIF qw/init_logging $Logger/;
 use CIF::Message;
-use CIF::Encoder::Json;
 use CIF::Router::RequestFactory;
 use CIF::Router::AuthFactory;
 use CIF::StorageFactory;
@@ -83,11 +82,6 @@ has 'storage_handle'    => (
     is          => 'ro',
     reader      => 'get_storage_handle',
     lazy_build  => 1,
-);
-
-has 'encoder_pretty'    => (
-    is      => 'ro',
-    isa     => 'Bool',
 );
 
 has 'refresh' => (
@@ -228,11 +222,12 @@ sub process {
     }
     
     $Logger->debug('re-encoding...');
-    $r = CIF::Encoder::Json->encode({ 
-        encoder_pretty  => 1,
-        data            => $r 
-    });
-    return $r;
+
+    if($Logger->is_debug()){
+        return JSON::XS->new->pretty->convert_blessed(1)->encode($r);
+    } else {
+        return JSON::XS->new->convert_blessed(1)->encode($r);
+    }
 }
 
 ##TODO - publisher
