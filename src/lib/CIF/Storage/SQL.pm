@@ -5,8 +5,6 @@ use warnings;
 
 use Mouse;
 
-## TODO
-
 sub understands {}
 
 sub process {}
