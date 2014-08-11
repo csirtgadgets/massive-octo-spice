@@ -3,16 +3,19 @@
 
 # Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
 VAGRANTFILE_API_VERSION = "2"
+VAGRANTFILE_LOCAL = 'Vagrantfile.local'
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # All Vagrant configuration is done here. The most common configuration
   # options are documented and commented below. For a complete reference,
   # please see the online documentation at vagrantup.com.
+  if File.file?(VAGRANTFILE_LOCAL)
+    external = File.read VAGRANTFILE_LOCAL
+    eval external
+  end
 
   # Every Vagrant virtual environment requires a box to build off of.
-  #config.vm.box = "precise64"
   config.vm.box = 'ubuntu/trusty64'
-  #config.vm.box = 'ubuntu/preceise64'
 
   # The url from where the 'config.vm.box' box will be fetched if it
   # doesn't already exist on the user's system.
@@ -20,9 +23,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # Create a forwarded port mapping which allows access to a specific port
   # within the machine from a port on the host machine. In the example below,
   # accessing "localhost:8080" will access port 80 on the guest machine.
-  # config.vm.network :forwarded_port, guest: 80, host: 8080
   config.vm.network :forwarded_port, guest: 9200, host: 9200
-  config.vm.network :forwarded_port, guest: 80, host: 8080
   config.vm.network :forwarded_port, guest: 443, host: 8443
   config.vm.network :forwarded_port, guest: 5000, host: 5000
 
@@ -59,9 +60,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   #
   # View the documentation for the provider you're using for more
   # information on available options.
-  config.vm.provider :virtualbox do |vb|
-    vb.customize ["modifyvm", :id, "--cpus", "2", "--ioapic", "on", "--memory", "1024" ]   
-  end  
 
   # Enable provisioning with Puppet stand alone.  Puppet manifests
   # are contained in a directory path relative to this Vagrantfile.
