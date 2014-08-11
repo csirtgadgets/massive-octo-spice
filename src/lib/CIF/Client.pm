@@ -3,73 +3,51 @@ package CIF::Client;
 use strict;
 use warnings;
 
+use Data::Dumper;
+use Mouse;
 use CIF qw/init_logging $Logger normalize_timestamp/;
 use CIF::Message;
-use CIF::Client::BrokerFactory;
-use CIF::FormatFactory;
-use CIF::EncoderFactory;
 use CIF::ObservableFactory;
+use JSON::XS;
 
-use Mouse;
 use Time::HiRes qw(tv_interval gettimeofday);
-use Config::Simple;
 use Data::Dumper;
 use Carp::Assert;
+use Try::Tiny;
 
-has 'remote'    => (
-    is      => 'ro',
-    isa     => 'Str',
-    reader  => 'get_remote',
+use ZMQ::FFI;
+use ZMQ::FFI::Constants qw(ZMQ_REQ ZMQ_SUB ZMQ_SNDTIMEO ZMQ_RCVTIMEO ZMQ_LINGER);
+
+use constant SND_TIMEOUT    => 120000;
+use constant RCV_TIMEOUT    => 120000;
+use constant PING_TIMEOUT   => 5000; ##TODO seperate ping timeouts from SND/RCV timeouts
+use constant REMOTE_DEFAULT => 'tcp://localhost:'.CIF::DEFAULT_PORT();
+
+has [qw(remote subscriber results Token)] => (
+    is  => 'ro',
 );
 
-has 'broker_handle' => (
+has [qw(context socket)] => (
     is          => 'ro',
-    reader      => 'get_broker_handle',
     lazy_build  => 1,
 );
 
-has 'config'    => (
-    is      => 'ro',
-    isa     => 'Str',
-    default => CIF::DEFAULT_CONFIG(),
-);
-
-has 'results'   => (
-    is      => 'rw',
-    isa     => 'ArrayRef',
-);
-
-has 'Token' => (
-    is      => 'ro',
-    isa     => 'Str',
-);
-
-has 'encoder'   => (
-    is      => 'ro',
-    isa     => 'Str',
-    reader  => 'get_encoder',
-);
-
-has 'encoder_handle' => (
-    is          => 'ro',
-    reader      => 'get_encoder_handle',
-    lazy_build  => 1,
-);
-
-has 'encoder_pretty'    => (
-    is      => 'ro',
-    isa     => 'Bool',
-    reader  => 'get_encoder_pretty',
-);
-
-sub _build_encoder_handle {
-    my $self = shift;
-    return CIF::EncoderFactory->new_plugin($self->get_encoder());
+sub _build_context {
+    return ZMQ::FFI->new();
 }
 
-sub _build_broker_handle {
+sub _build_socket {
     my $self = shift;
-    return CIF::Client::BrokerFactory->new_plugin({ remote => $self->get_remote() });
+    
+    my $socket = $self->context->socket(
+        ($self->subscriber()) ? ZMQ_SUB : ZMQ_REQ
+    );
+    $socket->set(ZMQ_SNDTIMEO,'int',SND_TIMEOUT());
+    $socket->set(ZMQ_RCVTIMEO,'int',RCV_TIMEOUT());
+    $socket->subscribe('') if($self->subscriber());
+    $socket->connect($self->remote());
+    
+    return $socket;
 }
 
 sub BUILD {
@@ -77,26 +55,10 @@ sub BUILD {
     init_logging({ level => 'WARN' }) unless($Logger);
 }
 
-sub encode {
-    my $self = shift;
-    my $args = shift;
-    
-    return $self->get_encoder_handle()->encode({ 
-        data => $args->{'data'}, encoder_pretty => $self->get_encoder_pretty() 
-    });
-}
-
-sub decode {
-    my $self = shift;
-    my $data = shift;
-    
-    return $self->get_encoder_handle()->decode({ data => $data });
-}
-
 sub receive {
     my $self = shift;
-    my $msg = $self->get_broker_handle()->receive();
-    $msg = $self->decode($msg);
+    my $msg = $self->socket->receive();
+    $msg = JSON::XS->new->decode($msg);
     map { $_ = CIF::ObservableFactory->new_plugin($_) } (@{$msg});
     return $msg;
 }
@@ -106,15 +68,10 @@ sub subscribe {
 	my $cb = shift;
 	
 	return AnyEvent->io(
-	   fh      => $self->get_broker_handle()->get_fd(),
+	   fh      => $self->socket->get_fd(),
 	   poll    => 'r',
 	   cb      => $cb,
     );
-}
-
-sub has_pollin {
-    my $self = shift;
-    return $self->get_broker_handle()->get_socket->has_pollin();
 }
 
 sub ping {
@@ -162,21 +119,22 @@ sub search {
     my $msg;
     if($args->{'Id'}){
     	$msg = CIF::Message->new({
-    		rtype       => 'search',
-	        mtype       => 'request',
-	        Token       => $args->{'Token'} || $self->Token(),
-	        Id			=> $args->{'Id'},
+    		rtype      => 'search',
+	        mtype      => 'request',
+	        Token      => $args->{'Token'} || $self->Token(),
+	        Id         => $args->{'Id'},
+	        feed       => $args->{'feed'},
     	});
     } else {
     	$msg = CIF::Message->new({
-	        rtype       => 'search',
-	        mtype       => 'request',
-	        Token       => $args->{'Token'} || $self->Token(),
-	        Query       => $args->{'Query'},
+	        rtype      => 'search',
+	        mtype      => 'request',
+	        Token      => $args->{'Token'} || $self->Token(),
+	        Query      => $args->{'Query'},
 	        Filters    => $filters,
+	        feed       => $args->{'feed'},
 	    });
     }
-
     $msg = $self->send($msg);
     
     #$Logger->debug(Dumper($msg));
@@ -195,36 +153,92 @@ sub send {
     my $msg  = shift;
     
     $Logger->debug('encoding...');
+    
+    warn Dumper($msg);
 
-    $msg = $self->encode({ data => $msg });
+    if($Logger->is_debug()){
+        $msg = JSON::XS->new->pretty->convert_blessed(1)->encode($msg);
+    } else {
+        $msg = JSON::XS->new->convert_blessed(1)->encode($msg);
+    }
     
     $Logger->debug('sending upstream...');
     
-    $msg = $self->get_broker_handle()->send($msg);
+    $msg = $self->_send($msg);
     return 0 unless($msg);
 
     $Logger->debug('decoding...');
-    $msg = $self->decode($msg);
+    $msg = JSON::XS->new->decode($msg);
+    
     $msg = ${$msg}[0] if(ref($msg) && ref($msg) eq 'ARRAY');
     
     return $msg;
 }
 
+sub _send {
+    my $self    = shift;
+    my $msg     = shift;
+
+    my ($ret,$err);
+    $ret = $self->socket->send($msg);
+    
+    try {
+        $ret = $self->socket->recv();
+    } catch {
+        $err = shift;
+    };
+    
+    if($err){
+        for($err){
+            if(/Resource temporarily unavailable/){
+                $Logger->debug('cif-router timeout...');
+                # o/w queued msgs will hang the context thread
+                $self->socket->set(ZMQ_LINGER,'int',0);
+                return 0;
+            }
+            $Logger->error($err);
+        }
+    }
+    
+    return $ret;
+}
+
+sub submit_feed {
+    my $self = shift;
+    my $args = shift;
+    
+    return $self->_submit($args);
+}
+
 sub submit {
     my $self = shift;
     my $args = shift;
-
+    
     map { $_ = CIF::ObservableFactory->new_plugin($_) } (@{$args->{'Observables'}});
+    
+    return $self->_submit($args);
+}
+
+sub _submit {
+    my $self = shift;
+    my $args = shift;
     
     my $msg = CIF::Message->new({
         rtype       => 'submission',
         mtype       => 'request',
         Token       => $args->{'Token'} || $self->Token(),
         Observables => $args->{'Observables'},
+        Feed        => $args->{'Feed'},
     });
-    my $sent = ($#{$args->{'Observables'}} + 1);
+    
+    my $sent = 1;
+    if($args->{'Observables'}){
+        $sent += ($#{$args->{'Observables'}});
+    }
     $Logger->info('sending: '.($sent));
+    
     my $t = gettimeofday();
+    
     $msg = $self->send($msg);
     if($msg){
         $t = tv_interval([split(/\./,$t)]);
