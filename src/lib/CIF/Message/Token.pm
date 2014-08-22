@@ -5,12 +5,12 @@ use warnings;
 
 use Mouse;
 
-has [qw/token alias description/] => (
+has [qw/Token Alias Description/] => (
     is      => 'ro',
     isa     => 'Str',
 );
 
-has [qw/created expires/] => (
+has [qw/Created Expires/] => (
     is      => 'ro',
     isa     => 'Int',
 );
@@ -27,6 +27,24 @@ sub understands {
 
     return unless($args->{'rtype'});
     return 1 if($args->{'rtype'} =~ /^token-/);
+}
+
+sub TO_JSON {
+    my $self = shift;
+
+    my $ret = {
+        'Token'         => $self->Token(),
+        'Alias'         => $self->Alias(),
+        'Description'   => $self->Description(),
+        'Created'       => $self->Created(),
+        'Expires'       => $self->Expires(),
+        
+        'restricted'    => $self->restricted(),
+        'revoked'       => $self->revoked(),
+        'admin'         => $self->admin(),
+        
+    };
+    return $ret;
 }
 
 __PACKAGE__->meta()->make_immutable();

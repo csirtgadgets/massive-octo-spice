@@ -3,82 +3,85 @@ package CIF::Smrt::Fetcher;
 use strict;
 use warnings;
 
-use Mouse::Role;
+use Mouse;
 use CIF qw/$Logger hash_create_static/;
 use File::Spec;
 
-use constant DEFAULT_AGENT => 'cif-smrt/'.CIF::VERSION().' ('.CIF::ORG().')';
+use LWP::UserAgent;
+use Mouse;
+use Carp::Assert;
+use Net::SSLeay;
+use File::Path qw(make_path);
+use File::Spec;
+use CIF qw/$Logger/;
+use File::Slurp;
+Net::SSLeay::SSLeay_add_ssl_algorithms(); ## TODO -- this needs cleaning up
 
-# http://stackoverflow.com/questions/10954827/perl-moose-how-can-i-dynamically-choose-a-specific-implementation-of-a-metho
-requires qw(understands process);
+use constant {
+    CAPACITY   => 5,
+    TLS_VERIFY => 1,
+    TIMEOUT    => 300,
+    AGENT => 'cif-smrt/'.CIF::VERSION().' ('.CIF::ORG().')',
+};
 
 has 'agent'     => (
     is      => 'ro',
-    isa     => 'Str',
-    default => DEFAULT_AGENT(),
-    reader  => 'get_reader',
+    default => AGENT,
 );
 
-has 'rule'  => (
-    is      => 'rw',
-    reader  => 'get_rule',
-    writer  => 'set_rule',
+has [qw(rule test_mode tmp)] => (
+    is      => 'ro'
 );
 
-has 'test_mode' => (
-    is      => 'ro',
-    isa     => 'Bool',
-    reader  => 'get_test_mode',
+has 'handle' => (
+    is          => 'ro',
+    lazy_build  => 1,
 );
 
-has 'tmp'   => (
-    is      => 'ro',
-    reader  => 'get_tmp',
-    isa     => 'Str',
-);
-
-sub process_file {
+sub _build_handle {
     my $self = shift;
     my $args = shift;
     
-    ##TODO - refactor
-    my $ts = $args->{'ts'} || DateTime->today();
-    my ($vol,$dir) = File::Spec->splitpath($args->{'file'});
-    my $log = File::Spec->catfile($self->get_tmp(),$ts->ymd('').'.log');
+    my $agent = LWP::UserAgent->new(
+        agent       => AGENT,
+        timeout     => $args->{'timeout'} || TIMEOUT,
+        conn_cache  => { 
+            total_capacity  => $args->{'capacity'} || CAPACITY
+        },
+    );
     
-    $Logger->debug('using log: '.$log);
-   
-    $Logger->debug('file: '.$args->{'file'});
-    die "file doesn't exist: ".$args->{'file'} unless(-e $args->{'file'});
-    my $file = URI::file->new_abs($args->{'file'});
-    unless ($file->scheme() eq 'file') {
-        die("Unsupported URI scheme: " . $file->scheme);
+    # set both just in case we have legacy stuff laying around
+    if(defined($args->{'tls_verify'}) && !$args->{'tls_verify'}){
+        $agent->ssl_opts(SSL_verify_mode => 'SSL_VERIFY_NONE');
+        $agent->ssl_opts(verify_hostname => 0);
+    }
+       
+    ##TODO clean this up from v1
+    if($args->{'proxy'}){
+        $agent->proxy(['http','https'],$args->{'proxy'});
+    } else {
+        $agent->env_proxy();
     }
     
-    # for now, we need to move content around, later on we might pass handles around
-    my $fh = IO::File->new("< " . $file->path) || die($!.': '.$file->path);
-    my $fh2 = IO::File->new("<".$log);
-    my $exists;
-    if($fh2){
-        while(<$fh2>){
-            chomp();
-            $exists->{$_} = 1;
-        }
-        $fh2->close();
-    }
-    my $wh = IO::File->new(">>".$log);
-    
-    my $array; my $tmp;
-    while (<$fh>){
-        chomp();
-        $tmp = hash_create_static($ts->epoch().$_);
-        next if(!$_ || $exists->{$tmp});
-        print $wh $tmp."\n" unless($file->path() =~ /testdata/); ##TODO- workaround for tests
-        push(@$array,$_);
-    }
-    $fh->close();
-    $wh->close() if($wh);
-    return $array;
+    return $agent;
 }
+
+sub process {
+    my $self = shift;
+    my $args = shift;
+    
+    my $ret;
+    unless($self->test_mode() && -e $self->tmp){ ## testmode cleans out the cache
+        $Logger->debug('pulling: '.$self->rule->remote);
+        #$ret = $self->handle->mirror($self->rule->remote,$self->tmp);
+        #unless($ret->is_success() || $ret->status_line() =~ /^304 /){
+        #    $Logger->error($ret->status_line());
+        #    return $ret->decoded_content();
+        #}
+    }
+    return read_file($self->tmp, binmode => ':raw');
+}
+
+__PACKAGE__->meta->make_immutable();
 
 1;

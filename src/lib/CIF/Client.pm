@@ -8,6 +8,7 @@ use Mouse;
 use CIF qw/init_logging $Logger normalize_timestamp/;
 use CIF::Message;
 use CIF::ObservableFactory;
+use CIF::MetaFactory;
 use JSON::XS;
 
 use Time::HiRes qw(tv_interval gettimeofday);
@@ -23,7 +24,7 @@ use constant RCV_TIMEOUT    => 120000;
 use constant PING_TIMEOUT   => 5000; ##TODO seperate ping timeouts from SND/RCV timeouts
 use constant REMOTE_DEFAULT => 'tcp://localhost:'.CIF::DEFAULT_PORT();
 
-has [qw(remote subscriber results Token)] => (
+has [qw(remote subscriber results token)] => (
     is  => 'ro',
 );
 
@@ -35,6 +36,11 @@ has [qw(context socket)] => (
 sub _build_context {
     return ZMQ::FFI->new();
 }
+
+has 'metadata_plugins'  => (
+    is      => 'ro',
+    default => sub { [ CIF::MetaFactory::_metadata_plugins() ] },
+);
 
 sub _build_socket {
     my $self = shift;
@@ -55,25 +61,6 @@ sub BUILD {
     init_logging({ level => 'WARN' }) unless($Logger);
 }
 
-sub receive {
-    my $self = shift;
-    my $msg = $self->socket->receive();
-    $msg = JSON::XS->new->decode($msg);
-    map { $_ = CIF::ObservableFactory->new_plugin($_) } (@{$msg});
-    return $msg;
-}
-
-sub subscribe {
-	my $self = shift;
-	my $cb = shift;
-	
-	return AnyEvent->io(
-	   fh      => $self->socket->get_fd(),
-	   poll    => 'r',
-	   cb      => $cb,
-    );
-}
-
 sub ping {
     my $self = shift;
     my $args = shift;
@@ -82,10 +69,10 @@ sub ping {
     my $msg = CIF::Message->new({
         rtype   => 'ping',
         mtype   => 'request',
-        Token   => $self->Token(),
+        Token   => $self->token,
     });
     $Logger->info('sending ping...');
-    my $ret = $self->send($msg);
+    my $ret = $self->_send($msg);
     if($ret){
         my $ts = $msg->{'Data'}->{'Timestamp'};
         $Logger->info('ping returned');
@@ -100,7 +87,7 @@ sub search {
     my $self = shift;
     my $args = shift;
     
-    my $filters = $args->{'Filters'};
+    my $filters = $args->{'filters'};
     if($filters->{'starttime'}){
     	unless($filters->{'starttime'} =~ /^\d+$/){
     		$filters->{'starttime'} =  DateTime::Format::DateParse->parse_datetime($filters->{'starttime'});
@@ -121,16 +108,16 @@ sub search {
     	$msg = CIF::Message->new({
     		rtype      => 'search',
 	        mtype      => 'request',
-	        Token      => $args->{'Token'} || $self->Token(),
-	        Id         => $args->{'Id'},
+	        Token      => $args->{'token'} || $self->token,
+	        Id         => $args->{'id'},
 	        feed       => $args->{'feed'},
     	});
     } else {
     	$msg = CIF::Message->new({
 	        rtype      => 'search',
 	        mtype      => 'request',
-	        Token      => $args->{'Token'} || $self->Token(),
-	        Query      => $args->{'Query'},
+	        Token      => $args->{'token'} || $self->token(),
+	        Query      => $args->{'query'},
 	        Filters    => $filters,
 	        feed       => $args->{'feed'},
 	    });
@@ -148,13 +135,75 @@ sub search {
     return (undef, $msg->{'Data'}->{'Results'});
 }
 
-sub send {
+sub submit_feed {
+    my $self = shift;
+    my $args = shift;
+    
+    return $self->_submit($args);
+}
+
+sub submit {
+    my $self = shift;
+    my $args = shift;
+    
+    foreach (@{$args->{'observables'}}){
+        $self->_process_metadata($_) if($args->{'enable_metadata'});
+        $_ = CIF::ObservableFactory->new_plugin($_);
+    }
+    return $self->_submit($args);
+}
+
+sub _process_metadata {
+    my $self = shift;
+    my $data = shift;
+    
+    foreach my $p (@{$self->metadata_plugins}){
+        next unless($p->understands($data));
+        $p = $p->new()->process($data);
+        $p->process($data);
+    }
+}
+
+sub _submit {
+    my $self = shift;
+    my $args = shift;
+    
+    my $msg = CIF::Message->new({
+        rtype       => 'submission',
+        mtype       => 'request',
+        Token       => $args->{'token'} || $self->token(),
+        Observables => $args->{'observables'},
+        Feed        => $args->{'feed'},
+    });
+    
+    my $sent = 1;
+    if($args->{'Observables'}){
+        $sent += ($#{$args->{'Observables'}});
+    }
+    $Logger->info('sending: '.($sent));
+    
+    my $t = gettimeofday();
+    
+    $msg = $self->_send($msg);
+    if($msg){
+        $t = tv_interval([split(/\./,$t)]);
+        $Logger->info('took: ~'.$t);
+        $Logger->info('rate: ~'.($sent/$t).' o/s');
+        return $msg->{'Data'} if($msg->{'stype'} eq 'failure');
+        return (undef,$msg->{'Data'}->{'Results'});
+    } else {
+        $Logger->warn('send failed');
+        return -1;
+    }
+}
+
+sub _send {
     my $self = shift;
     my $msg  = shift;
     
     $Logger->debug('encoding...');
     
-    warn Dumper($msg);
+    $Logger->debug(Dumper($msg));
 
     if($Logger->is_debug()){
         $msg = JSON::XS->new->pretty->convert_blessed(1)->encode($msg);
@@ -164,26 +213,11 @@ sub send {
     
     $Logger->debug('sending upstream...');
     
-    $msg = $self->_send($msg);
-    return 0 unless($msg);
-
-    $Logger->debug('decoding...');
-    $msg = JSON::XS->new->decode($msg);
-    
-    $msg = ${$msg}[0] if(ref($msg) && ref($msg) eq 'ARRAY');
-    
-    return $msg;
-}
-
-sub _send {
-    my $self    = shift;
-    my $msg     = shift;
-
     my ($ret,$err);
     $ret = $self->socket->send($msg);
     
     try {
-        $ret = $self->socket->recv();
+        $msg = $self->socket->recv;
     } catch {
         $err = shift;
     };
@@ -196,60 +230,28 @@ sub _send {
                 $self->socket->set(ZMQ_LINGER,'int',0);
                 return 0;
             }
-            $Logger->error($err);
+            $Logger->critical($err);
+            return 0;
         }
     }
     
-    return $ret;
+    $Logger->debug('decoding...');
+    $msg = JSON::XS->new->decode($msg);
+    
+    $msg = ${$msg}[0] if(ref($msg) && ref($msg) eq 'ARRAY');
+    
+    return $msg;
 }
 
-sub submit_feed {
-    my $self = shift;
-    my $args = shift;
-    
-    return $self->_submit($args);
-}
-
-sub submit {
-    my $self = shift;
-    my $args = shift;
-    
-    map { $_ = CIF::ObservableFactory->new_plugin($_) } (@{$args->{'Observables'}});
-    
-    return $self->_submit($args);
-}
-
-sub _submit {
-    my $self = shift;
-    my $args = shift;
-    
-    my $msg = CIF::Message->new({
-        rtype       => 'submission',
-        mtype       => 'request',
-        Token       => $args->{'Token'} || $self->Token(),
-        Observables => $args->{'Observables'},
-        Feed        => $args->{'Feed'},
-    });
-    
-    my $sent = 1;
-    if($args->{'Observables'}){
-        $sent += ($#{$args->{'Observables'}});
-    }
-    $Logger->info('sending: '.($sent));
-    
-    my $t = gettimeofday();
-    
-    $msg = $self->send($msg);
-    if($msg){
-        $t = tv_interval([split(/\./,$t)]);
-        $Logger->info('took: ~'.$t);
-        $Logger->info('rate: ~'.($sent/$t).' o/s');
-        return $msg->{'Data'} if($msg->{'stype'} eq 'failure');
-        return (undef,$msg->{'Data'}->{'Results'});
-    } else {
-        $Logger->warn('send failed');
-        return -1;
-    }
+sub _subscribe {
+	my $self = shift;
+	my $cb = shift;
+	
+	return AnyEvent->io(
+	   fh      => $self->socket->get_fd(),
+	   poll    => 'r',
+	   cb      => $cb,
+    );
 }
 
 __PACKAGE__->meta->make_immutable(inline_destructor => 0);    

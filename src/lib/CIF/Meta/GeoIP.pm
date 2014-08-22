@@ -14,30 +14,21 @@ with 'CIF::Meta';
 ## http://dev.maxmind.com/geoip/geoip2/geolite2/
 use constant FILE_LOC       => $CIF::VarPath."/cache/GeoLite2-City.mmdb";
 
-has 'file'  => (
-    is      => 'ro',
-    isa     => 'Str',
-    default => FILE_LOC(),
-    reader  => 'get_file',
-);
-
 has 'handle' => (
     is          => 'ro',
-    isa         => 'GeoIP2::Database::Reader',
     lazy_build  => 1,
-    reader      => 'get_handle',
 );
 
 sub _build_handle {
     my $self = shift;
-    return GeoIP2::Database::Reader->new(file => $self->get_file());
+    return GeoIP2::Database::Reader->new(file => FILE_LOC);
 }
 
 sub understands {
     my $self = shift;
     my $args = shift;
     
-    return unless(-e FILE_LOC()); ## TODO fixme
+    return unless(-e FILE_LOC());
 
     return unless($args->{'observable'});
     return unless(is_ip($args->{'observable'}));
@@ -60,7 +51,7 @@ sub process {
     $Logger->debug('checking: '.$args->{'observable'});
     my ($err,$ret);
     try {
-        $ret = $self->get_handle()->omni(ip => $ip);
+        $ret = $self->handle->omni(ip => $ip);
     } catch {
         $err = shift;
     };
@@ -77,13 +68,13 @@ sub process {
     }
     
     if($ret){
-        $args->{'cc'}      = $ret->country()->iso_code()                   if($ret->country()->iso_code() && !$args->{'countrycode'});
-        $args->{'citycode'}         = $ret->city()->names->{'en'}                   if($ret->city()->names->{'en'}); ## TODO -- configurable
-        $args->{'latitude'}         = $ret->location()->latitude()                  if($ret->location()->latitude());
-        $args->{'longitude'}        = $ret->location()->longitude()                 if($ret->location()->longitude());
-        $args->{'subdivision'}      = $ret->most_specific_subdivision()->iso_code() if($ret->most_specific_subdivision()->iso_code());
-        $args->{'timezone'}         = $ret->location()->time_zone()                 if($ret->location()->time_zone());
-        $args->{'metrocode'}        = $ret->location()->metro_code()                if($ret->location()->metro_code());
+        $args->{'cc'}           = $ret->country()->iso_code()                   if($ret->country()->iso_code() && !$args->{'countrycode'});
+        $args->{'citycode'}     = $ret->city()->names->{'en'}                   if($ret->city()->names->{'en'}); ## TODO -- configurable
+        $args->{'latitude'}     = $ret->location()->latitude()                  if($ret->location()->latitude());
+        $args->{'longitude'}    = $ret->location()->longitude()                 if($ret->location()->longitude());
+        $args->{'subdivision'}  = $ret->most_specific_subdivision()->iso_code() if($ret->most_specific_subdivision()->iso_code());
+        $args->{'timezone'}     = $ret->location()->time_zone()                 if($ret->location()->time_zone());
+        $args->{'metrocode'}    = $ret->location()->metro_code()                if($ret->location()->metro_code());
     }
 }
 

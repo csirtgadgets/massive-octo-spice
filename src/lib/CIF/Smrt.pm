@@ -5,129 +5,167 @@ use warnings;
 
 use Mouse;
 use CIF qw/hash_create_random normalize_timestamp is_ip init_logging $Logger/;
-require CIF::Client;
-require CIF::ObservableFactory;
-require CIF::RuleFactory;
-require CIF::Smrt::HandlerFactory;
+use CIF::Client; ## eventually this will go to the SDK
+use CIF::ObservableFactory;
+use CIF::RuleFactory;
+use CIF::Smrt::ParserFactory;
+use CIF::Smrt::Fetcher;
+use File::Path qw(make_path);
+use File::Spec;
+use File::Type;
+use IO::Uncompress::AnyUncompress qw(anyuncompress $AnyUncompressError);
 
 use Data::Dumper;
 use Config::Simple;
 use Carp::Assert;
 
-use constant DEFAULT_TMP    => $CIF::VarPath.'/smrt/cache';
-use constant MAX_DATETIME   => '2100-12-31T23:59:59Z'; # if you're still using this by then, God save you.
+use constant {
+    RE_DECODE_TYPES => qr/zip|lzf|lzma|xz|lzop/,
+    TMP             => $CIF::VarPath.'/smrt/cache',
+    MAX_DT          => '2100-12-31T23:59:59Z' # if you're still using this by then, God help you.
+};
 
-has 'client_config' => (
+has [qw(config is_test other_attributes test_mode handler rule tmp)] => (
     is      => 'ro',
-    isa     => 'HashRef',
-    reader  => 'get_client_config',
 );
 
-has 'config'    => (
-    is      => 'ro',
-    isa     => 'HashRef',
-);
-
-has 'client' => (
+has [qw(fetcher parser tmp_handle)] => (
     is          => 'ro',
-    isa         => 'CIF::Client',
-    reader      => 'get_client',
     lazy_build  => 1,
 );
 
-has 'is_test'   => (
-    is      => 'ro',
-    isa     => 'Bool',
-);
-
-has 'other_attributes'  => (
-    is      => 'ro',
-    isa     => 'HashRef',
-);
-
-has 'handler'   => (
-    is      => 'rw',
-    reader  => 'get_handler',
-    writer  => 'set_handler',
-);
-
-has 'rule'   => (
-    is      => 'rw',
-    writer  => 'set_rule',
-    reader  => 'get_rule',
-);
-
-has 'test_mode' => (
-    is      => 'ro',
-    isa     => 'Bool',
-    reader  => 'get_test_mode',
-);
-
-has 'tmp' => (
-    is      => 'ro',
-    isa     => 'Str',
-    reader  => 'get_tmp',
-    default => DEFAULT_TMP(),
-);
-
-sub _build_client {
+sub _build_tmp_handle {
     my $self = shift;
-    return CIF::Client->new($self->get_client_config())
+    warn ::Dumper($self);
+    my $tmp = $self->tmp.'/'.$self->rule->defaults->{'provider'}.'-'.$self->rule->{'feed'};
+    assert(-w $tmp, 'temp space is not writeable by user, or file exists and is not owned by user: '.$tmp) if(-e $tmp);
+    return $tmp;
 }
-    
+
+sub _build_fetcher {
+    my $self = shift;
+
+    return CIF::Smrt::Fetcher->new({
+        rule    => $self->rule,
+        tmp     => $self->tmp_handle,
+    });
+}
+
+sub _build_parser {
+    my $self = shift;
+    return CIF::Smrt::ParserFactory->new_plugin({ rule => $self->rule });
+}
+
 sub BUILD {
     my $self = shift;
     init_logging({ level => 'ERROR'}) unless($Logger);
+    
+    make_path($self->tmp, { mode => 0770 }) unless(-e $self->tmp);
+}
+
+sub decode {
+    my $self = shift;
+    my $data = shift;
+ 
+    my $ftype = File::Type->new->mime_type($data);
+    $Logger->debug('data is of type: '.$ftype);
+    
+    if($ftype =~ RE_DECODE_TYPES){
+        my $buffer;
+        my $status = anyuncompress \$data => \$buffer or die $AnyUncompressError;
+        return $buffer;
+    }
+    
+    return $data;
 }
 
 sub process {
     my $self = shift;
     my $args = shift;
-
-    $self->set_rule(
-        CIF::RuleFactory->new_plugin($args->{'rule'})
-    );
-
+    
+    #$Logger->debug(Dumper($self));
+    #$Logger->debug(Dumper($self->rule_handle));
+    
     $Logger->info('starting at: '.
-        DateTime->from_epoch(epoch => $self->get_rule->get_not_before())->datetime(),'Z'
+        DateTime->from_epoch(epoch => $self->rule->not_before)->datetime(),'Z'
     );
-    
-    $self->set_handler(
-        CIF::Smrt::HandlerFactory->new_plugin({
-            rule        => $self->get_rule(),
-            test_mode   => $self->get_test_mode(),
-            tmp         => $self->get_tmp(),
-        }),
-    );
-    
-    $Logger->info('processing...');
-    my $ret = $self->get_handler()->process($self->get_rule());
-    return 0 unless($ret);
 
+    # fetch
+    $Logger->debug('fetching...');
+    my $data = $self->fetcher->process();
+    
+    $Logger->debug('cache: '.$self->tmp_handle);
+    
+    # decode
+    $Logger->debug('decoding..');
+    $data = $self->decode($data);
+    
+    # parse
+    $Logger->debug('parsing...');
+    $data = $self->parser->process($data);
+    
+    # build
+    $Logger->info('processing events: '.($#{$data} + 1));
     my @array;
-    $Logger->info('building events: '.($#{$ret} + 1));
+    
     my $ts;
-
-    ## TODO -- re-work me so with { data => $_ }, for some reason undef keeps popping up
-    foreach (@$ret){
-        $ts = $_->{'detecttime'} || $_->{'lasttime'} || $_->{'reporttime'} || MAX_DATETIME();
+    foreach (@$data){
+        $ts = $_->{'detecttime'} || $_->{'lasttime'} || $_->{'reporttime'} || MAX_DT;
         $ts = normalize_timestamp($ts)->epoch();
 
-        next unless($self->get_rule()->get_not_before() <= $ts );
-        $_ = $self->get_rule()->process({ data => $_ });
+        next unless($self->rule->not_before <= $ts );
+        $_ = $self->rule->process({ data => $_ });
         push(@array,$_);
     }
+    $Logger->info('processed events: '.($#array + 1));
     return \@array;
 }
 
-sub ping_router {
+sub process_file {
     my $self = shift;
     my $args = shift;
     
-    my $ret = $self->get_client->ping();
-    return $ret;
+    ##TODO - refactor
+    my $ts = $args->{'ts'} || DateTime->today();
+    my ($vol,$dir) = File::Spec->splitpath($args->{'file'});
+    my $log = File::Spec->catfile($self->tmp(),$ts->ymd('').'.log');
+    
+    $Logger->debug('using log: '.$log);
+   
+    $Logger->debug('file: '.$args->{'file'});
+    die "file doesn't exist: ".$args->{'file'} unless(-e $args->{'file'});
+    my $file = URI::file->new_abs($args->{'file'});
+    unless ($file->scheme() eq 'file') {
+        die("Unsupported URI scheme: " . $file->scheme);
+    }
+    
+    # for now, we need to move content around, later on we might pass handles around
+    my $fh = IO::File->new("< " . $file->path) || die($!.': '.$file->path);
+    my $fh2 = IO::File->new("<".$log);
+    my $exists;
+    if($fh2){
+        while(<$fh2>){
+            chomp();
+            $exists->{$_} = 1;
+        }
+        $fh2->close();
+    }
+    my $wh = IO::File->new(">>".$log);
+    
+    my $array; my $tmp;
+    while (<$fh>){
+        chomp();
+        $tmp = hash_create_static($ts->epoch().$_);
+        next if(!$_ || $exists->{$tmp});
+        print $wh $tmp."\n" unless($file->path() =~ /testdata/); ##TODO- workaround for tests
+        push(@$array,$_);
+    }
+    $fh->close();
+    $wh->close() if($wh);
+    return $array;
 }
 
-__PACKAGE__->meta->make_immutable(inline_destructor => 0);
+
+__PACKAGE__->meta->make_immutable();
 
 1;

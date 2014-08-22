@@ -9,13 +9,11 @@ with 'CIF::Observable';
 
 has '+otype' => (
     is      => 'ro',
-    isa     => 'Str',
     default => 'actor',
 );
 
 has 'aliases' => (
     is      => 'ro',
-    isa     => 'ArrayRef',
 );
 
 sub process {}

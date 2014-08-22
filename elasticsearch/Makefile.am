@@ -4,8 +4,7 @@ CURLOPTS=-w "\n"
 CURLCMD=$(CURL) $(CURLOPTS)
 HOST=http://$(ES_HOST)
 TEMPLATE=cif-template.json
-INDEX=cif
-INDICIES=cif-*
+INDICIES=cif.*-*
 
 all-am: default
 default:

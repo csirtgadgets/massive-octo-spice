@@ -3,93 +3,82 @@ package CIF::Rule;
 use strict;
 use warnings;
 
-use Mouse::Role;
+use Mouse;
 use DateTime;
-use CIF::MetaFactory;
+use Carp;
+use Carp::Assert;
+use CIF::Observable;
+use CIF qw/parse_config/;
 
-use constant RE_COMMENTS => qr/^([#|;]+)/;
+use constant RE_IGNORE => qw(qr/[\.]$/);
+
+has [qw(store_content skip rule feed remote parser defaults)] => (
+    is      => 'ro',
+);
 
 has 'not_before'    => (
     is          => 'ro',
     isa         => 'CIF::Type::DateTimeInt',
     coerce      => 1,
-    reader      => 'get_not_before',
     default     => sub { DateTime->today()->epoch() },
-);
-
-has [qw(fetcher parser)] => (
-    is      => 'ro',
-);
-
-has 'defaults' => (
-    is      => 'rw',
-    isa     => 'HashRef',
-    reader  => 'get_defaults',
-    writer  => 'set_defaults',
-);
-
-has 'comments'  => (
-    is      => 'ro',
-    isa     => 'RegexpRef',
-    default => sub { RE_COMMENTS() },
-    reader  => 'get_comments',
-);
-
-has 'remote'    => (
-    is      => 'ro',
-    reader  => 'get_remote',
 );
 
 has '_now' => (
     is          => 'ro', 
-    isa         => 'CIF::Type::DateTimeInt',
-    reader      => 'get__now',
     default     => sub { time() },
 );
 
-has 'skip_comments' => (
-    is      => 'ro',
-    isa     => 'Bool',
-    default => 1,
-    reader  => 'get_skip_comments',
-);
-
-has 'meta'  => (
-    is      => 'ro',
-    isa     => 'Bool',
-    reader  => 'get_meta',
-);
-
-has '_meta'  => (
-    is      => 'ro',
-    isa     => 'ArrayRef',
-    reader  => 'get__meta',
-    default => sub { [ CIF::MetaFactory::_meta_plugins() ] },
-);
-
-around BUILDARGS => sub {
-    my $orig = shift;
+sub process {
     my $self = shift;
     my $args = shift;
 
-    $args->{'defaults'} = {%$args};
-    delete($args->{'defaults'}->{'remote'});    
-    return $self->$orig($args);  
-};
+    $self->_merge_defaults($args);
+    return $args->{'data'};
+}
 
-sub process_meta {
+sub _merge_defaults {
     my $self = shift;
     my $args = shift;
-    
-    return unless($self->get_meta());
-    
-    foreach my $p (@{$self->get__meta()}){
-        next unless($p->understands($args->{'data'}));
-        $p = $p->new();
-        $p->process($args->{'data'});
+
+    return unless($self->defaults);
+    foreach my $k (keys %{$self->defaults}){        
+        for($self->defaults->{$k}){
+            if($_ && $_ =~ /<(\S+)>/){
+                # if we have something that requires expansion
+                # < >'s
+                my $val;
+                
+                ##TODO -- work-around
+                if($1 =~ /^remote$/){
+                    $val = $self->remote;
+                } else {
+                    $val = $args->{'data'}->{$1};
+                }
+                unless($val){
+                    warn 'missing: '.$k;
+                    assert($val);
+                }
+                
+                # replace the 'variable'
+                my $default = $_;
+                $default =~ s/<\S+>/$val/;
+                $args->{'data'}->{$k} = $default;
+            } else {
+                $args->{'data'}->{$k} = $self->defaults->{$k};
+            }
+        }
     }
 }
 
-requires qw(understands process);
+sub _ignore {
+    my $self = shift;
+    my $arg = shift;
+
+    foreach (RE_IGNORE){
+        return 1 if($arg =~ $_);
+    }
+}
+
+__PACKAGE__->meta->make_immutable();
 
 1;

@@ -66,9 +66,7 @@ sub process {
     my $self = shift;
     my $args = shift;
     
-    my $tmp = $self->get_tmp().'/'.$self->get_rule()->get_defaults()->{'provider'}.'-'.$self->get_rule()->get_feed();
-    assert(-w $tmp, 'temp space is not writeable by user, or file exists and is not owned by user: '.$tmp) if(-e $tmp);
-    ##TODO -- umask
+    
     
     my $ret;
     unless($self->get_test_mode() && -e $tmp){

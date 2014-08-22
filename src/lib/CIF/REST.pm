@@ -25,6 +25,7 @@ use constant {
 # https://github.com/tempire/mojolicious-plugin-basicauth/blob/master/lib/Mojolicious/Plugin/BasicAuth.pm
 # http://daveyshafik.com/archives/35507-mimetypes-and-apis.html
 # http://www.troyhunt.com/2014/02/your-api-versioning-is-wrong-which-is.html
+# https://developer.github.com/v3/
 sub startup {
     my $self = shift;
     

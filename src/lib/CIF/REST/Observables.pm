@@ -7,9 +7,9 @@ sub index {
     my $query      	= $self->param('q') || $self->param('observable');
     
     my $res = $self->cli->search({
-        Token      	=> $self->param('token'),
-        Query      	=> $query,
-        Filters     => {
+        token      	=> $self->param('token'),
+        query      	=> $query,
+        filters     => {
         	otype          => $self->param('otype')        || undef,
         	cc             => $self->param('cc')           || undef,
         	confidence     => $self->param('confidence')   || 0,
@@ -35,8 +35,8 @@ sub show {
     my $query      = $self->param('observable');
     
     my $res = $self->cli->search({
-        Token      => $self->param('token'),
-        Id         => $query,
+        token      => $self->param('token'),
+        id         => $query,
     });
     $self->stash(observables => $res); ##TODO -- does this leak if we don't clear it?
     $self->respond_to(

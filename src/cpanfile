@@ -1,3 +1,7 @@
+requires 'File::Slurp','9999.19';
+requires 'YAML::Tiny','1.63';
+requires 'Parse::RecDescent','1.967009';
+requires 'Inline::Python','0.43';
 requires 'local::lib';
 requires 'Carp::Assert';
 requires 'Compress::Snappy';

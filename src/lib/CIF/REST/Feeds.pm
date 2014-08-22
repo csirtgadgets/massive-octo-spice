@@ -5,8 +5,8 @@ sub index {
     my $self = shift;
 	
 	my $res = $self->cli->search({
-		Token     => $self->param('token'),
-		Filters   => {
+		token     => $self->param('token'),
+		filters   => {
 			otype        => $self->param('otype')        || undef,
 			confidence   => $self->param('confidence')   || undef,
 			cc           => $self->param('cc')           || undef,
@@ -28,8 +28,8 @@ sub show {
   my $self  = shift;
   
   my $res = $self->cli->search({
-      Token => $self->param('token'),
-      Id    => $self->param('feed'),
+      token => $self->param('token'),
+      id    => $self->param('feed'),
       feed  => 1,
   });
   
@@ -46,8 +46,8 @@ sub create {
     $data = [$data] unless(ref($data) eq 'ARRAY');
     
     my $res = $self->cli->submit_feed({
-    	Token  => $self->param('token'),
-        Feed   => $data,
+    	token  => $self->param('token'),
+        feed   => $data,
     });
     
     $self->res->headers->add('X-Location' => $self->req->url->to_string());

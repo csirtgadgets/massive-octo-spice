@@ -13,17 +13,18 @@ use AnyEvent;
 use Daemon::Control;
 use Getopt::Long;
 use Config::Simple;
-use CIF qw/debug hash_create_random init_logging $Logger/;
+use CIF qw/debug hash_create_random init_logging $Logger parse_config/;
 use CIF::Smrt;
+use CIF::Rule;
 use Data::Dumper;
 use Carp qw/croak/;
 
 my $help;
-my $remote      = 'zmq+tcp://localhost:'.CIF::DEFAULT_PORT();
-my $token       = '';
+my $remote      = 'tcp://localhost:'.CIF::DEFAULT_PORT();
+my $token;
 my $rule        = $CIF::SmrtRulesDefault;
 my $feed        = '';
-my $limit       = 0;
+my $limit;
 my $refresh     = 0;
 my $clean       = 0;
 my $notbefore   = 'today';
@@ -32,7 +33,7 @@ my $meta            = 0;
 
 # daemon
 my $daemon      = 0;
-my $config      = $CIF::EtcPath.'/cif-smrt.conf';
+my $config      = $CIF::EtcPath.'/cif-smrt.yml';
 my $pidfile     = $CIF::PidPath.'/smrt.pid';
 my $user        = $CIF::CIF_USER;
 my $group       = $CIF::CIF_GROUP;
@@ -55,18 +56,6 @@ my $consolemode = 0;
 my $logfile     = $CIF::LogPath.'/cif-smrt.log';
 
 my $today = DateTime->today()->ymd('');
-
-my $smrt_config;
-my $client_config;
-
-if(-e $config){
-    $config = Config::Simple->new($config);
-    $client_config  = $config->get_block('client');
-    $smrt_config    = $config->get_block('smrt');
-    
-    $token  = $smrt_config->{'token'}   || $client_config->{'token'}    || $token;
-    $remote = $smrt_config->{'remote'}  || $client_config->{'remote'}   || $remote;
-}
 
 Getopt::Long::Configure("bundling");
 GetOptions(
@@ -122,6 +111,18 @@ if($notbefore && $notbefore =~ /^\d+$/){
     print usage();
     print $0.' -N|--notbefore requires quotes around the value (eg: -N "3 days ago")'."\n\n";
     exit(-1);
+}
+
+my $smrt_config;
+my $client_config;
+
+if(-e $config){
+    $config = parse_config($config);
+    $client_config  = $config->{'client'};
+    $smrt_config    = $config->{'smrt'};
+    
+    $token  = $smrt_config->{'token'}   || $client_config->{'token'}    || $token;
+    $remote = $smrt_config->{'remote'}  || $client_config->{'remote'}   || $remote;
 }
 
 sub usage {
@@ -249,25 +250,7 @@ sub main {
 
 sub _main { 
     _clean_tmp();
-    
-    my $smrt = CIF::Smrt->new({
-        client_config => {
-            remote          => $remote,
-            Token           => $token,
-            encoder_pretty  => ($debug ne 'ERROR') ? 1 : 0,
-        },
-        test_mode   => $testmode,
-    });
-    my ($err,$ret);
-    
-    $Logger->info('checking for router...');
-    $ret = $smrt->ping_router();
-    unless($ret){
-        $Logger->error('router unavailable... ping timeout');
-        return;
-    }
 
-    ##TODO refactor this into libcif rules?
     my $rules;
     if(-d $rule){
         opendir(F,$rule) || die('unable to open: '.$rule.'... '.$!);
@@ -287,32 +270,53 @@ sub _main {
                         limit       => $limit,
                         not_before  => $notbefore,
                     },
-                    meta        => (defined($c->{'meta'})) ? $c->{'meta'} : $meta,
+                    metadata        => (defined($c->{'meta'})) ? $c->{'meta'} : $meta,
                 });
                     
             }
         }
-                
     } else {
-        $rules = [{
-            config  => $rule,
-            feed    => $feed,
-            override    => {
-                limit       => $limit,
-                not_before  => $notbefore,
-            },
-            meta    => $meta,
-        }];
+        my $r = parse_config($rule); # get the inital rule
+        $r->{'rule'} = $rule;
+        $r->{'feed'} = $feed;
+         
+        $r->{'not_before'} = ($notbefore) ? $notbefore : 'today';
+        
+        $r->{'defaults'} = { %{$r->{'defaults'}}, %{$r->{'feeds'}->{$feed}} };
+        
+        $r->{'defaults'}->{'limit'}      = $limit if($limit); # override
+        
+        
+        $r = CIF::Rule->new($r);
+        $rules = [$r];
     }
     
+    my $cli = CIF::Client->new({
+        remote  => $remote,
+        token   => $token,
+    });
+    
+    unless($Logger->is_debug()){
+        $Logger->info('checking for router...');
+        unless($cli->ping()){
+            $Logger->error('router unavailable... ping timeout');
+            return;
+        }
+    }
+    
+    my ($smrt,$err,$ret);
     foreach (@$rules){
-        $Logger->info("processing: $0 -d -r $_->{'config'} -f $_->{'feed'}");
-        $ret = $smrt->process({
+        $Logger->info("processing: $0 -d -r $_->{'rule'} -f $_->{'feed'}");
+        
+        $ret = $smrt = CIF::Smrt->new({
             rule    => $_,
-        });
+            tmp     => $cache,
+        })->process();
+       
         if($ret){
-            ($err,$ret) = $smrt->get_client->submit({
-                Observables => $ret,
+            ($err,$ret) = $cli->submit({
+                observables     => $ret,
+                enable_metadata => $meta,
             });
             croak($err) if($err);
         } elsif($ret < 0) {

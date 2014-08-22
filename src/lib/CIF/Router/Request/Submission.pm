@@ -19,10 +19,9 @@ sub understands {
 sub process {
     my $self    = shift;
     my $msg     = shift->{'Data'} || return -1;
-
-    my $results = $self->get_storage_handle()->process({
-        Observables => $msg->{'Observables'},
-    });
+    
+    my $results = $self->get_storage_handle->process($msg);
+    
     $results = [ $results ] unless(ref($results) eq 'ARRAY');
 
     my $resp = CIF::Message::Submission->new({

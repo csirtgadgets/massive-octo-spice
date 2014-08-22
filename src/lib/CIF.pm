@@ -22,6 +22,7 @@ our %EXPORT_TAGS = ( 'all' => [ qw(
     is_datetime normalize_timestamp
     protocol_to_int
     observable_type
+    parse_config
 ) ] );
 
 our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
@@ -66,12 +67,33 @@ use CIF::Plugin::DateTime qw(:all);
 
 use CIF::Logger;
 
+use YAML::Tiny;
+use Config::Simple;
+
 ##TODO fix this
 use constant DEFAULT_CONFIG         => ($ENV{'HOME'}) ? $ENV{'HOME'}.'/.cif' : '';
 use constant DEFAULT_QUERY_LIMIT    => 500;
 use constant DEFAULT_GROUP          => 'everyone';
 
 # Preloaded methods go here.
+
+sub parse_config {
+	my $config = shift;
+    my $block = shift;
+    
+	return unless(-e $config);
+	if($config =~ /\.yml$/){
+        $config = YAML::Tiny->read($config)->[0];
+    } else {
+        $config = Config::Simple->new($config) || croak('config error...');
+        if($block){
+            $config = $config->get_block($block);
+        } else {
+            $config = $config->{'_DATA'};
+        }
+    }
+    return $config;
+}
 
 sub observable_type {
     my $arg = shift || return;

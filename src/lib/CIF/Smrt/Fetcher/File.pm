@@ -23,7 +23,7 @@ sub process {
     my $args = shift;
 
     return $self->get_rule->get_remote() if($self->get_rule()->{'fetcher'} && $self->get_rule()->{'fetcher'} eq 'passthrough');
-    return $self->process_file({ file => $self->get_rule()->get_remote() });
+    #return $self->process_file({ file => $self->get_rule()->get_remote() });
 }
 
 __PACKAGE__->meta->make_immutable();

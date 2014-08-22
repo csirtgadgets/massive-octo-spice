@@ -8,6 +8,12 @@ use Time::HiRes qw(gettimeofday);
 
 with 'CIF::Router::Request';
 
+has 'Id'    => (
+    is     => 'rw',
+    reader => 'get_Id',
+    writer => 'set_Id',
+);
+
 sub understands {
     my $self = shift;
     my $args = shift;
@@ -27,7 +33,7 @@ sub TO_JSON {
     my $self = shift;
     
     return {
-        ''
+        'Id'    => self->Id(),
     };
 }
 

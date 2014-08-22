@@ -22,7 +22,7 @@ has 'protocol' => (
 
 has 'application' => (
     is      => 'ro',
-    isa     => 'CIF::Type::LowerCaseStr',
+    isa     => 'ArrayRef',
     coerce  => 1,
     reader  => 'get_application',
 );

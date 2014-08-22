@@ -10,7 +10,6 @@ with 'CIF::ObservableAddressIP';
 
 has '+otype' => (
     is      => 'ro',
-    isa     => 'Str',
     default => 'ipv4',
 );
 
