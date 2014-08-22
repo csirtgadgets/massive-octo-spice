@@ -1,0 +1,79 @@
+#!perl
+
+BEGIN {
+    use FindBin;
+    use lib "$FindBin::Bin/../lib";
+}
+
+use feature 'say';
+use strict;
+use warnings FATAL => 'all';
+
+use Getopt::Long;
+use Carp;
+use Data::Dumper;
+
+
+# http://search.cpan.org/dist/Mojolicious-Plugin-Database/lib/Mojolicious/Plugin/Database.pm
+
+my $help;
+my $remote          = 'tcp://localhost';
+my $token;
+my $debug           = 0;
+my $verbosity       = 0;
+my $config          = $ENV{'HOME'}.'/.cif.yml';
+
+my $filters;
+
+Getopt::Long::Configure("bundling");
+GetOptions(
+    'help|h'            => \$help, 
+    'config|C=s'        => \$config,
+    'debug|d'           => \$debug,
+    'verbosity|v+'      => \$verbosity,
+    
+    'token=s'           => \$token->{'token'},
+    'alias=s'           => \$token->{'alias'},
+    'expires=s'         => \$token->{'expires'},
+    'admin=b'           => \$token->{'admin'},
+    
+) or die(usage());
+
+die(usage()) if($help);
+die(usage()) unless();
+
+my $loglevel = ($debug) ? 'DEBUG' : 'WARN';
+
+init_logging(
+    { 
+        level       => $loglevel,
+        category    => 'cif',
+    },
+);
+
+if($verbosity){
+    unless($debug){ # we're already at TRACE
+        $Logger->more_logging($verbosity);
+    }
+}
+
+die(usage()."\nmissing Token (--token|-T)\n") unless($token);
+
+sub usage {
+    return <<EOF;
+
+Usage: $0 [OPTION]
+
+Options:
+
+    -h, --help                  this message     
+
+
+ Examples:
+    $0 --new --alias me@example.com --expires 2016-07-01 --admin
+
+EOF
+}
+
+
+

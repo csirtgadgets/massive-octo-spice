@@ -1,0 +1,39 @@
+parser: csv
+remote: http://s3.amazonaws.com/alexa-static/top-1m.csv.zip
+
+defaults:
+  values:
+    - rank
+    - observable
+  description: 'alexa #<rank>'
+  tags: whitelist
+  otype: fqdn
+  application:
+      - http
+      - https
+  protocol: tcp
+  altid: http://www.alexa.com/siteinfo/<observable>
+  altid_tlp: green
+  provider: alexa.com
+  tlp: green
+
+feeds:
+  top10000:
+    start: 1001
+    end: 10000
+    confidence: 25
+
+  top1000:
+    start: 101
+    end: 1000
+    confidence: 50
+
+  top100:
+    start: 11
+    end: 100
+    confidence: 75
+
+  top10:
+    start: 1
+    end: 10
+    confidence: 95
