@@ -322,7 +322,7 @@
               0
             ]
           },
-          "field": "countrycode"
+          "field": "cc"
         },
         {
           "error": false,
@@ -385,7 +385,7 @@
             "observable",
             "application",
             "confidence",
-            "countrycode",
+            "cc",
             "firsttime",
             "lasttime",
             "provider",
@@ -423,7 +423,7 @@
   "failover": false,
   "index": {
     "interval": "day",
-    "pattern": "[cif-]YYYY.MM.DD",
+    "pattern": "[cif.observables-]YYYY.MM.DD",
     "default": "NO_TIME_FILTER_OR_INDEX_PATTERN_NOT_MATCHED",
     "warm_fields": true
   },
