@@ -32,7 +32,7 @@ if [ $VER == "12.04" ]; then ## 14.04 has it built in and supports cpanfile
 fi
 
 # cpan.org has been less than reliable lately
-cpanm --mirror http://cpan.metacpan.org Regexp::Common \
+cpanm -n --mirror http://cpan.metacpan.org Regexp::Common \
 http://cpan.metacpan.org/authors/id/S/SH/SHERZODR/Config-Simple-4.59.tar.gz \
 Mouse
 
