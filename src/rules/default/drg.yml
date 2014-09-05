@@ -1,0 +1,23 @@
+parser: pipe
+defaults:
+  tags: scanner
+  protocol: tcp
+  provider: dragonresearchgroup.org
+  altid_tlp: green
+  tlp: amber
+  confidence: 85
+  values:
+    - null
+    - null
+    - observable
+    - detecttime
+    - null
+feeds:
+  ssh:
+    remote: http://dragonresearchgroup.org/insight/sshpwauth.txt
+    application: ssh
+    portlist: 22
+  vnc:
+    remote: http://dragonresearchgroup.org/insight/vncprobe.txt
+    application: vnc
+    portlist: 5900-5904
