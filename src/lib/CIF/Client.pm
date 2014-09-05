@@ -122,7 +122,7 @@ sub search {
 	        feed       => $args->{'feed'},
 	    });
     }
-    $msg = $self->send($msg);
+    $msg = $self->_send($msg);
     
     #$Logger->debug(Dumper($msg));
     
@@ -159,8 +159,7 @@ sub _process_metadata {
     
     foreach my $p (@{$self->metadata_plugins}){
         next unless($p->understands($data));
-        $p = $p->new()->process($data);
-        $p->process($data);
+        $p->new()->process($data);
     }
 }
 
@@ -171,7 +170,7 @@ sub _submit {
     my $msg = CIF::Message->new({
         rtype       => 'submission',
         mtype       => 'request',
-        Token       => $args->{'token'} || $self->token(),
+        Token       => $args->{'token'} || $self->token() || $self->{'Token'},
         Observables => $args->{'observables'},
         Feed        => $args->{'feed'},
     });

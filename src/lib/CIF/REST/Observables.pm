@@ -22,7 +22,7 @@ sub index {
         	providers      => $self->param('provider')    || undef,
         },
     });
-    $self->stash(observables => $res);
+    $self->stash(observables => $res, token => $self->param('token')); ##TODO is this safe?
     $self->respond_to(
         json    => { json => $res },
         html    => { template => 'observables/index' },
