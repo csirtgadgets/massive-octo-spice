@@ -112,6 +112,7 @@ if [ ! -f /home/cif/.profile ]; then
 	chown $MYUSER:$MYGROUP /home/cif/.profile
 fi
 
+mkdir -p /var/smrt/cache
 chown -R $MYUSER:$MYGROUP /var/smrt
 
 if [ -z `grep -l '/opt/cif/bin' /home/cif/.profile` ]; then
