@@ -118,6 +118,7 @@ my $client_config;
 
 if(-e $config){
     $config = parse_config($config);
+    
     $client_config  = $config->{'client'};
     $smrt_config    = $config->{'smrt'};
     
@@ -200,6 +201,10 @@ if($verbosity){
     unless($debug){ # we're already at TRACE
         $Logger->more_logging($verbosity);
     }
+}
+
+unless($token){
+	croak('missing token');
 }
 
 if($daemon){
