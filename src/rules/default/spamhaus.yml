@@ -1,0 +1,19 @@
+defaults:
+  provider: spamhaus.org
+  confidence: 95
+  tlp: amber
+  tags:
+    - suspicious
+    - hijacked
+  altid: http://www.spamhaus.org/sbl/sbl.lasso?query=<reference>
+  altid_tlp: green
+  pattern: '^(\S+)\s;\s(\S+)$'
+  values:
+    - observable
+    - reference
+
+feeds:
+  drop:
+    remote: http://www.spamhaus.org/drop/drop.lasso
+  edrop:
+    remote: http://www.spamhaus.org/drop/edrop.txt

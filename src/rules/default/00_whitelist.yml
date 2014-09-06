@@ -1,0 +1,30 @@
+defaults:
+  tlp: amber
+  provider: localhost
+  tags: whitelist
+  confidence: 85
+
+# restriction = 'need-to-know'
+# guid = everyone
+# alternativeid_restriction = 'public'
+# source = 'localhost'
+# description = 'unknown local'
+# assessment = 'whitelist'
+#
+# [domains]
+# feed = etc/whitelist_domains
+# regex = '^(\S+)$'
+# regex_values = 'address'
+# confidence = 95
+#
+# [infrastructure]
+# feed = etc/whitelist_infrastructure
+# regex = '^(\S+)$'
+# regex_values = 'address'
+# confidence = 95
+#
+# [urls]
+# feed = etc/whitelist_urls
+# regex = '^(\S+)$'
+# regex_values = 'address'
+# confidence = 95

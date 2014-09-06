@@ -1,0 +1,15 @@
+defaults:
+  confidence: 85
+  provider: openbl.org
+
+feeds:
+  scanners:
+    remote: http://www.openbl.org/lists/base_1days.txt
+    pattern: ^(\S+)$
+    tags: scanner
+    protocol: tcp
+    altid: <remote>
+    altid_tlp: green
+    values:
+      - observable
+      - detecttime

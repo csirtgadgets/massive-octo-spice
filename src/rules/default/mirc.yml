@@ -1,0 +1,18 @@
+paser: pattern
+defaults:
+  tags: whitelist
+  provider: mirc.com
+  protocol: tcp
+  altid_tlp: green
+  tlp: amber
+  confidence: 85
+  application: irc
+  remote: http://www.mirc.com/servers.ini
+  altid: <remote>
+
+feeds:
+  domains:
+    pattern: SERVER:([a-zA-Z0-9-.]+\.[a-z]{2,3}):(\d+[-[\d+,]+):?GROUP
+    values:
+      - observable
+      - portlist

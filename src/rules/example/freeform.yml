@@ -1,0 +1,18 @@
+parser: text
+defaults:
+  tags: suspicious
+  tlp: amber
+  store_content: 1
+  confidence: 65
+  altid_tlp: green
+
+feeds:
+  garwarn:
+    provider: garwarner.blogspot.com
+    remote: testdata/freeform/garwarn.txt
+  feye:
+    provider: fireeye.com
+    remote: testdata/freeform/feye.txt
+    ignore: '^Backdoor.APT.|\.[dll|exe|hlp|rar]'
+    altid: http://www.fireeye.com/blog/technical/targeted-attack/2014/06/clandestine-fox-part-deux.htm
+    altid_tlp: green
