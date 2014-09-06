@@ -11,34 +11,33 @@ BEGIN {
     } else {
         use_ok('CIF');
         use_ok('CIF::Smrt');
-        use_ok('CIF::ObservableFactory');
+        use_ok('CIF::Rule');
     }
 };
 
-my $rules = [
-    {
-        config  => 'rules/example/passivedns.cfg.example',
-        feed    => 'gamelinux',
-        tmp => '/tmp',
-    },
-];
+use CIF qw/parse_config/;
 
-my $smrt = CIF::Smrt->new({
-    client_config => {
-        remote          => 'dummy',
-        Token           => '1234',
-    },
-     tmp => '/tmp',
-});
+my $rule = parse_config('rules/example/passivedns.yml');
 
-my $ret;
-foreach my $r (@$rules){
-    $ret = $smrt->process({ 
-        rule        => $r,
-        test_mode   => 1,
-        tmp => '/tmp',
-    });
-    map { $_ = CIF::ObservableFactory->new_plugin($_) } (@$ret);
+ok($rule);
+
+$rule->{'not_before'} = '10000 days ago';
+
+my @rules;
+
+foreach my $feed (qw/gamelinux/){
+    my $r = {%$rule};
+    $r->{'defaults'} = { %{$r->{'defaults'}}, %{$r->{'feeds'}->{$feed}} };
+    $r->{'feed'} = $feed;
+    $r = CIF::Rule->new($r);
+    push(@rules,$r);
+}
+
+foreach (@rules){
+    my $ret = CIF::Smrt->new({
+        rule    => $_,
+        tmp     => '/tmp',
+    })->process();
     ok($#{$ret},'testing for results...');
 }
 

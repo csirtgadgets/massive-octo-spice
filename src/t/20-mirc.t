@@ -6,38 +6,28 @@ use Data::Dumper;
 BEGIN { 
     use_ok('CIF');
     use_ok('CIF::Smrt');
+    use_ok('CIF::Rule');
 };
 
-my $rules = [
-    {
-        config  => 'rules/default/00_mirc_whitelist.cfg',
-        feed    => 'domains',
-        override    => {
-            remote    => 'testdata/mirc.com/servers.ini',
-            not_before  => '10000 days ago',
-            tmp => '/tmp',
-            id  => '1234',
-        },
-         tmp => '/tmp',
-    },
-];
+use CIF qw/parse_config/;
+use Data::Dumper;
 
-my $smrt = CIF::Smrt->new({
-    client_config => {
-        remote          => 'dummy',
-        Token           => '1234',
-    },
-     tmp => '/tmp',
-});
+my $rule = parse_config('rules/default/mirc.yml');
 
-my $ret;
-foreach my $r (@$rules){
-    $ret = $smrt->process({ 
-        rule        => $r,
-        test_mode   => 1,
-         tmp => '/tmp',
-    });
-    ok($#{$ret},'testing for results...');
-}
+ok($rule);
+
+$rule->{'not_before'} = '10000 days ago';
+$rule->{'feeds'}->{'domains'}->{'remote'} = 'testdata/mirc.com/servers.ini';
+
+my $r = {%$rule};
+$r->{'defaults'} = { %{$r->{'defaults'}}, %{$r->{'feeds'}->{'domains'}} };
+$r->{'feed'} = 'domains';
+
+my $ret = CIF::Smrt->new({
+    rule    => CIF::Rule->new($r),
+    tmp     => '/tmp',
+})->process();
+
+ok($#{$ret},'testing for results...');
 
 done_testing();

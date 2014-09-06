@@ -26,7 +26,7 @@ if($pid == 0){
     diag('starting client');
     my $cli = CIF::Client->new({
         remote          => 'tcp://localhost:'.CIF::DEFAULT_PORT(),
-        Token           => '1234',
+        token           => '1234',
         encoder_pretty  => 1,
     });
     diag('running ping...');

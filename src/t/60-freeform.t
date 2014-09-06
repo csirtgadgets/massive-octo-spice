@@ -8,37 +8,34 @@ use Data::Dumper;
 BEGIN { 
     use_ok('CIF');
     use_ok('CIF::Smrt');
+    use_ok('CIF::Rule');
 };
 
-my $rules = [
-    {
-        config  => 'rules/example/freeform.cfg.example',
-        feed    => 'garwarn',
-        tmp => '/tmp',
-    },
-    {
-    	config => 'rules/example/freeform.cfg.example',
-    	feed   => 'feye',
-    	tmp    => '/tmp',
-    }
-];
+use CIF qw/parse_config/;
 
-my $smrt = CIF::Smrt->new({
-    client_config => {
-        remote          => 'dummy',
-        Token           => '1234',
-    },
-     tmp => '/tmp',
-});
+my $rule = parse_config('rules/example/freeform.yml');
 
-my $ret;
-foreach my $r (@$rules){
-    $ret = $smrt->process({ 
-        rule        => $r,
-        test_mode   => 1,
-        tmp => '/tmp',
-    });
+ok($rule);
+
+$rule->{'not_before'} = '10000 days ago';
+
+my @rules;
+
+foreach my $feed (qw/garwarn feye/){
+    my $r = {%$rule};
+    $r->{'defaults'} = { %{$r->{'defaults'}}, %{$r->{'feeds'}->{$feed}} };
+    $r->{'feed'} = $feed;
+    $r = CIF::Rule->new($r);
+    push(@rules,$r);
+}
+
+foreach (@rules){
+    my $ret = CIF::Smrt->new({
+        rule    => $_,
+        tmp     => '/tmp',
+    })->process();
     ok($#{$ret},'testing for results...');
 }
+
 
 done_testing();
