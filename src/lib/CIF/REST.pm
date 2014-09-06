@@ -42,7 +42,7 @@ sub startup {
     # http://mojolicio.us/perldoc/Mojolicious/Renderer#default_format
     $self->hook(before_routes => sub { ## TODO -- around_action?
         my $c = shift;
-        if($c->req->headers->accept =~ /json/){
+        if($c->req->headers->accept =~ /json/ || $c->req->headers->user_agent =~ /curl|wget|^cif/){
             $c->app->renderer->default_format('json');
         } else {
             $c->app->renderer->default_format('html');
