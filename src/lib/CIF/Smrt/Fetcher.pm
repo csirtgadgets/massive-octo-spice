@@ -15,7 +15,7 @@ use Net::SSLeay;
 use File::Path qw(make_path);
 use File::Spec;
 use CIF qw/$Logger/;
-use File::Slurp;
+use File::Slurp; ## we can always re-factorize this
 Net::SSLeay::SSLeay_add_ssl_algorithms(); ## TODO -- this needs cleaning up
 
 use constant {
@@ -72,15 +72,18 @@ sub process {
     my $args = shift;
     
     my $ret;
-  
+    
     unless($self->test_mode() && -e $self->tmp){ ## testmode cleans out the cache
-        $Logger->debug('pulling: '.$self->rule->defaults->{'remote'});
-        $ret = $self->handle->mirror($self->rule->defaults->{'remote'},$self->tmp);
-        $Logger->debug('status: '.$ret->status_line());
-        unless($ret->is_success() || $ret->status_line() =~ /^304 /){
-            $Logger->error($ret->status_line());
-            croak($ret->decoded_content());
-            #return $ret->decoded_content();
+        if(-e $self->rule->defaults->{'remote'}){
+            return read_file($self->rule->defaults->{'remote'});
+        } else {
+            $Logger->debug('pulling: '.$self->rule->defaults->{'remote'});
+            $ret = $self->handle->mirror($self->rule->defaults->{'remote'},$self->tmp);
+            $Logger->debug('status: '.$ret->status_line());
+            unless($ret->is_success() || $ret->status_line() =~ /^304 /){
+                $Logger->error($ret->status_line());
+                croak($ret->decoded_content());
+            }
         }
     }
     return read_file($self->tmp, binmode => ':raw');

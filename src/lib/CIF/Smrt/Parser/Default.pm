@@ -28,6 +28,7 @@ sub process {
     my $defaults = $self->rule->defaults;
     
     my $cols = $defaults->{'values'};
+    $cols = [$cols] unless(ref($cols));
 
     return unless($#{$data} > 0);
     assert($cols,'missing values param');
@@ -36,11 +37,11 @@ sub process {
     my @array;
     
     my $pattern = $defaults->{'pattern'};
-    
-    if(defined($pattern)){
+    if(defined($pattern) && !$defaults->{'parser'}){
         $pattern = qr/$pattern/;
     } else {
-        for($self->rule->parser){
+        my $parser = $self->rule->defaults->{'parser'} || $self->rule->parser || '';
+        for($parser){
             if(/^csv$/){
                 $pattern = ',';
                 last;
@@ -48,6 +49,9 @@ sub process {
             if(/^pipe$/){
                 $pattern = '\||\s+\|\s+';
                 last;
+            }
+            if(/^delim$/){
+                last; # do nothing
             }
         }
     }
@@ -68,6 +72,7 @@ sub process {
     }
     
     my ($x,@y,$z);
+
     for (my $i = $start; $i <= $end; $i++){ 
         $x = @{$data}[$i];
         next if($x =~ RE_COMMENTS);
@@ -81,13 +86,17 @@ sub process {
             @y = split($pattern,$x);
         }
         
-        if($self->rule->parser eq 'csv'){
+        if($self->rule->parser && $self->rule->parser eq 'csv'){
              s/"//g foreach(@y);
         }
         $z = undef;
-        foreach (0 ... $#{$cols}){
-            next if($cols->[$_] eq 'null');
-            $z->{$cols->[$_]} = $y[$_];
+        if($#{$cols} > 0){
+            foreach (0 ... $#{$cols}){
+                next if($cols->[$_] eq 'null');
+                $z->{$cols->[$_]} = $y[$_];
+            }
+        } else {
+            $z->{$cols->[0]} = $y[0];
         }
         if($self->rule->store_content){
                 $z->{'additionaldata'} = [$x];

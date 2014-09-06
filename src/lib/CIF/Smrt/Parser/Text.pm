@@ -4,13 +4,8 @@ use strict;
 use warnings;
 
 use Mouse;
-
-# cif
 use CIF qw(observable_type);
-
-# other
 use String::Tokenizer;
-#use Lingua::EN::NamedEntity;
 
 # http://search.cpan.org/~ambs/Lingua-NATools-v0.7.5/lib/Lingua/NATools.pm
 # http://search.cpan.org/~tpederse/WordNet-Similarity-2.05/lib/WordNet/Similarity.pm
@@ -20,18 +15,9 @@ use String::Tokenizer;
 # https://metacpan.org/pod/Lingua::EN::Tagger
 # https://metacpan.org/pod/Lingua::EN::NamedEntity
 
-has 'handle' => (
-    is      => 'ro',
-    isa     => 'String::Tokenizer',
-    default => sub { String::Tokenizer->new() },
-    reader  => 'get_handle',
-);
-
 has 'remove_extra_whitespace'   => (
     is      => 'ro',
-    isa     => 'Bool',
     default => 0,
-    reader  => 'get_remove_extra_whitespace',
 );
 
 with 'CIF::Smrt::Parser';
@@ -45,26 +31,34 @@ sub understands {
 
 sub process {
     my $self = shift;
-    my $args = shift;
+    my $data = shift;
 
     my $rv = [];
     my $otype;
-    foreach (@{$args->{'content'}}){
-        # skip comments
-        next if($self->get_rule()->get_skip_comments() && $_ =~ $self->get_rule()->get_comments());
-        $_ =~ s/\s{2,}//g if($self->get_remove_extra_whitespace());
+    
+    $data = [split(/\n/,$data)];
+    
+    my $tokenizer = String::Tokenizer->new();
+    my $ignore = $self->rule->defaults->{'ignore'};
+    if($ignore){
+        $ignore = qr/$ignore/;
+    }
+    
+    foreach (@$data){
+        next unless($_);
+        $_ =~ s/\s{2,}//g if($self->remove_extra_whitespace);
         
-        $self->get_handle()->tokenize($_);
-        foreach my $t ($self->get_handle()->getTokens()){
-            next if($self->get_rule()->_ignore($t));
+        $tokenizer->tokenize($_);
+        foreach my $t ($tokenizer->getTokens()){
+            next if($ignore && $t =~ $ignore);
             next unless(observable_type($t));
             $otype = observable_type($t);
             next unless($otype);
             $t = { 
-            	observable => $self->get_rule()->_replace($t),
+            	observable => $t,
             	otype      => $otype
             };
-            if($self->get_rule()->get_store_content()){
+            if($self->rule->store_content){
                 $t->{'additionaldata'} = [$_];
             }
             push(@$rv,$t);

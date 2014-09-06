@@ -6,6 +6,7 @@ use warnings;
 use Module::PluginFinder;
 use Try::Tiny;
 use Carp;
+use CIF qw/$Logger/;
 
 my $finder = Module::PluginFinder->new(
     search_path => 'CIF::Observable',
@@ -18,6 +19,8 @@ my $finder = Module::PluginFinder->new(
 sub new_plugin {
     my ($self,$args) = @_;
     return unless($args);
+    
+    #$Logger->debug('observable: '.$args->{'observable'});
     
     my ($ret,$err);
     try {

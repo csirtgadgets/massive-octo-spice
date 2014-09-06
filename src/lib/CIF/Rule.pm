@@ -11,6 +11,7 @@ use CIF::Observable;
 use CIF qw/parse_config/;
 
 use constant RE_IGNORE => qw(qr/[\.]$/);
+use constant RE_SKIP => qr/remote|pattern|values|ignore/;
 
 has [qw(store_content skip rule feed remote parser defaults)] => (
     is      => 'ro',
@@ -31,7 +32,7 @@ has '_now' => (
 sub process {
     my $self = shift;
     my $args = shift;
-
+    
     $self->_merge_defaults($args);
     return $args->{'data'};
 }
@@ -41,21 +42,16 @@ sub _merge_defaults {
     my $args = shift;
 
     return unless($self->defaults);
-    foreach my $k (keys %{$self->defaults}){        
+    foreach my $k (keys %{$self->defaults}){
+        next if($k =~ RE_SKIP); 
         for($self->defaults->{$k}){
             if($_ && $_ =~ /<(\S+)>/){
                 # if we have something that requires expansion
                 # < >'s
                 my $val;
-                
-                ##TODO -- work-around
-                if($1 =~ /^remote$/){
-                    $val = $self->remote;
-                } else {
-                    $val = $args->{'data'}->{$1};
-                }
+                $val = $args->{'data'}->{$1} || $self->defaults->{$1};
                 unless($val){
-                    warn 'missing: '.$k;
+                    warn 'missing: '.$1;
                     assert($val);
                 }
                 
@@ -70,7 +66,7 @@ sub _merge_defaults {
     }
 }
 
-sub _ignore {
+sub ignore {
     my $self = shift;
     my $arg = shift;
 

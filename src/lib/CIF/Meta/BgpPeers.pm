@@ -14,6 +14,7 @@ sub understands {
     my $self = shift;
     my $args = shift;
 
+    return; ##TODO maybe split this out? adds significant time to an insert
     return unless($args->{'observable'});
     return unless(is_ip($args->{'observable'}));
     return 1;

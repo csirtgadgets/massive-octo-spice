@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use Mouse;
-use CIF qw/hash_create_random normalize_timestamp is_ip init_logging $Logger/;
+use CIF qw/observable_type hash_create_random normalize_timestamp is_ip init_logging $Logger/;
 use CIF::Client; ## eventually this will go to the SDK
 use CIF::ObservableFactory;
 use CIF::RuleFactory;
@@ -99,16 +99,22 @@ sub process {
     $Logger->debug('decoding..');
     $data = $self->decode($data);
     
+    
+    
     # parse
     $Logger->debug('parsing...');
     $data = $self->parser->process($data);
-    
+
     # build
     $Logger->info('processing events: '.($#{$data} + 1));
     my @array;
     
     my $ts;
+    my $otype;
     foreach (@$data){
+        $otype = observable_type($_->{'observable'});
+        next unless($otype);
+        
         $ts = $_->{'detecttime'} || $_->{'lasttime'} || $_->{'reporttime'} || MAX_DT;
         $ts = normalize_timestamp($ts)->epoch();
 
