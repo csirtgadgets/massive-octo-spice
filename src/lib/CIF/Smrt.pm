@@ -4,19 +4,18 @@ use strict;
 use warnings;
 
 use Mouse;
-use CIF qw/observable_type hash_create_random normalize_timestamp is_ip init_logging $Logger/;
+use CIF qw/observable_type hash_create_random hash_create_static normalize_timestamp is_ip init_logging $Logger/;
 use CIF::Client; ## eventually this will go to the SDK
 use CIF::ObservableFactory;
-use CIF::RuleFactory;
 use CIF::Smrt::ParserFactory;
 use CIF::Smrt::Fetcher;
 use File::Path qw(make_path);
 use File::Spec;
 use File::Type;
 use IO::Uncompress::AnyUncompress qw(anyuncompress $AnyUncompressError);
+use JSON::XS;
 
 use Data::Dumper;
-use Config::Simple;
 use Carp::Assert;
 
 use constant {
@@ -25,7 +24,7 @@ use constant {
     MAX_DT          => '2100-12-31T23:59:59Z' # if you're still using this by then, God help you.
 };
 
-has [qw(config is_test other_attributes test_mode handler rule tmp)] => (
+has [qw(ignore_journal config is_test other_attributes test_mode handler rule tmp)] => (
     is      => 'ro',
 );
 
@@ -82,9 +81,6 @@ sub process {
     my $self = shift;
     my $args = shift;
     
-    #$Logger->debug(Dumper($self));
-    #$Logger->debug(Dumper($self->rule_handle));
-    
     $Logger->info('starting at: '.
         DateTime->from_epoch(epoch => $self->rule->not_before)->datetime(),'Z'
     );
@@ -99,12 +95,18 @@ sub process {
     $Logger->debug('decoding..');
     $data = $self->decode($data);
     
-    
-    
     # parse
     $Logger->debug('parsing...');
     $data = $self->parser->process($data);
 
+    unless($self->ignore_journal){
+        # log
+        $Logger->debug('checking journal');
+        $data = $self->check_journal($data);
+        
+        $Logger->debug('writing journal...');
+        $self->write_journal($data); ##TODO -- should this be after?
+    }
     # build
     $Logger->info('processing events: '.($#{$data} + 1));
     my @array;
@@ -114,59 +116,72 @@ sub process {
     foreach (@$data){
         $otype = observable_type($_->{'observable'});
         next unless($otype);
-        
+
         $ts = $_->{'detecttime'} || $_->{'lasttime'} || $_->{'reporttime'} || MAX_DT;
         $ts = normalize_timestamp($ts)->epoch();
-
+        
         next unless($self->rule->not_before <= $ts );
         $_ = $self->rule->process({ data => $_ });
         push(@array,$_);
     }
     $Logger->info('processed events: '.($#array + 1));
+
     return \@array;
 }
 
-sub process_file {
-    my $self = shift;
-    my $args = shift;
+my $today = DateTime->today();
+sub _journal_hash {
+    my $data = shift;
     
-    ##TODO - refactor
-    my $ts = $args->{'ts'} || DateTime->today();
-    my ($vol,$dir) = File::Spec->splitpath($args->{'file'});
-    my $log = File::Spec->catfile($self->tmp(),$ts->ymd('').'.log');
+    #return hash_create_static($today->epoch().$_->{'observable'});
+    
+    my $x = JSON::XS->new->canonical->encode($_);
+    return hash_create_static($today->epoch().$x);
+}
+
+sub write_journal {
+    my $self = shift;
+    my $data = shift;
+    
+    my $log = File::Spec->catfile($self->tmp(),$today->ymd('').'.log');
+    my $f = IO::File->new(">>".$log);
+    
+    my $array; my $tmp;
+    foreach (@$data){
+        $tmp = _journal_hash($_);
+        print $f $tmp."\n";
+        push(@$array,$_);
+    }
+    $f->close();
+}
+
+sub check_journal {
+    my $self = shift;
+    my $data = shift;
+    
+    my $log = File::Spec->catfile($self->tmp(),$today->ymd('').'.log');
     
     $Logger->debug('using log: '.$log);
-   
-    $Logger->debug('file: '.$args->{'file'});
-    die "file doesn't exist: ".$args->{'file'} unless(-e $args->{'file'});
-    my $file = URI::file->new_abs($args->{'file'});
-    unless ($file->scheme() eq 'file') {
-        die("Unsupported URI scheme: " . $file->scheme);
-    }
-    
-    # for now, we need to move content around, later on we might pass handles around
-    my $fh = IO::File->new("< " . $file->path) || die($!.': '.$file->path);
-    my $fh2 = IO::File->new("<".$log);
+  
+    my $f = IO::File->new("<".$log);
     my $exists;
-    if($fh2){
-        while(<$fh2>){
+    if($f){
+        while(<$f>){
             chomp();
             $exists->{$_} = 1;
         }
-        $fh2->close();
+        $f->close();
     }
-    my $wh = IO::File->new(">>".$log);
+    
+    $f = IO::File->new(">>".$log);
     
     my $array; my $tmp;
-    while (<$fh>){
-        chomp();
-        $tmp = hash_create_static($ts->epoch().$_);
-        next if(!$_ || $exists->{$tmp});
-        print $wh $tmp."\n" unless($file->path() =~ /testdata/); ##TODO- workaround for tests
+    foreach (@$data){
+        $tmp = _journal_hash($_);
+        next if($exists->{$tmp});
         push(@$array,$_);
     }
-    $fh->close();
-    $wh->close() if($wh);
+    $f->close();
     return $array;
 }
 
