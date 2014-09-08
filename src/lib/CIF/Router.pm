@@ -9,7 +9,6 @@ use CIF::Message;
 use CIF::Router::RequestFactory;
 use CIF::Router::AuthFactory;
 use CIF::StorageFactory;
-use Config::Simple;
 use ZMQx::Class;
 use JSON::XS;
 use Try::Tiny;
