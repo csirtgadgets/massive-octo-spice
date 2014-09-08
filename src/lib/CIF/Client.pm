@@ -203,8 +203,6 @@ sub _send {
     
     $Logger->debug('encoding...');
     
-    $Logger->debug(Dumper($msg));
-
     if($Logger->is_debug()){
         $msg = JSON::XS->new->pretty->convert_blessed(1)->encode($msg);
     } else {
