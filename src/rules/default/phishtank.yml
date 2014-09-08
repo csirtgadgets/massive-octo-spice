@@ -1,12 +1,25 @@
-remote = 'http://data.phishtank.com/data/online-valid.json.gz'
-parser  = 'json'
-provider = phishtank.com
-tlp = amber
-altid_tlp = green
-application = http
+defaults:
+  parser: json
+  provider: phishtank.com
+  tlp: amber
+  application:
+    - http
+    - https
+  confidence: 85
+  tags: phishing
+  remote: http://data.phishtank.com/data/online-valid.json.gz
 
-[urls]
-tags = phishing
-fields = 'submission_time,url,target,phish_detail_url,details'
-values = 'detecttime,observable,description,altid,additional_data'
-confidence = 85
+feeds:
+  urls:
+    map:
+      - submission_time
+      - url
+      - target
+      - phish_detail_url
+      - details
+    values:
+      - detecttime
+      - observable
+      - description
+      - altid
+      - additional_data

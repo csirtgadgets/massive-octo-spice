@@ -1,7 +1,7 @@
 parser: csv
-remote: http://s3.amazonaws.com/alexa-static/top-1m.csv.zip
 
 defaults:
+  remote: http://s3.amazonaws.com/alexa-static/top-1m.csv.zip
   values:
     - rank
     - observable
