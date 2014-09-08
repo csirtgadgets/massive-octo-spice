@@ -4,13 +4,13 @@ perl:
 
 before_install:
     - sudo apt-get install -qq python-software-properties
-    - echo "yes" | sudo add-apt-repository "ppa:chris-lea/zeromq" 
+    - echo "yes" | sudo add-apt-repository "ppa:chris-lea/zeromq"
     - sudo apt-get update -qq
     - perl -V
 
 install:
     - sudo apt-get install -y curl mailutils build-essential git-core automake cpanminus rng-tools openjdk-7-jre-headless libtool pkg-config vim htop bind9 libzmq3-dev libffi6 libmoose-perl libmouse-perl libanyevent-perl liblwp-protocol-https-perl libxml2-dev libexpat-dev python-dev
-    - cpanm Regexp::Common http://cpan.metacpan.org/authors/id/S/SH/SHERZODR/Config-Simple-4.59.tar.gz
+    - cpanm Regexp::Common
     - sudo rm -f /dev/random
     - sudo mknod -m 0666 /dev/random c 1 9
     - echo HRNGDEVICE=/dev/urandom | sudo tee /etc/default/rng-tools
@@ -22,7 +22,7 @@ before_script:
 script:
     - ./configure && make
     - time make deps NOTESTS=-n
-    - CI_BUILD=1 make test 
+    - CI_BUILD=1 make test
 
 notifications:
     email:
