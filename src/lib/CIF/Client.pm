@@ -21,7 +21,6 @@ use ZMQ::FFI::Constants qw(ZMQ_REQ ZMQ_SUB ZMQ_SNDTIMEO ZMQ_RCVTIMEO ZMQ_LINGER)
 
 use constant SND_TIMEOUT    => 120000;
 use constant RCV_TIMEOUT    => 120000;
-use constant PING_TIMEOUT   => 5000; ##TODO seperate ping timeouts from SND/RCV timeouts
 use constant REMOTE_DEFAULT => 'tcp://localhost:'.CIF::DEFAULT_PORT();
 
 has [qw(remote subscriber results token)] => (
@@ -59,28 +58,6 @@ sub _build_socket {
 sub BUILD {
     my $self = shift;
     init_logging({ level => 'WARN' }) unless($Logger);
-}
-
-sub ping {
-    my $self = shift;
-    my $args = shift;
-    
-    $Logger->info('generating ping request...');
-    my $msg = CIF::Message->new({
-        rtype   => 'ping',
-        mtype   => 'request',
-        Token   => $self->token,
-    });
-    $Logger->info('sending ping...');
-    my $ret = $self->_send($msg);
-    if($ret){
-        my $ts = $msg->{'Data'}->{'Timestamp'};
-        $Logger->info('ping returned');
-        return tv_interval([split(/\./,$ts)]);
-    } else {
-        $Logger->warn('timeout...');
-    }
-    return 0;
 }
 
 sub search {
