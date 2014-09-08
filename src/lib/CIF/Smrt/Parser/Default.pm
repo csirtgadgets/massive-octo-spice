@@ -15,8 +15,8 @@ sub understands {
     my $self = shift;
     my $args = shift;
 
-    return 1 unless($args->{'rule'}->{'parser'});
-    return 1 if($args->{'rule'}->{'parser'} =~ RE_SUPPORTED_PARSERS());
+    return 1 unless($args->{'rule'}->{'defaults'}->{'parser'});
+    return 1 if($args->{'rule'}->{'defaults'}->{'parser'} =~ RE_SUPPORTED_PARSERS());
 }
 
 sub process {
@@ -40,7 +40,7 @@ sub process {
     if(defined($pattern) && !$defaults->{'parser'}){
         $pattern = qr/$pattern/;
     } else {
-        my $parser = $self->rule->defaults->{'parser'} || $self->rule->parser || '';
+        my $parser = $self->rule->rule->{'parser'} || $self->rule->defaults->{'parser'} || '';
         for($parser){
             if(/^csv$/){
                 $pattern = ',';
