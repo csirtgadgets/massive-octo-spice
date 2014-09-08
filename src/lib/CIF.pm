@@ -22,7 +22,7 @@ our %EXPORT_TAGS = ( 'all' => [ qw(
     is_datetime normalize_timestamp
     protocol_to_int
     observable_type
-    parse_config
+    parse_config parse_rules
 ) ] );
 
 our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
@@ -66,33 +66,68 @@ use CIF::Plugin::Binary qw(:all);
 use CIF::Plugin::DateTime qw(:all);
 
 use CIF::Logger;
+use Carp;
 
 use YAML::Tiny;
-use Config::Simple;
 
-##TODO fix this
 use constant DEFAULT_CONFIG         => ($ENV{'HOME'}) ? $ENV{'HOME'}.'/.cif' : '';
-use constant DEFAULT_QUERY_LIMIT    => 500;
 use constant DEFAULT_GROUP          => 'everyone';
 
 # Preloaded methods go here.
 
 sub parse_config {
 	my $config = shift;
-    my $block = shift;
     
 	return unless(-e $config);
-	if($config =~ /\.yml$/){
-        $config = YAML::Tiny->read($config)->[0];
+    $config = YAML::Tiny->read($config)->[0];
+    return $config;
+}
+
+sub parse_rule {
+    my $rule = shift;
+    my $feed = shift;
+    
+    croak('missing feed') unless($rule->{'feeds'}->{$feed});
+    my $r->{'rule'} = $rule;
+    $r->{'feed'} = $feed;
+     
+    $r->{'defaults'} = { %{$rule->{'defaults'}}, %{$rule->{'feeds'}->{$feed}} };
+
+    $r = CIF::Rule->new($r);
+    
+    return $r;   
+}
+sub parse_rules {
+    my $rule = shift;
+    my $feed = shift;
+    
+    my @rules;
+    if(-d $rule){
+        opendir(F,$rule) || die('unable to open: '.$rule.'... '.$!);
+        my $files = [ sort { $a cmp $b } grep (/.yml$/,readdir(F)) ];
+        foreach my $f (@$files){
+            my $t = parse_config("$rule/$f");
+            foreach my $feed (keys %{$t->{'feeds'}}){
+                my $x = parse_rule($t,$feed);
+                $x->{'rule_path'} = "$rule/$f";
+                push(@rules,$x); 
+            }
+        }
     } else {
-        $config = Config::Simple->new($config) || croak('config error...');
-        if($block){
-            $config = $config->get_block($block);
+        my $t = parse_config("$rule");
+        if($feed){
+            my $x = parse_rule(parse_config($rule),$feed);
+            $x->{'rule_path'} = $rule;
+            push(@rules, $x);
         } else {
-            $config = $config->{'_DATA'};
+            foreach my $feed (keys %{$t->{'feeds'}}){
+                my $x = parse_rule($t,$feed);
+                $x->{'rule_path'} = "$rule";
+                push(@rules,$x);
+            }
         }
     }
-    return $config;
+    return \@rules;
 }
 
 sub observable_type {
