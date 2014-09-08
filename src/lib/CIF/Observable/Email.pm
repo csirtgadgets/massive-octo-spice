@@ -27,6 +27,7 @@ has 'message' => (
 has 'hash' => (
     is      => 'ro',
     isa     => 'CIF::Type::Hash',
+    default => sub { sha256_hex($_[0]->{'observable'}) },
 );
 
 has 'htype' => (
