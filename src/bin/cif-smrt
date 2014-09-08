@@ -12,8 +12,7 @@ use warnings;
 use AnyEvent;
 use Daemon::Control;
 use Getopt::Long;
-use Config::Simple;
-use CIF qw/debug hash_create_random init_logging $Logger parse_config/;
+use CIF qw/debug hash_create_random init_logging $Logger parse_rules/;
 use CIF::Smrt;
 use CIF::Rule;
 use CIF::SDK::Client;
@@ -33,6 +32,7 @@ my $cache       = $CIF::VarPath.'/smrt/cache';
 my $meta        = 0;
 my $timeout     = 300;
 my $no_verify_ssl;
+my $ignore_journal;
 
 # daemon
 my $daemon      = 0;
@@ -74,6 +74,7 @@ GetOptions(
     '--interval'	    => \$interval,
     '--randomstart'   	=> \$randomstart,
     '--testmode'        => \$testmode,
+    '--ignore-journal'  => \$ignore_journal,
     
     # logging
     'logfile=s'     => \$logfile,
@@ -109,8 +110,6 @@ unless(-e $rule){
 	say (usage()."ERROR: $rule doesn't exist or cif-smrt doesn't have permission to access it");
 	exit(-1);
 }
-
-die(usage()) if((-f $rule) && !$feed);
 
 if($notbefore && $notbefore =~ /^\d+$/){
     print usage();
@@ -261,48 +260,8 @@ sub main {
 sub _main { 
     _clean_tmp();
 
-    ##TODO YAML
-    my $rules;
-    if(-d $rule){
-        opendir(F,$rule) || die('unable to open: '.$rule.'... '.$!);
-        my $files = [ sort { $a cmp $b } grep (/.cfg$/,readdir(F)) ]; ##TODO
-        foreach my $f (@$files){
-            my $t = Config::Simple->new("$rule/$f");
-            my @sections = keys(%{$t->{'_DATA'}});
-            next unless($t->param(-block => 'default')->{'enabled'});
-            foreach my $section (@sections){
-                next if($section =~ /^default/);
-                next if($t->param(-block => $section)->{'disabled'});
-                my $c = $t->param(-block => $section);
-                push(@$rules,{
-                    config  => $rule."/".$f,
-                    feed    => $section,
-                    override    => {
-                        limit       => $limit,
-                        not_before  => $notbefore,
-                    },
-                    metadata        => (defined($c->{'meta'})) ? $c->{'meta'} : $meta,
-                });
-                    
-            }
-        }
-    } else {
-        my $r = parse_config($rule); # get the inital rule
-        croak('missing feed: '.$feed) unless($r->{'feeds'}->{$feed});
-        $r->{'rule'} = $rule;
-        $r->{'feed'} = $feed;
-         
-        $r->{'not_before'} = ($notbefore) ? $notbefore : 'today';
-        
-        $r->{'defaults'} = { %{$r->{'defaults'}}, %{$r->{'feeds'}->{$feed}} };
-        
-        $r->{'defaults'}->{'limit'}      = $limit if($limit); # override
-        
-        
-        $r = CIF::Rule->new($r);
-        $rules = [$r];
-    }
-    
+    my $rules = parse_rules($rule,$feed);
+
     my $cli = CIF::SDK::Client->new({
         remote      => $remote,
         token       => $token,
@@ -318,22 +277,24 @@ sub _main {
         }
     }
     
-    my ($smrt,$err,$ret);
-    foreach (@$rules){
-        $Logger->info("processing: $0 -d -r $_->{'rule'} -f $_->{'feed'}");
+    my ($smrt,$err,$ret,$data);
+    foreach my $r (@$rules){
+        $Logger->debug($r->defaults->{'provider'}.' - '.$r->feed);
+        $Logger->info("processing: $0 -d -r $r->{'rule_path'} -f $r->{'feed'}");
         
-        $ret = $smrt = CIF::Smrt->new({
-            rule    => $_,
-            tmp     => $cache,
-        })->process();
+        my $smrt = CIF::Smrt->new({
+            rule            => $r,
+            tmp             => $cache,
+            ignore_journal   => $ignore_journal,
+        });
         
-        if($ret){
-            ($err,$ret) = $cli->submit($ret);
+        $data = $smrt->process();
+        
+        if($#{$data} >= 0){
+            ($err,$ret) = $cli->submit($data);
             croak($err) if($err);
-        } elsif($ret < 0) {
-            exit(-1);
         } else {
-            $Logger->info('nothing [new] to send...');
+            $Logger->info('nothing new to send...');
         }
     }
     $Logger->info('done');    
