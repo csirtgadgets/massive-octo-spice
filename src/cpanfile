@@ -5,7 +5,6 @@ requires 'Inline::Python','0.43';
 requires 'local::lib';
 requires 'Carp::Assert';
 requires 'Compress::Snappy';
-requires 'Config::Simple','4.59';
 requires 'Crypt::Random::Source';
 requires 'Daemon::Control';
 requires 'DateTime::Format::DateParse';
