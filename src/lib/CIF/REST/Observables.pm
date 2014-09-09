@@ -16,7 +16,7 @@ sub index {
         	starttime      => $self->param('starttime')    || undef,
         	groups         => $self->param('group')       || undef,
         	limit          => $self->param('limit')        || undef,
-        	tags           => $self->param('tag')         || undef,
+        	tags           => $self->param('tags')         || undef,
         	applications   => $self->param('application') || undef,
         	asns           => $self->param('asn')         || undef,
         	providers      => $self->param('provider')    || undef,
@@ -31,12 +31,10 @@ sub index {
 
 sub show {
     my $self  = shift;
-
-    my $query      = $self->param('observable');
     
     my $res = $self->cli->search({
         token      => $self->param('token'),
-        id         => $query,
+        id         => $self->stash->{'observable'},
     });
     $self->stash(observables => $res); ##TODO -- does this leak if we don't clear it?
     $self->respond_to(

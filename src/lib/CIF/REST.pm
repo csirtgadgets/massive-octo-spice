@@ -51,7 +51,7 @@ sub startup {
 
     $self->helper(cli => sub {
         CIF::Client->new({
-            remote  => REMOTE(),
+            remote  => REMOTE,
         })
     });
     
