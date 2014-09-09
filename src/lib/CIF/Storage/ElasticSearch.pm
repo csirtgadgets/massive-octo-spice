@@ -145,7 +145,7 @@ sub _search {
     
     return -1 if(ref($args->{'Query'}));
     
-    my $groups = $args->{'groups'} || ['everyone'];
+    my $groups = $args->{'group'} || ['everyone'];
     $groups = [$groups] unless(ref($groups) && ref($groups) eq 'ARRAY');
     
     my ($q,$terms,$ranges);
@@ -186,30 +186,30 @@ sub _search {
     	$terms->{'tags'} = $filters->{'tags'};
     }
     
-    if($filters->{'applications'}){
-    	$filters->{'applications'} = [$filters->{'applications'}] unless(ref($filters->{'applications'}) eq 'ARRAY');
-    	$terms->{'application'} = $filters->{'applications'};
+    if($filters->{'application'}){
+    	$filters->{'application'} = [$filters->{'application'}] unless(ref($filters->{'application'}) eq 'ARRAY');
+    	$terms->{'application'} = $filters->{'application'};
     }
     
-    if($filters->{'asns'}){
-    	$filters->{'asns'} = [$filters->{'asns'}] unless(ref($filters->{'asns'}));
-    	$terms->{'asn'} = $filters->{'asns'}
+    if($filters->{'asn'}){
+    	$filters->{'asn'} = [$filters->{'asn'}] unless(ref($filters->{'asn'}));
+    	$terms->{'asn'} = $filters->{'asn'}
     }
     
-    if($filters->{'providers'}){
-        $filters->{'providers'} = [$filters->{'providers'}] unless(ref($filters->{'providers'}));
-        $terms->{'provider'} = $filters->{'providers'}
+    if($filters->{'provider'}){
+        $filters->{'provider'} = [$filters->{'provider'}] unless(ref($filters->{'provider'}));
+        $terms->{'provider'} = $filters->{'provider'}
     }
     
     ## TODO asn_desc TERM => ***
     
-    if($filters->{'groups'}){
-        $filters->{'groups'} = [$filters->{'groups'}] unless(ref($filters->{'groups'}) eq 'ARRAY');
+    if($filters->{'group'}){
+        $filters->{'group'} = [$filters->{'group'}] unless(ref($filters->{'group'}) eq 'ARRAY');
     } else {
-        $filters->{'groups'} = ['everyone'];
+        $filters->{'group'} = ['everyone'];
     }
     
-    $terms->{'group'} = $filters->{'groups'}; ## TODO re-create es.map with groups [] capable array (similar to peers?)
+    $terms->{'group'} = $filters->{'group'};
     
     my (@and,@or);
     
