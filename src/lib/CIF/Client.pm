@@ -81,7 +81,7 @@ sub search {
     }
     
     my $msg;
-    if($args->{'Id'}){
+    if($args->{'id'}){
     	$msg = CIF::Message->new({
     		rtype      => 'search',
 	        mtype      => 'request',
