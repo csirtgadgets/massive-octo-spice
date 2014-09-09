@@ -1,0 +1,28 @@
+parser: rss
+defaults:
+  confidence: 85
+  tlp: amber
+  provider: malc0de.com
+  #remote: http://malc0de.com/rss
+  remote: /var/smrt/cache/malc0de.com-urls
+  parser: rss
+  tags: malware
+
+feeds:
+  urls:
+    otype: url
+    pattern:
+      description:
+        pattern: '^URL: ([\S\s]+)?, IP Address: \S+?, Country: \S+?, ASN: \S+?, MD5: \S+?'
+        values: observable
+      link:
+        pattern: '(\S+)'
+        values: altid
+  # malware:
+    # pattern:
+      # description:
+        # pattern: '^URL: [\S+|\s]+?, IP Address: \S+?, Country: \S+?, ASN: \S+?, MD5: (\S+)?'
+        # values: observable
+      # link:
+        # pattern: '(\S+)'
+        # values: altid

@@ -1,5 +1,5 @@
+parser: json
 defaults:
-  parser: json
   provider: phishtank.com
   tlp: amber
   application:
