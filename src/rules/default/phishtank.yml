@@ -18,7 +18,7 @@ feeds:
       - phish_detail_url
       - details
     values:
-      - detecttime
+      - firsttime
       - observable
       - description
       - altid

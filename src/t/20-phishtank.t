@@ -13,7 +13,7 @@ BEGIN {
 
 my $rules = [
     {
-        config  => 'rules/default/phishtank.cfg',
+        config  => 'rules/default/phishtank.yaml',
         feed    => 'urls',
         override    => {
             remote  => 'testdata/phishtank.com/online-valid.json.gz',
