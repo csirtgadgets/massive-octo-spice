@@ -229,6 +229,28 @@ sub _subscribe {
     );
 }
 
+sub ping {
+    my $self = shift;
+    my $args = shift;
+    
+    $Logger->info('generating ping request...');
+    my $msg = CIF::Message->new({
+        rtype   => 'ping',
+        mtype   => 'request',
+        Token   => $self->token,
+    });
+    $Logger->info('sending ping...');
+    my $ret = $self->_send($msg);
+    if($ret){
+        my $ts = $msg->{'Data'}->{'Timestamp'};
+        $Logger->info('ping returned');
+        return tv_interval([split(/\./,$ts)]);
+    } else {
+        $Logger->warn('timeout...');
+    }
+    return 0;
+}
+
 __PACKAGE__->meta->make_immutable(inline_destructor => 0);    
 
 1;
