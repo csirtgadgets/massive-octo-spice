@@ -165,6 +165,8 @@ sub _search {
     
     my $filters = $args->{'Filters'};
     
+    $Logger->debug(Dumper($filters));
+    
     if($filters->{'otype'}){
     	$terms->{'otype'} = [$filters->{'otype'}];
 	}

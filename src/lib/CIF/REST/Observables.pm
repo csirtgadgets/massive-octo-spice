@@ -14,12 +14,12 @@ sub index {
         	cc             => $self->param('cc')           || undef,
         	confidence     => $self->param('confidence')   || 0,
         	starttime      => $self->param('starttime')    || undef,
-        	groups         => $self->param('group')       || undef,
+        	group          => $self->param('group')       || undef,
         	limit          => $self->param('limit')        || undef,
         	tags           => $self->param('tags')         || undef,
-        	applications   => $self->param('application') || undef,
-        	asns           => $self->param('asn')         || undef,
-        	providers      => $self->param('provider')    || undef,
+        	application    => $self->param('application') || undef,
+        	asn            => $self->param('asn')         || undef,
+        	provider       => $self->param('provider')    || undef,
         },
     });
     $self->stash(observables => $res, token => $self->param('token')); ##TODO is this safe?

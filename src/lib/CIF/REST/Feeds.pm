@@ -11,7 +11,7 @@ sub index {
 			confidence   => $self->param('confidence')   || undef,
 			cc           => $self->param('cc')           || undef,
 			tags         => $self->param('tag')          || undef,
-			providers    => $self->param('provider')     || undef,
+			provider     => $self->param('provider')     || undef,
 			tlp          => $self->param('tlp')          || undef,
 		},
 		feed      => 1,
