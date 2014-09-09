@@ -116,7 +116,7 @@ sub process {
     foreach (@$data){
         $otype = observable_type($_->{'observable'});
         next unless($otype);
-
+        
         $ts = $_->{'firsttime'} || $_->{'lasttime'} || $_->{'reporttime'} || MAX_DT;
         $ts = normalize_timestamp($ts)->epoch();
         

@@ -91,7 +91,8 @@ sub is_fqdn_lazy {
 sub is_url {
     my $arg = shift || return;
     
-    return 1 if($arg =~ RE_URL());    
+    return 1 if($arg =~ RE_URL);
+    return 2 if($arg =~ RE_URL_BROKEN);
 }
 
 sub is_url_broken {

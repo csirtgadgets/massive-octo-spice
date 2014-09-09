@@ -24,10 +24,11 @@ $r->{'defaults'} = { %{$r->{'defaults'}}, %{$r->{'feeds'}->{'domains'}} };
 $r->{'feed'} = 'domains';
 
 my $ret = CIF::Smrt->new({
-    rule    => CIF::Rule->new($r),
-    tmp     => '/tmp',
+    rule            => CIF::Rule->new($r),
+    tmp             => '/tmp',
+    ignore_journal  => 1,
 })->process();
 
-ok($#{$ret},'testing for results...');
+ok($#{$ret} >= 0,'testing for results...');
 
 done_testing();
