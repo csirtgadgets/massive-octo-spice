@@ -2,55 +2,41 @@ use strict;
 use warnings;
 use 5.011;
 
-use Test::More skip_all => 'not ready yet';
+use Test::More;
 use Test::More;
 use Data::Dumper;
 
 BEGIN { 
     use_ok('CIF');
     use_ok('CIF::Smrt');
+    use_ok('CIF::Rule');
 };
 
-my $rules = [
-    {
-        config  => 'rules/default/phishtank.yaml',
-        feed    => 'urls',
-        override    => {
-            remote  => 'testdata/phishtank.com/online-valid.json.gz',
-            not_before  => '10000 days ago',
-        }
-    },
-    {
-        config  => 'rules/default/phishtank.cfg',
-        feed    => 'urls',
-        override    => {
-            values      => 'null,observable,alternativeid,detecttime,null,null,null,description',
-            skip_first  => 1,
-            parser      => 'csv',
-            remote      => 'testdata/phishtank.com/online-valid.csv',
-            not_before  => '10000 days ago',
-        }
-    },
-];
+use CIF qw/parse_config/;
 
-my $smrt = CIF::Smrt->new({
-    client_config => {
-        remote          => 'dummy',
-        Token           => '1234',
-    },
-});
+my $rule = parse_config('rules/default/phishtank.yml');
 
-my $ret;
-foreach my $r (@$rules){
-    $ret = $smrt->process({ 
-        rule            => $r,
-        test_mode       => 1,
-    });
+ok($rule);
+
+$rule->{'not_before'} = '10000 days ago';
+$rule->{'feeds'}->{'urls'}->{'remote'} = 'testdata/phishtank.com/online-valid.json.gz';
+
+my @rules;
+foreach my $feed (qw/urls/){
+    my $r = {%$rule};
+    $r->{'defaults'} = { %{$r->{'defaults'}}, %{$r->{'feeds'}->{$feed}} };
+    $r->{'feed'} = $feed;
+    $r = CIF::Rule->new($r);
+    push(@rules,$r);
+}
+
+foreach (@rules){
+    my $ret = CIF::Smrt->new({
+        rule    => $_,
+        tmp     => '/tmp',
+    })->process();
+    
     ok($#{$ret},'testing for results...');
-    $ret = $smrt->get_client->submit({
-        Observables => $ret,
-    });
-    ok($#{$ret},'testing subission results: '.(($#{$ret})+1));
 }
 
 done_testing();
