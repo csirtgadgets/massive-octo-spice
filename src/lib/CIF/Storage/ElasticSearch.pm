@@ -352,8 +352,6 @@ sub _submission {
     
     my ($things,$index,$type);
     
-    warn Dumper($args);
-    
     if($args->{'Observables'}){
         $things = $args->{'Observables'};
         $index = $self->observables_index();
