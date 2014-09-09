@@ -3,9 +3,7 @@ defaults:
   confidence: 85
   tlp: amber
   provider: malc0de.com
-  #remote: http://malc0de.com/rss
-  remote: /var/smrt/cache/malc0de.com-urls
-  parser: rss
+  remote: http://malc0de.com/rss
   tags: malware
 
 feeds:

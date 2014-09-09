@@ -32,11 +32,12 @@ foreach my $feed (qw/urls/){
 
 foreach (@rules){
     my $ret = CIF::Smrt->new({
-        rule    => $_,
-        tmp     => '/tmp',
+        rule            => $_,
+        tmp             => '/tmp',
+        ignore_journal  => 1,
     })->process();
     
-    ok($#{$ret},'testing for results...');
+    ok($#{$ret} >= 0,'testing for results...');
 }
 
 done_testing();

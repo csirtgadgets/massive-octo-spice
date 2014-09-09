@@ -13,8 +13,8 @@ sub understands {
     my $self = shift;
     my $args = shift;
     
-    return 0 unless($args->{'rule'}->{'rule'}->{'parser'});
-    return 1 if($args->{'rule'}->{'rule'}->{'parser'} eq 'json');
+    return 0 unless($args->{'rule'}->{'parser'});
+    return 1 if($args->{'rule'}->{'parser'} eq 'json');
 }
 
 sub process {
