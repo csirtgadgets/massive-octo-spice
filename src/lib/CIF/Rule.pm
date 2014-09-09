@@ -9,6 +9,7 @@ use Carp;
 use Carp::Assert;
 use CIF::Observable;
 use CIF qw/parse_config/;
+use URI;
 
 use constant RE_IGNORE => qw(qr/[\.]$/);
 use constant RE_SKIP => qr/remote|pattern|values|ignore/;
@@ -34,7 +35,24 @@ sub process {
     my $args = shift;
     
     $self->_merge_defaults($args);
+    $self->_normalize_otype($args->{'data'});
     return $args->{'data'};
+}
+
+sub _normalize_otype {
+    my $self = shift;
+    my $data = shift;
+    
+    return $data unless($self->defaults->{'otype'});
+    
+    for($self->defaults->{'otype'}){
+        if(/^url$/){
+            unless($data->{'observable'} =~ /^https?/){
+                $data->{'observable'} = 'http://'.$data->{'observable'};
+            }
+            $data->{'observable'} = URI->new($data->{'observable'})->canonical->as_string;
+        }
+    }
 }
 
 sub _merge_defaults {
