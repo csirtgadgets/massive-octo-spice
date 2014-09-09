@@ -10,7 +10,7 @@ defaults:
     - null
     - null
     - observable
-    - detecttime
+    - firsttime
     - null
 feeds:
   ssh:
