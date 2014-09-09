@@ -14,9 +14,9 @@ use constant RE_COMMENTS => qr/^([#|;]+)/;
 sub understands {
     my $self = shift;
     my $args = shift;
-
-    return 1 unless($args->{'rule'}->{'defaults'}->{'parser'});
-    return 1 if($args->{'rule'}->{'defaults'}->{'parser'} =~ RE_SUPPORTED_PARSERS());
+    
+    return 1 unless($args->{'rule'}->{'rule'}->{'parser'});
+    return 1 if($args->{'rule'}->{'rule'}->{'parser'} =~ RE_SUPPORTED_PARSERS());
 }
 
 sub process {
