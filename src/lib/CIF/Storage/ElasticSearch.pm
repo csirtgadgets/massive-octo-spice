@@ -12,7 +12,7 @@ use Net::DNS::Match;
 use DateTime;
 use Try::Tiny;
 use Carp::Assert;
-use CIF qw/hash_create_random is_hash_sha256/;
+use CIF qw/hash_create_random is_hash_sha256 is_ip is_fqdn/;
 use Data::Dumper;
 use JSON qw(encode_json);
 
@@ -148,13 +148,18 @@ sub _search {
     my $groups = $args->{'group'} || ['everyone'];
     $groups = [$groups] unless(ref($groups) && ref($groups) eq 'ARRAY');
     
-    my ($q,$terms,$ranges);
+    my ($q,$terms,$ranges,$prefix,$regexp);
        
     if($args->{'Id'}){
     	$terms->{'id'} = [$args->{'Id'}];
     } elsif($args->{'Query'}) {
     	if($args->{'Query'} ne 'all'){
-    		$terms->{'observable'} = [$args->{'Query'}];
+    		if(is_ip($args->{'Query'})){
+                my @array = split(/\./,$args->{'Query'});
+    		    $regexp->{'observable'} = $array[0].'.*';
+    		} else {
+    		    $terms->{'observable'} = [$args->{'Query'}];
+    		}
     	}
     }
     
@@ -232,6 +237,12 @@ sub _search {
             }
 		}
 	}
+	
+	if($regexp){
+	   foreach (keys %$regexp){
+		    push(@and, { regexp => { $_ => $regexp->{$_} } } );
+		}
+	}
     
     if($ranges){
     	foreach (keys %$ranges){
@@ -282,11 +293,51 @@ sub _search {
     
     $results = [ map { $_ = $_->{'_source'} } @$results ];
     
+    if(is_ip($args->{'Query'})){
+        $results = _ip_results($args->{'Query'},$results);
+    } elsif(is_fqdn($args->{'Query'})){
+        $results = _fqdn_results($args->{'Query'},$results);
+    }
+    
     if(defined($args->{'feed'})){
         $results = @{$results}[0]->{'Observables'};
     }
     
     return $results;
+}
+
+sub _ip_results {
+    my $query = shift;
+    my $results = shift;
+    
+    my $pt = Net::Patricia->new();
+    $pt->add_string($query);
+    my @ret; my $pt2;
+    foreach (@$results){
+        if($pt->match_string($_->{'observable'})){
+            push(@ret,$_);
+        } else {
+            $pt2 = Net::Patricia->new();
+            $pt2->add_string($_->{'observable'});
+            push(@ret,$_) if($pt2->match_string($query));
+        }
+    }
+    
+    return \@ret;
+}
+
+sub _fqdn_results {
+    my $query = shift;
+    my $results = shift;
+    
+    my $t = Net::DNS::Match->new();
+    $t->add($query);
+    
+    my @ret;
+    foreach (@$results){
+        push(@ret,$_) if($t->match($_->{'observable'}));
+    }
+    return \@ret;
 }
 
 sub _submission {
@@ -342,69 +393,6 @@ sub _submission {
     ##http://search.cpan.org/dist/Perl-Critic/lib/Perl/Critic/Policy/ControlStructures/ProhibitMutatingListFunctions.pm
     $ret = [ map { $_ = $_->{'index'}->{'_id'} } @{$ret->{'items'}} ];
     return $ret;
-}
-
-##TODO -- factory?
-sub _process_ip {
-    my $args = shift;
-    
-    my @array = split(/\./,$args->{'Query'});
- 
-    return {
-        observable => {
-            wildcard => { value => $array[0].'.'.'*' },
-        }
-    }  
-}
-
-sub _process_ip_results {
-    my $args = shift;
-    
-    my $query   = $args->{'Query'};
-    my $results = $args->{'Results'};
-    
-    my $pt = Net::Patricia->new();
-    $pt->add_string($query);
-    my @ret; my $pt2;
-    foreach (@$results){
-        if($pt->match_string($_->{'observable'})){
-            push(@ret,$_);
-        } else {
-            $pt2 = Net::Patricia->new();
-            $pt2->add_string($_->{'observable'});
-            push(@ret,$_) if($pt2->match_string($query));
-        }
-    }
-    
-    return \@ret;
-}
-
-sub _process_fqdn_results {
-    my $args = shift;
-    
-    my $query   = $args->{'Query'},
-    my $results = $args->{'Results'},
-    
-    my $t = Net::DNS::Match->new();
-    $t->add($args->{'Query'});
-    
-    my @ret;
-    foreach (@$results){
-        push(@ret,$_) if($t->match($_->{'observable'}));
-    }
-    return \@ret;
-}
-
-
-sub _process_fqdn {
-    my $args = shift;
-    my $q = $args->{'Query'};
-    
-    return {
-        observable => {
-            wildcard => { value => '*'.$q },
-        }
-    }
 }
 
 __PACKAGE__->meta()->make_immutable();
