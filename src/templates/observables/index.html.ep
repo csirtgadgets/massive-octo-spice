@@ -18,6 +18,7 @@
                 <tr>
                 	% foreach my $c (@header) {
                     <td class="striped value">
+                    	% if($o->{$c} && length($o->{$c}) > 31){ $o->{$c} = substr($o->{$c},0,31); $o->{$c} .= '...'; }
                     	% if (ref($o->{$c}) && ref($o->{$c}) eq 'ARRAY'){ $o->{$c} = join(',',@{$o->{$c}}); }
                         <%= $o->{$c} %>
                     </td>
