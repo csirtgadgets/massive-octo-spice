@@ -4,8 +4,7 @@ use Mojo::Base -strict;
 use File::Basename 'dirname';
 use File::Spec;
 
-use lib join '/', File::Spec->splitdir(dirname(__FILE__)), 'lib';
-use lib join '/', File::Spec->splitdir(dirname(__FILE__)), '..', 'lib';
+$ENV{MOJO_HOME} = join '/', File::Spec->splitdir(dirname(__FILE__)), '..', 'lib/perl5/CIF';
 
 # Check if Mojolicious is installed;
 die <<EOF unless eval { require Mojolicious::Commands; 1 };
