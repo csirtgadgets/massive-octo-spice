@@ -18,15 +18,15 @@ use JSON qw(encode_json);
 
 with 'CIF::Storage';
 
-use constant DEFAULT_NODE               => 'localhost:9200';
-use constant DEFAULT_MAX_FLUSH_COUNT    => 10000;
-
-use constant OBSERVABLES_BASE           => 'cif.observables';
-use constant FEEDS_BASE                 => 'cif.feeds';
-
 use constant {
+    NODE                => 'localhost:9200',
+    MAX_SIZE            => 104857600,
+    MAX_COUNT           => 10,
+    OBSERVABLES         => 'cif.observables',
+    FEEDS               => 'cif.feeds',
     OBSERVABLES_TYPE    => 'observables',
     FEEDS_TYPE          => 'feeds',
+    LIMIT               => 50000
 };
 
 use constant DEFAULT_LIMIT              => 5000;
@@ -34,40 +34,41 @@ use constant DEFAULT_LIMIT              => 5000;
 has 'handle' => (
     is          => 'rw',
     isa         => 'Search::Elasticsearch::Client::Direct',
-    reader      => 'get_handle',
-    writer      => 'set_handle',
     lazy_build  => 1,
 );
 
 has 'nodes' => (
     is      => 'ro',
-    default => sub { [ DEFAULT_NODE() ] },
-    reader  => 'get_nodes',
+    default => sub { [ NODE ] },
 );
 
 has 'observables_index'  => (
     is      => 'ro',
-    default => sub { OBSERVABLES_BASE() },
+    default => sub { OBSERVABLES },
 );
 
 has 'feeds_index' => (
     is      => 'ro',
-    default => sub { FEEDS_BASE() },
+    default => sub { FEEDS },
 );
 
-has 'max_flush' => (
+has 'max_count' => (
     is      => 'ro',
-    default => DEFAULT_MAX_FLUSH_COUNT(),
-    reader  => 'get_max_flush',
+    default => MAX_COUNT,
+);
+
+has 'max_size' => (
+    is      => 'ro',
+    default => MAX_SIZE,
 );
 
 sub _build_handle {
     my $self = shift;
     my $args = shift;
  
-    $self->set_handle(
+    $self->handle(
         Search::Elasticsearch->new(
-            nodes   => $self->get_nodes(),
+            nodes   => $self->nodes,
         )
     );
 }
@@ -93,7 +94,7 @@ sub check_handle {
     $Logger->debug('checking handle...');
     my ($ret,$err);
     try {
-        $self->get_handle->info();
+        $self->handle->info();
     } catch {
         $err = shift;
     };
@@ -120,8 +121,6 @@ sub process {
     my $args = shift;
     
     return -1 unless($self->check_handle());
-    
-    warn ::Dumper($args);
     
     my $ret;
     if($args->{'Query'} && $args->{'feed'}){
@@ -290,7 +289,7 @@ sub _search {
         body    => $q,
     );
     
-    my $results = $self->get_handle()->search(%search);
+    my $results = $self->handle()->search(%search);
     $results = $results->{'hits'}->{'hits'};
     
     $results = [ map { $_ = $_->{'_source'} } @$results ];
@@ -370,10 +369,11 @@ sub _submission {
     $Logger->debug('submitting to index: '.$index);
     
     my $bulk = Search::Elasticsearch::Bulk->new(
-        es  => $self->get_handle(),
+        es  => $self->handle(),
         index       => $index,
         type        => $type,
-        max_count   => $self->get_max_flush(),
+        max_count   => $self->max_count,
+        max_size    => $self->max_size,
         verbose     => 1,
     );
 
@@ -388,10 +388,15 @@ sub _submission {
     }
 
     $ret = $bulk->flush();
-    
+
     ##http://www.perlmonks.org/?node_id=743445
     ##http://search.cpan.org/dist/Perl-Critic/lib/Perl/Critic/Policy/ControlStructures/ProhibitMutatingListFunctions.pm
     $ret = [ map { $_ = $_->{'index'}->{'_id'} } @{$ret->{'items'}} ];
+    
+    if($#{$ret} == -1){
+        $Logger->error('trying to submit something thats too big...');
+    }  
+
     return $ret;
 }
 

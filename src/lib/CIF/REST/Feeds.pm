@@ -50,12 +50,18 @@ sub create {
         feed   => $data,
     });
     
-    $self->res->headers->add('X-Location' => $self->req->url->to_string());
-    $self->res->headers->add('X-Id' => @{$res}[0]); ## TODO
-
-    $self->respond_to(
-        json    => { json => $res, status => 201 },
-    );
+    if($#{$res} >= 0){
+        $self->res->headers->add('X-Location' => $self->req->url->to_string());
+        $self->res->headers->add('X-Id' => @{$res}[0]); ## TODO
+    
+        $self->respond_to(
+            json    => { json => $res, status => 201 },
+        );
+    } else {
+        $self->respond_to(
+            json    => { json => { 'message' => 'failed to create feed' }, status => 403 }
+        );
+    }
 }
     
 1;

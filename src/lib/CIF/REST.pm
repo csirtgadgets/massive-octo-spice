@@ -6,11 +6,17 @@ use warnings;
 
 require CIF::Client;
 use Data::Dumper;
-#use Schema;
+
+sub random_key {
+    my @chars = ("A".."Z", "a".."z", 0..9);
+    my $string;
+    $string .= $chars[rand @chars] for 1..45;
+    return $string;
+}
 
 use constant {
-    SECRET      => $ENV{'SECRET'}       || 'ZOMGZ CHANGE ME!',
-    EXPIRATION  => $ENV{'EXPIRATION'}   || (3600*24*7),
+    SECRET      => $ENV{'SECRET'}       || random_key(),
+    EXPIRATION  => $ENV{'EXPIRATION'}   || 84600, # 1 day
     MODE        => $ENV{'MODE'}         || 'development',
     REMOTE      => $ENV{'REMOTE'}       || 'tcp://localhost:' . CIF::DEFAULT_PORT(),
     VERSION     => $ENV{'VERSION'}      || 2,
@@ -95,7 +101,6 @@ sub startup {
     $protected->get('/feeds')->to('feeds#index')->name('feeds#index');
     $protected->put('/feeds')->to('feeds#create')->name('feeds#create');
     $protected->get('/feeds/:feed')->to('feeds#show')->name('feeds#show');
-
 }
 
 1;

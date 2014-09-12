@@ -162,12 +162,13 @@ sub _submit {
     my $t = gettimeofday();
     
     $msg = $self->_send($msg);
+    
     if($msg){
         $t = tv_interval([split(/\./,$t)]);
         $Logger->info('took: ~'.$t);
         $Logger->info('rate: ~'.($sent/$t).' o/s');
         return $msg->{'Data'} if($msg->{'stype'} eq 'failure');
-        return (undef,$msg->{'Data'}->{'Results'});
+        return(undef,$msg->{'Data'}->{'Results'});
     } else {
         $Logger->warn('send failed');
         return -1;
