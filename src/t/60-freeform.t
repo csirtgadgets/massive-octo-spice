@@ -31,8 +31,9 @@ foreach my $feed (qw/garwarn feye/){
 
 foreach (@rules){
     my $ret = CIF::Smrt->new({
-        rule    => $_,
-        tmp     => '/tmp',
+        rule            => $_,
+        tmp             => '/tmp',
+        ignore_journal  => 1,
     })->process();
     ok($#{$ret},'testing for results...');
 }
