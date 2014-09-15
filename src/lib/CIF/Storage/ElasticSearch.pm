@@ -21,7 +21,7 @@ with 'CIF::Storage';
 use constant {
     NODE                => 'localhost:9200',
     MAX_SIZE            => 104857600,
-    MAX_COUNT           => 10,
+    MAX_COUNT           => 5000000,
     OBSERVABLES         => 'cif.observables',
     FEEDS               => 'cif.feeds',
     OBSERVABLES_TYPE    => 'observables',
@@ -364,12 +364,12 @@ sub _submission {
     $index = $index.'-'.$date;
     
     my $id;
-    my ($ret,$err);
+    my $err
    
     $Logger->debug('submitting to index: '.$index);
     
     my $bulk = Search::Elasticsearch::Bulk->new(
-        es  => $self->handle(),
+        es          => $self->handle(),
         index       => $index,
         type        => $type,
         max_count   => $self->max_count,
@@ -387,13 +387,12 @@ sub _submission {
         });
     }
 
-    $ret = $bulk->flush();
+    my @results = $bulk->flush();
+    @results = @{$results[0]->{'items'}};
 
-    ##http://www.perlmonks.org/?node_id=743445
-    ##http://search.cpan.org/dist/Perl-Critic/lib/Perl/Critic/Policy/ControlStructures/ProhibitMutatingListFunctions.pm
-    $ret = [ map { $_ = $_->{'index'}->{'_id'} } @{$ret->{'items'}} ];
+    @results = map { $_ = $_->{'index'}->{'_id'} } @results;
     
-    if($#{$ret} == -1){
+    if($#results == -1){
         $Logger->error('trying to submit something thats too big...');
     }  
 
