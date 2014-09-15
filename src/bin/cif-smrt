@@ -12,7 +12,7 @@ use warnings;
 use AnyEvent;
 use Daemon::Control;
 use Getopt::Long;
-use CIF qw/debug hash_create_random init_logging $Logger parse_rules/;
+use CIF qw/debug hash_create_random init_logging $Logger parse_rules parse_config/;
 use CIF::Smrt;
 use CIF::Rule;
 use CIF::SDK::Client;
@@ -122,6 +122,8 @@ my $client_config;
 
 if(-e $config){
     $config = parse_config($config);
+    
+    $config = $config->{'client'};
     
     $token          = $token    || $config->{'token'};
     $remote         = $remote   || $config->{'remote'};
