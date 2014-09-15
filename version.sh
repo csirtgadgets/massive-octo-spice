@@ -2,6 +2,8 @@
 
 set -e
 
-VERSION=`git describe --tags`
+if [ ! $VERSION ]; then
+    VERSION=`git describe --tags`
+fi
 
 echo $VERSION | tr -d "\n"

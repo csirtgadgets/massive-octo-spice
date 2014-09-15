@@ -2,6 +2,9 @@ language: perl
 perl:
     - 5.18
 
+env:
+    - VERSION="2.0"
+
 before_install:
     - sudo apt-get install -qq python-software-properties
     - echo "yes" | sudo add-apt-repository "ppa:chris-lea/zeromq"
