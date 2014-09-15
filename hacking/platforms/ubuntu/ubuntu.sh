@@ -76,7 +76,6 @@ fi
 
 a2enmod ssl
 
-service apache2 restart
 
 if [ -z `getent passwd $MYUSER` ]; then
 	echo "adding user: $MYUSER"
@@ -124,4 +123,8 @@ fi
 update-rc.d cif-router defaults 95 10
 update-rc.d cif-smrt defaults 95 10
 
+echo 'starting cif-router...'
 service cif-router start
+
+echo 'restarting apache...'
+service apache2 restart
