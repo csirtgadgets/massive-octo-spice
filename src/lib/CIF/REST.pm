@@ -39,9 +39,10 @@ sub startup {
     $self->mode(MODE);
     $self->sessions->default_expiration(EXPIRATION);
     
+    # via https://developer.github.com/v3/media/#request-specific-version
     $self->hook(after_render => sub {
         my ($c, $output, $format) = @_;
-        $c->res->headers->append('X-CIF-Media-Type' => 'vnd.cif.'.VERSION());
+        $c->res->headers->append('X-CIF-Media-Type' => 'cif.v'.VERSION);
     });
     
     # http://mojolicio.us/perldoc/Mojolicious/Guides/Rendering#Content-type
