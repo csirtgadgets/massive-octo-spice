@@ -6,6 +6,10 @@ use Mojo::Base -strict;
 use File::Basename 'dirname';
 use File::Spec;
 
+##TODO- this should all be baked into the configure.ac ?
+use lib join '/', File::Spec->splitdir(dirname(__FILE__)), '..', 'lib';
+use lib join '/', File::Spec->splitdir(dirname(__FILE__)), '..', 'lib/perl5';
+
 $ENV{MOJO_HOME} = join '/', File::Spec->splitdir(dirname(__FILE__)), '..', 'lib/perl5/CIF';
 
 # Check if Mojolicious is installed;
