@@ -87,15 +87,17 @@ sub parse_rule {
     my $rule = shift;
     my $feed = shift;
     
-    croak('missing feed') unless($rule->{'feeds'}->{$feed});
-    my $r->{'rule'} = $rule;
-    $r->{'feed'} = $feed;
-     
-    $r->{'defaults'} = { %{$rule->{'defaults'}}, %{$rule->{'feeds'}->{$feed}} };
-
-    $r = CIF::Rule->new($r);
+    $rule = parse_config($rule) unless(ref($rule) && ref($rule) eq 'HASH');
     
-    return $r;   
+    croak('missing feed') unless($rule->{'feeds'}->{$feed});
+    
+    $rule->{'feed'} = $feed;
+     
+    $rule->{'defaults'} = { %{$rule->{'defaults'}}, %{$rule->{'feeds'}->{$feed}} };
+
+    $rule = CIF::Rule->new($rule);
+
+    return $rule;   
 }
 sub parse_rules {
     my $rule = shift;
@@ -114,12 +116,12 @@ sub parse_rules {
             }
         }
     } else {
-        my $t = parse_config("$rule");
         if($feed){
-            my $x = parse_rule(parse_config($rule),$feed);
+            my $x = parse_rule($rule,$feed);
             $x->{'rule_path'} = $rule;
             push(@rules, $x);
         } else {
+            my $t = parse_config($rule);
             foreach my $feed (keys %{$t->{'feeds'}}){
                 my $x = parse_rule($t,$feed);
                 $x->{'rule_path'} = "$rule";
@@ -127,6 +129,7 @@ sub parse_rules {
             }
         }
     }
+    return $rules[0] unless($#rules > 0); # more than one rule
     return \@rules;
 }
 

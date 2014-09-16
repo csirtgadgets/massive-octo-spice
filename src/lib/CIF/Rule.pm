@@ -8,7 +8,7 @@ use DateTime;
 use Carp;
 use Carp::Assert;
 use CIF::Observable;
-use CIF qw/parse_config/;
+use CIF qw/parse_config normalize_timestamp/;
 use URI;
 
 use constant RE_IGNORE => qw(qr/[\.]$/);
@@ -29,6 +29,13 @@ has '_now' => (
     is          => 'ro', 
     default     => sub { time() },
 );
+
+sub set_not_before {
+    my $self = shift;
+    my $arg = shift;
+    
+    $self->{'not_before'} = normalize_timestamp($arg)->epoch;
+}
 
 sub process {
     my $self = shift;

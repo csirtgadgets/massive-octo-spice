@@ -80,7 +80,8 @@ sub decode {
 sub process {
     my $self = shift;
     my $args = shift;
-    
+
+    ## TODO
     $Logger->info('starting at: '.
         DateTime->from_epoch(epoch => $self->rule->not_before)->datetime(),'Z'
     );
@@ -129,10 +130,10 @@ sub process {
     return \@array;
 }
 
-my $today = DateTime->today();
 sub _journal_hash {
     my $data = shift;
     
+    my $today = DateTime->today();
     #return hash_create_static($today->epoch().$_->{'observable'});
     
     my $x = JSON::XS->new->canonical->encode($_);
@@ -143,6 +144,7 @@ sub write_journal {
     my $self = shift;
     my $data = shift;
     
+    my $today = DateTime->today();
     my $log = File::Spec->catfile($self->tmp(),$today->ymd('').'.log');
     my $f = IO::File->new(">>".$log);
     
@@ -158,6 +160,8 @@ sub write_journal {
 sub check_journal {
     my $self = shift;
     my $data = shift;
+    
+    my $today = DateTime->today();
     
     my $log = File::Spec->catfile($self->tmp(),$today->ymd('').'.log');
     
