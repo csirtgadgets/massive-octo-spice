@@ -15,31 +15,19 @@ BEGIN {
     }
 };
 
-use CIF qw/parse_config/;
+use CIF qw/parse_rules/;
 
-my $rule = parse_config('rules/example/passivedns.yml');
+my $rule = parse_rules('rules/example/passivedns.yml','gamelinux');
 
 ok($rule);
 
-$rule->{'not_before'} = '10000 days ago';
+$rule->set_not_before('10000 days ago');
 
-my @rules;
-
-foreach my $feed (qw/gamelinux/){
-    my $r = {%$rule};
-    $r->{'defaults'} = { %{$r->{'defaults'}}, %{$r->{'feeds'}->{$feed}} };
-    $r->{'feed'} = $feed;
-    $r = CIF::Rule->new($r);
-    push(@rules,$r);
-}
-
-foreach (@rules){
-    my $ret = CIF::Smrt->new({
-        rule            => $_,
-        tmp             => '/tmp',
-        ignore_journal  => 1,
-    })->process();
-    ok($#{$ret},'testing for results...');
-}
+my $ret = CIF::Smrt->new({
+    rule            => $rule,
+    tmp             => '/tmp',
+    ignore_journal  => 1,
+})->process();
+ok($#{$ret},'testing for results...');
 
 done_testing();

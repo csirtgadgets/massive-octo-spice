@@ -12,32 +12,22 @@ BEGIN {
     use_ok('CIF::Rule');
 };
 
-use CIF qw/parse_config/;
+use CIF qw/parse_rules normalize_timestamp/;
 
-my $rule = parse_config('rules/default/phishtank.yml');
+my $rule = parse_rules('rules/default/phishtank.yml','urls');
 
-ok($rule);
+ok($rule, 'testing rule...');
 
-$rule->{'not_before'} = '10000 days ago';
-$rule->{'feeds'}->{'urls'}->{'remote'} = 'testdata/phishtank.com/online-valid.json.gz';
+$rule->set_not_before('10000 days ago');
 
-my @rules;
-foreach my $feed (qw/urls/){
-    my $r = {%$rule};
-    $r->{'defaults'} = { %{$r->{'defaults'}}, %{$r->{'feeds'}->{$feed}} };
-    $r->{'feed'} = $feed;
-    $r = CIF::Rule->new($r);
-    push(@rules,$r);
-}
+$rule->{'defaults'}->{'remote'} = 'testdata/phishtank.com/online-valid.json.gz';
 
-foreach (@rules){
-    my $ret = CIF::Smrt->new({
-        rule            => $_,
-        tmp             => '/tmp',
-        ignore_journal  => 1,
-    })->process();
+my $ret = CIF::Smrt->new({
+    rule            => $rule,
+    tmp             => '/tmp',
+    ignore_journal  => 1,
+})->process();
     
-    ok($#{$ret} >= 0,'testing for results...');
-}
+ok($#{$ret} >= 0,'testing for results...');
 
 done_testing();

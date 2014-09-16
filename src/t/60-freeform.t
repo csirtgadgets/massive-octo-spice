@@ -11,31 +11,16 @@ BEGIN {
     use_ok('CIF::Rule');
 };
 
-use CIF qw/parse_config/;
+use CIF qw/parse_rules/;
 
-my $rule = parse_config('rules/example/freeform.yml');
-
-ok($rule);
-
-$rule->{'not_before'} = '10000 days ago';
-
-my @rules;
-
-foreach my $feed (qw/garwarn feye/){
-    my $r = {%$rule};
-    $r->{'defaults'} = { %{$r->{'defaults'}}, %{$r->{'feeds'}->{$feed}} };
-    $r->{'feed'} = $feed;
-    $r = CIF::Rule->new($r);
-    push(@rules,$r);
-}
-
-foreach (@rules){
+foreach (qw(garwarn feye)){
+    my $rule = parse_rules('rules/example/freeform.yml', $_);
     my $ret = CIF::Smrt->new({
-        rule            => $_,
+        rule            => $rule,
         tmp             => '/tmp',
         ignore_journal  => 1,
     })->process();
-    ok($#{$ret},'testing for results...');
+    ok($#{$ret},'testing for results for: '.$rule->{'feed'});
 }
 
 

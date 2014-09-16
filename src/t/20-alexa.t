@@ -8,28 +8,20 @@ BEGIN {
     use_ok('CIF::Rule');
 };
 
-use CIF qw/parse_config/;
+use CIF qw/parse_rules/;
 my $rule = 'rules/default/alexa.yml';
 my @feeds = qw(top10);
 
-$rule = parse_config($rule);
+$rule = parse_rules($rule,'top10');
 
 ok($rule);
 
-$rule->{'not_before'} = '10000 days ago';
-$rule->{'feeds'}->{'top10'}->{'remote'} = 'testdata/alexa.com/top-1m.csv';
+$rule->set_not_before('10000 days ago');
+$rule->{'defaults'}->{'remote'} = 'testdata/alexa.com/top-1m.csv';
 
-my @rules;
-foreach my $feed (@feeds){
-    my $r = {%$rule};
-    $r->{'defaults'} = { %{$r->{'defaults'}}, %{$r->{'feeds'}->{$feed}} };
-    $r->{'feed'} = $feed;
-    $r = CIF::Rule->new($r);
-
-    push(@rules,$r);
-}
-
+my @rules = ($rule);
 foreach (@rules){
+
     my $ret = CIF::Smrt->new({
         rule            => $_,
         tmp             => '/tmp',

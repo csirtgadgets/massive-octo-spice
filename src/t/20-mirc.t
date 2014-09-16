@@ -9,26 +9,19 @@ BEGIN {
     use_ok('CIF::Rule');
 };
 
-use CIF qw/parse_config/;
-use Data::Dumper;
+use CIF qw/parse_rules/;
 
-my $rule = parse_config('rules/default/mirc.yml');
+my $rule = parse_rules('rules/default/mirc.yml','domains');
 
 ok($rule);
 
-$rule->{'not_before'} = '10000 days ago';
-$rule->{'feeds'}->{'domains'}->{'remote'} = 'testdata/mirc.com/servers.ini';
-
-my $r = {%$rule};
-$r->{'defaults'} = { %{$r->{'defaults'}}, %{$r->{'feeds'}->{'domains'}} };
-$r->{'feed'} = 'domains';
+$rule->{'defaults'}->{'remote'} = 'testdata/mirc.com/servers.ini';
 
 my $ret = CIF::Smrt->new({
-    rule            => CIF::Rule->new($r),
+    rule            => $rule,
     tmp             => '/tmp',
     ignore_journal  => 1,
 })->process();
-
 ok($#{$ret} >= 0,'testing for results...');
 
 done_testing();
