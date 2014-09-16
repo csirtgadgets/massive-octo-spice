@@ -40,7 +40,7 @@ sub process {
     if(defined($pattern) && !$defaults->{'parser'}){
         $pattern = qr/$pattern/;
     } else {
-        my $parser = $self->rule->rule->{'parser'} || '';
+        my $parser = $self->rule->{'parser'} || '';
         for($parser){
             if(/^csv$/){
                 $pattern = ',';

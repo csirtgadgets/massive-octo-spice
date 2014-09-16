@@ -364,7 +364,7 @@ sub _submission {
     $index = $index.'-'.$date;
     
     my $id;
-    my $err
+    my $err;
    
     $Logger->debug('submitting to index: '.$index);
     
@@ -396,7 +396,7 @@ sub _submission {
         $Logger->error('trying to submit something thats too big...');
     }  
 
-    return $ret;
+    return \@results;
 }
 
 __PACKAGE__->meta()->make_immutable();
