@@ -128,5 +128,4 @@ service cif-router start
 
 echo 'restarting apache...'
 service apache2 stop
-sleep 1
 service apache2 start
