@@ -154,8 +154,8 @@ sub _submit {
     });
     
     my $sent = 1;
-    if($args->{'Observables'}){
-        $sent += ($#{$args->{'Observables'}});
+    if($args->{'observables'}){
+        $sent += ($#{$args->{'observables'}});
     }
     $Logger->info('sending: '.($sent));
     
