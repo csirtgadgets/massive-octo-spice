@@ -12,8 +12,6 @@ use lib join '/', File::Spec->splitdir(dirname(__FILE__)), '..', 'lib/perl5';
 
 my $base = join '/', File::Spec->splitdir(dirname(__FILE__));
 
-warn $base;
-
 if(-e $base.'/../lib/perl5'){
     $base .= '/../lib/perl5/CIF';
 } else {
