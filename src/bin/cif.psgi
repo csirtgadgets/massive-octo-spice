@@ -10,7 +10,18 @@ use File::Spec;
 use lib join '/', File::Spec->splitdir(dirname(__FILE__)), '..', 'lib';
 use lib join '/', File::Spec->splitdir(dirname(__FILE__)), '..', 'lib/perl5';
 
-$ENV{MOJO_HOME} = join '/', File::Spec->splitdir(dirname(__FILE__)), '..', 'lib/perl5/CIF';
+my $base = join '/', File::Spec->splitdir(dirname(__FILE__));
+
+warn $base;
+
+if(-e $base.'/../lib/perl5'){
+    $base .= '/../lib/perl5/CIF';
+} else {
+    $base .= '/../lib/CIF';
+}
+$ENV{MOJO_HOME} = $base;
+
+warn $base;
 
 # Check if Mojolicious is installed;
 die <<EOF unless eval { require Mojolicious::Commands; 1 };
