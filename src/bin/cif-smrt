@@ -263,6 +263,7 @@ sub _main {
     _clean_tmp();
 
     my $rules = parse_rules($rule,$feed);
+    $rules = [ $rules ] unless(ref($rules) && ref($rules) eq 'ARRAY');
 
     my $cli = CIF::SDK::Client->new({
         remote      => $remote,
