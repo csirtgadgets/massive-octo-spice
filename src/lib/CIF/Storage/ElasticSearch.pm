@@ -173,11 +173,12 @@ sub _search {
 
 	if($filters->{'cc'}){
 		$terms->{'cc'} = [lc($filters->{'cc'})];
-	} else {
-	    if($args->{'feed'}){
-	        $missing = { 'field' => 'cc' };
-	    }
-	}
+	} 
+#	else { ##TODO- forget why we had this here?
+#	    if($args->{'feed'}){
+#	        $missing = { 'field' => 'cc' };
+#	    }
+#	}
     
     if($filters->{'confidence'}){
     	$ranges->{'confidence'}->{'gte'} = $filters->{'confidence'};
@@ -293,7 +294,7 @@ sub _search {
     $results = $results->{'hits'}->{'hits'};
     
     $results = [ map { $_ = $_->{'_source'} } @$results ];
-    use Data::Dumper; warn Dumper($results);
+
     if(is_ip($args->{'Query'})){
         $results = _ip_results($args->{'Query'},$results);
     } elsif(is_fqdn($args->{'Query'})){
