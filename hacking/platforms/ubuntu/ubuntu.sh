@@ -24,6 +24,9 @@ else
     echo "deb http://packages.elasticsearch.org/elasticsearch/1.0/debian stable main" >> /etc/apt/sources.list.d/elasticsearch.list
 fi
 
+debconf-set-selections <<< "postfix postfix/mailname string localhost"
+debconf-set-selections <<< "postfix postfix/main_mailer_type string 'Internet Site'"
+
 apt-get update
 apt-get install -y curl cpanminus build-essential libmodule-build-perl libssl-dev elasticsearch apache2 libapache2-mod-perl2 curl mailutils build-essential git-core automake rng-tools openjdk-7-jre-headless libtool pkg-config vim htop bind9 libzmq3-dev libffi6 libmoose-perl libmouse-perl libanyevent-perl liblwp-protocol-https-perl libxml2-dev libexpat1-dev libgeoip-dev geoip-bin python-dev
 
@@ -34,6 +37,7 @@ fi
 # cpan.org has been less than reliable lately
 cpanm -n --mirror http://cpan.metacpan.org Regexp::Common Mouse
 cpanm git://github.com/csirtgadgets/p5-cif-sdk.git
+cpanm git://github.com/maxmind/GeoIP2-perl.git@v0.040005
 
 echo 'HRNGDEVICE=/dev/urandom' >> /etc/default/rng-tools
 service rng-tools restart
