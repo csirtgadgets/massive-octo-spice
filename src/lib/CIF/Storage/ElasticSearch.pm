@@ -293,7 +293,7 @@ sub _search {
     $results = $results->{'hits'}->{'hits'};
     
     $results = [ map { $_ = $_->{'_source'} } @$results ];
-    
+    use Data::Dumper; warn Dumper($results);
     if(is_ip($args->{'Query'})){
         $results = _ip_results($args->{'Query'},$results);
     } elsif(is_fqdn($args->{'Query'})){
@@ -301,7 +301,11 @@ sub _search {
     }
     
     if(defined($args->{'feed'})){
-        $results = @{$results}[0]->{'Observables'};
+        if($#{$results} >= 0){
+            $results = @{$results}[0]->{'Observables'};
+        } else {
+            $Logger->debug('no results found...');
+        }
     }
     
     return $results;
