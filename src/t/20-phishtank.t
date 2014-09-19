@@ -2,8 +2,7 @@ use strict;
 use warnings;
 use 5.011;
 
-use Test::More;
-use Test::More;
+use Test::More skip_all => 'skipping phishtank giving us bad data atm';
 use Data::Dumper;
 
 BEGIN { 
