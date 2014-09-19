@@ -18,10 +18,11 @@ defaults:
   tlp: green
 
 feeds:
-  top10000:
-    start: 1001
-    end: 10000
-    confidence: 25
+  # there's urls in some of the fields...
+  #top10000:
+  #  start: 1001
+  #  end: 10000
+  #  confidence: 25
 
   top1000:
     start: 101
