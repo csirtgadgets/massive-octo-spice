@@ -11,6 +11,8 @@ defaults:
 
 feeds:
   urls:
+    otype: url
+    disabled: true
     map:
       - submission_time
       - url
