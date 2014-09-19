@@ -14,7 +14,7 @@ use URI;
 use constant RE_IGNORE => qw(qr/[\.]$/);
 use constant RE_SKIP => qr/remote|pattern|values|ignore/;
 
-has [qw(store_content skip rule feed remote parser defaults)] => (
+has [qw(store_content skip rule feed remote parser defaults disabled)] => (
     is      => 'ro',
 );
 

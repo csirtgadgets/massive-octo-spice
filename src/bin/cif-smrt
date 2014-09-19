@@ -282,6 +282,10 @@ sub _main {
     
     my ($smrt,$err,$ret,$data);
     foreach my $r (@$rules){
+        if($r->disabled && $r->disabled eq 'true'){
+                $Logger->info("disabled: $r->{'rule_path'} -f $r->{'feed'}");
+                next();
+        }
         $Logger->debug($r->defaults->{'provider'}.' - '.$r->feed);
         $Logger->info("processing: $0 -d -r $r->{'rule_path'} -f $r->{'feed'}");
         
