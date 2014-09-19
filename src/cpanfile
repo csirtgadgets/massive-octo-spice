@@ -1,3 +1,4 @@
+requires 'Net::Server::SS::PreFork';
 requires 'CIF::SDK', '>= 0.00_02';
 requires 'File::Slurp','9999.19';
 requires 'YAML::Tiny','1.63';
@@ -11,7 +12,8 @@ requires 'Daemon::Control';
 requires 'DateTime::Format::DateParse';
 requires 'Digest::SHA';
 requires 'File::Type';
-requires 'GeoIP2','>= 0.040005, < 0.040006';
+requires 'GeoIP2','>= 0.040005, < 0.05';
+requires 'MaxMind::DB::Reader', '>= 0.05, < 0.06';
 requires 'JSON::XS';
 requires 'LWP::UserAgent';
 requires 'LWPx::ParanoidAgent';

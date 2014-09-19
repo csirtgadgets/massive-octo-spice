@@ -19,8 +19,6 @@ if(-e $base.'/../lib/perl5'){
 }
 $ENV{MOJO_HOME} = $base;
 
-warn $base;
-
 # Check if Mojolicious is installed;
 die <<EOF unless eval { require Mojolicious::Commands; 1 };
 It looks like you don't have the Mojolicious framework installed.

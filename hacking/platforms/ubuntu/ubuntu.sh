@@ -28,7 +28,7 @@ debconf-set-selections <<< "postfix postfix/mailname string localhost"
 debconf-set-selections <<< "postfix postfix/main_mailer_type string 'Internet Site'"
 
 apt-get update
-apt-get install -y curl cpanminus build-essential libmodule-build-perl libssl-dev elasticsearch apache2 libapache2-mod-perl2 curl mailutils build-essential git-core automake rng-tools openjdk-7-jre-headless libtool pkg-config vim htop bind9 libzmq3-dev libffi6 libmoose-perl libmouse-perl libanyevent-perl liblwp-protocol-https-perl libxml2-dev libexpat1-dev libgeoip-dev geoip-bin python-dev
+apt-get install -y curl cpanminus build-essential libmodule-build-perl libssl-dev elasticsearch apache2 libapache2-mod-perl2 curl mailutils build-essential git-core automake rng-tools openjdk-7-jre-headless libtool pkg-config vim htop bind9 libzmq3-dev libffi6 libmoose-perl libmouse-perl libanyevent-perl liblwp-protocol-https-perl libxml2-dev libexpat1-dev libgeoip-dev geoip-bin python-dev starman
 
 if [ $VER == "12.04" ]; then ## 14.04 has it built in and supports cpanfile
 	cpanm --self-upgrade --mirror http://cpan.metacpan.org
@@ -37,6 +37,7 @@ fi
 # cpan.org has been less than reliable lately
 cpanm -n --mirror http://cpan.metacpan.org Regexp::Common Mouse
 cpanm git://github.com/csirtgadgets/p5-cif-sdk.git
+cpanm https://cpan.metacpan.org/authors/id/D/DR/DROLSKY/MaxMind-DB-Reader-0.050005.tar.gz
 cpanm git://github.com/maxmind/GeoIP2-perl.git@v0.040005
 
 echo 'HRNGDEVICE=/dev/urandom' >> /etc/default/rng-tools
@@ -78,8 +79,7 @@ elif [ $VER == "14.04" ]; then
 	a2ensite default-ssl.conf
 fi
 
-a2enmod ssl
-
+a2enmod ssl proxy proxy_http
 
 if [ -z `getent passwd $MYUSER` ]; then
 	echo "adding user: $MYUSER"
@@ -103,6 +103,7 @@ make elasticsearch
 echo 'copying init.d scripts...'
 cp ./hacking/packaging/ubuntu/init.d/cif-smrt /etc/init.d/
 cp ./hacking/packaging/ubuntu/init.d/cif-router /etc/init.d/
+cp ./hacking/packaging/ubuntu/init.d/cif-starman /etc/init.d/
 
 if [ ! -f /etc/default/cif ]; then
     echo 'setting /etc/default/cif'
@@ -126,6 +127,7 @@ fi
 
 update-rc.d cif-router defaults 95 10
 update-rc.d cif-smrt defaults 95 10
+update-rc.d cif-starman defaults 95 10
 
 echo 'starting cif-router...'
 service cif-router start
@@ -133,3 +135,6 @@ service cif-router start
 echo 'restarting apache...'
 service apache2 stop
 service apache2 start
+
+echo 'starting cif-starman...'
+service cif-starman start
