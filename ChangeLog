@@ -1,15 +1,18 @@
 Revision history for massive-octo-spice
 
-2.00.00-alpha.3 2014-09-15
+2.00.00-alpha.3 2014-09-20
     - migrated "ini style" configs to YAML
     - [cif-smrt] enabled simple JSON feed parsing
     - [p5-cif-sdk] created bin/cif-feed
     - [cif-router] supports 'sub-domain' and 'ipv4 CIDR' queries
     - [cif-router] CIF::REST / HTTP API has been re-factored, created more doc around the API, now a full blown Mojo app
+    - [cif-router] removed mod_perl support, apache2 proxies to starman workers (can use nginx, etc)
     - [CIF::REST] queries can now be filtered by asn,cc,tags,provider,application,portlist,otype'
     - [cif-router] strictly now a zmq app, removed lots of Factory type code we don't need
     - removed detecttime, replaced with firsttime
     - enabled other feeds in rules/default
+    - fixed various tests
+    - changed the way headers are used in the SDK's and API
 
 2.00.00-alpha.2 2014-07-27
     - misc travis-ci updates
