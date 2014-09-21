@@ -1,0 +1,46 @@
+parser: rss
+defaults:
+  provider: zeustracker.abuse.com
+  tlp: amber
+  alt_tlp: green
+  confidence: 85
+  altid: https://spyeyetracker.abuse.ch/monitor.php?host=<observable>
+  tags:
+    - zeus
+    - botnet
+  pattern:
+    description:
+      pattern: '^SpyEye \S+URL: (\S+), Status:'
+      values: observable
+    title:
+      pattern: ^\S+\s\((\S+)\)$
+      values: firsttime
+
+feeds:
+  binaries:
+    remote: https://spyeyetracker.abuse.ch/monitor.php?rssfeed=binaryurls
+    description: binary
+
+  configs:
+    remote: https://spyeyetracker.abuse.ch/monitor.php?rssfeed=configurls
+    description: config
+
+  dropzones:
+    remote: https://spyeyetracker.abuse.ch/monitor.php?rssfeed=dropurls
+    description: dropzone
+
+  domains:
+    parser: default
+    remote: https://spyeyetracker.abuse.ch/blocklist.php?download=domainblocklist
+    pattern: ^(\S+)$
+    values:
+      - observable
+    confidence: 65
+
+  ip:
+    parser: default
+    remote: https://spyeyetracker.abuse.ch/blocklist.php?download=ipblocklist
+    pattern: ^(\S+)$
+    values:
+      - observable
+    confidence: 65
