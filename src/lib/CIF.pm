@@ -90,6 +90,10 @@ sub parse_rule {
     $rule = parse_config($rule) unless(ref($rule) && ref($rule) eq 'HASH');
     
     croak('missing feed') unless($rule->{'feeds'}->{$feed});
+
+    if($rule->{'feeds'}->{$feed}->{'parser'}){
+        $rule->{'parser'} = $rule->{'feeds'}->{$feed}->{'parser'};
+    }
     
     $rule->{'feed'} = $feed;
      
