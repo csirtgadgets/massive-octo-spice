@@ -1,0 +1,20 @@
+parser: html
+defaults:
+  confidence: 65
+  tlp: amber
+  provider: botscout.com
+  remote: http://botscout.com/last_caught_cache.htm
+  tags: botnet
+
+feeds:
+  bots:
+    map:
+      - Bot Name
+      - Bot Email
+      - Bot Ip
+      - From
+    values:
+      - description
+      - null
+      - observable
+      - null

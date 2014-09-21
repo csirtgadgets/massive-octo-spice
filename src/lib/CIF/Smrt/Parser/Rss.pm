@@ -9,10 +9,6 @@ use CIF qw/$Logger/;
 
 with 'CIF::Smrt::Parser';
 
-##TODO: 
-# https://github.com/justfalter/cif-v1/tree/v1_fork/lib/CIF/Smrt/ParserHelpers
-# https://github.com/justfalter/cif-v1/blob/v1_fork/lib/CIF/Smrt/Parsers/ParseXPath.pm
-
 sub understands {
     my $self = shift;
     my $args = shift;

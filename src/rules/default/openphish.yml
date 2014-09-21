@@ -1,0 +1,12 @@
+defaults:
+  tags: phishing
+  protocol: tcp
+  provider: openphish.com
+  altid_tlp: green
+  tlp: amber
+  confidence: 65
+  values: observable
+feeds:
+  urls:
+    pattern: ^(\S+)$
+    remote: http://openphish.com/feed.txt

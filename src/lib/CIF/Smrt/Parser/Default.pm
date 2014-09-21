@@ -37,7 +37,7 @@ sub process {
     my @array;
     
     my $pattern = $defaults->{'pattern'};
-    if(defined($pattern) && !$defaults->{'parser'}){
+    if(defined($pattern) && (!$defaults->{'parser'} || $defaults->{'parser'} eq 'default')){
         $pattern = qr/$pattern/;
     } else {
         my $parser = $self->rule->{'parser'} || '';
