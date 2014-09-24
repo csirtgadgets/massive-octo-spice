@@ -17,6 +17,7 @@ use File::Spec;
 use CIF qw/$Logger/;
 use File::Slurp; ## we can always re-factorize this
 Net::SSLeay::SSLeay_add_ssl_algorithms(); ## TODO -- this needs cleaning up
+use Try::Tiny;
 
 use constant {
     CAPACITY   => 5,
@@ -71,14 +72,21 @@ sub process {
     my $self = shift;
     my $args = shift;
     
-    my $ret;
+    my ($ret,$err);
     
     unless($self->test_mode() && -e $self->tmp){ ## testmode cleans out the cache
         if(-e $self->rule->defaults->{'remote'}){
             return read_file($self->rule->defaults->{'remote'});
         } else {
             $Logger->debug('pulling: '.$self->rule->defaults->{'remote'});
-            $ret = $self->handle->mirror($self->rule->defaults->{'remote'},$self->tmp);
+            try {
+                $ret = $self->handle->mirror($self->rule->defaults->{'remote'},$self->tmp);
+            } catch {
+                $err = shift;
+                $Logger->fatal($err);
+                $Logger->fatal('possible timeout grabbing the feed');
+                die;
+            };
             $Logger->debug('status: '.$ret->status_line());
             unless($ret->is_success() || $ret->status_line() =~ /^304 /){
                 $Logger->error($ret->status_line());
