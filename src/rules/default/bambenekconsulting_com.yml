@@ -15,9 +15,11 @@ feeds:
   goz_ip:
     remote: http://osint.bambenekconsulting.com/feeds/goz-iplist.txt
     tags:
+      - botnet
       - gozi
 
   goz_domains:
     remote: http://osint.bambenekconsulting.com/feeds/goz-domlist.txt
     tags:
+      - botnet
       - gozi
