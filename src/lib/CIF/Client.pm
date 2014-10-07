@@ -19,9 +19,11 @@ use Try::Tiny;
 use ZMQ::FFI;
 use ZMQ::FFI::Constants qw(ZMQ_REQ ZMQ_SUB ZMQ_SNDTIMEO ZMQ_RCVTIMEO ZMQ_LINGER);
 
-use constant SND_TIMEOUT    => 120000;
-use constant RCV_TIMEOUT    => 120000;
-use constant REMOTE_DEFAULT => 'tcp://localhost:'.CIF::DEFAULT_PORT();
+use constant {
+    SND_TIMEOUT => 120000,
+    RCV_TIMEOUT => 120000,
+    REMOTE      => 'tcp://localhost:'.CIF::DEFAULT_PORT
+};
 
 has [qw(remote subscriber results token)] => (
     is  => 'ro',
@@ -50,7 +52,7 @@ sub _build_socket {
     $socket->set(ZMQ_SNDTIMEO,'int',SND_TIMEOUT());
     $socket->set(ZMQ_RCVTIMEO,'int',RCV_TIMEOUT());
     $socket->subscribe('') if($self->subscriber());
-    $socket->connect($self->remote());
+    $socket->connect($self->remote || REMOTE);
     
     return $socket;
 }
@@ -58,6 +60,41 @@ sub _build_socket {
 sub BUILD {
     my $self = shift;
     init_logging({ level => 'WARN' }) unless($Logger);
+}
+
+sub token_create {
+    my $self = shift;
+    my $args = shift;
+    
+    my $msg = CIF::Message->new({
+        rtype   => 'token-create',
+        mtype   => 'request',   
+        Token   => $self->token,
+        Data    => $args
+    });
+    $msg = $self->_send($msg);
+    
+    my $stype = $msg->{'stype'} || $msg->{'stype'};
+    return $msg->{'Data'} if($stype eq 'failure');
+}
+
+sub token_list {
+    my $self = shift;
+    my $args = shift;
+    
+    my $msg = CIF::Message->new({
+        rtype   => 'token-list',
+        mtype   => 'request',
+        Token   => $self->token,
+        Data    => $args,
+        Alias   => $args->{'alias'},
+        Token   => $args->{'token'},
+    });
+    warn ::Dumper($args);
+    warn ::Dumper($msg);
+    $msg = $self->_send($msg);
+    my $stype = $msg->{'stype'} || $msg->{'stype'};
+    return $msg->{'Data'} if($stype eq 'failure');
 }
 
 sub search {

@@ -67,7 +67,6 @@ has 'auth' => (
 
 has 'auth_handle' => (
     is          => 'ro',
-    reader      => 'get_auth_handle',
     lazy_build  => 1,
 );
 
@@ -103,7 +102,7 @@ sub startup {
     my $self = shift;
     my $args = shift;
     
-    unless($self->get_auth_handle()->check_handle()){
+    unless($self->auth_handle()->check_handle()){
         $Logger->fatal('unable to start router, no auth handle...');
         return 0;
     }
@@ -170,6 +169,8 @@ sub process {
 
     $msg = @{$msg}[0] if(ref($msg) eq 'ARRAY');
     
+    $Logger->debug(Dumper($msg));
+    
     my $r = CIF::Message->new({
         rtype   => $msg->{'rtype'},
         mtype   => 'response',
@@ -178,12 +179,12 @@ sub process {
     
     $Logger->debug('auth');
 
-    my $ret = $self->get_auth_handle()->process($msg);
+    my $ret = $self->auth_handle->process($msg);
     if($ret){
         $Logger->debug('auth passed');
         my $req = CIF::Router::RequestFactory->new_plugin({ 
             msg             => $msg,
-            auth_handle     => $self->get_auth_handle(),
+            auth            => $self->auth_handle,
             storage_handle  => $self->get_storage_handle(),
         });
         if($req){
@@ -191,20 +192,20 @@ sub process {
             my $rv = $req->process($msg);
             if($rv < 0){
                 $Logger->error('request plugin failure');
-                $r->set_stype('failure');
-                $r->set_Data('ERROR: contact administrator');
+                $r->stype('failure');
+                $r->Data('ERROR: contact administrator');
             } else {
-                $r->set_Data($rv);
-                $r->set_stype('success');
+                $r->Data($rv);
+                $r->stype('success');
             }
         } else {
             $Logger->error('request type not supported');
-            $r->set_stype('failure');
-            $r->set_Data('ERROR: request type not supported');
+            $r->stype('failure');
+            $r->Data('ERROR: request type not supported');
         }
     } else {
         $Logger->info('auth failed for: '.$msg->{'Token'});
-        $r->set_stype('unauthorized');
+        $r->stype('unauthorized');
         delete($r->{'Data'});
     }
     

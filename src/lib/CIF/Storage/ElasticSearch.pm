@@ -290,7 +290,7 @@ sub _search {
         body    => $q,
     );
     
-    my $results = $self->handle()->search(%search);
+    my $results = $self->handle->search(%search);
     $results = $results->{'hits'}->{'hits'};
     
     $results = [ map { $_ = $_->{'_source'} } @$results ];

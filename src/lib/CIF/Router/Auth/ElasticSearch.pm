@@ -1,4 +1,4 @@
-package CIF::Auth::ElasticSearch;
+package CIF::Router::Auth::ElasticSearch;
 
 use strict;
 use warnings;
@@ -16,54 +16,40 @@ use JSON qw(encode_json);
 
 with 'CIF::Storage';
 
-use constant DEFAULT_NODE               => 'localhost:9200';
-use constant DEFAULT_INDEX_BASE         => 'ciftokens';
-use constant DEFAULT_TYPE               => 'tokens';
-use constant DEFAULT_SEARCH_FIELD       => 'token';
+use constant {
+    NODE    => 'localhost:9200',
+    INDEX   => 'cif.tokens',
+    TYPE    => 'tokens',
+};
 
 has 'handle' => (
     is          => 'rw',
     isa         => 'Search::Elasticsearch::Client::Direct',
-    reader      => 'get_handle',
-    writer      => 'set_handle',
     lazy_build  => 1,
 );
 
 has 'nodes' => (
     is      => 'ro',
-    isa     => 'ArrayRef',
-    default => sub { [ DEFAULT_NODE() ] },
-    reader  => 'get_nodes',
+    default => sub { [ NODE ] },
 );
 
 has 'index' => (
     is      => 'ro',
-    isa     => 'Str',
-    default => sub { DEFAULT_INDEX_BASE() },
-    reader  => 'get_index',
+    default => sub { INDEX },
 );
 
-has 'index_search'  => (
+has 'type' => (
     is      => 'ro',
-    isa     => 'Str',
-    default => sub { DEFAULT_INDEX_SEARCH() },
-    reader  => 'get_index_search',
-);
-
-has 'type'  => (
-    is      => 'ro',
-    isa     => 'Str',
-    default => sub { DEFAULT_TYPE() },
-    reader  => 'get_type',
+    default => sub { TYPE },
 );
 
 sub _build_handle {
     my $self = shift;
     my $args = shift;
  
-    $self->set_handle(
+    $self->handle(
         Search::Elasticsearch->new(
-            nodes   => $self->get_nodes(),
+            nodes   => $self->nodes(),
         )
     );
 }
@@ -89,7 +75,7 @@ sub check_handle {
     $Logger->debug('checking handle...');
     my ($ret,$err);
     try {
-        $self->get_handle->info();
+        $self->handle->info();
     } catch {
         $err = shift;
     };
@@ -103,42 +89,95 @@ sub check_handle {
     }
 }
 
-sub ping {
-    my $self = shift;
-    my $args = shift;
-    
-    return 1 if($self->check_handle());
-    return 0;
-}
-
 sub process {
-    my $self = shift;
-    my $args = shift;
+    my $self    = shift;
+    my $msg     = shift;
     
     return -1 unless($self->check_handle());
-    
-#    my $ret;
-#    if($args->{'Query'} || $args->{'Id'} || $args->{'Filters'}){
-#        $Logger->debug('searching...');
-#        $ret = $self->_search($args);
-#    } elsif($args->{'Observables'}){
-#        $Logger->debug('submitting...');
-#        $ret = $self->_submission($args);
-#    } else {
-#        $Logger->error('unknown type, skipping');
-#    }
-#    return $ret;
+
+    my $ret;
+    for($msg->{'rtype'}){
+        if(/^token-create$/){
+            $Logger->debug('creating token...');
+            return $self->create($msg);
+        }
+        if(/^token-list$/){
+            $Logger->debug('searching for token...');
+            return $self->search($msg);
+        }
+    }
 }
 
-sub auth {
+sub auth { return shift->search(shift); }
+
+sub search {
+	my $self = shift;
+	my $args = shift;
 	
+	my $data = $args->{'Data'};
+	
+	#return 1;
+	warn Dumper($args);
+	my $q;
+	if($args->{'token'}){
+	    $q = "token(\"$data->{'Token'}\")";
+	} else {
+	    # alias
+	    $q = "token(\"$data->{'Alias'}\")";
+	}
+	
+	$q = {
+	    query  => {
+	        query_string   => {
+	            query  => $q
+	        }
+	    }
+	};
+	
+	if($Logger->is_debug()){
+	    my $j = JSON->new();
+        $Logger->debug($j->pretty->encode($q)); ##TODO -- debugging
+	}
+	
+	my %search = (
+	   index   => $self->index,
+	   body    => $q,
+    );
+    
+    my $res = $self->handle->search(%search);
+    $res = $res->{'hits'}->{'hits'};
+    $res = [ map { $_ = $_->{_source} } @$res ];
+    warn Dumper($res);
+    
+    return $res;
 }
 
 sub create {
+	my $self = shift;
+	my $data = shift;
 	
+	my $token = hash_create_random();
+	
+	my $prof = {
+	       alias   => 'wes@barely3am.com',
+	       token   => $token,
+	       admin   => 1,
+	};
+	
+	my $res = $self->handle->index(
+	   index   => $self->index,
+	   id      => hash_create_random(),
+	   type    => $self->type,
+	   body    => $prof
+    );
+    return $token if($res->{_id});
 }
 
 sub remove {
+    my $self = shift;
+    my $data = shift;
+    
+        
 	
 }
 

@@ -7,11 +7,9 @@ use Mouse;
 use Time::HiRes qw(gettimeofday);
     
 has 'Timestamp' => (
-    is          => 'ro',
-    isa         => 'Num',
-    reader      => 'get_Timestamp',
-    lazy        => 1,
     default     => sub { gettimeofday() },
+    lazy        => 1,
+    is  => 'ro',
 );
 
 sub understands {
@@ -22,19 +20,11 @@ sub understands {
     return 1 if($args->{'rtype'} eq 'ping');
 }
 
-around BUILDARGS => sub {
-    my $orig = shift;
-    my $self = shift;
-    my $args = shift;
-
-    return $self->$orig($args);
-};
-
 sub TO_JSON {
     my $self = shift;
     
     return {
-        'Timestamp'    => $self->get_Timestamp(),
+        'Timestamp'    => $self->Timestamp,
     };
 }
 

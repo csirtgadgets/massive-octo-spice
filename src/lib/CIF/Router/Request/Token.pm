@@ -4,37 +4,33 @@ use strict;
 use warnings;
 
 use Mouse;
-use Time::HiRes qw(gettimeofday);
 
 with 'CIF::Router::Request';
 
-has 'Id'    => (
-    is     => 'rw',
-    reader => 'get_Id',
-    writer => 'set_Id',
-);
+use CIF::Message::Token;
+use CIF qw/$Logger/;
 
 sub understands {
     my $self = shift;
     my $args = shift;
 
     return unless($args->{'rtype'});
-    return 1 if($args->{'rtype'} eq 'token');
+    return 1 if($args->{'rtype'} =~ /^token-/);
 }
 
 sub process {
-    my $self = shift;
-    my $args = shift;
+    my $self    = shift;
+    my $msg     = shift;
     
+    my $res = $self->auth->process($msg);
     
-}
+    return (-1) unless($res);
 
-sub TO_JSON {
-    my $self = shift;
+    $res = 'CIF::Message::Token'->new({
+        Token   => $res->{'token'},
+    });
+    return $res;
     
-    return {
-        'Id'    => self->Id(),
-    };
 }
 
 __PACKAGE__->meta()->make_immutable();

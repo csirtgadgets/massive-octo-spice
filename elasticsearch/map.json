@@ -1,6 +1,6 @@
 {
     "order" : 0,
-    "template" : "cif-*",
+    "template" : "cif.*",
     "settings" : {
         "index.analysis.analyzer.default.stopwords" : "_none_",
         "index.refresh_interval" : "5s",
@@ -59,6 +59,14 @@
                 	"group": { "type": "string", "index": "not_analyzed" },
 			"confidence": { "type": "integer", "store": "yes" },
 			"cc": { "type": "string", "index": "not_analyzed" }
+		}
+	}
+	"tokens": {
+		"properties": {
+			"@version" : { "index" : "not_analyzed", "type" : "string" },
+			"@timestamp": { "type": "date_time" },
+			"alias": { "type": "string" },
+			"token": { "type": "string" }
 		}
 	}
     }
