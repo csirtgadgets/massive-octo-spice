@@ -161,9 +161,7 @@ sub process {
     my $self    = shift;
     my $msg     = shift;
     
-    Module::Refresh->refresh;
-    
-    $msg = JSON::XS::decode_json($msg);
+    $msg = JSON::XS->new->decode($msg);
 
     $msg = @{$msg}[0] if(ref($msg) eq 'ARRAY');
     
@@ -219,8 +217,16 @@ sub publish {
     my $data = shift;
     
     $Logger->debug('publishing...');
+
+    my ($m,$err);
+    try {
+        $m = JSON::XS->new->decode(@{$data}[0]);
+    } catch {
+        $err = shift;
+        $Logger->error($err);
+        $Logger->debug(Dumper($data));
+    };
     
-    my $m = JSON::XS::decode_json(@{$data}[0]);
     return unless($m->{'mtype'} eq 'request');
 
     for($m->{'rtype'}){

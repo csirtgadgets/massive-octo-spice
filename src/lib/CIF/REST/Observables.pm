@@ -57,6 +57,13 @@ sub create {
         enable_metadata => 1,
     });
     
+    unless($res){
+         $self->respond_to(
+            json => { json => { "error" => "unknown, contact system administrator" }, status => 500 },
+        );
+        return;
+    }
+    
     if($res == -1){
         $self->respond_to(
             json => { json => { "error" => "timeout" }, status => 408 },
