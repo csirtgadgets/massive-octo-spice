@@ -4,8 +4,6 @@ use strict;
 use warnings;
 use feature 'say';
 
-##TODO - https://github.com/collectiveintel/cif-v1/tree/master/cif-smrt/lib/CIF/Smrt/Plugin/Postprocessor
-
 use Mouse;
 use CIF qw/init_logging $Logger/;
 use CIF::Client;
@@ -14,7 +12,6 @@ use ZMQ::FFI::Constants qw(ZMQ_REQ ZMQ_SUB ZMQ_SNDTIMEO ZMQ_RCVTIMEO ZMQ_LINGER 
 use JSON::XS;
 use Try::Tiny;
 use Data::Dumper;
-use Module::Refresh;
 use CIF::ObservableFactory;
 use CIF::WorkerFactory;
 use CIF::MetaFactory;
