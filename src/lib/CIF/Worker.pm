@@ -211,7 +211,7 @@ sub send {
             if(/Resource temporarily unavailable/){
                 $Logger->debug('cif-router timeout...');
                 # o/w queued msgs will hang the context thread
-                $self->socket->set(ZMQ_LINGER,'int',0);
+                $self->router_socket->set(ZMQ_LINGER,'int',0);
                 return 0;
             }
             $Logger->critical($err);

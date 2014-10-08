@@ -9,7 +9,7 @@ with 'CIF::Observable';
 
 has 'portlist' => (
     is        => 'rw',
-    isa       => 'CIF::Type::PortList',
+    #isa       => 'CIF::Type::PortList', ##TODO
     reader    => 'get_portlist',
 );
 
