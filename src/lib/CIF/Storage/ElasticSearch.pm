@@ -184,8 +184,8 @@ sub _search {
     	$ranges->{'confidence'}->{'gte'} = $filters->{'confidence'};
     }
     
-    if($filters->{'starttime'}){
-    	$ranges->{'reporttime'}->{'gte'} = $filters->{'starttime'};
+    if($filters->{'firsttime'}){
+    	$ranges->{'firsttime'}->{'gte'} = $filters->{'firsttime'};
     }
     
     if($filters->{'tags'}){
@@ -206,6 +206,11 @@ sub _search {
     if($filters->{'provider'}){
         $filters->{'provider'} = [$filters->{'provider'}] unless(ref($filters->{'provider'}));
         $terms->{'provider'} = $filters->{'provider'}
+    }
+    
+    if($filters->{'rdata'}){
+        $filters->{'rdata'} = [$filters->{'rdata'}] unless(ref($filters->{'rdata'}));
+        $terms->{'rdata'} = $filters->{'rdata'}
     }
     
     ## TODO asn_desc TERM => ***
