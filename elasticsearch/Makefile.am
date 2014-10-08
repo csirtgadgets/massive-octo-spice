@@ -16,7 +16,7 @@ init:
 remove:
 	$(CURLCMD) -XDELETE $(HOST)/$(INDICIES) -w "\n"
 
-reload: remove default
+reload: remove init
 
 list:
 	$(CURLCMD) -XGET $(HOST)/$(INDICIES)/_mapping?pretty -w "\n"
