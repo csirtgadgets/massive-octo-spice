@@ -222,10 +222,14 @@ sub publish {
     
     my $m = JSON::XS::decode_json(@{$data}[0]);
     return unless($m->{'mtype'} eq 'request');
-    
+
     for($m->{'rtype'}){
         if(/^search$/){
-            $m = [{observable => $m->{'Data'}->{'Query'}, confidence => 50}]; ##TODO
+            if($m->{'Data'}->{'Query'}){
+                $m = [{observable => $m->{'Data'}->{'Query'}, confidence => 50}]; ##TODO
+                last;
+            }
+            $m = undef;
             last;
         }
         if(/^submission$/){
