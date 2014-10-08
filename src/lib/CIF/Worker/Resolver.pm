@@ -49,19 +49,27 @@ sub _rr_to_observation {
                 $thing = $rr->nsdname();
                 last;
             }
+            if(/^MX$/){
+                $thing = $rr->exchange();
+                last;
+            }
         }
-        my $o = CIF::ObservableFactory->new_plugin({
-            related     => $data->{'id'},
-            observable  => $thing,
-            confidence  => $confidence,
-            tags        => $tags,
-            tlp         => $data->{'tlp'} || CIF::TLP_DEFAULT,
-            group       => $data->{'group'} || CIF::GROUP_DEFAULT,
-            provider    => $data->{'provider'} || CIF::PROVIDER_DEFAULT,
-            rdata       => $data->{'observable'},
-            rtype       => $type,
-        });
-        push(@obs,$o);
+        unless($thing){
+            $Logger->error('missing thing type: '.Dumper($rr));
+        } else {
+            my $o = CIF::ObservableFactory->new_plugin({
+                related     => $data->{'id'},
+                observable  => $thing,
+                confidence  => $confidence,
+                tags        => $tags,
+                tlp         => $data->{'tlp'} || CIF::TLP_DEFAULT,
+                group       => $data->{'group'} || CIF::GROUP_DEFAULT,
+                provider    => $data->{'provider'} || CIF::PROVIDER_DEFAULT,
+                rdata       => $data->{'observable'},
+                rtype       => $type,
+            });
+            push(@obs,$o);
+        }
     }
     return \@obs;
 }
