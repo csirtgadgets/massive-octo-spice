@@ -35,6 +35,9 @@ sub process {
         group       => $data->{'group'} || CIF::GROUP_DEFAULT,
         provider    => $data->{'provider'} || CIF::PROVIDER_DEFAULT,
         confidence  => $self->degrade_confidence($data->{'confidence'} || 25),
+        application => $data->{'application'},
+        portlist    => $data->{'portlist'},
+        protocol    => $data->{'protocol'},
     };
     return [$obs];
 }   

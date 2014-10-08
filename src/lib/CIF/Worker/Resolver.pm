@@ -66,6 +66,9 @@ sub _rr_to_observation {
                 group       => $data->{'group'} || CIF::GROUP_DEFAULT,
                 provider    => $data->{'provider'} || CIF::PROVIDER_DEFAULT,
                 rdata       => $data->{'observable'},
+                application => $data->{'application'},
+                portlist    => $data->{'portlist'},
+                protocol    => $data->{'protocol'},
                 rtype       => $type,
             });
             push(@obs,$o);
