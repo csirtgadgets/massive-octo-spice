@@ -23,6 +23,10 @@ use constant SND_TIMEOUT    => 120000;
 use constant RCV_TIMEOUT    => 120000;
 use constant REMOTE_DEFAULT => 'tcp://localhost:'.CIF::DEFAULT_PORT();
 
+use constant {
+    SEARCH_CONFIDENCE => 25,
+};
+
 has [qw(remote subscriber results token)] => (
     is  => 'ro',
 );

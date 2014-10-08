@@ -8,12 +8,6 @@ use CIF qw/is_fqdn/;
 
 with 'CIF::ObservableAddress';
 
-has 'rdata' => (
-    is      => 'rw',
-    isa     => 'ArrayRef',
-    coerce  => 1,
-);
-
 has '+otype' => (
     is      => 'ro',
     isa     => 'Str',

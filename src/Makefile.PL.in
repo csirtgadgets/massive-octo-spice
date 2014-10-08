@@ -12,7 +12,7 @@ sub MY::libscan {
 WriteMakefile(
     NAME            => 'CIF',
     VERSION         => '@CIF_VERSION@',
-    EXE_FILES       => ['bin/cif-smrt','bin/cif-router','bin/cif.psgi'],
+    EXE_FILES       => ['bin/cif-smrt','bin/cif-router','bin/cif.psgi','bin/cif-worker'],
     NO_META         => 1,
     NO_MYMETA       => 1,
 );

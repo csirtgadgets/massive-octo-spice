@@ -34,4 +34,14 @@ has 'cc'   => (
     reader  => 'get_cc',
 );
 
+has 'rdata' => (
+    is      => 'ro',
+    isa     => 'ArrayRef',
+    coerce  => 1,
+);
+
+has 'rtype' => (
+    is  => 'ro'
+);
+
 1;
