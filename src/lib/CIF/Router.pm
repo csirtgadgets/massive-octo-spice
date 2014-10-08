@@ -13,6 +13,7 @@ use ZMQx::Class;
 use JSON::XS;
 use Try::Tiny;
 use Data::Dumper;
+use Module::Refresh;
 
 # constants
 use constant DEFAULT_FRONTEND_PORT          => CIF::DEFAULT_FRONTEND_PORT();
@@ -26,15 +27,12 @@ use constant DEFAULT_PUBLISHER_LISTEN       => 'tcp://*:'.DEFAULT_PUBLISHER_PORT
 
 has 'port'      => (
     is      => 'ro',
-    isa     => 'Int',
-    default => DEFAULT_FRONTEND_PORT(),
+    default => DEFAULT_FRONTEND_PORT,
 );
 
 has 'frontend_listen'   => (
     is      => 'ro',
-    isa     => 'Str',
-    default => DEFAULT_FRONTEND_LISTEN(),
-    reader  => 'get_frontend_listen',
+    default => DEFAULT_FRONTEND_LISTEN,
 );
 
 has 'frontend'  => (
@@ -49,14 +47,12 @@ has 'frontend_watcher'  => (
 has 'publisher' => (
     is      => 'rw',
     isa     => 'ZMQx::Class::Socket',
-    reader  => 'get_publisher',
 );
 
 has 'publisher_listen' => (
     is      => 'ro',
     isa     => 'Str',
-    default => DEFAULT_PUBLISHER_LISTEN(),
-    reader  => 'get_publisher_listen',
+    default => DEFAULT_PUBLISHER_LISTEN,
 );
 
 has 'auth' => (
@@ -116,19 +112,19 @@ sub startup {
     $self->frontend(
         ZMQx::Class->socket(
             'REP',
-            bind => $self->get_frontend_listen(),
+            bind => $self->frontend_listen,
         )
     );
-    $Logger->info('frontend started on: '.$self->get_frontend_listen());
+    $Logger->info('frontend started on: '.$self->frontend_listen);
     
     $self->publisher(
         ZMQx::Class->socket(
             'PUB',
-            bind    => $self->get_publisher_listen(),
+            bind    => $self->publisher_listen,
         )
     );
     
-    $Logger->info('publisher started on: '.$self->get_publisher_listen());
+    $Logger->info('publisher started on: '.$self->publisher_listen);
     
     my ($ret,$err,$m);
     $self->frontend_watcher(
@@ -136,7 +132,6 @@ sub startup {
             sub {
                 while (my $msg = $self->frontend->receive()){
                     $Logger->debug('received message...');
-                    $Logger->trace(Dumper($msg));
                     
                     $Logger->debug('publishing');
                     $self->publish($msg);
@@ -165,6 +160,8 @@ sub startup {
 sub process {
     my $self    = shift;
     my $msg     = shift;
+    
+    Module::Refresh->refresh;
     
     $msg = JSON::XS::decode_json($msg);
 
@@ -217,20 +214,36 @@ sub process {
     }
 }
 
-##TODO - publisher
 sub publish {
     my $self = shift;
     my $data = shift;
     
-    ##TODO -- clean this up, permissions, etc
-    #debug('publishing...');
-    #$m = JSON::XS::decode_json(@{$msg}[0]);
-    #$m = [@{$m->{'Data'}->{'Observables'}}];
-    #if($m){
-    #    $m = JSON::XS::encode_json($m);
-    #    $self->get_publisher->send($m);
-    #}
-    #$m = undef;
+    $Logger->debug('publishing...');
+    
+    my $m = JSON::XS::decode_json(@{$data}[0]);
+    return unless($m->{'mtype'} eq 'request');
+    
+    for($m->{'rtype'}){
+        if(/^search$/){
+            $m = [{observable => $m->{'Data'}->{'Query'}, confidence => 50}]; ##TODO
+            last;
+        }
+        if(/^submission$/){
+            $m = $m->{'Data'}->{'Observables'};
+            last;   
+        }
+        if(/^ping$/){
+            $m = undef;
+            last;
+        }
+        $m = [@{$m->{'Data'}->{'Results'}}];
+    }
+    
+    if($m){
+        $m = JSON::XS::encode_json($m);
+        $self->publisher->send($m);
+    }
+    $m = undef;
     return 1;
 }
 

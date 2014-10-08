@@ -386,6 +386,7 @@ sub _submission {
         $_->{'@timestamp'}  = $timestamp;
         $_->{'@version'}    = 2; ##TODO
         $_->{'id'}  = hash_create_random();
+        $_->{'confidence'} = $_->{'confidence'} + 0.0; ## work-around cause ES tries to parse anything with quotes around it
         $bulk->index({ 
             id      => $_->{'id'}, 
             source => $_ ,

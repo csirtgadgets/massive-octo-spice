@@ -1,0 +1,218 @@
+#!perl
+
+BEGIN {
+    use FindBin;
+    use local::lib "$FindBin::Bin/..";
+}
+
+use strict;
+use warnings;
+use feature 'say';
+
+use CIF qw/init_logging $Logger/;
+use CIF::Worker;
+use Getopt::Long;
+use AnyEvent;
+use Daemon::Control;
+use Try::Tiny;
+use Data::Dumper;
+
+my $help;
+my $router          = CIF::Worker::ROUTER;
+my $publisher       = CIF::Worker::PUBLISHER;
+my $config          = "$CIF::EtcPath/cif-worker.yml";
+
+# daemon
+my $daemon          = 0;
+my $pidfile         = $CIF::PidPath.'/cif-worker.pid';
+my $user            = $CIF::CIF_USER;
+my $group           = $CIF::CIF_GROUP;
+my $threads         = 8;
+
+# notification
+my $notify;
+my $notify_to       = 'root@localhost';
+my $notify_subj     = '[cif-worker] ERROR';
+my $notify_from     = 'cif';
+my $notify_level    = 'error';
+
+# logging
+my $debug           = 0;
+my $verbosity       = 0;
+my $logging         = 0;
+my $logfile         = $CIF::LogPath.'/cif-worker.log';
+
+Getopt::Long::Configure ("bundling");
+GetOptions(
+    'help|h'        => \$help, 
+    'config|C=s'    => \$config,
+    'router|R=s'    => \$router,
+    'publisher|P=s' => \$publisher,
+    
+    # daemon opts
+    'daemon|D'      => \$daemon,
+    'pidfile|p=s'   => \$pidfile,
+    'user|u=s'      => \$user,
+    'group|g=s'     => \$group,
+    'threads|t=i'   => \$threads,
+    
+    #notification
+    'notify'        => \$notify,
+    'notify-to=s'   => \$notify_to,
+    'notify-subj=s' => \$notify_subj,
+    'notify-from=s' => \$notify_from,
+    
+    # logging
+    'verbosity|v+'  => \$verbosity,
+    'debug|d'       => \$debug,
+    'logging'       => \$logging,
+    'logfile=s'     => \$logfile,
+) or die(usage());
+
+die(usage()) if($help);
+
+sub usage {
+    return <<EOF;
+
+Usage: $0 [OPTIONS] [status|start|stop|restart|reload]
+
+ Options:
+    -C,  --config=FILE       specify cofiguration file, default: $config
+    -d,  --debug             turn on debugging (max verbosity)
+    -v+, --verbosity         turn up verbosity
+    -h,  --help              this message
+    
+ Daemon Options:
+    -D, --daemon            run as daemon
+    -u, --user              run daemon as user, default: $user
+    -g, --group             run daemon as group, default: $group
+    -p, --pid               pidfile location, default: $pidfile
+    --logging               turn on logging [to file]
+    --logfile               logfile location, default: $logfile
+    
+ Notification Options:
+    --notify:               turn on notification, default: off.
+    --notify-to:            default: $notify_to
+    --notify-from:          default: $notify_from
+    --notify-subj:          default: $notify_subj
+    --notify-level:         default: $notify_level
+
+ Examples:
+    $0 -C $config
+    $0 -D start -C $config -p $pidfile
+
+EOF
+}
+
+my $loglevel = ($debug) ? 'DEBUG' : 'WARN';
+
+if($notify){
+    $notify = { 
+        to          => $notify_to, 
+        from        => $notify_from, 
+        subject     => $notify_subj, 
+        min_level   => lc($notify_level) }
+}
+
+init_logging(
+    { 
+        level       => $loglevel,
+        catagory	=> 'cif-router',
+        filename    => ($logging) ? $logfile : 0,
+    },
+    $notify,   
+);
+
+if($verbosity){
+    unless($debug){ # we're already at TRACE
+        $Logger->more_logging($verbosity);
+    }
+}
+
+if($daemon){
+    $ARGV[0] = 'start' unless($ARGV);
+    my $r = Daemon::Control->new(
+        name    => 'cif-worker',
+        program => sub { main() },
+        
+        pid_file    => $pidfile,
+        fork        => 2,
+        
+        user         => $user,
+        group        => $group,
+    )->run();
+} else {
+    main();
+}
+
+$Logger->info('shutting down...');
+
+sub main {
+    my $master = CIF::Worker->new({ publisher => $publisher });
+    $master->workers_socket;
+    
+    my @workers;
+    for(my $count = 1; $count <= $threads; $count++){
+        my $pid = fork();
+        if($pid){
+            # parent
+            #print "pid is $pid, parent $$\n";
+            push(@workers, $pid);
+        } elsif ($pid == 0) {
+            # child
+            workers($count);
+            exit 0;
+        } else {
+            die "couldnt fork: $!\n";
+        }
+    }
+    
+    my $done = AnyEvent->condvar();
+    $SIG{'TERM'} = $SIG{'INT'} = sub { $done->send(); };
+    
+    my $x = $master->start_subscriber(sub {
+        while($master->subscriber_socket->has_pollin()){
+            my $msg = $master->subscriber_socket->recv();
+            $Logger->info('recieved msg...');
+            $msg = $master->decode($msg);
+            foreach (@$msg){
+                $Logger->debug('sending to worker...');
+                $master->workers_socket->send($master->encode($_));
+            }
+        }
+    });
+    
+    unless($x){
+        $done->send();
+        exit(0);
+    }
+    
+    $done->recv();
+    
+    foreach (@workers) {
+        kill INT => $_;
+        my $tmp = waitpid($_, 0);
+    }
+}
+
+sub workers {
+    $Logger->debug('staring worker..');
+
+    my $d    = AnyEvent->condvar();
+    $SIG{'INT'} = sub { $d->send(); };
+    
+    my $worker = CIF::Worker->new({
+        router      => $router,
+    });
+    $worker->data_socket;
+
+   my $rv = $worker->start_worker(sub {
+       while($worker->data_socket->has_pollin()){
+           my $msg = $worker->data_socket->recv();
+           $Logger->debug('worker received msg...');
+           $worker->process($msg);
+       }
+   });
+
+   $d->recv();
+}
