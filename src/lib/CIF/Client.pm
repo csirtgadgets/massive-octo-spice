@@ -19,8 +19,8 @@ use Try::Tiny;
 use ZMQ::FFI;
 use ZMQ::FFI::Constants qw(ZMQ_REQ ZMQ_SUB ZMQ_SNDTIMEO ZMQ_RCVTIMEO ZMQ_LINGER);
 
-use constant SND_TIMEOUT    => 120000;
-use constant RCV_TIMEOUT    => 120000;
+use constant SND_TIMEOUT    => 360000;
+use constant RCV_TIMEOUT    => 360000;
 use constant REMOTE_DEFAULT => 'tcp://localhost:'.CIF::DEFAULT_PORT();
 
 use constant {

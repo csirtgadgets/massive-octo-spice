@@ -57,9 +57,16 @@ sub create {
         enable_metadata => 1,
     });
     
+    if($res == -1){
+        $self->respond_to(
+            json => { json => { "error" => "timeout" }, status => 408 },
+        );
+        return;
+    }
+    
     $self->res->headers->add('X-Location' => $self->req->url->to_string());
     $self->res->headers->add('X-Id' => @{$res}[0]); ## TODO
-
+    
     $self->respond_to(
         json    => { json => $res, status => 201 },
     );
