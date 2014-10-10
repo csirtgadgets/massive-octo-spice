@@ -55,15 +55,20 @@ sub create {
     my $data    = $self->req->json();
     my $nowait  = $self->param('nowait') || 0;
     
-    $self->render_later;
-
     my $res;
     if($nowait){
+        $SIG{CHLD} = 'IGNORE'; # http://stackoverflow.com/questions/10923530/reaping-child-processes-from-perl
         my $child = fork();
+        
+    	unless (defined $child) {
+    		die "fork(): $!";
+    	}
+    	
         if($child == 0){
             # child
-            $res = $self->_submit($data);
-            return;
+            $self->_submit($data);
+
+            exit;
         } else {
             $self->respond_to(
                 json    => { json => { 'message' => 'submission accepted, processing may take time' }, status => 201 },

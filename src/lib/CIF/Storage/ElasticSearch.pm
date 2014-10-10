@@ -29,8 +29,6 @@ use constant {
     LIMIT               => 50000
 };
 
-use constant DEFAULT_LIMIT              => 5000;
-
 has 'handle' => (
     is          => 'rw',
     isa         => 'Search::Elasticsearch::Client::Direct',
@@ -404,7 +402,9 @@ sub _submission {
     @results = map { $_ = $_->{'index'}->{'_id'} } @results;
     
     if($#results == -1){
+        use Data::Dumper;
         $Logger->error('trying to submit something thats too big...');
+        $Logger->error(Dumper(@{$things}[0]));
     }  
 
     return \@results;
