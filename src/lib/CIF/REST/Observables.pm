@@ -59,7 +59,8 @@ sub create {
         my $child = fork();
         if($child == 0){
             # child
-            $self->_submit($data);
+            $res = $self->_submit($data);
+            return;
         } else {
             $self->respond_to(
                 json    => { json => { 'message' => 'submission accepted, processing may take time' }, status => 201 },
@@ -67,7 +68,7 @@ sub create {
             return;
         }
     } else {
-        my $res = $self->_submit($data);
+        $res = $self->_submit($data);
     }
 
     unless($res){
@@ -101,5 +102,6 @@ sub _submit {
         observables     => $data,
         enable_metadata => 1,
     });
+    return $res;
 }
 1;
