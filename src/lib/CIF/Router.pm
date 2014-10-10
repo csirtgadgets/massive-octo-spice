@@ -13,7 +13,6 @@ use ZMQx::Class;
 use JSON::XS;
 use Try::Tiny;
 use Data::Dumper;
-use Module::Refresh;
 
 # constants
 use constant DEFAULT_FRONTEND_PORT          => CIF::DEFAULT_FRONTEND_PORT();
