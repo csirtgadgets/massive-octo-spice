@@ -103,6 +103,9 @@ sub search {
 	        feed       => $args->{'feed'},
 	    });
     }
+    
+    $Logger->debug('sending search...');
+    
     $msg = $self->_send($msg);
     
     #$Logger->debug(Dumper($msg));

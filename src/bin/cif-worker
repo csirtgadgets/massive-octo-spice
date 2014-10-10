@@ -104,7 +104,7 @@ Usage: $0 [OPTIONS] [status|start|stop|restart|reload]
 EOF
 }
 
-my $loglevel = ($debug) ? 'DEBUG' : 'WARN';
+my $loglevel = ($debug) ? 'DEBUG' : 'INFO';
 
 if($notify){
     $notify = { 
@@ -117,7 +117,7 @@ if($notify){
 init_logging(
     { 
         level       => $loglevel,
-        catagory	=> 'cif-router',
+        #catagory	=> 'cif-worker',
         filename    => ($logging) ? $logfile : 0,
     },
     $notify,   

@@ -70,7 +70,7 @@ case "$1" in
 
 
     # Start Daemon
-    start-stop-daemon --start -c "$CIF_USER" --exec $DAEMON -- $DAEMON_OPTS
+    start-stop-daemon --start -c "$CIF_USER" --exec $DAEMON -- $DAEMON_OPTS > /dev/null 2>&1
     log_end_msg $?
     ;;      
   stop)

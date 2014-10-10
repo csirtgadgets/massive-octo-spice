@@ -36,6 +36,10 @@ if [ -r /etc/default/rcS ]; then
     . /etc/default/rcS
 fi
 
+if [ -r /etc/default/cif-starman
+	. /etc/default/cif-starman
+fi
+
 LOG_FILE=$LOG_DIR/cif-starman.log
 
 # configuration file
@@ -47,7 +51,7 @@ PID_FILE=/var/run/$NAME.pid
 # Check DAEMON exists
 test -x $DAEMON || exit 0
 
-DAEMON_OPTS="--user $USER --group $GROUP --workers $WORKERS --port $PORT $APP"
+DAEMON_OPTS="--user $USER --group $GROUP --workers $WORKERS --port $PORT --error-log $LOG_FILE $APP
 
 case "$1" in
   start)

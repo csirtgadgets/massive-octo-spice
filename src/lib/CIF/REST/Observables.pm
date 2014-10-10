@@ -2,11 +2,14 @@ package CIF::REST::Observables;
 use Mojo::Base 'Mojolicious::Controller';
 use POSIX;
 
+use CIF qw/$Logger/;
+
 sub index {
     my $self = shift;
 
     my $query      	= $self->param('q') || $self->param('observable');
     
+    $Logger->debug('generating search...');
     my $res = $self->cli->search({
         token      	=> $self->param('token'),
         query      	=> $query,

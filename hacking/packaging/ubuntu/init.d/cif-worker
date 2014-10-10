@@ -65,8 +65,7 @@ case "$1" in
     touch $LOG_FILE && chown "$USER":"$GROUP" $LOG_FILE
 
     # Start Daemon
-    echo "$DAEMON $DAEMON_OPTS"
-    start-stop-daemon --start -c "$USER" --exec $DAEMON -- $DAEMON_OPTS
+    start-stop-daemon --start -c "$USER" --exec $DAEMON -- $DAEMON_OPTS > /dev/null 2>&1
     log_end_msg $?
     ;;      
   stop)
