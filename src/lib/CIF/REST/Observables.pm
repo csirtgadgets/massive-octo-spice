@@ -50,7 +50,7 @@ sub create {
     my $self = shift;
     
     my $data    = $self->req->json();
-    my $nowait  = $self->param('nowait') || 1;
+    my $nowait  = $self->param('nowait') || 0;
     
     $self->render_later;
 
