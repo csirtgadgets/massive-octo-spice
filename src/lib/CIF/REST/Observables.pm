@@ -1,5 +1,6 @@
 package CIF::REST::Observables;
 use Mojo::Base 'Mojolicious::Controller';
+use POSIX;
 
 sub index {
     my $self = shift;
@@ -48,15 +49,27 @@ sub show {
 sub create {
     my $self = shift;
     
-    my $data = $self->req->json();
+    my $data    = $self->req->json();
+    my $nowait  = $self->param('nowait') || 1;
     
-    ##TODO client should spin this out to a queue
-    my $res = $self->cli->submit({
-        token           => $self->param('token'),
-        observables     => $data,
-        enable_metadata => 1,
-    });
-    
+    $self->render_later;
+
+    my $res;
+    if($nowait){
+        my $child = fork();
+        if($child == 0){
+            # child
+            $self->_submit($data);
+        } else {
+            $self->respond_to(
+                json    => { json => { 'message' => 'submission accepted, processing may take time' }, status => 201 },
+            );
+            return;
+        }
+    } else {
+        my $res = $self->_submit($data);
+    }
+
     unless($res){
          $self->respond_to(
             json => { json => { "error" => "unknown, contact system administrator" }, status => 500 },
@@ -71,12 +84,22 @@ sub create {
         return;
     }
     
-    $self->res->headers->add('X-Location' => $self->req->url->to_string());
-    $self->res->headers->add('X-Id' => @{$res}[0]); ## TODO
-    
     $self->respond_to(
         json    => { json => $res, status => 201 },
     );
+    
+    $self->res->headers->add('X-Location' => $self->req->url->to_string());
+    $self->res->headers->add('X-Id' => @{$res}[0]); ## TODO
 }
 
+sub _submit {
+    my $self = shift;
+    my $data = shift;
+    
+    my $res = $self->cli->submit({
+        token           => $self->param('token'),
+        observables     => $data,
+        enable_metadata => 1,
+    });
+}
 1;

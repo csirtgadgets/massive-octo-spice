@@ -30,7 +30,7 @@ my $clean       = 0;
 my $notbefore   = 'today';
 my $cache       = $CIF::VarPath.'/smrt/cache';
 my $meta        = 0;
-my $timeout     = 300;
+my $timeout     = 900;
 my $no_verify_ssl;
 my $ignore_journal;
 
@@ -270,6 +270,7 @@ sub _main {
         token       => $token,
         timeout     => $timeout,
         verify_ssl  => ($no_verify_ssl) ? 0 : 1,
+        nowait      => 1,
     });
     
     unless($Logger->is_debug()){
@@ -298,8 +299,12 @@ sub _main {
         $data = $smrt->process();
         
         if($#{$data} >= 0){
+            $Logger->info('sending '.($#{$data} + 1).' observables...');
             ($err,$ret) = $cli->submit($data);
             croak($err) if($err);
+            if($ret->{'message'}){
+                $Logger->info($ret->{'message'});
+            }
         } else {
             $Logger->info('nothing new to send...');
         }
