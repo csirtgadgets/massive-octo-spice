@@ -154,6 +154,7 @@ sub _search {
     		if(is_ip($args->{'Query'})){
                 my @array = split(/\./,$args->{'Query'});
     		    $regexp->{'observable'} = $array[0].'.*';
+    		    $terms->{'otype'} = 'ipv4'; ## TODO ipv6
     		} else {
     		    $terms->{'observable'} = [$args->{'Query'}];
     		}
