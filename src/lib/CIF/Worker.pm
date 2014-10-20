@@ -152,8 +152,6 @@ sub process {
     $self->_process_metadata($data);
     foreach my $p (@{$self->_worker_plugins}){
         next unless($data->{'confidence'} && $data->{'confidence'} >= CONFIDENCE_MIN);
-        use Data::Dumper;
-        warn Dumper($data);
         $data = CIF::ObservableFactory->new_plugin($data);
         next unless($p->understands($data));
         if(my $tmp = $p->new->process($data)){
