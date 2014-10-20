@@ -69,12 +69,23 @@ sub search {
     my $args = shift;
     
     my $filters = $args->{'filters'};
+    
+    warn Dumper($filters);
     if($filters->{'firsttime'}){
     	unless($filters->{'firsttime'} =~ /^\d+$/){
     		$filters->{'firsttime'} =  DateTime::Format::DateParse->parse_datetime($filters->{'firsttime'});
     		$filters->{'firsttime'} = $filters->{'firsttime'}->epoch.'000'; #millis
     	}
     }
+    
+    if($filters->{'lasttime'}){
+    	unless($filters->{'lasttime'} =~ /^\d+$/){
+    		$filters->{'lasttime'} =  DateTime::Format::DateParse->parse_datetime($filters->{'lasttime'});
+    		$filters->{'lasttime'} = $filters->{'lasttime'}->epoch.'000'; #millis
+    	}
+    }
+    
+    
     
     if($filters->{'tags'} && $filters->{'tags'} =~ /,/){
     	$filters->{'tags'} = [split(/,/,$filters->{'tags'})];

@@ -1,6 +1,7 @@
 Revision history for massive-octo-spice
 
-2.00.00-alpha.4 2014-10-20
+2.00.00-alpha.4 2014-10
+    - added firsttime/lasttime filters to API
     - added forking to psqi api, faster data processing of new observables, https://github.com/csirtgadgets/massive-octo-spice/commit/d804c09e87c12a6105d37be9b08d91d850b4bdf5
     - added cif-worker queue, https://github.com/csirtgadgets/massive-octo-spice/pull/62
     - misc bugfixes to elasticsearch template

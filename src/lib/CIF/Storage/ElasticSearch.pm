@@ -187,6 +187,10 @@ sub _search {
     	$ranges->{'firsttime'}->{'gte'} = $filters->{'firsttime'};
     }
     
+    if($filters->{'lasttime'}){
+    	$ranges->{'lasttime'}->{'lte'} = $filters->{'lasttime'};
+    }
+    
     if($filters->{'tags'}){
     	$filters->{'tags'} = [$filters->{'tags'}] unless(ref($filters->{'tags'}) eq 'ARRAY');
     	$terms->{'tags'} = $filters->{'tags'};
