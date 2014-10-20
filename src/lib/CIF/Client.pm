@@ -69,10 +69,10 @@ sub search {
     my $args = shift;
     
     my $filters = $args->{'filters'};
-    if($filters->{'starttime'}){
-    	unless($filters->{'starttime'} =~ /^\d+$/){
-    		$filters->{'starttime'} =  DateTime::Format::DateParse->parse_datetime($filters->{'starttime'});
-    		$filters->{'starttime'} = $filters->{'starttime'}->epoch.'000'; #millis
+    if($filters->{'firsttime'}){
+    	unless($filters->{'firsttime'} =~ /^\d+$/){
+    		$filters->{'firsttime'} =  DateTime::Format::DateParse->parse_datetime($filters->{'firsttime'});
+    		$filters->{'firsttime'} = $filters->{'firsttime'}->epoch.'000'; #millis
     	}
     }
     
