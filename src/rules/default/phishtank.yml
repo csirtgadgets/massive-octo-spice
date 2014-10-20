@@ -1,5 +1,4 @@
 parser: json
-disabled: true
 defaults:
   provider: phishtank.com
   tlp: amber
@@ -8,21 +7,22 @@ defaults:
     - https
   confidence: 85
   tags: phishing
-  remote: http://data.phishtank.com/data/online-valid.json.gz
+  protocol: tcp
+  #remote: http://data.phishtank.com/data/online-valid.json.gz
+  remote: /opt/cif/var/smrt/cache/phishtank.com-urls
 
 feeds:
-  # urls:
-    # otype: url
-    # disabled: true
-    # map:
-      # - submission_time
-      # - url
-      # - target
-      # - phish_detail_url
-      # - details
-    # values:
-      # - firsttime
-      # - observable
-      # - description
-      # - altid
-      # - additional_data
+  urls:
+    otype: url
+    map:
+      - submission_time
+      - url
+      - target
+      - phish_detail_url
+      - details
+    values:
+      - firsttime
+      - observable
+      - description
+      - altid
+      - additional_data

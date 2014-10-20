@@ -130,12 +130,14 @@ sub startup {
         $self->frontend->anyevent_watcher(
             sub {
                 while (my $msg = $self->frontend->receive()){
-                    $Logger->debug('received message...');
+                    $Logger->info('received message...');
                     
-                    $Logger->debug('publishing');
+                    $Logger->debug(Dumper($msg));
+                    
+                    $Logger->info('publishing');
                     $self->publish($msg);
                     
-                    $Logger->debug('processing...');
+                    $Logger->info('processing...');
                     try {
                         $msg = $self->process(@$msg);
                     } catch {
@@ -146,7 +148,7 @@ sub startup {
                         $ret = -1;
                         $Logger->error($err);
                     }
-                    $Logger->debug('replying...');
+                    $Logger->info('replying...');
                     $self->frontend->send($msg);
                 }
             }
