@@ -118,8 +118,6 @@ sub process {
         $otype = observable_type($_->{'observable'});
         next unless($otype);
         
-        next unless($_->{'observable'} =~ /aloncat.com.uy/);
-        
         $ts = $_->{'firsttime'} || $_->{'lasttime'} || $_->{'reporttime'} || MAX_DT;
         $ts = normalize_timestamp($ts)->epoch();
         

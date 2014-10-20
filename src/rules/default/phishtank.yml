@@ -8,8 +8,7 @@ defaults:
   confidence: 85
   tags: phishing
   protocol: tcp
-  #remote: http://data.phishtank.com/data/online-valid.json.gz
-  remote: /opt/cif/var/smrt/cache/phishtank.com-urls
+  remote: http://data.phishtank.com/data/online-valid.json.gz
 
 feeds:
   urls:
