@@ -38,7 +38,7 @@ fi
 LOG_FILE=$LOG_DIR/cif-smrt.log
 
 # configuration file
-CONF_FILE=$CONF_DIR/cif-smrt.conf
+CONF_FILE=$CONF_DIR/cif-smrt.yml
 
 if [ -f "$DEFAULT" ]; then
     . "$DEFAULT"

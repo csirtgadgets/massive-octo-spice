@@ -21,7 +21,7 @@ use Carp qw/croak/;
 
 my $help;
 my $remote      = 'https://localhost';
-my $token;
+my $token       = 1234; ##TODO alphas only!!!
 my $rule        = $CIF::SmrtRulesDefault;
 my $feed        = '';
 my $limit;
@@ -31,7 +31,7 @@ my $notbefore   = 'today';
 my $cache       = $CIF::VarPath.'/smrt/cache';
 my $meta        = 0;
 my $timeout     = 900;
-my $no_verify_ssl;
+my $no_verify_ssl = 1; ##TODO alphas only!!!
 my $ignore_journal;
 
 # daemon
