@@ -85,8 +85,6 @@ sub search {
     	}
     }
     
-    
-    
     if($filters->{'tags'} && $filters->{'tags'} =~ /,/){
     	$filters->{'tags'} = [split(/,/,$filters->{'tags'})];
     }
@@ -112,6 +110,7 @@ sub search {
 	        Query      => $args->{'query'},
 	        Filters    => $filters,
 	        feed       => $args->{'feed'},
+	        nolog      => $args->{'nolog'},
 	    });
     }
     
