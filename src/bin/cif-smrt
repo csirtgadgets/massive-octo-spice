@@ -20,7 +20,7 @@ use Data::Dumper;
 use Carp qw/croak/;
 
 my $help;
-my $remote      = 'https://localhost';
+my $remote      = 'http://localhost:5000'; ## todo -- fix apache bottlekneck
 my $token       = 1234; ##TODO alphas only!!!
 my $rule        = $CIF::SmrtRulesDefault;
 my $feed        = '';
