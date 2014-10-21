@@ -85,12 +85,11 @@ sub process {
                 $err = shift;
                 $Logger->fatal($err);
                 $Logger->fatal('possible timeout grabbing the feed');
-                die;
             };
             $Logger->debug('status: '.$ret->status_line());
             unless($ret->is_success() || $ret->status_line() =~ /^304 /){
                 $Logger->error($ret->status_line());
-                croak($ret->decoded_content());
+                return;
             }
         }
     }

@@ -96,6 +96,10 @@ sub process {
     # fetch
     $Logger->debug('fetching...');
     my $data = $self->fetcher->process();
+    unless($data){
+        $Logger->debug('no data.. skipping..');
+        return [];
+    }
     
     $Logger->debug('cache: '.$self->tmp_handle);
     
