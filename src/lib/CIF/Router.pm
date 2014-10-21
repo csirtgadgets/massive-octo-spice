@@ -233,7 +233,7 @@ sub publish {
     for($m->{'rtype'}){
         if(/^search$/){
             if($m->{'Data'}->{'Query'}){
-                $m = [{observable => $m->{'Data'}->{'Query'}, confidence => 50}]; ##TODO
+                $m = [{observable => $m->{'Data'}->{'Query'}, confidence => 50, tags => ['search']}]; ##TODO
                 last;
             }
             $m = undef;

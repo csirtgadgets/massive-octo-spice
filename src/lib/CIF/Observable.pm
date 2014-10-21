@@ -82,7 +82,7 @@ has 'related' => (
 
 has 'altid'     => (
     is  => 'ro',
-    isa => 'Str',
+    isa => 'Maybe[Str]',
 );
 
 has 'altid_tlp' => (

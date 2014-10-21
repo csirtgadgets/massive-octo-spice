@@ -78,7 +78,7 @@ sub _rr_to_observation {
                 rdata       => $data->{'observable'},
                 application => $data->{'application'},
                 portlist    => $data->{'portlist'},
-                protocol    => $data->{'protocol'},
+                protocol    => $data->{'protocol'} || undef,
                 altid       => $data->{'altid'},
                 altid_tlp   => $data->{'altid_tlp'} || $data->{'tlp'} || CIF::TLP_DEFAULT,
                 rtype       => $type,

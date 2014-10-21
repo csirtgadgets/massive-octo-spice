@@ -206,12 +206,21 @@ sub workers {
         router      => $router,
     });
     $worker->data_socket;
-
-   my $rv = $worker->start_worker(sub {
+    my $err;
+    my $rv = $worker->start_worker(sub {
        while($worker->data_socket->has_pollin()){
            my $msg = $worker->data_socket->recv();
-           $Logger->debug('worker received msg...');
-           $worker->process($msg);
+           $Logger->info('worker received msg...');
+           $Logger->debug(Dumper($msg));
+           try {
+                $worker->process($msg);
+           } catch {
+                $err = shift;
+           };
+           if($err){
+                $Logger->error($err);
+                $err = '';
+           }
        }
    });
 
