@@ -39,7 +39,7 @@ sub process {
         portlist    => $data->{'portlist'},
         protocol    => $data->{'protocol'},
         altid       => $data->{'altid'},
-        altid_tlp   => $data->{'altid_tlp'},
+        altid_tlp   => $data->{'altid_tlp'} || $data->{'tlp'} || CIF::TLP_DEFAULT,
     };
     return [$obs];
 }   

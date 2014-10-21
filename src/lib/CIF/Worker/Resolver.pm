@@ -80,7 +80,7 @@ sub _rr_to_observation {
                 portlist    => $data->{'portlist'},
                 protocol    => $data->{'protocol'},
                 altid       => $data->{'altid'},
-                altid_tlp   => $data->{'altid_tlp'},
+                altid_tlp   => $data->{'altid_tlp'} || $data->{'tlp'} || CIF::TLP_DEFAULT,
                 rtype       => $type,
             });
             push(@obs,$o);
