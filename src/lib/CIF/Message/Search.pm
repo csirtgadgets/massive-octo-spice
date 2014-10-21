@@ -29,7 +29,7 @@ has 'Filters' => (
     reader  => 'get_Filters',
 );
 
-has 'feed' => (
+has [qw/feed nolog/] => (
     is  => 'ro',
 );
 	   
@@ -49,7 +49,8 @@ sub TO_JSON {
         'Id'			=> $self->get_Id(),
         'Results'       => $self->get_Results(),
         'Filters'       => $self->get_Filters(),
-        'feed'          => $self->feed(),
+        'feed'          => $self->feed,
+        'nolog'         => $self->nolog,
     };
     return $ret;
 }
