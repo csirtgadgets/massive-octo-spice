@@ -22,8 +22,6 @@ has 'protocol' => (
 
 has 'application' => (
     is      => 'ro',
-    #isa     => 'Maybe[ArrayRef]',
-    coerce  => 1,
     reader  => 'get_application',
 );
 
