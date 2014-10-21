@@ -38,6 +38,8 @@ sub process {
         application => $data->{'application'},
         portlist    => $data->{'portlist'},
         protocol    => $data->{'protocol'},
+        altid       => $data->{'altid'},
+        altid_tlp   => $data->{'altid_tlp'},
     };
     return [$obs];
 }   

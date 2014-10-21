@@ -93,7 +93,7 @@ GetOptions(
     'refresh|Z'         => \$refresh,
     'meta|M'            => \$meta,
     'clean|c'           => \$clean,
-    'nbefore|N=s'       => \$notbefore,
+    'not-before=s'       => \$notbefore,
     'cache|P=s'         => \$cache,
     
     #notification
@@ -147,6 +147,7 @@ Usage: $0 [OPTIONS] [-D status|start|stop|restart|reload]
     -f, --feed=STRING       specify a feed (within a rule)
     -R, --remote=STRING     specify a remote to connect to, default $remote
     -T, --token=STRING      specify a default token/apikey to use, default: $token
+    --not-before=STRING     specify a time to begin processing the data
     
  Daemon Options:
     -D, --daemon            run as daemon
@@ -293,7 +294,8 @@ sub _main {
         my $smrt = CIF::Smrt->new({
             rule            => $r,
             tmp             => $cache,
-            ignore_journal   => $ignore_journal,
+            ignore_journal  => $ignore_journal,
+            not_before      => $notbefore,
         });
         
         $data = $smrt->process();

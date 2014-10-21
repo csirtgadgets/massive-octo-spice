@@ -33,6 +33,13 @@ has [qw(fetcher parser tmp_handle)] => (
     lazy_build  => 1,
 );
 
+has 'not_before'    => (
+    is          => 'ro',
+    isa         => 'CIF::Type::DateTimeInt',
+    coerce      => 1,
+    default     => sub { DateTime->today()->epoch() },
+);
+
 sub _build_tmp_handle {
     my $self = shift;
     my $tmp = $self->tmp.'/'.$self->rule->defaults->{'provider'}.'-'.$self->rule->{'feed'};
@@ -83,7 +90,7 @@ sub process {
 
     ## TODO
     $Logger->info('starting at: '.
-        DateTime->from_epoch(epoch => $self->rule->not_before)->datetime(),'Z'
+        DateTime->from_epoch(epoch => $self->not_before)->datetime(),'Z'
     );
 
     # fetch
@@ -121,7 +128,7 @@ sub process {
         $ts = $_->{'firsttime'} || $_->{'lasttime'} || $_->{'reporttime'} || MAX_DT;
         $ts = normalize_timestamp($ts)->epoch();
         
-        next unless($self->rule->not_before <= $ts );
+        next unless($self->not_before <= $ts );
         $_ = $self->rule->process({ data => $_ });
         push(@array,$_);
     }

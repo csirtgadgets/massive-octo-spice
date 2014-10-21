@@ -29,7 +29,17 @@ sub _rr_to_observation {
     my $data    = shift;
     my $type    = shift || 'A';
     
-    my $tags = ($data->{'tags'}) ? ['rdata',@{$data->{'tags'}}] : ['rdata']; 
+    my $tags = $data->{'tags'};
+    $tags = [$tags] unless(ref($tags) && ref($tags) eq 'ARRAY');
+    
+    my $found = 0;
+    foreach my $t ($@tags){
+        $found = 1 if($t eq 'rdata');
+    }
+    unless($found){
+        push(@$tags,'rdata');
+    }
+    
     my $confidence = $self->degrade_confidence($data->{'confidence'});
     
     my $ret = $self->resolve($data->{'observable'},$type);
@@ -69,6 +79,8 @@ sub _rr_to_observation {
                 application => $data->{'application'},
                 portlist    => $data->{'portlist'},
                 protocol    => $data->{'protocol'},
+                altid       => $data->{'altid'},
+                altid_tlp   => $data->{'altid_tlp'},
                 rtype       => $type,
             });
             push(@obs,$o);
