@@ -69,8 +69,7 @@ sub search {
     my $args = shift;
     
     my $filters = $args->{'filters'};
-    
-    warn Dumper($filters);
+
     if($filters->{'firsttime'}){
     	unless($filters->{'firsttime'} =~ /^\d+$/){
     		$filters->{'firsttime'} =  DateTime::Format::DateParse->parse_datetime($filters->{'firsttime'});
