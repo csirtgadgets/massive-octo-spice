@@ -1,0 +1,15 @@
+defaults:
+  tags: scanner
+  protocol: tcp
+  provider: nothink.org
+  altid_tlp: green
+  tlp: amber
+  confidence: 65
+  pattern: ^(\S+)$
+  values:
+    - observable
+feeds:
+  ssh:
+    remote: http://www.nothink.org/blacklist/blacklist_ssh_day.txt
+    application: ssh
+    portlist: 22

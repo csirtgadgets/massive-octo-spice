@@ -20,8 +20,8 @@ use Data::Dumper;
 use Carp qw/croak/;
 
 my $help;
-my $remote      = 'https://localhost';
-my $token;
+my $remote      = 'http://localhost:5000'; ## todo -- fix apache bottlekneck
+my $token       = 1234; ##TODO alphas only!!!
 my $rule        = $CIF::SmrtRulesDefault;
 my $feed        = '';
 my $limit;
@@ -30,8 +30,8 @@ my $clean       = 0;
 my $notbefore   = 'today';
 my $cache       = $CIF::VarPath.'/smrt/cache';
 my $meta        = 0;
-my $timeout     = 300;
-my $no_verify_ssl;
+my $timeout     = 900;
+my $no_verify_ssl = 1; ##TODO alphas only!!!
 my $ignore_journal;
 
 # daemon
@@ -93,7 +93,7 @@ GetOptions(
     'refresh|Z'         => \$refresh,
     'meta|M'            => \$meta,
     'clean|c'           => \$clean,
-    'nbefore|N=s'       => \$notbefore,
+    'not-before=s'       => \$notbefore,
     'cache|P=s'         => \$cache,
     
     #notification
@@ -147,6 +147,7 @@ Usage: $0 [OPTIONS] [-D status|start|stop|restart|reload]
     -f, --feed=STRING       specify a feed (within a rule)
     -R, --remote=STRING     specify a remote to connect to, default $remote
     -T, --token=STRING      specify a default token/apikey to use, default: $token
+    --not-before=STRING     specify a time to begin processing the data
     
  Daemon Options:
     -D, --daemon            run as daemon
@@ -192,7 +193,7 @@ if($notify){
         min_level   => lc($notify_level) }
 }
 
-my $loglevel = ($debug) ? 'DEBUG' : 'WARN';
+my $loglevel = ($debug) ? 'DEBUG' : 'INFO';
 
 init_logging(
     {
@@ -270,6 +271,7 @@ sub _main {
         token       => $token,
         timeout     => $timeout,
         verify_ssl  => ($no_verify_ssl) ? 0 : 1,
+        nowait      => 1,
     });
     
     unless($Logger->is_debug()){
@@ -292,14 +294,19 @@ sub _main {
         my $smrt = CIF::Smrt->new({
             rule            => $r,
             tmp             => $cache,
-            ignore_journal   => $ignore_journal,
+            ignore_journal  => $ignore_journal,
+            not_before      => $notbefore,
         });
         
         $data = $smrt->process();
         
         if($#{$data} >= 0){
+            $Logger->info('sending '.($#{$data} + 1).' observables...');
             ($err,$ret) = $cli->submit($data);
             croak($err) if($err);
+            if(ref($ret) eq 'HASH' && $ret->{'message'}){
+                $Logger->info($ret->{'message'});
+            }
         } else {
             $Logger->info('nothing new to send...');
         }

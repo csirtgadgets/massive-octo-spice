@@ -6,7 +6,7 @@ use warnings;
 use Mouse::Util::TypeConstraints;
 
 subtype 'CIF::Type::Tlp',
-    as 'Str',
+    as 'Maybe[Str]',
     where { /^(white|green|amber|red)$/ },
     message { "Not a valid TLP color: ".$_ };
     

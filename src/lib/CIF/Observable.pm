@@ -76,15 +76,13 @@ has [qw(reporttime firsttime lasttime)] => (
     default => sub { time() },
 );
 
-has 'relatedid' => (
+has 'related' => (
     is      => 'ro',
-    isa     => 'CIF::Type::LowercaseStr',
-    coerce  => 1, 
 );
 
 has 'altid'     => (
     is  => 'ro',
-    isa => 'Str',
+    isa => 'Maybe[Str]',
 );
 
 has 'altid_tlp' => (

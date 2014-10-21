@@ -29,8 +29,9 @@ foreach (@rules){
         rule            => $_,
         tmp             => '/tmp',
         ignore_journal  => 1,
+        not_before      => '2010-01-01',
     })->process();
-    ok($#{$ret} >= 0,'testing for results for: '.$_->{'feed'});
+    ok($ret && $#{$ret} >= 0,'testing for results for: '.$_->{'feed'});
     ok(@$ret[0]->{'observable'} =~ /(141.52.251.250|63.230.14.171)/, 'testing output...');
 }
 

@@ -1,5 +1,15 @@
 Revision history for massive-octo-spice
 
+2.00.00-alpha.4 2014-10-21
+    - added firsttime/lasttime filters to API
+    - added forking to psqi api, faster data processing of new observables, https://github.com/csirtgadgets/massive-octo-spice/commit/d804c09e87c12a6105d37be9b08d91d850b4bdf5
+    - added cif-worker queue for handing dns/url resolution, https://github.com/csirtgadgets/massive-octo-spice/pull/62
+    - misc bugfixes to elasticsearch template
+    - added try/catch to fetcher, https://github.com/csirtgadgets/massive-octo-spice/pull/60/files
+    - added new feed sources, https://github.com/csirtgadgets/massive-octo-spice/pull/57
+    - fixed #56, added HTML table parser, XML parser
+    - various cif-smrt bugfixes
+
 2.00.00-alpha.3 2014-09-20
     - migrated "ini style" configs to YAML
     - [cif-smrt] enabled simple JSON feed parsing

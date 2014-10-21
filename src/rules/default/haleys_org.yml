@@ -1,0 +1,16 @@
+defaults:
+  tags: scanner
+  protocol: tcp
+  provider: charles.the-haleys.org
+  altid_tlp: green
+  tlp: amber
+  confidence: 65
+  pattern: ^ALL\s\:\s(\S+) $
+  values:
+    - observable
+    - null
+feeds:
+  ssh:
+    remote: http://charles.the-haleys.org/ssh_dico_attack_hdeny_format.php/hostsdeny.txt
+    application: ssh
+    portlist: 22

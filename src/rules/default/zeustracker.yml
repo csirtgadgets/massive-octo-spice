@@ -1,0 +1,46 @@
+parser: rss
+defaults:
+  provider: zeustracker.abuse.com
+  tlp: amber
+  alt_tlp: green
+  confidence: 85
+  altid: https://zeustracker.abuse.ch/monitor.php?search=<observable>
+  tags:
+    - zeus
+    - botnet
+  pattern:
+    description:
+      pattern: '^URL: ([\s\S]*), status: online, MD5 hash:'
+      values: observable
+    title:
+      pattern: ^\S+\s\((\S+)\)$
+      values: firsttime
+
+feeds:
+  binaries:
+    remote: https://zeustracker.abuse.ch/monitor.php?urlfeed=binaries
+    description: binary
+
+  configs:
+    remote: https://zeustracker.abuse.ch/monitor.php?urlfeed=configs
+    description: config
+
+  dropzones:
+    remote: https://zeustracker.abuse.ch/monitor.php?urlfeed=configs
+    description: dropzone
+
+  domains:
+    parser: default
+    remote: https://zeustracker.abuse.ch/blocklist.php?download=domainblocklist
+    pattern: ^(\S+)$
+    values:
+      - observable
+    confidence: 65
+
+  ip:
+    parser: default
+    remote: https://zeustracker.abuse.ch/blocklist.php?download=ipblocklist
+    pattern: ^(\S+)$
+    values:
+      - observable
+    confidence: 65

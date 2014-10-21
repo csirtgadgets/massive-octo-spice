@@ -5,14 +5,14 @@ sub index {
     my $self = shift;
 	
 	my $res = $self->cli->search({
-		token     => $self->param('token'),
+		token     => scalar $self->param('token'),
 		filters   => {
-			otype        => $self->param('otype')        || undef,
-			confidence   => $self->param('confidence')   || undef,
-			cc           => $self->param('cc')           || undef,
-			tags         => $self->param('tag')          || undef,
-			provider     => $self->param('provider')     || undef,
-			tlp          => $self->param('tlp')          || undef,
+			otype        => scalar $self->param('otype')        || undef,
+			confidence   => scalar $self->param('confidence')   || undef,
+			cc           => scalar $self->param('cc')           || undef,
+			tags         => scalar $self->param('tag')          || undef,
+			provider     => scalar $self->param('provider')     || undef,
+			tlp          => scalar $self->param('tlp')          || undef,
 		},
 		feed      => 1,
 	});
@@ -28,8 +28,8 @@ sub show {
   my $self  = shift;
   
   my $res = $self->cli->search({
-      token => $self->param('token'),
-      id    => $self->param('feed'),
+      token => scalar $self->param('token'),
+      id    => scalar $self->param('feed'),
       feed  => 1,
   });
   
@@ -46,7 +46,7 @@ sub create {
     $data = [$data] unless(ref($data) eq 'ARRAY');
     
     my $res = $self->cli->submit_feed({
-    	token  => $self->param('token'),
+    	token  => scalar $self->param('token'),
         feed   => $data,
     });
     

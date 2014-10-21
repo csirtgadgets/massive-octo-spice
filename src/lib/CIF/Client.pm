@@ -19,9 +19,13 @@ use Try::Tiny;
 use ZMQ::FFI;
 use ZMQ::FFI::Constants qw(ZMQ_REQ ZMQ_SUB ZMQ_SNDTIMEO ZMQ_RCVTIMEO ZMQ_LINGER);
 
-use constant SND_TIMEOUT    => 120000;
-use constant RCV_TIMEOUT    => 120000;
+use constant SND_TIMEOUT    => 360000;
+use constant RCV_TIMEOUT    => 360000;
 use constant REMOTE_DEFAULT => 'tcp://localhost:'.CIF::DEFAULT_PORT();
+
+use constant {
+    SEARCH_CONFIDENCE => 25,
+};
 
 has [qw(remote subscriber results token)] => (
     is  => 'ro',
@@ -65,10 +69,18 @@ sub search {
     my $args = shift;
     
     my $filters = $args->{'filters'};
-    if($filters->{'starttime'}){
-    	unless($filters->{'starttime'} =~ /^\d+$/){
-    		$filters->{'starttime'} =  DateTime::Format::DateParse->parse_datetime($filters->{'starttime'});
-    		$filters->{'starttime'} = $filters->{'starttime'}->epoch.'000'; #millis
+
+    if($filters->{'firsttime'}){
+    	unless($filters->{'firsttime'} =~ /^\d+$/){
+    		$filters->{'firsttime'} =  DateTime::Format::DateParse->parse_datetime($filters->{'firsttime'});
+    		$filters->{'firsttime'} = $filters->{'firsttime'}->epoch.'000'; #millis
+    	}
+    }
+    
+    if($filters->{'lasttime'}){
+    	unless($filters->{'lasttime'} =~ /^\d+$/){
+    		$filters->{'lasttime'} =  DateTime::Format::DateParse->parse_datetime($filters->{'lasttime'});
+    		$filters->{'lasttime'} = $filters->{'lasttime'}->epoch.'000'; #millis
     	}
     }
     
@@ -97,8 +109,12 @@ sub search {
 	        Query      => $args->{'query'},
 	        Filters    => $filters,
 	        feed       => $args->{'feed'},
+	        nolog      => $args->{'nolog'},
 	    });
     }
+    
+    $Logger->debug('sending search...');
+    
     $msg = $self->_send($msg);
     
     #$Logger->debug(Dumper($msg));

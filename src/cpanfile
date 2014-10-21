@@ -1,3 +1,5 @@
+requires 'Encoding::FixLatin';
+requires 'HTML::TableExtract';
 requires 'Test::Exception', '<= 0.32';
 requires 'Net::Server::SS::PreFork';
 requires 'CIF::SDK', '>= 0.00_02';

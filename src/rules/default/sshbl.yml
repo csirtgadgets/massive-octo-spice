@@ -1,6 +1,7 @@
 defaults:
   confidence: 85
   provider: openbl.org
+  tlp: amber
 
 feeds:
   scanners:

@@ -21,6 +21,7 @@ my $ret = CIF::Smrt->new({
     rule            => $rule,
     tmp             => '/tmp',
     ignore_journal  => 1,
+    not_before      => '2010-01-01',
 })->process();
 ok($#{$ret} >= 0,'testing for results...');
 
