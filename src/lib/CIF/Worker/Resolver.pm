@@ -33,7 +33,7 @@ sub _rr_to_observation {
     $tags = [$tags] unless(ref($tags) && ref($tags) eq 'ARRAY');
     
     my $found = 0;
-    foreach my $t ($@tags){
+    foreach my $t (@$tags){
         $found = 1 if($t eq 'rdata');
     }
     unless($found){
