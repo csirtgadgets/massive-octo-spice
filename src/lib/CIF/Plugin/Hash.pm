@@ -23,11 +23,11 @@ our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
 our @EXPORT = qw(
 );
 
-use Crypt::Random::Source qw(get_strong);
+use Crypt::Random::Source qw(get_strong get_weak);
 use Digest::SHA qw/sha256_hex/;
 use Time::HiRes qw/gettimeofday/;
 
-use constant DEFAULT_RANDOM_BYTES => 4096;
+use constant DEFAULT_RANDOM_BYTES => 32;
 
 my $HTYPES = {
     'uuid'      => qr/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/,
@@ -40,7 +40,7 @@ my $HTYPES = {
 ##TODO -- double check the randomness of this
 sub hash_create_random {
     my $arg = shift || DEFAULT_RANDOM_BYTES();
-    return sha256_hex(gettimeofday().get_strong($arg));
+    return sha256_hex(gettimeofday().get_weak($arg));
 }
 
 sub hash_create_static {
