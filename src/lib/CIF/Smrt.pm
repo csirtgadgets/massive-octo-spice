@@ -149,6 +149,7 @@ sub _journal_hash {
     #return hash_create_static($today->epoch().$_->{'observable'});
     
     my $x = JSON::XS->new->canonical->encode($_);
+    $x = Encode::_utf8_off($x);
     return hash_create_static($today->epoch().$x);
 }
 
