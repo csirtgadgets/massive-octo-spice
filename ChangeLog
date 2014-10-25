@@ -1,5 +1,9 @@
 Revision history for massive-octo-spice
 
+2.00.00-alpha.5 2014-10-25
+    - bugfix to cif-router startup when no elastic search cluster found
+    - weakened random hash generation (message ids), o/w it drains urandom too fast on most servers w/o hardware rngd
+
 2.00.00-alpha.4 2014-10-21
     - added firsttime/lasttime filters to API
     - added forking to psqi api, faster data processing of new observables, https://github.com/csirtgadgets/massive-octo-spice/commit/d804c09e87c12a6105d37be9b08d91d850b4bdf5

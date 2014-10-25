@@ -164,11 +164,23 @@ sub main {
         auth            => $auth,
         storage         => $storage,
     });
-    my $rv = $router->startup();
-    unless($rv){
-        $done->send();
-        exit(0);
-    }
+    
+    my ($err,$rv);
+    
+    do {
+        $Logger->info('retrying...') if($err);
+        try {
+            $rv = $router->startup();
+        } catch {
+            $err = shift;
+        };
+        unless($rv){
+            $Logger->warn($err) if($err);
+            $Logger->warn('retrying in 5secs...');
+            sleep(5);
+            $err = undef;
+        }
+    } until($rv);
     
     $done->recv();
 }
