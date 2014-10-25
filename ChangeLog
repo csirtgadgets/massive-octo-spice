@@ -3,6 +3,7 @@ Revision history for massive-octo-spice
 2.00.00-alpha.5 2014-10-25
     - bugfix to cif-router startup when no elastic search cluster found
     - weakened random hash generation (message ids), o/w it drains urandom too fast on most servers w/o hardware rngd
+    - fixed issue with non-ascii chars show up in urls: https://github.com/csirtgadgets/massive-octo-spice/issues/67
 
 2.00.00-alpha.4 2014-10-21
     - added firsttime/lasttime filters to API
