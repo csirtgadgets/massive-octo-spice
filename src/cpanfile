@@ -45,6 +45,7 @@ requires 'Text::Table';
 requires 'Time::HiRes';
 requires 'Try::Tiny';
 requires 'URI';
+requires 'URI::Escape';
 requires 'XML::LibXML';
 requires 'XML::RSS';
 requires 'ZMQ::FFI';
