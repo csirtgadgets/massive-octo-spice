@@ -65,6 +65,8 @@ if [ -z `grep -l '127.0.0.1' /etc/resolvconf/resolv.conf.d/base` ]; then
     ifdown eth0 && sudo ifup eth0
 fi
 
+echo "prepend domain-name-servers 127.0.0.1;" >> /etc/dhcp/dhclient.conf
+
 echo 'setting up apache'
 cp cif.conf /etc/apache2/
 
