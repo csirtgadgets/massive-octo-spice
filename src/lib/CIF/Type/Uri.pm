@@ -5,6 +5,7 @@ use warnings;
 
 use Mouse::Util::TypeConstraints;
 use URI;
+use URI::Escape;
 
 use constant RE_URL_SCHEME => qr/^[-+.a-zA-Z0-9]+:\/\//;
 our @ALLOWED_SCHEMES = qw(
@@ -21,6 +22,7 @@ subtype 'CIF::Type::Uri',
     as 'Str',
     where { 
         my $url_text = shift;
+        $url_text = uri_escape_utf8($url_text,'\x00-\x1f\x7f-\xff');
         $url_text = lc($url_text);
         my $url = URI->new($url_text);
         return (
