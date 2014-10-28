@@ -17,6 +17,7 @@ NAME=cif-smrt
 DESC="cif-smrt"
 DEFAULT_CIF=/etc/default/cif
 DEFAULT=/etc/default/$NAME
+CACHE=/var/smrt/cache
 CIF_DEBUG=""
 
 if [ `id -u` -ne 0 ]; then
@@ -67,7 +68,7 @@ case "$1" in
     mkdir -p $LOG_DIR && chown "$CIF_USER":"$CIF_GROUP" $LOG_DIR
     touch "$PID_FILE" && chown "$CIF_USER":"$CIF_GROUP" "$PID_FILE"
     touch $LOG_FILE && chown "$CIF_USER":"$CIF_GROUP" $LOG_FILE
-
+    chown -R "$CIF_USER":"$CIF_GROUP" $CACHE
 
     # Start Daemon
     start-stop-daemon --start -c "$CIF_USER" --exec $DAEMON -- $DAEMON_OPTS > /dev/null 2>&1

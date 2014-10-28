@@ -238,17 +238,20 @@ $Logger->info('shutting down...');
 sub main {
     my $done = AnyEvent->condvar();
     
-    # play nice with feed providers, so we don't slam them all at once
+    # play nice with feed providers, so we don't slam all the feed providers every 60min at once
     $randomstart = ($testmode) ? 0 : int(rand($randomstart)); # sometime in the next $randomstart
+    
+    $Logger->debug('random start set to: '.$randomstart);
+    
     $Logger->info('delaying start for: '.$randomstart.'min then running every '.$interval.'min there after...');
-    $Logger->info('to run immediately, set: --randomstart 0');
+    $Logger->info('to run immediately, set: --randomstart 0 or --testmode');
     
     $randomstart    = (60 * $randomstart);
     $interval       = (60 * $interval);
     
     my $w = AnyEvent->timer(
         after       => $randomstart, 
-        interval    => $interval, # once an hour
+        interval    => $interval,
         cb          => sub { 
             _main();
             $done->send() if($testmode);

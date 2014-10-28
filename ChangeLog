@@ -1,5 +1,8 @@
 Revision history for massive-octo-spice
 
+2.00.00-alpha.6 2014-10-27
+    - bugfix when handling smrt/cache permissions
+
 2.00.00-alpha.5 2014-10-25
     - bugfix to cif-router startup when no elastic search cluster found
     - weakened random hash generation (message ids), o/w it drains urandom too fast on most servers w/o hardware rngd
