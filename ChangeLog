@@ -1,5 +1,8 @@
 Revision history for massive-octo-spice
 
+2.00.00-alpha.7 2014-
+    - set static log4perl version
+
 2.00.00-alpha.6 2014-10-27
     - bugfix when handling smrt/cache permissions
 

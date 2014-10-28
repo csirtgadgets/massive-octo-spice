@@ -22,7 +22,7 @@ requires 'LWP::UserAgent';
 requires 'LWPx::ParanoidAgent';
 requires 'Log::Dispatch';
 requires 'Log::Dispatch::Email::MIMELite';
-requires 'Log::Log4perl';
+requires 'Log::Log4perl', '1.44';
 requires 'Mail::RFC822::Address';
 requires 'Module::PluginFinder';
 requires 'Mouse';
