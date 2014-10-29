@@ -36,6 +36,7 @@ fi
 
 # cpan.org has been less than reliable lately
 cpanm -n --mirror http://cpan.metacpan.org Regexp::Common Mouse
+cpanm http://backpan.perl.org/authors/id/M/MS/MSCHILLI/Log-Log4perl-1.44.tar.gz
 cpanm http://search.cpan.org/CPAN/authors/id/A/AD/ADIE/Test-Exception-0.32.tar.gz
 cpanm git://github.com/csirtgadgets/p5-cif-sdk.git
 cpanm https://cpan.metacpan.org/authors/id/D/DR/DROLSKY/MaxMind-DB-Reader-0.050005.tar.gz
