@@ -6,9 +6,10 @@ use warnings;
 use Mouse;
 use CIF qw/is_url/;
 
-with 'CIF::Observable';
+with 'CIF::ObservableAddress';
 
 has '+otype' => (
+    is  => 'ro',
     default => 'url',
 );
 

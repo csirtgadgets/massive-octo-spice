@@ -29,8 +29,6 @@ use constant {
     LIMIT               => 50000
 };
 
-use constant DEFAULT_LIMIT              => 5000;
-
 has 'handle' => (
     is          => 'rw',
     isa         => 'Search::Elasticsearch::Client::Direct',
@@ -156,6 +154,7 @@ sub _search {
     		if(is_ip($args->{'Query'})){
                 my @array = split(/\./,$args->{'Query'});
     		    $regexp->{'observable'} = $array[0].'.*';
+    		    $terms->{'otype'} = 'ipv4'; ## TODO ipv6
     		} else {
     		    $terms->{'observable'} = [$args->{'Query'}];
     		}
@@ -184,8 +183,12 @@ sub _search {
     	$ranges->{'confidence'}->{'gte'} = $filters->{'confidence'};
     }
     
-    if($filters->{'starttime'}){
-    	$ranges->{'reporttime'}->{'gte'} = $filters->{'starttime'};
+    if($filters->{'firsttime'}){
+    	$ranges->{'firsttime'}->{'gte'} = $filters->{'firsttime'};
+    }
+    
+    if($filters->{'lasttime'}){
+    	$ranges->{'lasttime'}->{'lte'} = $filters->{'lasttime'};
     }
     
     if($filters->{'tags'}){
@@ -206,6 +209,11 @@ sub _search {
     if($filters->{'provider'}){
         $filters->{'provider'} = [$filters->{'provider'}] unless(ref($filters->{'provider'}));
         $terms->{'provider'} = $filters->{'provider'}
+    }
+    
+    if($filters->{'rdata'}){
+        $filters->{'rdata'} = [$filters->{'rdata'}] unless(ref($filters->{'rdata'}));
+        $terms->{'rdata'} = $filters->{'rdata'}
     }
     
     ## TODO asn_desc TERM => ***
@@ -386,6 +394,7 @@ sub _submission {
         $_->{'@timestamp'}  = $timestamp;
         $_->{'@version'}    = 2; ##TODO
         $_->{'id'}  = hash_create_random();
+        $_->{'confidence'} = ($_->{'confidence'}) ? ($_->{'confidence'} + 0.0) : 0; ## work-around cause ES tries to parse anything with quotes around it
         $bulk->index({ 
             id      => $_->{'id'}, 
             source => $_ ,
@@ -398,7 +407,9 @@ sub _submission {
     @results = map { $_ = $_->{'index'}->{'_id'} } @results;
     
     if($#results == -1){
+        use Data::Dumper;
         $Logger->error('trying to submit something thats too big...');
+        $Logger->error(Dumper(@{$things}[0]));
     }  
 
     return \@results;

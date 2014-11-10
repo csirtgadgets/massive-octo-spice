@@ -7,6 +7,7 @@ use Mouse;
 use Net::Abuse::Utils qw(get_as_description get_asn_info get_peer_info);
 use CIF qw/is_ip $Logger/;
 use Try::Tiny;
+use Encoding::FixLatin qw(fix_latin);
 
 with 'CIF::Meta';
 
@@ -30,6 +31,10 @@ sub process {
     my ($asn,$prefix,$cc,$rir,$date) = get_asn_info($o);
     my $asn_desc;
     $asn_desc = get_as_description($asn) if($asn);
+    
+    if($asn_desc){
+        $asn_desc = fix_latin($asn_desc);
+    }
     
     $args->{'asn'}          = $asn if($asn);
     $args->{'asn_desc'}     = $asn_desc if($asn_desc);

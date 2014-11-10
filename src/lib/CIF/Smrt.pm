@@ -14,6 +14,8 @@ use File::Spec;
 use File::Type;
 use IO::Uncompress::AnyUncompress qw(anyuncompress $AnyUncompressError);
 use JSON::XS;
+use Try::Tiny;
+use URI::Escape;
 
 use Data::Dumper;
 use Carp::Assert;
@@ -31,6 +33,13 @@ has [qw(ignore_journal config is_test other_attributes test_mode handler rule tm
 has [qw(fetcher parser tmp_handle)] => (
     is          => 'ro',
     lazy_build  => 1,
+);
+
+has 'not_before'    => (
+    is          => 'ro',
+    isa         => 'CIF::Type::DateTimeInt',
+    coerce      => 1,
+    default     => sub { DateTime->today()->epoch() },
 );
 
 sub _build_tmp_handle {
@@ -83,12 +92,16 @@ sub process {
 
     ## TODO
     $Logger->info('starting at: '.
-        DateTime->from_epoch(epoch => $self->rule->not_before)->datetime(),'Z'
+        DateTime->from_epoch(epoch => $self->not_before)->datetime(),'Z'
     );
 
     # fetch
     $Logger->debug('fetching...');
     my $data = $self->fetcher->process();
+    unless($data){
+        $Logger->debug('no data.. skipping..');
+        return [];
+    }
     
     $Logger->debug('cache: '.$self->tmp_handle);
     
@@ -117,14 +130,16 @@ sub process {
     foreach (@$data){
         $otype = observable_type($_->{'observable'});
         next unless($otype);
-        
+
         $ts = $_->{'firsttime'} || $_->{'lasttime'} || $_->{'reporttime'} || MAX_DT;
         $ts = normalize_timestamp($ts)->epoch();
         
-        next unless($self->rule->not_before <= $ts );
+        next unless($self->not_before <= $ts );
         $_ = $self->rule->process({ data => $_ });
+
         push(@array,$_);
     }
+
     $Logger->info('processed events: '.($#array + 1));
 
     return \@array;
@@ -132,12 +147,23 @@ sub process {
 
 sub _journal_hash {
     my $data = shift;
-    
+
     my $today = DateTime->today();
-    #return hash_create_static($today->epoch().$_->{'observable'});
     
-    my $x = JSON::XS->new->canonical->encode($_);
-    return hash_create_static($today->epoch().$x);
+    my $err;
+    $data->{'observable'} = uri_escape_utf8($data->{'observable'},'\x00-\x1f\x7f-\xff'); # be very specific about this.
+    
+    my $x = JSON::XS->new->canonical->encode($data);
+
+    try {
+        $x = hash_create_static($today->epoch().$x);
+    } catch {
+        $err = shift;
+        $Logger->error($err);
+        $Logger->error($x);
+    };
+    
+    return $x;
 }
 
 sub write_journal {

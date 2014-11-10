@@ -10,6 +10,7 @@ use Carp::Assert;
 use CIF::Observable;
 use CIF qw/parse_config normalize_timestamp/;
 use URI;
+use URI::Escape;
 
 use constant RE_IGNORE => qw(qr/[\.]$/);
 use constant RE_SKIP => qr/remote|pattern|values|ignore/;
@@ -57,6 +58,7 @@ sub _normalize_otype {
             unless($data->{'observable'} =~ /^https?/){
                 $data->{'observable'} = 'http://'.$data->{'observable'};
             }
+            $data->{'observable'} = uri_escape_utf8($data->{'observable'},'\x00-\x1f\x7f-\xff');
             $data->{'observable'} = URI->new($data->{'observable'})->canonical->as_string;
         }
     }

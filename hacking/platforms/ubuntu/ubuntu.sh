@@ -65,6 +65,8 @@ if [ -z `grep -l '127.0.0.1' /etc/resolvconf/resolv.conf.d/base` ]; then
     ifdown eth0 && sudo ifup eth0
 fi
 
+echo "prepend domain-name-servers 127.0.0.1;" >> /etc/dhcp/dhclient.conf
+
 echo 'setting up apache'
 cp cif.conf /etc/apache2/
 
@@ -105,6 +107,7 @@ echo 'copying init.d scripts...'
 cp ./hacking/packaging/ubuntu/init.d/cif-smrt /etc/init.d/
 cp ./hacking/packaging/ubuntu/init.d/cif-router /etc/init.d/
 cp ./hacking/packaging/ubuntu/init.d/cif-starman /etc/init.d/
+cp ./hacking/packaging/ubuntu/init.d/cif-worker /etc/init.d/
 
 if [ ! -f /etc/default/cif ]; then
     echo 'setting /etc/default/cif'
@@ -129,6 +132,7 @@ fi
 update-rc.d cif-router defaults 95 10
 update-rc.d cif-smrt defaults 95 10
 update-rc.d cif-starman defaults 95 10
+update-rc.d cif-worker defaults 95 10
 
 echo 'starting cif-router...'
 service cif-router start
@@ -139,3 +143,6 @@ service apache2 start
 
 echo 'starting cif-starman...'
 service cif-starman start
+
+echo 'starting cif-worker'
+service cif-worker start

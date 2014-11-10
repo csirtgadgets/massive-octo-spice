@@ -52,7 +52,12 @@ sub _log_search {
         group       => GROUP_DEFAULT(),
     });
     
+    use Data::Dumper;
+    $Logger->debug(Dumper($obs));
+    
     $obs = $obs->TO_JSON();
+    
+    $Logger->debug($obs);
     
     my $res = $self->get_storage_handle()->process({ Observables => [$obs] });
     

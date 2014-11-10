@@ -73,6 +73,14 @@ use YAML::Tiny;
 use constant DEFAULT_CONFIG         => ($ENV{'HOME'}) ? $ENV{'HOME'}.'/.cif' : '';
 use constant DEFAULT_GROUP          => 'everyone';
 
+use constant {
+    TLP_AMBER           => 'amber',
+    TLP_DEFAULT         => 'amber',
+    GROUP_DEFAULT       => 'everyone',
+    LANG_DEFAULT        => 'EN',
+    PROVIDER_DEFAULT    => 'unknown',
+};
+
 # Preloaded methods go here.
 
 sub parse_config {

@@ -6,7 +6,7 @@ use warnings;
 use Mouse::Util::TypeConstraints;
 
 subtype "CIF::Type::PortList", 
-    as 'Str',
+    as 'Maybe[Str]',
     where {
         my $portlist = shift;
         foreach my $part (split(',', $portlist)) {

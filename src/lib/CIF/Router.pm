@@ -26,15 +26,12 @@ use constant DEFAULT_PUBLISHER_LISTEN       => 'tcp://*:'.DEFAULT_PUBLISHER_PORT
 
 has 'port'      => (
     is      => 'ro',
-    isa     => 'Int',
-    default => DEFAULT_FRONTEND_PORT(),
+    default => DEFAULT_FRONTEND_PORT,
 );
 
 has 'frontend_listen'   => (
     is      => 'ro',
-    isa     => 'Str',
-    default => DEFAULT_FRONTEND_LISTEN(),
-    reader  => 'get_frontend_listen',
+    default => DEFAULT_FRONTEND_LISTEN,
 );
 
 has 'frontend'  => (
@@ -49,14 +46,12 @@ has 'frontend_watcher'  => (
 has 'publisher' => (
     is      => 'rw',
     isa     => 'ZMQx::Class::Socket',
-    reader  => 'get_publisher',
 );
 
 has 'publisher_listen' => (
     is      => 'ro',
     isa     => 'Str',
-    default => DEFAULT_PUBLISHER_LISTEN(),
-    reader  => 'get_publisher_listen',
+    default => DEFAULT_PUBLISHER_LISTEN,
 );
 
 has 'auth' => (
@@ -115,32 +110,33 @@ sub startup {
     $self->frontend(
         ZMQx::Class->socket(
             'REP',
-            bind => $self->get_frontend_listen(),
+            bind => $self->frontend_listen,
         )
     );
-    $Logger->info('frontend started on: '.$self->get_frontend_listen());
+    $Logger->info('frontend started on: '.$self->frontend_listen);
     
     $self->publisher(
         ZMQx::Class->socket(
             'PUB',
-            bind    => $self->get_publisher_listen(),
+            bind    => $self->publisher_listen,
         )
     );
     
-    $Logger->info('publisher started on: '.$self->get_publisher_listen());
+    $Logger->info('publisher started on: '.$self->publisher_listen);
     
     my ($ret,$err,$m);
     $self->frontend_watcher(
         $self->frontend->anyevent_watcher(
             sub {
                 while (my $msg = $self->frontend->receive()){
-                    $Logger->debug('received message...');
-                    $Logger->trace(Dumper($msg));
+                    $Logger->info('received message...');
                     
-                    $Logger->debug('publishing');
+                    $Logger->debug(Dumper($msg));
+                    
+                    $Logger->info('publishing');
                     $self->publish($msg);
                     
-                    $Logger->debug('processing...');
+                    $Logger->info('processing...');
                     try {
                         $msg = $self->process(@$msg);
                     } catch {
@@ -151,7 +147,7 @@ sub startup {
                         $ret = -1;
                         $Logger->error($err);
                     }
-                    $Logger->debug('replying...');
+                    $Logger->info('replying...');
                     $self->frontend->send($msg);
                 }
             }
@@ -165,7 +161,7 @@ sub process {
     my $self    = shift;
     my $msg     = shift;
     
-    $msg = JSON::XS::decode_json($msg);
+    $msg = JSON::XS->new->decode($msg);
 
     $msg = @{$msg}[0] if(ref($msg) eq 'ARRAY');
     
@@ -218,20 +214,48 @@ sub process {
     }
 }
 
-##TODO - publisher
 sub publish {
     my $self = shift;
     my $data = shift;
     
-    ##TODO -- clean this up, permissions, etc
-    #debug('publishing...');
-    #$m = JSON::XS::decode_json(@{$msg}[0]);
-    #$m = [@{$m->{'Data'}->{'Observables'}}];
-    #if($m){
-    #    $m = JSON::XS::encode_json($m);
-    #    $self->get_publisher->send($m);
-    #}
-    #$m = undef;
+    $Logger->debug('publishing...');
+
+    my ($m,$err);
+    try {
+        $m = JSON::XS->new->decode(@{$data}[0]);
+    } catch {
+        $err = shift;
+        $Logger->error($err);
+        $Logger->debug(Dumper($data));
+    };
+    
+    return unless($m->{'mtype'} eq 'request');
+
+    for($m->{'rtype'}){
+        if(/^search$/){
+            if($m->{'Data'}->{'Query'}){
+                $m = [{observable => $m->{'Data'}->{'Query'}, confidence => 50, tags => ['search']}]; ##TODO
+                last;
+            }
+            $m = undef;
+            last;
+        }
+        if(/^submission$/){
+            $m = $m->{'Data'}->{'Observables'};
+            last;   
+        }
+        if(/^ping$/){
+            $m = undef;
+            last;
+        }
+        $m = [@{$m->{'Data'}->{'Results'}}];
+    }
+    
+    if($m){
+        $m = JSON::XS::encode_json($m);
+        $self->publisher->send($m);
+    }
+    $m = undef;
     return 1;
 }
 

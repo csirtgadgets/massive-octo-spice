@@ -7,9 +7,10 @@ BEGIN {
 
 use strict;
 use warnings;
+use feature 'say';
 
 use CIF qw/init_logging $Logger/;
-use CIF::Router;
+use CIF::Worker;
 use Getopt::Long;
 use AnyEvent;
 use Daemon::Control;
@@ -17,22 +18,21 @@ use Try::Tiny;
 use Data::Dumper;
 
 my $help;
-my $frontend        = CIF::Router::DEFAULT_FRONTEND_LISTEN();
-my $backend         = CIF::Router::DEFAULT_BACKEND_LISTEN();
-my $storage         = 'elasticsearch';
-my $auth            = 'dummy',
-my $config          = "$CIF::EtcPath/cif-router.conf";
+my $router          = CIF::Worker::ROUTER;
+my $publisher       = CIF::Worker::PUBLISHER;
+my $config          = "$CIF::EtcPath/cif-worker.yml";
 
 # daemon
 my $daemon          = 0;
-my $pidfile         = $CIF::PidPath.'/cif-router.pid';
+my $pidfile         = $CIF::PidPath.'/cif-worker.pid';
 my $user            = $CIF::CIF_USER;
 my $group           = $CIF::CIF_GROUP;
+my $threads         = 8;
 
 # notification
 my $notify;
 my $notify_to       = 'root@localhost';
-my $notify_subj     = '[cif-router] ERROR';
+my $notify_subj     = '[cif-worker] ERROR';
 my $notify_from     = 'cif';
 my $notify_level    = 'error';
 
@@ -40,22 +40,21 @@ my $notify_level    = 'error';
 my $debug           = 0;
 my $verbosity       = 0;
 my $logging         = 0;
-my $logfile         = $CIF::LogPath.'/cif-router.log';
+my $logfile         = $CIF::LogPath.'/cif-worker.log';
 
 Getopt::Long::Configure ("bundling");
 GetOptions(
     'help|h'        => \$help, 
     'config|C=s'    => \$config,
-    'frontend|F=s'  => \$frontend,
-    'backend|B=s'   => \$backend,
-    'auth|a=s'      => \$auth,
-    'storage|s=s'   => \$storage,
+    'router|R=s'    => \$router,
+    'publisher|P=s' => \$publisher,
     
     # daemon opts
     'daemon|D'      => \$daemon,
     'pidfile|p=s'   => \$pidfile,
     'user|u=s'      => \$user,
     'group|g=s'     => \$group,
+    'threads|t=i'   => \$threads,
     
     #notification
     'notify'        => \$notify,
@@ -78,8 +77,6 @@ sub usage {
 Usage: $0 [OPTIONS] [status|start|stop|restart|reload]
 
  Options:
-    -F,  --frontend=STRING   specify the frontend binding, default: $frontend
-    -B,  --backend=STRING    specify the backend binding, default: $backend
     -C,  --config=FILE       specify cofiguration file, default: $config
     -d,  --debug             turn on debugging (max verbosity)
     -v+, --verbosity         turn up verbosity
@@ -99,10 +96,6 @@ Usage: $0 [OPTIONS] [status|start|stop|restart|reload]
     --notify-from:          default: $notify_from
     --notify-subj:          default: $notify_subj
     --notify-level:         default: $notify_level
-    
- Advanced Options:
-    -A, --auth              specify authorization plugin, default: $auth
-    -S, --storage           specify storage plugin, default: $storage
 
  Examples:
     $0 -C $config
@@ -124,7 +117,7 @@ if($notify){
 init_logging(
     { 
         level       => $loglevel,
-        catagory	=> 'cif-router',
+        #catagory	=> 'cif-worker',
         filename    => ($logging) ? $logfile : 0,
     },
     $notify,   
@@ -138,9 +131,8 @@ if($verbosity){
 
 if($daemon){
     $ARGV[0] = 'start' unless($ARGV);
-
     my $r = Daemon::Control->new(
-        name    => 'cif-router',
+        name    => 'cif-worker',
         program => sub { main() },
         
         pid_file    => $pidfile,
@@ -156,31 +148,81 @@ if($daemon){
 $Logger->info('shutting down...');
 
 sub main {
-    my $done    = AnyEvent->condvar();
+    my $master = CIF::Worker->new({ publisher => $publisher });
+    $master->workers_socket;
     
-    my $router  = CIF::Router->new({
-        frontend_listen => $frontend,
-        backend_listen  => $backend,
-        auth            => $auth,
-        storage         => $storage,
+    my @workers;
+    for(my $count = 1; $count <= $threads; $count++){
+        my $pid = fork();
+        if($pid){
+            # parent
+            #print "pid is $pid, parent $$\n";
+            push(@workers, $pid);
+        } elsif ($pid == 0) {
+            # child
+            workers($count);
+            exit 0;
+        } else {
+            die "couldnt fork: $!\n";
+        }
+    }
+    
+    my $done = AnyEvent->condvar();
+    $SIG{'TERM'} = $SIG{'INT'} = sub { $done->send(); };
+    
+    my $x = $master->start_subscriber(sub {
+        while($master->subscriber_socket->has_pollin()){
+            my $msg = $master->subscriber_socket->recv();
+            $Logger->info('recieved msg...');
+            $Logger->debug($msg);
+            $msg = $master->decode($msg);
+            foreach (@$msg){
+                $Logger->debug('sending to worker...');
+                $master->workers_socket->send($master->encode($_));
+            }
+        }
     });
     
-    my ($err,$rv);
-    
-    do {
-        $Logger->info('retrying...') if($err);
-        try {
-            $rv = $router->startup();
-        } catch {
-            $err = shift;
-        };
-        unless($rv){
-            $Logger->warn($err) if($err);
-            $Logger->warn('retrying in 5secs...');
-            sleep(5);
-            $err = undef;
-        }
-    } until($rv);
+    unless($x){
+        $done->send();
+        exit(0);
+    }
     
     $done->recv();
+    
+    foreach (@workers) {
+        kill INT => $_;
+        my $tmp = waitpid($_, 0);
+    }
+}
+
+sub workers {
+    $Logger->debug('staring worker..');
+
+    my $d    = AnyEvent->condvar();
+    $SIG{'INT'} = sub { $d->send(); };
+    
+    my $worker = CIF::Worker->new({
+        router      => $router,
+    });
+    $worker->data_socket;
+    my $err;
+    my $rv = $worker->start_worker(sub {
+       while($worker->data_socket->has_pollin()){
+           my $msg = $worker->data_socket->recv();
+           $Logger->info('worker received msg...');
+           $Logger->debug(Dumper($msg));
+           try {
+                $worker->process($msg);
+           } catch {
+                $err = shift;
+           };
+           if($err){
+                $Logger->error($err);
+                $err = '';
+           }
+       }
+   });
+
+   $d->recv();
 }

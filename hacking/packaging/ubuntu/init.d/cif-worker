@@ -1,29 +1,27 @@
 #!/bin/bash
 #
-# /etc/init.d/cif-starman -- startup script
+# /etc/init.d/cif-worker -- startup script
 #
 ### BEGIN INIT INFO
-# Provides:          cif-starman
+# Provides:          cif-worker
 # Required-Start:    $network $named
 # Required-Stop:     $network $named
 # Default-Start:     2 3 4 5
 # Default-Stop:      0 1 6
-# Short-Description: Starts starman for cif
-# Description:       Starts starman using start-stop-daemon
+# Short-Description: Starts worker for cif
+# Description:       Starts worker using start-stop-daemon
 ### END INIT INFO
 
-PATH=/bin:/usr/bin:/sbin:/usr/sbin
-NAME=cif-starman
-DESC="cif-starman"
+PATH=/opt/cif/bin:/bin:/usr/bin:/sbin:/usr/sbin
+NAME=cif-worker
+DESC="cif-worker"
 DEBUG=""
-WORKERS=16
-APP=/opt/cif/bin/cif.psgi
+THREADS=8
 INTERVAL=5
-USER=www-data
-GROUP=www-data
+USER=cif
+GROUP=cif
 LOG_DIR=/var/log
-DAEMON=/usr/bin/starman
-PORT=5000
+DAEMON=/opt/cif/bin/cif-worker
 
 if [ `id -u` -ne 0 ]; then
     echo "You need root privileges to run this script"
@@ -36,14 +34,10 @@ if [ -r /etc/default/rcS ]; then
     . /etc/default/rcS
 fi
 
-if [ -r /etc/default/cif-starman ]; then
-	. /etc/default/cif-starman
-fi
-
-LOG_FILE=$LOG_DIR/cif-starman.log
+LOG_FILE=$LOG_DIR/cif-worker.log
 
 # configuration file
-CONF_FILE=$CONF_DIR/cif-starman.conf
+CONF_FILE=$CONF_DIR/cif-worker.yml
 
 # Define other required variables
 PID_FILE=/var/run/$NAME.pid
@@ -51,13 +45,13 @@ PID_FILE=/var/run/$NAME.pid
 # Check DAEMON exists
 test -x $DAEMON || exit 0
 
-DAEMON_OPTS="--user $USER --group $GROUP --workers $WORKERS --port $PORT --error-log $LOG_FILE $APP"
+DAEMON_OPTS="--user $USER --group $GROUP --threads $THREADS --logging --logfile $LOG_FILE -p $PID_FILE -C $CONF_FILE -D start"
 
 case "$1" in
   start)
     log_daemon_msg "Starting $DESC"
 
-    pid=`pidofproc -p $PID_FILE starman`
+    pid=`pidofproc -p $PID_FILE cif-worker`
     if [ -n "$pid" ] ; then
         log_begin_msg "Already running."
         log_end_msg 0
@@ -66,11 +60,12 @@ case "$1" in
 
     # Prepare environment
     mkdir -p $LOG_DIR && chown "$USER":"$GROUP" $LOG_DIR
+    touch "$PID_FILE"
+    chown "$USER":"$GROUP" "$PID_FILE"
     touch $LOG_FILE && chown "$USER":"$GROUP" $LOG_FILE
 
     # Start Daemon
-    echo "$DAEMON $DAEMON_OPTS"
-    start-stop-daemon -b -m --start --pidfile "$PID_FILE" -c "$USER" --exec $DAEMON -- $DAEMON_OPTS
+    start-stop-daemon --start -c "$USER" --exec $DAEMON -- $DAEMON_OPTS > /dev/null 2>&1
     log_end_msg $?
     ;;      
   stop)
@@ -94,7 +89,7 @@ case "$1" in
     log_end_msg 0
     ;;
   status)
-    status_of_proc -p $PID_FILE starman starman && exit 0 || exit $?
+    status_of_proc -p $PID_FILE cif-worker cif-worker && exit 0 || exit $?
     ;;
   restart|force-reload)
     if [ -f "$PID_FILE" ]; then

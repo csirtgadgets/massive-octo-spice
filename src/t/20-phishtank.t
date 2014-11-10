@@ -2,7 +2,7 @@ use strict;
 use warnings;
 use 5.011;
 
-use Test::More skip_all => 'skipping phishtank giving us bad data atm';
+use Test::More;
 use Data::Dumper;
 
 BEGIN { 
@@ -25,6 +25,7 @@ my $ret = CIF::Smrt->new({
     rule            => $rule,
     tmp             => '/tmp',
     ignore_journal  => 1,
+    not_before      => '2010-01-01',
 })->process();
     
 ok($#{$ret} >= 0,'testing for results...');

@@ -28,14 +28,18 @@ EOF
 
 use CIF qw($Logger init_logging);
 
-my $debug = $ENV{'DEBUG'} || 'DEBUG';
+my $debug = $ENV{'DEBUG'} || 'INFO';
 
 init_logging(
     {
         level       => $debug,
-        category	=> 'cif.psgi',
+        category    => 'cif.psgi',
     },
 );
+
+
+
+$Logger->info('starting CIF::REST');
 
 # Start commands
 Mojolicious::Commands->start_app('CIF::REST');

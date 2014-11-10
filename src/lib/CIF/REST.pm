@@ -66,7 +66,7 @@ sub startup {
         my $self = shift;
         
         return 1 if
-            $self->param('token');
+            scalar $self->param('token');
         }
     );
     
