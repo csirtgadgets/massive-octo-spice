@@ -61,9 +61,6 @@ sub _normalize_otype {
     } else {
         $data->{'observable'} = _normalize_url($data->{'observable'});
     }
-    if($data->{'observable'} =~ /zhidao.baidu.com/){
-        $Logger->debug(Dumper($data));
-    }
 }
 
 sub _normalize_url {
