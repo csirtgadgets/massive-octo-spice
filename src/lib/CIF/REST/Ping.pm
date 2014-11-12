@@ -8,9 +8,9 @@ use Time::HiRes qw(gettimeofday);
 
 sub index { 
     my $self  = shift;
-    
+
     my $res = $self->cli->ping({
-        token      => scalar $self->param('token'),
+        token      => $self->token
     });
 
     if($res){
