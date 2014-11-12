@@ -114,9 +114,11 @@ sub startup {
                 while (my $msg = $self->frontend->receive()){
                     $Logger->info('received message...');
                     
+                    $Logger->info('decoding...');
+                    $msg = JSON::XS->new->decode(@$msg);
                     $Logger->info('processing...');
                     try {
-                        $msg = $self->process(@$msg);
+                        $msg = $self->process($msg);
                     } catch {
                         $err = shift;
                     };
@@ -124,9 +126,15 @@ sub startup {
                     if($err){
                         $ret = -1;
                         $Logger->error($err);
+                        $msg = CIF::Message->new({
+                            stype   => 'failure',
+                            mtype   => 'response',
+                            rtype   => $msg->{'rtype'},
+                            Data    => 'unknown failure',
+                        });
+                    } else {
+                        $self->publish($msg) if($msg->{'stype'} eq 'success');
                     }
-                    
-                    $self->publish($msg) if($msg->{'stype'} eq 'success');
                         
                     $Logger->debug('re-encoding...');
                     
@@ -149,8 +157,6 @@ sub startup {
 sub process {
     my $self    = shift;
     my $msg     = shift;
-    
-    $msg = JSON::XS->new->decode($msg);
 
     $msg = @{$msg}[0] if(ref($msg) eq 'ARRAY');
     

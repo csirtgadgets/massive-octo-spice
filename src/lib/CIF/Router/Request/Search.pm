@@ -88,8 +88,6 @@ sub _log_search {
     
     $obs = $obs->TO_JSON();
     
-    $Logger->debug($obs);
-    
     my $res = $self->storage->process({ Observables => [$obs] });
     
     $Logger->debug('search logged');

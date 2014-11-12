@@ -8,9 +8,10 @@ use DateTime;
 use Carp;
 use Carp::Assert;
 use CIF::Observable;
-use CIF qw/parse_config normalize_timestamp/;
+use CIF qw/$Logger parse_config normalize_timestamp is_url/;
 use URI;
 use URI::Escape;
+use Data::Dumper;
 
 use constant RE_IGNORE => qw(qr/[\.]$/);
 use constant RE_SKIP => qr/remote|pattern|values|ignore/;
@@ -50,18 +51,31 @@ sub process {
 sub _normalize_otype {
     my $self = shift;
     my $data = shift;
-    
-    return $data unless($self->defaults->{'otype'});
-    
-    for($self->defaults->{'otype'}){
-        if(/^url$/){
-            unless($data->{'observable'} =~ /^https?/){
-                $data->{'observable'} = 'http://'.$data->{'observable'};
+
+    if($self->defaults->{'otype'}){
+        for($self->defaults->{'otype'}){
+            if(/^url$/){
+                $data->{'observable'} = _normalize_url($data->{'observable'});
             }
-            $data->{'observable'} = uri_escape_utf8($data->{'observable'},'\x00-\x1f\x7f-\xff');
-            $data->{'observable'} = URI->new($data->{'observable'})->canonical->as_string;
         }
+    } else {
+        $data->{'observable'} = _normalize_url($data->{'observable'});
     }
+    if($data->{'observable'} =~ /zhidao.baidu.com/){
+        $Logger->debug(Dumper($data));
+    }
+}
+
+sub _normalize_url {
+    my $data = shift;
+    my $x = is_url($data);
+    return $data unless($x);
+    if ($x == 2){
+        $data = 'http://'.$data;
+    }
+    $data = uri_escape_utf8($data,'\x00-\x1f\x7f-\xff');
+    $data = URI->new($data)->canonical->as_string;
+    return $data;
 }
 
 sub _merge_defaults {
