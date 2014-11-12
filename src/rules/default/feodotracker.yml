@@ -7,13 +7,6 @@ defaults:
   tags:
     - feodo
     - botnet
-  pattern:
-    description:
-      pattern: '^URL: ([\s\S]*), status: online, MD5 hash:'
-      values: observable
-    title:
-      pattern: ^\S+\s\((\S+)\)$
-      values: firsttime
 
 feeds:
   domains:
