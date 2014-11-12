@@ -63,10 +63,8 @@ sub startup {
     });
     
     $self->helper(auth => sub {
-        my $self = shift;
-        
-        return 1 if
-            scalar $self->param('token');
+            my $self = shift;
+            return 0 unless scalar $self->param('token');
         }
     );
     

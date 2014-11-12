@@ -12,7 +12,7 @@ use Net::DNS::Match;
 use DateTime;
 use Try::Tiny;
 use Carp::Assert;
-use CIF qw/hash_create_random is_hash_sha256 is_ip is_fqdn/;
+use CIF qw/hash_create_random is_hash_sha256 is_ip is_fqdn normalize_timestamp/;
 use Data::Dumper;
 use JSON qw(encode_json);
 
@@ -26,7 +26,10 @@ use constant {
     FEEDS               => 'cif.feeds',
     OBSERVABLES_TYPE    => 'observables',
     FEEDS_TYPE          => 'feeds',
-    LIMIT               => 50000
+    LIMIT               => 50000,
+    
+    TOKENS_INDEX        => 'cif.tokens',
+    TOKENS_TYPE         => 'tokens',
 };
 
 has 'handle' => (
@@ -58,6 +61,16 @@ has 'max_count' => (
 has 'max_size' => (
     is      => 'ro',
     default => MAX_SIZE,
+);
+
+has 'tokens_index'  => (
+    is  => 'ro',
+    default => sub { TOKENS_INDEX },
+);
+
+has 'tokens_type'  => (
+    is  => 'ro',
+    default => sub { TOKENS_TYPE },
 );
 
 sub _build_handle {
@@ -114,22 +127,67 @@ sub ping {
     return 0;
 }
 
+sub check_auth {
+    my $self    = shift;
+    my $token   = shift;
+    
+    return 0 unless $token;
+    
+    $Logger->debug('checking auth for: '.$token);
+    
+    my $q = { query => { query_string => { query => 'token("'.$token.'")' } } };
+    
+    if($Logger->is_debug()){
+	    my $j = JSON->new();
+        $Logger->trace($j->pretty->encode($q));
+	}
+    
+    my %search = (
+        index   => $self->tokens_index,
+        body    => $q,
+    );
+    
+    my $res = $self->handle->search(%search);
+    return 0 if($res->{'hits'}->{'total'} == 0);
+    
+    $res = $res->{'hits'}->{'hits'};
+    $res = @{$res}[0]->{'_source'};
+    
+    if($res->{'expires'}){
+        my $dt = DateTime->from_epoch(epoch => time());
+        $dt = $dt->ymd().'T'.$dt->hms().'Z';
+        if($res->{'expires'} < $dt){
+            $Logger->info('token is expired: '.$token);
+            return 0;
+        }
+    }
+    return $res;
+}
+
 sub process {
     my $self = shift;
     my $args = shift;
     
-    return -1 unless($self->check_handle());
+    unless($self->check_handle()){
+        $Logger->warn('storage handle check failed...');
+        return -1;
+    } else {
+        $Logger->info('storage handle OK');
+    }
     
     my $ret;
     if($args->{'Query'} && $args->{'feed'}){
     	$Logger->debug('searching for feed...');
     	$ret = $self->_feed($args);
+    	
     } elsif($args->{'Query'} || $args->{'Id'} || $args->{'Filters'}){
         $Logger->debug('searching...');
         $ret = $self->_search($args);
+        
     } elsif($args->{'Observables'} || $args->{'Feed'}){
         $Logger->debug('submitting...');
         $ret = $self->_submission($args);
+        
     } else {
         $Logger->error('unknown type, skipping');
     }
@@ -298,7 +356,7 @@ sub _search {
         body    => $q,
     );
     
-    my $results = $self->handle()->search(%search);
+    my $results = $self->handle->search(%search);
     $results = $results->{'hits'}->{'hits'};
     
     $results = [ map { $_ = $_->{'_source'} } @$results ];
@@ -382,12 +440,13 @@ sub _submission {
     $Logger->debug('submitting to index: '.$index);
     
     my $bulk = Search::Elasticsearch::Bulk->new(
-        es          => $self->handle(),
+        es          => $self->handle,
         index       => $index,
         type        => $type,
         max_count   => $self->max_count,
         max_size    => $self->max_size,
         verbose     => 1,
+        refresh     => 1,
     );
 
     foreach (@$things){
@@ -407,12 +466,218 @@ sub _submission {
     @results = map { $_ = $_->{'index'}->{'_id'} } @results;
     
     if($#results == -1){
-        use Data::Dumper;
         $Logger->error('trying to submit something thats too big...');
         $Logger->error(Dumper(@{$things}[0]));
     }  
 
     return \@results;
+}
+
+sub token_list {
+    my $self = shift;
+    my $args = shift;
+    
+    my $q;
+    if($args->{'Username'}){
+        $q = "token(\"$args->{'Username'}\")";
+    } elsif($args->{'Token'}) {
+         $q = "token(\"$args->{'Token'}\")";
+    }
+    
+    if($q){
+        $q = {
+    	    query  => {
+    	        query_string   => {
+    	            query  => $q
+    	        }
+    	    }
+    	}
+    } else {
+        $q = {
+            query => { "match_all" => {} }
+        };
+    }
+	
+	my %search = (
+	   index   => $self->tokens_index,
+	   body    => $q,
+    );
+    
+    my $res = $self->handle->search(%search);
+    return 0 if($res->{'hits'}->{'total'} == 0);
+    $res = $res->{'hits'}->{'hits'};
+    $res = [ map { $_ = $_->{_source} } @$res ];
+    
+    return $res;
+}
+
+sub token_new {
+    my $self = shift;
+    my $args = shift;
+    
+    my $token = hash_create_random();
+	
+	if($args->{'Expires'}){
+	    $args->{'Expires'} = normalize_timestamp($args->{'Expires'},undef,1);
+	}
+	
+	$args->{'read'} = 1 unless($args->{'read'} || $args->{'write'});
+	
+	
+	my $prof = {
+	   token        => $token,
+       username     => $args->{'Username'},
+       expires      => $args->{'Expires'},
+       
+       admin        => $args->{'admin'},
+       revoked      => $args->{'revoked'},
+       acl          => $args->{'acl'},
+       'read'       => $args->{'read'},
+       'write'      => $args->{'write'},
+       groups       => $args->{'groups'} || ['everyone'],
+	};
+	
+	my $found;
+	foreach my $g (@{$prof->{'groups'}}){
+	    $found = 1 if($g eq 'everyone');
+	}
+	push(@{$prof->{'groups'}},'everyone') unless($found);
+	
+	my $res = $self->handle->index(
+	   index   => $self->tokens_index,
+	   id      => hash_create_random(),
+	   type    => $self->tokens_type,
+	   body    => $prof,
+	   refresh => 1,
+    );
+    return $token if($res->{_id});
+}
+
+sub token_edit {
+    my $self = shift;
+    my $args = shift;
+    
+    my $ids;
+    if($args->{'Username'}){
+        $ids = $self->_tokenid_by_username($args->{'Username'});
+    } else {
+        $ids = $self->_tokenid_by_token($args->{'Token'});
+    }
+    
+    return 0 unless($ids);
+    
+    my $params = {};
+    
+    $params->{'revoked'}    = 1 if($args->{'revoked'});
+    $params->{'read'}       = 1 if($args->{'read'});
+    $params->{'write'}      = 1 if($args->{'write'});
+    $params->{'acl'}        = $params->{'acl'} if($args->{'acl'});
+    $params->{'admin'}      = 1 if($args->{'admin'});
+    $params->{'groups'}     = $params->{'groups'} if($args->{'groups'});
+    
+    if($args->{'Expires'}){
+	    $params->{'expires'} = normalize_timestamp($args->{'Expires'},undef,1);
+	}
+        
+
+    my $bulk = Search::Elasticsearch::Bulk->new(
+        es          => $self->handle,
+        index       => $self->tokens_index,
+        type        => $self->tokens_type,
+        refresh     => 1,
+    );
+    
+    foreach my $id (@$ids){
+        $Logger->debug('updating: '.$id);
+        $bulk->update({
+            id      => $id,
+            doc     => $params,
+        });
+    }
+    
+    my @results = $bulk->flush();
+    @results = @{$results[0]->{'items'}};
+    @results = map { $_ = $_->{'delete'}->{'_id'} } @results;   
+    
+    return \@results
+    
+}
+    
+sub token_delete {
+    my $self = shift;
+    my $args = shift;
+    
+    my $ids;
+    if($args->{'Username'}){
+        $ids = $self->_tokenid_by_username($args->{'Username'});
+    } else {
+        $ids = $self->_tokenid_by_token($args->{'Token'});
+    }
+    
+    return 0 unless($ids);
+    
+    my $bulk = Search::Elasticsearch::Bulk->new(
+        es          => $self->handle,
+        index       => $self->tokens_index,
+        type        => $self->tokens_type,
+        refresh     => 1,
+    );
+    
+    foreach my $id (@$ids){
+        $Logger->debug('deleting: '.$id);
+        $bulk->delete({
+            id      => $id,
+        });
+    }
+    
+    my @results = $bulk->flush();
+    @results = @{$results[0]->{'items'}};
+    @results = map { $_ = $_->{'delete'}->{'_id'} } @results;
+    
+    return \@results
+}
+
+sub _tokenid_by {
+    my $self    = shift;
+    my $q       = shift;
+    
+    $q = {
+	    query  => {
+	        query_string   => {
+	            query  => $q
+	        }
+	    }
+	};
+	
+	my %search = (
+	   index   => $self->tokens_index,
+	   body    => $q,
+    );
+    
+    my $res = $self->handle->search(%search);
+    return 0 if($res->{'hits'}->{'total'} == 0);
+    
+    $res = $res->{'hits'}->{'hits'};
+    $res = [ map { $_ = $_->{_id} } @$res ];
+    
+    return $res;
+}
+
+sub _tokenid_by_username {
+    my $self        = shift;
+    my $username    = shift;
+
+    my $q = 'token("'.$username.'")';
+    return $self->_tokenid_by($q);
+}
+
+sub _tokenid_by_token {
+    my $self    = shift;
+    my $t       = shift;
+    
+    my $q = 'token("'.$t.'")';
+    return $self->_tokenid_by($q);
+    
 }
 
 __PACKAGE__->meta()->make_immutable();

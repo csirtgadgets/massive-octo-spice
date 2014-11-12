@@ -3,7 +3,6 @@ package CIF::Client;
 use strict;
 use warnings;
 
-use Data::Dumper;
 use Mouse;
 use CIF qw/init_logging $Logger normalize_timestamp/;
 use CIF::Message;
@@ -19,9 +18,11 @@ use Try::Tiny;
 use ZMQ::FFI;
 use ZMQ::FFI::Constants qw(ZMQ_REQ ZMQ_SUB ZMQ_SNDTIMEO ZMQ_RCVTIMEO ZMQ_LINGER);
 
-use constant SND_TIMEOUT    => 360000;
-use constant RCV_TIMEOUT    => 360000;
-use constant REMOTE_DEFAULT => 'tcp://localhost:'.CIF::DEFAULT_PORT();
+use constant {
+    SND_TIMEOUT => 120000,
+    RCV_TIMEOUT => 120000,
+    REMOTE      => 'tcp://localhost:'.CIF::DEFAULT_PORT
+};
 
 use constant {
     SEARCH_CONFIDENCE => 25,
@@ -54,7 +55,7 @@ sub _build_socket {
     $socket->set(ZMQ_SNDTIMEO,'int',SND_TIMEOUT());
     $socket->set(ZMQ_RCVTIMEO,'int',RCV_TIMEOUT());
     $socket->subscribe('') if($self->subscriber());
-    $socket->connect($self->remote());
+    $socket->connect($self->remote || REMOTE);
     
     return $socket;
 }
@@ -63,6 +64,90 @@ sub BUILD {
     my $self = shift;
     init_logging({ level => 'WARN' }) unless($Logger);
 }
+
+sub ping {
+    my $self = shift;
+    my $args = shift;
+    
+    $Logger->info('generating ping request...');
+    my $msg = CIF::Message->new({
+        rtype   => 'ping',
+        mtype   => 'request',
+        Token   => $self->token || $args->{'token'},
+    });
+    $Logger->info('sending ping...');
+    my $ret = $self->_send($msg);
+    
+    return 0 if $ret->{'stype'} eq 'unauthorized';
+    return [gettimeofday] if $ret->{'stype'} eq 'success';
+}
+
+sub ping_write {
+    my $self = shift;
+    my $args = shift;
+    
+    $Logger->info('generating ping request...');
+    my $msg = CIF::Message->new({
+        rtype   => 'ping-write',
+        mtype   => 'request',
+        Token   => $self->token || $args->{'token'},
+    });
+    $Logger->info('sending ping...');
+    my $ret = $self->_send($msg);
+    
+    return 0 if $ret->{'stype'} eq 'unauthorized';
+    return [gettimeofday] if $ret->{'stype'} eq 'success';
+}
+
+sub token_new {
+    my $self = shift;
+    my $args = shift;
+    
+    my $msg = CIF::Message->new({
+        rtype   => 'token-new',
+        mtype   => 'request',   
+        Token   => $self->token,
+        Data    => $args,
+    });
+    $msg = $self->_send($msg);
+    my $stype = $msg->{'stype'} || $msg->{'stype'};
+    return $msg->{'Data'} if($stype eq 'failure');
+}
+
+sub token_list {
+    my $self = shift;
+    my $args = shift;
+    
+    my $msg = CIF::Message->new({
+        rtype       => 'token-list',
+        mtype       => 'request',
+        Token       => $self->token,
+        Data        => $args,
+    });
+    
+    $msg = $self->_send($msg);
+
+    my $stype = $msg->{'stype'} || $msg->{'stype'};
+    return $msg->{'Data'} if($stype eq 'failure');
+}
+
+sub token_delete {
+    my $self = shift;
+    my $args = shift;
+    
+    my $msg = CIF::Message->new({
+        rtype       => 'token-delete',
+        mtype       => 'request',
+        Token       => $self->token,
+        Data        => $args,
+    });
+    
+    $msg = $self->_send($msg);
+   
+    my $stype = $msg->{'stype'} || $msg->{'stype'};
+    return $msg->{'Data'} if($stype eq 'failure');
+}
+
 
 sub search {
     my $self = shift;
@@ -117,10 +202,8 @@ sub search {
     
     $msg = $self->_send($msg);
     
-    #$Logger->debug(Dumper($msg));
-    
-    my $stype = $msg->{'stype'} || $msg->{'stype'};
-    return $msg->{'Data'} if($stype eq 'failure');
+    return 0 if $msg->{'stype'} eq 'unauthorized';
+    return unless $msg->{'stype'} eq 'success';
     
     unless($args->{'nodecode'}){
         map { $_ = CIF::ObservableFactory->new_plugin($_) } (@{$msg->{'Data'}->{'Results'}});
@@ -244,28 +327,6 @@ sub _subscribe {
 	   poll    => 'r',
 	   cb      => $cb,
     );
-}
-
-sub ping {
-    my $self = shift;
-    my $args = shift;
-    
-    $Logger->info('generating ping request...');
-    my $msg = CIF::Message->new({
-        rtype   => 'ping',
-        mtype   => 'request',
-        Token   => $self->token,
-    });
-    $Logger->info('sending ping...');
-    my $ret = $self->_send($msg);
-    if($ret){
-        my $ts = $msg->{'Data'}->{'Timestamp'};
-        $Logger->info('ping returned');
-        return tv_interval([split(/\./,$ts)]);
-    } else {
-        $Logger->warn('timeout...');
-    }
-    return 0;
 }
 
 __PACKAGE__->meta->make_immutable(inline_destructor => 0);    

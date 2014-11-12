@@ -1,9 +1,9 @@
-EXTRA_DIST = cif-template.json
+EXTRA_DIST = map.json
 
 CURLOPTS=-w "\n"
 CURLCMD=$(CURL) $(CURLOPTS)
 HOST=http://$(ES_HOST)
-TEMPLATE=cif-template.json
+TEMPLATE=map.json
 INDICIES=cif.*-*
 
 all-am: default
