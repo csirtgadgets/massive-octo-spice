@@ -17,7 +17,7 @@ sub understands {
     my $args = shift;
 
     return unless($args->{'rtype'});
-    return 1 if($args->{'rtype'} eq 'ping');
+    return 1 if($args->{'rtype'} =~ /^ping(-write)?$/);
 }
 
 sub TO_JSON {

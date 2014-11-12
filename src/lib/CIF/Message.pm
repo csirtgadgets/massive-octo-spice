@@ -29,7 +29,6 @@ has 'id'   => (
 
 has 'Token' => (
     is  => 'ro',
-    required    => 1,
 );
 
 has 'Data'  => (

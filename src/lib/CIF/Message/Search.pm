@@ -6,7 +6,7 @@ use warnings;
 use Mouse;
 
 has [qw/Id Query Results Filters feed/] => (
-    is  => 'ro',
+    is  => 'rw',
 );
 
 has [qw/feed nolog/] => (
@@ -25,10 +25,10 @@ sub TO_JSON {
     my $self = shift;
 
     my $ret = {
-        'Query'         => $self->get_Query(),
-        'Id'			=> $self->get_Id(),
-        'Results'       => $self->get_Results(),
-        'Filters'       => $self->get_Filters(),
+        'Query'         => $self->Query,
+        'Id'			=> $self->Id,
+        'Results'       => $self->Results,
+        'Filters'       => $self->Filters,
         'feed'          => $self->feed,
         'nolog'         => $self->nolog,
     };

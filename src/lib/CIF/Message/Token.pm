@@ -5,7 +5,7 @@ use warnings;
 
 use Mouse;
 
-has [qw/Token Alias Description Created Expires/] => (
+has [qw/Token Username Description Created Expires Results/] => (
     is  => 'rw',
 );
 
@@ -30,10 +30,11 @@ sub TO_JSON {
         'admin'         => $self->admin,
         
         'Token'         => $self->Token,
-        'Alias'         => $self->Alias,
+        'Username'      => $self->Username,
         'Description'   => $self->Description,
         'Created'       => $self->Created,
-        'Expires'       => $self->Expires,        
+        'Expires'       => $self->Expires,
+        'Results'       => $self->Results,      
     };
 }
 

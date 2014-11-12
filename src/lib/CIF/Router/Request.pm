@@ -7,10 +7,8 @@ use Mouse::Role;
 
 requires qw(process);
 
-has 'storage_handle' => (
-    reader  => 'get_storage_handle',
+has [qw/user storage nolog msg/] => (
+    is  => 'ro',
 );
-
-has 'auth' => (is => 'ro');
 
 1;
