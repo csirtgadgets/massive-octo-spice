@@ -12,7 +12,7 @@ sub index {
     
     $Logger->debug('generating search...');
     my $res = $self->cli->search({
-        token      	=> scalar $self->param('token'),
+        token      	=> $self->token,
         query      	=> scalar $query,
         nolog       => scalar $self->param('nolog'),
         filters     => {
@@ -34,7 +34,7 @@ sub index {
 
     if(defined($res)){
         if($res){
-            $self->stash(observables => $res, token => scalar $self->param('token'));
+            $self->stash(observables => $res, token => $self->token);
             $self->respond_to(
                 json    => { json => $res },
                 html    => { template => 'observables/index' },
@@ -51,7 +51,7 @@ sub show {
     my $self  = shift;
     
     my $res = $self->cli->search({
-        token      => scalar $self->param('token'),
+        token      => $self->token,
         id         => $self->stash->{'observable'},
     });
     
@@ -75,11 +75,12 @@ sub create {
     
     my $data    = $self->req->json();
     my $nowait  = scalar $self->param('nowait') || 0;
-    my $token   = scalar $self->param('token');
+    
+    warn $self->token;
     
     # ping the router first, make sure we have a valid key
     my $res = $self->cli->ping_write({
-        token   => $token,
+        token   => $self->token,
     });
     
     if($res == 0){
@@ -134,7 +135,7 @@ sub _submit {
     my $data = shift;
     
     my $res = $self->cli->submit({
-        token           => scalar $self->param('token'),
+        token           => $self->token,
         observables     => $data,
         enable_metadata => 1,
     });
