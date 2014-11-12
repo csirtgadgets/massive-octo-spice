@@ -306,7 +306,6 @@ sub _main {
         if($#{$data} >= 0){
             $Logger->info('sending '.($#{$data} + 1).' observables...');
             ($ret,$err) = $cli->submit($data);
-            $Logger->debug($ret);
             croak($err) if($err);
             if(ref($ret) eq 'HASH' && $ret->{'message'}){
                 $Logger->info($ret->{'message'});
