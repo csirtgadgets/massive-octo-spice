@@ -166,6 +166,7 @@ sub process {
     });
     
     my $user = $self->storage_handle->check_auth($msg->{'Token'});
+    $Logger->debug(Dumper($user));
 
     if($user){
         my $req = CIF::Router::RequestFactory->new_plugin({ 

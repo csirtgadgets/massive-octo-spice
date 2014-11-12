@@ -135,7 +135,7 @@ sub check_auth {
     
     $Logger->debug('checking auth for: '.$token);
     
-    my $q = { query => { query_string => { query => 'token("'.$token.'")' } } };
+    my $q = { query => { query_string => { query => { default_field => 'token', query => $token } } } };
     
     if($Logger->is_debug()){
 	    my $j = JSON->new();
@@ -148,6 +148,7 @@ sub check_auth {
     );
     
     my $res = $self->handle->search(%search);
+
     return 0 if($res->{'hits'}->{'total'} == 0);
     
     $res = $res->{'hits'}->{'hits'};
@@ -479,9 +480,15 @@ sub token_list {
     
     my $q;
     if($args->{'Username'}){
-        $q = "token(\"$args->{'Username'}\")";
+        $q = {
+            default_field   => 'username',
+            query           => $args->{'Username'},
+        };
     } elsif($args->{'Token'}) {
-         $q = "token(\"$args->{'Token'}\")";
+        $q = {
+            default_field   => 'token',
+            query           => $args->{'Token'},
+        };
     }
     
     if($q){
@@ -667,17 +674,16 @@ sub _tokenid_by_username {
     my $self        = shift;
     my $username    = shift;
 
-    my $q = 'token("'.$username.'")';
+    my $q = { default_field => 'username', query => $username };
     return $self->_tokenid_by($q);
 }
 
 sub _tokenid_by_token {
     my $self    = shift;
-    my $t       = shift;
+    my $token   = shift;
     
-    my $q = 'token("'.$t.'")';
-    return $self->_tokenid_by($q);
-    
+    my $q = { default_field => 'token', query => $token };
+    return $self->_tokenid_by($token);
 }
 
 __PACKAGE__->meta()->make_immutable();
