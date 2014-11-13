@@ -231,12 +231,7 @@ sub _search {
 
 	if($filters->{'cc'}){
 		$terms->{'cc'} = [lc($filters->{'cc'})];
-	} 
-#	else { ##TODO- forget why we had this here?
-#	    if($args->{'feed'}){
-#	        $missing = { 'field' => 'cc' };
-#	    }
-#	}
+	}
     
     if($filters->{'confidence'}){
     	$ranges->{'confidence'}->{'gte'} = $filters->{'confidence'};
@@ -274,9 +269,7 @@ sub _search {
         $filters->{'rdata'} = [$filters->{'rdata'}] unless(ref($filters->{'rdata'}));
         $terms->{'rdata'} = $filters->{'rdata'}
     }
-    
-    ## TODO asn_desc TERM => ***
-    
+
     if($filters->{'group'}){
         $filters->{'group'} = [$filters->{'group'}] unless(ref($filters->{'group'}) eq 'ARRAY');
     } else {
