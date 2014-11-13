@@ -107,7 +107,7 @@ sub startup {
     
     $Logger->info('publisher started on: '.$self->publisher_listen);
     
-    my ($ret,$err,$m);
+    my ($ret,$err,$resp); ##TODO mem leaks?
     $self->frontend_watcher(
         $self->frontend->anyevent_watcher(
             sub {
@@ -118,7 +118,7 @@ sub startup {
                     $msg = JSON::XS->new->decode(@$msg);
                     $Logger->info('processing...');
                     try {
-                        $msg = $self->process($msg);
+                        $resp = $self->process($msg);
                     } catch {
                         $err = shift;
                     };
@@ -126,26 +126,29 @@ sub startup {
                     if($err){
                         $ret = -1;
                         $Logger->error($err);
-                        $msg = CIF::Message->new({
+                        $resp = CIF::Message->new({
                             stype   => 'failure',
                             mtype   => 'response',
                             rtype   => $msg->{'rtype'},
                             Data    => 'unknown failure',
                         });
                     } else {
-                        $self->publish($msg) if($msg->{'stype'} eq 'success');
+                        $Logger->debug(Dumper($msg));
+                        $self->publish($msg) if($resp->{'stype'} eq 'success');
                     }
                         
                     $Logger->debug('re-encoding...');
                     
                     if($Logger->is_debug()){
-                        $msg = JSON::XS->new->pretty->convert_blessed(1)->encode($msg);
+                        $resp = JSON::XS->new->pretty->convert_blessed(1)->encode($resp);
                     } else {
-                        $msg = JSON::XS->new->convert_blessed(1)->encode($msg);
+                        $resp = JSON::XS->new->convert_blessed(1)->encode($resp);
                     }
                     
                     $Logger->info('replying...');
-                    $self->frontend->send($msg);
+                    $self->frontend->send($resp);
+                    
+                    $resp = undef;
                 }
             }
         )

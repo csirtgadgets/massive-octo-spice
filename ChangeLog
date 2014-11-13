@@ -1,6 +1,7 @@
 Revision history for massive-octo-spice
 
 2.00.00-alpha.6 2014-11-13
+    - bugfix to cif-workers not getting messages
     - set static log4perl version
     - added tokens support: https://github.com/csirtgadgets/massive-octo-spice/issues/30
     - re-factored HTTP API to support Authorization: Token token=xxxxxx instead of ?token= param
