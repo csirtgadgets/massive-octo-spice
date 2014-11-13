@@ -2,7 +2,7 @@ requires 'Encoding::FixLatin';
 requires 'HTML::TableExtract';
 requires 'Test::Exception', '<= 0.32';
 requires 'Net::Server::SS::PreFork';
-requires 'CIF::SDK', '>= 0.00_02';
+requires 'CIF::SDK', '>= 0.00_05';
 requires 'File::Slurp','9999.19';
 requires 'YAML::Tiny','1.63';
 requires 'Parse::RecDescent','1.967009';

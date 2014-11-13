@@ -111,6 +111,7 @@ sub process {
     
     # parse
     $Logger->debug('parsing...');
+    
     $data = $self->parser->process($data);
 
     unless($self->ignore_journal){

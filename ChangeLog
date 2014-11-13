@@ -1,10 +1,13 @@
 Revision history for massive-octo-spice
 
-2.00.00-alpha.7 2014-10
+2.00.00-alpha.6 2014-11-13
     - set static log4perl version
-
-2.00.00-alpha.6 2014-10-27
+    - added tokens support: https://github.com/csirtgadgets/massive-octo-spice/issues/30
+    - re-factored HTTP API to support Authorization: Token token=xxxxxx instead of ?token= param
+    - added feodo botnet tracker: https://github.com/csirtgadgets/massive-octo-spice/issues/76
     - bugfix when handling smrt/cache permissions
+    - other misc bugfixes, #82, #85, #87, #54
+    - bugfix to malwaredomains.com feed
 
 2.00.00-alpha.5 2014-10-25
     - bugfix to cif-router startup when no elastic search cluster found

@@ -25,7 +25,7 @@ has 'id' => (
 
 has 'provider' => (
     is      => 'ro',
-    isa       => 'CIF::Type::LowerCaseStr',
+    isa       => 'Maybe[CIF::Type::LowerCaseStr]',
     coerce    => 1,
 );
 
@@ -87,7 +87,7 @@ has 'altid'     => (
 
 has 'altid_tlp' => (
     is  => 'ro',
-    isa => 'CIF::Type::Tlp',
+    isa => 'Maybe[CIF::Type::Tlp]',
 );
 
 has 'additional_data' => (

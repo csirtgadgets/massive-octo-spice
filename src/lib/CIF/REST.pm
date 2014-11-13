@@ -63,12 +63,18 @@ sub startup {
     });
     
     $self->helper(auth => sub {
-        my $self = shift;
-        
-        return 1 if
-            scalar $self->param('token');
+            my $self = shift;
+            return 0 unless $self->req->headers->authorization();
         }
     );
+    
+    $self->helper(token => sub {
+        my $self = shift;
+        my $token = scalar $self->req->headers->authorization();
+        $token =~ /^Token token=(\S+)$/;
+        $token = $1;
+        return $token
+    });
     
     $self->helper(version => sub {
         my $self = shift;

@@ -2,7 +2,7 @@
 
 BEGIN {
     use FindBin;
-    use lib "$FindBin::Bin/../lib";
+    use local::lib "$FindBin::Bin/..";
 }
 
 use feature 'say';
@@ -12,18 +12,20 @@ use warnings FATAL => 'all';
 use Getopt::Long;
 use Carp;
 use Data::Dumper;
+use Text::Table;
+use CIF::StorageFactory;
 
-
-# http://search.cpan.org/dist/Mojolicious-Plugin-Database/lib/Mojolicious/Plugin/Database.pm
+use CIF qw/$Logger init_logging/;
 
 my $help;
-my $remote          = 'tcp://localhost';
-my $token;
+my $remote          = 'localhost:9200';
+my $storage         = 'elasticsearch';
 my $debug           = 0;
 my $verbosity       = 0;
 my $config          = $ENV{'HOME'}.'/.cif.yml';
-
-my $filters;
+my $token;
+my $action;
+my $localmode;
 
 Getopt::Long::Configure("bundling");
 GetOptions(
@@ -31,23 +33,37 @@ GetOptions(
     'config|C=s'        => \$config,
     'debug|d'           => \$debug,
     'verbosity|v+'      => \$verbosity,
+    'localmode'         => \$localmode,
     
     'token=s'           => \$token->{'token'},
-    'alias=s'           => \$token->{'alias'},
+    'username=s'        => \$token->{'username'},
+    'groups=s'          => \$token->{'groups'} || '',
     'expires=s'         => \$token->{'expires'},
-    'admin=b'           => \$token->{'admin'},
+    'admin'             => \$token->{'admin'},
+    'read'              => \$token->{'read'},
+    'write'             => \$token->{'write'},
+    'acl'               => \$token->{'acl'},
+    
+    'new'               => \$action->{'new'},
+    'delete'            => \$action->{'delete'},
+    'list'              => \$action->{'list'},
+    'revoke'            => \$action->{'revoke'},
+    
+    'storage=s'         => $storage,
     
 ) or die(usage());
 
 die(usage()) if($help);
-die(usage()) unless();
+die(usage()) unless($action);
 
-my $loglevel = ($debug) ? 'DEBUG' : 'WARN';
+croak(usage()."\n\nERROR: --new and --delete are mutually exclusive") if($action->{'new'} && $action->{'delete'});
+
+my $loglevel = ($debug) ? 'DEBUG' : 'INFO';
 
 init_logging(
     { 
         level       => $loglevel,
-        category    => 'cif',
+        category    => 'cif-tokens',
     },
 );
 
@@ -57,8 +73,6 @@ if($verbosity){
     }
 }
 
-die(usage()."\nmissing Token (--token|-T)\n") unless($token);
-
 sub usage {
     return <<EOF;
 
@@ -66,14 +80,88 @@ Usage: $0 [OPTION]
 
 Options:
 
-    -h, --help                  this message     
+    -h, --help      this message     
+   
+    --username      specify a username
+    --admin         set the admin flag for the user
+    --read          set read permissions for a token
+    --write         set write permissions for a token
+    --expires       set an expiration date for the token
+    
+Actions:
 
-
+    --new           generate a new token               
+    --delete        remove token
+    --revoke        revoke a user / token
+    
  Examples:
-    $0 --new --alias me@example.com --expires 2016-07-01 --admin
+    $0 --new --user me\@example.com --expires 2016-07-01 --admin
 
 EOF
 }
 
+$storage = CIF::StorageFactory->new_plugin({ 
+    plugin => $storage,
+    remote  => $remote,
+});
 
+my $rv;
+my @cols = ('username','groups','admin','read','write','acl','expires','revoked','token');
 
+if($action->{'delete'}){
+    $rv = $storage->token_delete({
+        Username    => $token->{'username'},
+        Token       => $token->{'token'},
+    });
+    if($rv){
+        $Logger->info(($#{$rv} + 1).' tokens deleted...');
+        exit(0);
+    } else {
+        $Logger->info('no tokens found...');
+        exit(0);
+    }
+}
+if($action->{'new'}){
+    $token->{'groups'} = [split(/,/,$token->{'groups'})] if($token->{'groups'});
+    $rv = $storage->token_new({
+        Username    => $token->{'username'},
+        admin       => $token->{'admin'},
+        Expires     => $token->{'expires'},
+        'read'      => $token->{'read'},
+        'write'     => $token->{'write'},
+        acl         => $token->{'acl'},
+        groups      => $token->{'groups'},
+    });
+    unless($rv){
+        $Logger->info('failed to generate new token...');
+        exit(-1);
+    }
+}
+
+if($action->{'revoke'}){
+    $rv = $storage->token_edit({
+        Token       => $token->{'token'},
+        Username    => $token->{'username'},
+        revoked => 1,
+    });
+}
+
+$rv = $storage->token_list({ username => $token->{'username'}, token => $token->{'token'} });
+
+if($rv){
+    my $t = Text::Table->new(@cols);
+    foreach my $r (@$rv){
+        my @list;
+        foreach my $c (@cols){
+            $r->{$c} = 'yes' if($r->{$c} && $r->{$c} eq 1);
+           if(ref($r->{$c}) eq 'ARRAY'){
+                $r->{$c} = join(',',@{$r->{$c}}); 
+           }
+            push(@list, $r->{$c});
+        }
+        $t->load(\@list);
+    }
+    say $t;
+} else {
+    $Logger->info('no tokens found...');
+}

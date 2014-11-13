@@ -1,8 +1,9 @@
 package CIF::REST::Observables;
+
 use Mojo::Base 'Mojolicious::Controller';
 use POSIX;
-
 use CIF qw/$Logger/;
+use Data::Dumper;
 
 sub index {
     my $self = shift;
@@ -11,7 +12,7 @@ sub index {
     
     $Logger->debug('generating search...');
     my $res = $self->cli->search({
-        token      	=> scalar $self->param('token'),
+        token      	=> $self->token,
         query      	=> scalar $query,
         nolog       => scalar $self->param('nolog'),
         filters     => {
@@ -30,25 +31,43 @@ sub index {
         	reporttime      => scalar $self->param('reporttime')   || undef,
         },
     });
-    $self->stash(observables => $res, token => scalar $self->param('token')); ##TODO is this safe?
-    $self->respond_to(
-        json    => { json => $res },
-        html    => { template => 'observables/index' },
-    );
+    
+    if(defined($res)){
+        if($res){
+            $self->stash(observables => $res, token => $self->token);
+            $self->respond_to(
+                json    => { json => $res },
+                html    => { template => 'observables/index' },
+            );
+        } else {
+            $self->render(json   => { 'message' => 'unauthorized' }, status => 401 );
+        }
+    } else {
+        $self->render(json   => { 'message' => 'unknown failure' }, status => 500 );
+    }
 }
 
 sub show {
     my $self  = shift;
     
     my $res = $self->cli->search({
-        token      => scalar $self->param('token'),
+        token      => $self->token,
         id         => $self->stash->{'observable'},
     });
-    $self->stash(observables => $res); ##TODO -- does this leak if we don't clear it?
-    $self->respond_to(
-        json    => { json => $res },
-        html    => { template => 'observables/show' },
-    );
+    
+    if(defined($res)){
+        if($res){
+           $self->stash(observables => $res);
+            $self->respond_to(
+                json    => { json => $res },
+                html    => { template => 'observables/show' },
+            );
+        } else {
+            $self->render(json   => { 'message' => 'unauthorized' }, status => 401 );
+        }
+    } else {
+        $self->render(json   => { 'message' => 'unknown failure' }, status => 500 );
+    }
 }
 
 sub create {
@@ -57,7 +76,16 @@ sub create {
     my $data    = $self->req->json();
     my $nowait  = scalar $self->param('nowait') || 0;
     
-    my $res;
+    # ping the router first, make sure we have a valid key
+    my $res = $self->cli->ping_write({
+        token   => $self->token,
+    });
+    
+    if($res == 0){
+        $self->render(json   => { 'message' => 'unauthorized' }, status => 401 );
+        return;
+    }
+
     if($nowait){
         $SIG{CHLD} = 'IGNORE'; # http://stackoverflow.com/questions/10923530/reaping-child-processes-from-perl
         my $child = fork();
@@ -80,27 +108,24 @@ sub create {
     } else {
         $res = $self->_submit($data);
     }
-
-    unless($res){
-         $self->respond_to(
-            json => { json => { "error" => "unknown, contact system administrator" }, status => 500 },
-        );
-        return;
+    
+    if(defined($res)){
+        if($res){
+            $self->respond_to(
+                json    => { json => $res, status => 201 },
+            );
+            $self->res->headers->add('X-Location' => $self->req->url->to_string());
+            $self->res->headers->add('X-Id' => @{$res}[0]); ## TODO
+        } elsif($res == -1 ){
+           $self->respond_to(
+                json => { json => { "error" => "timeout" }, status => 408 },
+           );
+        } else {
+            $self->render(json   => { 'message' => 'unauthorized' }, status => 401 );
+        }
+    } else {
+        $self->render(json   => { 'message' => 'unknown failure' }, status => 500 );
     }
-    
-    if($res == -1){
-        $self->respond_to(
-            json => { json => { "error" => "timeout" }, status => 408 },
-        );
-        return;
-    }
-    
-    $self->respond_to(
-        json    => { json => $res, status => 201 },
-    );
-    
-    $self->res->headers->add('X-Location' => $self->req->url->to_string());
-    $self->res->headers->add('X-Id' => @{$res}[0]); ## TODO
 }
 
 sub _submit {
@@ -108,7 +133,7 @@ sub _submit {
     my $data = shift;
     
     my $res = $self->cli->submit({
-        token           => scalar $self->param('token'),
+        token           => $self->token,
         observables     => $data,
         enable_metadata => 1,
     });

@@ -7,7 +7,6 @@ use Mouse;
 use CIF qw/init_logging $Logger/;
 use CIF::Message;
 use CIF::Router::RequestFactory;
-use CIF::Router::AuthFactory;
 use CIF::StorageFactory;
 use ZMQx::Class;
 use JSON::XS;
@@ -60,12 +59,6 @@ has 'auth' => (
     reader      => 'get_auth',
 );
 
-has 'auth_handle' => (
-    is          => 'ro',
-    reader      => 'get_auth_handle',
-    lazy_build  => 1,
-);
-
 has 'storage'   => (
     is          => 'ro',
     isa         => 'Str',
@@ -74,14 +67,8 @@ has 'storage'   => (
 
 has 'storage_handle'    => (
     is          => 'ro',
-    reader      => 'get_storage_handle',
     lazy_build  => 1,
 );
-
-sub _build_auth_handle {
-    my $self = shift;
-    return CIF::Router::AuthFactory->new_plugin({ plugin => $self->get_auth() });
-}
 
 sub _build_storage_handle {
     my $self = shift;
@@ -98,12 +85,7 @@ sub startup {
     my $self = shift;
     my $args = shift;
     
-    unless($self->get_auth_handle()->check_handle()){
-        $Logger->fatal('unable to start router, no auth handle...');
-        return 0;
-    }
-    
-    unless($self->get_storage_handle()->check_handle()){
+    unless($self->storage_handle->check_handle()){
         $Logger->fatal('unable to start router, no storage handle...');
         return 0;
     }
@@ -132,14 +114,11 @@ sub startup {
                 while (my $msg = $self->frontend->receive()){
                     $Logger->info('received message...');
                     
-                    $Logger->debug(Dumper($msg));
-                    
-                    $Logger->info('publishing');
-                    $self->publish($msg);
-                    
+                    $Logger->info('decoding...');
+                    $msg = JSON::XS->new->decode(@$msg);
                     $Logger->info('processing...');
                     try {
-                        $msg = $self->process(@$msg);
+                        $msg = $self->process($msg);
                     } catch {
                         $err = shift;
                     };
@@ -147,7 +126,24 @@ sub startup {
                     if($err){
                         $ret = -1;
                         $Logger->error($err);
+                        $msg = CIF::Message->new({
+                            stype   => 'failure',
+                            mtype   => 'response',
+                            rtype   => $msg->{'rtype'},
+                            Data    => 'unknown failure',
+                        });
+                    } else {
+                        $self->publish($msg) if($msg->{'stype'} eq 'success');
                     }
+                        
+                    $Logger->debug('re-encoding...');
+                    
+                    if($Logger->is_debug()){
+                        $msg = JSON::XS->new->pretty->convert_blessed(1)->encode($msg);
+                    } else {
+                        $msg = JSON::XS->new->convert_blessed(1)->encode($msg);
+                    }
+                    
                     $Logger->info('replying...');
                     $self->frontend->send($msg);
                 }
@@ -161,72 +157,53 @@ sub startup {
 sub process {
     my $self    = shift;
     my $msg     = shift;
-    
-    $msg = JSON::XS->new->decode($msg);
 
     $msg = @{$msg}[0] if(ref($msg) eq 'ARRAY');
     
     my $r = CIF::Message->new({
         rtype   => $msg->{'rtype'},
         mtype   => 'response',
-        Token   => $msg->{'Token'},
     });
     
-    $Logger->debug('auth');
+    my $user = $self->storage_handle->check_auth($msg->{'Token'});
 
-    my $ret = $self->get_auth_handle()->process($msg);
-    if($ret){
-        $Logger->debug('auth passed');
+    if($user){
         my $req = CIF::Router::RequestFactory->new_plugin({ 
-            msg             => $msg,
-            auth_handle     => $self->get_auth_handle(),
-            storage_handle  => $self->get_storage_handle(),
+            msg     => $msg,
+            storage => $self->storage_handle,
+            user    => $user,
+            nolog   => $msg->{'nolog'},
         });
         if($req){
-            $Logger->debug('found request plugin, processing...');
-            my $rv = $req->process($msg);
+            $Logger->debug('found request plugin: '.ref($req));
+            my $rv = $req->process($msg->{'Data'});
             if($rv < 0){
-                $Logger->error('request plugin failure');
-                $r->set_stype('failure');
-                $r->set_Data('ERROR: contact administrator');
+                $Logger->error('request failure');
+                $r->stype('failure');
+                $r->Data('ERROR: contact administrator');
+            } elsif ($rv == 0) {
+                $Logger->info('auth failed for: '.$msg->{'Token'});
+                $r->stype('unauthorized');
             } else {
-                $r->set_Data($rv);
-                $r->set_stype('success');
+                $r->Data($rv);
+                $r->stype('success');
             }
         } else {
             $Logger->error('request type not supported');
-            $r->set_stype('failure');
-            $r->set_Data('ERROR: request type not supported');
+            $r->stype('failure');
+            $r->Data('ERROR: request type not supported');
         }
     } else {
         $Logger->info('auth failed for: '.$msg->{'Token'});
-        $r->set_stype('unauthorized');
-        delete($r->{'Data'});
+        $r->stype('unauthorized');
     }
     
-    $Logger->debug('re-encoding...');
-
-    if($Logger->is_debug()){
-        return JSON::XS->new->pretty->convert_blessed(1)->encode($r);
-    } else {
-        return JSON::XS->new->convert_blessed(1)->encode($r);
-    }
+    return $r;
 }
 
 sub publish {
     my $self = shift;
-    my $data = shift;
-    
-    $Logger->debug('publishing...');
-
-    my ($m,$err);
-    try {
-        $m = JSON::XS->new->decode(@{$data}[0]);
-    } catch {
-        $err = shift;
-        $Logger->error($err);
-        $Logger->debug(Dumper($data));
-    };
+    my $m = shift;
     
     return unless($m->{'mtype'} eq 'request');
 
@@ -243,7 +220,11 @@ sub publish {
             $m = $m->{'Data'}->{'Observables'};
             last;   
         }
-        if(/^ping$/){
+        if(/^ping(-write)?$/){
+            $m = undef;
+            last;
+        }
+        if(/^token-/){
             $m = undef;
             last;
         }
@@ -251,6 +232,7 @@ sub publish {
     }
     
     if($m){
+        $Logger->debug('publishing...');
         $m = JSON::XS::encode_json($m);
         $self->publisher->send($m);
     }

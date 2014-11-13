@@ -9,59 +9,30 @@ use CIF::MessageFactory;
 use Time::HiRes qw(gettimeofday);
 
 has 'version'   => (
-    is      => 'ro',
-    isa     => 'Num',
-    default => sub { CIF::PROTOCOL_VERSION(); },
-    reader  => 'get_version',
+    is  => 'ro',
+    default => sub { CIF::PROTOCOL_VERSION; },
 );
 
-has 'mtype' => (
-    is          => 'rw',
-    isa         => 'Str',
-    required    => 1,
-    reader      => 'get_mtype',
-    writer      => 'set_mtype',
-);
-
-has 'stype' => (
+has [qw/stype rtype mtype/] => (
     is      => 'rw',
-    isa     => 'Str',
-    reader      => 'get_stype',
-    writer      => 'set_stype',
-);
-
-has 'rtype' => (
-    is          => 'ro',
-    isa         => 'Str',
-    required    => 1,
-    reader      => 'get_rtype',
 );
 
 has 'timestamp' => (
-    is      => 'ro',
-    isa     => 'Num',
-    reader  => 'get_timestamp',
+    is  => 'ro',
     default => sub { gettimeofday() },
 );
 
 has 'id'   => (
-    is      => 'ro',
-    isa     => 'Str',
+    is  => 'ro',
     default => sub { hash_create_random() },
-    reader  => 'get_id',
 );
 
 has 'Token' => (
-    is          => 'ro',
-    isa         => 'Str',
-    required    => 1,
-    reader      => 'get_Token',
+    is  => 'ro',
 );
 
 has 'Data'  => (
     is      => 'rw',
-    reader      => 'get_Data',
-    writer      => 'set_Data',
 );
 
 around BUILDARGS => sub {
@@ -77,15 +48,16 @@ sub TO_JSON {
     my $self = shift;
 
     my $ret = {
-        'version'      => $self->get_version(),
-        'mtype'        => $self->get_mtype(),    
-        'stype'        => $self->get_stype(),
-        'rtype'        => $self->get_rtype(),
-        'timestamp'    => $self->get_timestamp(),
-        'id'           => $self->get_id(),
+        'version'      => $self->version,
+        'timestamp'    => $self->timestamp,
+        'id'           => $self->id,
         
-        'Data'          => $self->get_Data(),
-        'Token'         => $self->get_Token(), 
+        'mtype'        => $self->mtype,    
+        'stype'        => $self->stype,
+        'rtype'        => $self->rtype,
+        
+        'Data'          => $self->Data,
+        'Token'         => $self->Token, 
     };
     return $ret;
 }

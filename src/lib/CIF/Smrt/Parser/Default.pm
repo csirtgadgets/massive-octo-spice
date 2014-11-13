@@ -78,10 +78,22 @@ sub process {
         next if($x =~ RE_COMMENTS);
         chomp($x);
         next unless($x =~ $pattern);
+
         @y = ();
-        if(ref($pattern) eq 'Regexp'){
+        
+        if(ref($pattern) eq 'Regexp' && (!$self->rule->{'parser'} || ($self->rule->{'parser'} && $self->rule->{'parser'} ne 'delim'))){
         	$x =~ $pattern;
-        	push(@y,($1,$2,$3)); ## TODO -- finish me
+        	my @loc = ();
+        	push(@loc,$1) if($1);
+        	push(@loc,$2) if($2);
+        	push(@loc,$3) if($3);
+        	push(@loc,$4) if($4);
+        	push(@loc,$5) if($5);
+        	push(@loc,$6) if($6);
+        	push(@loc,$7) if($7);
+        	push(@loc,$8) if($8);
+        	push(@loc,$9) if($9);
+        	push(@y,@loc);
         } else {
             @y = split($pattern,$x);
         }

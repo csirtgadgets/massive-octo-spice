@@ -18,9 +18,11 @@ sub understands {
 
 sub process {
     my $self    = shift;
-    my $msg     = shift->{'Data'} || return -1;
+    my $data    = shift || return -1;
     
-    my $results = $self->get_storage_handle->process($msg);
+    return 0 unless($self->user->{'write'});
+    
+    my $results = $self->storage->process($data);
     
     $results = [ $results ] unless(ref($results) eq 'ARRAY');
 

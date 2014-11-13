@@ -37,51 +37,25 @@ sub understands {
     return 1 if($args->{'rtype'} eq 'search');
 }
 
-sub _log_search {
-    my $self    = shift;
-    my $data    = shift;
-    
-    $Logger->debug('logging search: '.$data->{'Data'}->{'Query'});
-    
-    my $obs = CIF::ObservableFactory->new_plugin({ 
-        observable  => $data->{'Data'}->{'Query'},
-        provider    => hash_create_static($data->{'Token'}),
-        confidence  => CONFIDENCE_DEFAULT(),
-        tlp         => TLP_DEFAULT(),
-        tags        => ['search'],
-        group       => GROUP_DEFAULT(),
-    });
-    
-    use Data::Dumper;
-    $Logger->debug(Dumper($obs));
-    
-    $obs = $obs->TO_JSON();
-    
-    $Logger->debug($obs);
-    
-    my $res = $self->get_storage_handle()->process({ Observables => [$obs] });
-    
-    $Logger->debug('search logged');
-    return $res;
-}
-
 sub process {
     my $self    = shift;
-    my $msg     = shift;
-    my $data    = $msg->{'Data'};
+    my $data     = shift;
     
     if($data->{'Query'}){
-    	return -1 unless($self->check($data->{'Query'}));
+    	unless($self->check($data->{'Query'})){
+    	    $Logger->info('malformed query detected: '.$data->{'Query'});
+    	    return -1;
+    	}
     } else {
     	return -1 unless ($data->{'Id'} || $data->{'Filters'});
     }
     
-    $Logger->debug(Dumper($msg));
-   
-    my $results = $self->get_storage_handle()->process($data);
+    return 0 unless($self->user->{'read'});
+    
+    my $results = $self->storage->process($data);
    
     if($data->{'Query'} && $data->{'Query'} ne 'all'){
-        $self->_log_search($msg) unless($data->{'nolog'});
+        $self->_log_search($data) unless($self->nolog);
     }
     
     return (-1) unless(ref($results) eq "ARRAY");
@@ -90,11 +64,34 @@ sub process {
         Results     => $results,
     });
     if($data->{'Query'}){
-    	$resp->set_Query($data->{'Query'});
+    	$resp->Query($data->{'Query'});
     } else {
-    	$resp->set_Id($data->{'Id'});
+    	$resp->Id($data->{'Id'});
     }
     return $resp;
+}
+
+sub _log_search {
+    my $self    = shift;
+    my $data    = shift;
+    
+    $Logger->debug('logging search: '.$data->{'Query'});
+    
+    my $obs = CIF::ObservableFactory->new_plugin({ 
+        observable  => $data->{'Query'},
+        provider    => $self->{'username'},
+        confidence  => CONFIDENCE_DEFAULT(),
+        tlp         => TLP_DEFAULT(),
+        tags        => ['search'],
+        group       => GROUP_DEFAULT(),
+    });
+    
+    $obs = $obs->TO_JSON();
+    
+    my $res = $self->storage->process({ Observables => [$obs] });
+    
+    $Logger->debug('search logged');
+    return $res;
 }
 
 __PACKAGE__->meta()->make_immutable();
