@@ -20,8 +20,8 @@ use Data::Dumper;
 use Carp qw/croak/;
 
 my $help;
-my $remote      = 'http://localhost:5000'; ## todo -- fix apache bottlekneck
-my $token       = 1234; ##TODO alphas only!!!
+my $remote      = 'http://localhost:5000'; # https://github.com/csirtgadgets/massive-octo-spice/issues/71
+my $token;
 my $rule        = $CIF::SmrtRulesDefault;
 my $feed        = '';
 my $limit;
@@ -279,7 +279,7 @@ sub _main {
     
     unless($Logger->is_debug()){
         $Logger->info('checking for router...');
-        unless($cli->ping()){
+        unless($cli->ping_write()){
             $Logger->error('router unavailable... ping timeout');
             return;
         }
@@ -305,7 +305,7 @@ sub _main {
         
         if($#{$data} >= 0){
             $Logger->info('sending '.($#{$data} + 1).' observables...');
-            ($err,$ret) = $cli->submit($data);
+            ($ret,$err) = $cli->submit($data);
             croak($err) if($err);
             if(ref($ret) eq 'HASH' && $ret->{'message'}){
                 $Logger->info($ret->{'message'});

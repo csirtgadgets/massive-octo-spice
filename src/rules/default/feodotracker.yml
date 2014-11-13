@@ -1,0 +1,23 @@
+defaults:
+  provider: feodotracker.abuse.ch
+  tlp: amber
+  alt_tlp: green
+  confidence: 75
+  altid: https://feodotracker.abuse.ch/host/<observable>
+  tags:
+    - feodo
+    - botnet
+
+feeds:
+  domains:
+    remote: https://feodotracker.abuse.ch/blocklist/?download=domainblocklist
+    pattern: ^(\S+)$
+    values:
+      - observable
+
+  ips:
+    remote: https://feodotracker.abuse.ch/blocklist/?download=ipblocklist
+    pattern: ^(\S+)$
+    values:
+      - observable
+    confidence: 65

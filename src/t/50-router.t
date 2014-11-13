@@ -16,7 +16,6 @@ BEGIN {
 use AnyEvent;
 
 my $storage = 'dummy';
-my $auth = 'dummy';
 
 my $pid = fork();
 
@@ -45,7 +44,6 @@ sub start_router {
     my $obj = CIF::Router->new({
         encoder_pretty  => 1,
         storage         => $storage,
-        auth            => $auth,
     });
 
     my $ret = $obj->startup();

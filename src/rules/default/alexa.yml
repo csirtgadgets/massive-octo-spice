@@ -1,5 +1,4 @@
 parser: csv
-
 defaults:
   remote: http://s3.amazonaws.com/alexa-static/top-1m.csv.zip
   values:
@@ -7,7 +6,6 @@ defaults:
     - observable
   description: 'alexa #<rank>'
   tags: whitelist
-  otype: fqdn
   application:
       - http
       - https
@@ -19,10 +17,10 @@ defaults:
 
 feeds:
   # there's urls in some of the fields...
-  #top10000:
-  #  start: 1001
-  #  end: 10000
-  #  confidence: 25
+  top10000:
+   start: 1001
+   end: 10000
+   confidence: 25
 
   top1000:
     start: 101

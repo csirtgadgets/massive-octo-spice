@@ -1,6 +1,6 @@
 {
     "order" : 0,
-    "template" : "cif-*",
+    "template" : "cif.*",
     "settings" : {
         "index.analysis.analyzer.default.stopwords" : "_none_",
         "index.refresh_interval" : "5s",
@@ -39,28 +39,42 @@
         "observables": {
             "properties" : {
                 "@version" : { "index" : "not_analyzed", "type" : "string" },
-                "@timestamp": { "type": "date_time" },
+                "@timestamp": { "type": "date" },
                 "group": { "type": "string", "index": "not_analyzed" },
-                "observable": { "type": "string" },
-		"otype": { "type": "string" },
+                "observable": { "type": "string", "index": "not_analyzed" },
+				"otype": { "type": "string" },
                 "confidence": { "type": "float", "store": "yes" },
-                "firsttime": { "type": "date_time" },
-                "lasttime": { "type": "date_time" },
-                "reporttime": { "type": "date_time" },
+                "firsttime": { "type": "date" },
+                "lasttime": { "type": "date" },
+                "reporttime": { "type": "date" },
                 "provider": { "type": "string" },
                 "rdata": { "type": "string" },
                 "cc": { "type": "string", "index": "not_analyzed" },
-		"portlist": { "type": "string" }
+				"portlist": { "type": "string" }
             }
         },
-	"feeds": {
-		"properties" : {
-			"@version" : { "index" : "not_analyzed", "type" : "string" },
-                	"@timestamp": { "type": "date_time" },
-                	"group": { "type": "string", "index": "not_analyzed" },
-			"confidence": { "type": "float", "store": "yes" },
-			"cc": { "type": "string", "index": "not_analyzed" }
+		"feeds": {
+			"properties" : {
+				"@version" : { "index" : "not_analyzed", "type" : "string" },
+	            "@timestamp": { "type": "date" },
+				"group": { "type": "string", "index": "not_analyzed" },
+				"confidence": { "type": "float", "store": "yes" },
+				"cc": { "type": "string", "index": "not_analyzed" }
+			}
+		},
+		"tokens": {
+			"properties": {
+				"@version" : { "index" : "not_analyzed", "type" : "string" },
+				"@timestamp": { "type": "date" },
+				"username": { "type": "string" },
+				"groups": { "type": "string" },
+				"token": { "type": "string" },
+				"revoked": { "type": "boolean" },
+				"read": { "type": "boolean" },
+				"write": { "type": "boolean" },
+				"acl": { "type": "string" },
+				"expires": { "type": "date" }
+			}
 		}
-	}
     }
 }

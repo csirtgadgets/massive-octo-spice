@@ -5,7 +5,7 @@ sub index {
     my $self = shift;
 	
 	my $res = $self->cli->search({
-		token     => scalar $self->param('token'),
+		token     => $self->token,
 		filters   => {
 			otype        => scalar $self->param('otype')        || undef,
 			confidence   => scalar $self->param('confidence')   || undef,
@@ -28,7 +28,7 @@ sub show {
   my $self  = shift;
   
   my $res = $self->cli->search({
-      token => scalar $self->param('token'),
+      token => $self->token,
       id    => scalar $self->param('feed'),
       feed  => 1,
   });
@@ -46,13 +46,13 @@ sub create {
     $data = [$data] unless(ref($data) eq 'ARRAY');
     
     my $res = $self->cli->submit_feed({
-    	token  => scalar $self->param('token'),
+    	token  => $self->token,
         feed   => $data,
     });
     
     if($#{$res} >= 0){
         $self->res->headers->add('X-Location' => $self->req->url->to_string());
-        $self->res->headers->add('X-Id' => @{$res}[0]); ## TODO
+        $self->res->headers->add('X-Id' => @{$res}[0]);
     
         $self->respond_to(
             json    => { json => $res, status => 201 },
