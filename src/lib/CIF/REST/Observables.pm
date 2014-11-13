@@ -31,7 +31,7 @@ sub index {
         	reporttime      => scalar $self->param('reporttime')   || undef,
         },
     });
-
+    
     if(defined($res)){
         if($res){
             $self->stash(observables => $res, token => $self->token);

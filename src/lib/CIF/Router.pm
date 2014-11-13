@@ -181,6 +181,9 @@ sub process {
                 $Logger->error('request failure');
                 $r->stype('failure');
                 $r->Data('ERROR: contact administrator');
+            } elsif ($rv == 0) {
+                $Logger->info('auth failed for: '.$msg->{'Token'});
+                $r->stype('unauthorized');
             } else {
                 $r->Data($rv);
                 $r->stype('success');
