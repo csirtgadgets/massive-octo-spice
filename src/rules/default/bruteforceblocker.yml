@@ -13,4 +13,4 @@ feeds:
     pattern: '^(\S+)[\s|\t]+#\s(\S+\s\S+)'
     values:
       - observable
-      - firsttime
+      - lasttime
