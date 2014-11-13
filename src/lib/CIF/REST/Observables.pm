@@ -31,7 +31,7 @@ sub index {
         	reporttime      => scalar $self->param('reporttime')   || undef,
         },
     });
-
+    
     if(defined($res)){
         if($res){
             $self->stash(observables => $res, token => $self->token);
@@ -75,8 +75,6 @@ sub create {
     
     my $data    = $self->req->json();
     my $nowait  = scalar $self->param('nowait') || 0;
-    
-    warn $self->token;
     
     # ping the router first, make sure we have a valid key
     my $res = $self->cli->ping_write({

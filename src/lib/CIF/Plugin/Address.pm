@@ -34,8 +34,9 @@ use constant RE_FQDN            => qr/^(?:[0-9a-zA-Z-]{1,63}\.)+[a-zA-Z]{2,63}$/
 use constant RE_IPV4            => qr/^$RE{'net'}{'IPv4'}/;
 use constant RE_IPV6            => qr/^$RE{'net'}{'IPv6'}/;
 use constant ASN_MAX            => 2**32 - 1;
-use constant RE_URL             => qr/^[-+.a-zA-Z0-9]+:\/\//;
-use constant RE_URL_BROKEN      => qr/^([a-z0-9.-]+[a-z]{2,10}|\b(?:\d{1,3}\.){3}\d{1,3}\b)(:(\d+))?\/+/;
+use constant RE_URL             => qr/^(http|https|smtp|ftp|sftp):\/\//;
+use constant RE_URL_BROKEN      => qr/^([a-z0-9.-]+[a-z]{2,63}|\b(?:\d{1,3}\.){3}\d{1,3}\b)(:(\d+))?\/+/;
+use constant RE_URL_BROKEN_DUMB      => qr/(\S+):\/\//;
 
 my $protocols = {
     icmp    => 1,
@@ -93,6 +94,9 @@ sub is_url {
     
     return 1 if($arg =~ RE_URL);
     return 2 if($arg =~ RE_URL_BROKEN);
+    
+    # https://github.com/csirtgadgets/massive-octo-spice/issues/86
+    #return 3 if($arg =~ RE_URL_BROKEN_DUMB && $arg !~ /^(http|https|ftp|sftp)/); 
 }
 
 sub is_url_broken {

@@ -2,7 +2,7 @@
 
 BEGIN {
     use FindBin;
-    use lib "$FindBin::Bin/../lib";
+    use local::lib "$FindBin::Bin/..";
 }
 
 use feature 'say';
