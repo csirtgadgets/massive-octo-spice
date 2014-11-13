@@ -76,8 +76,6 @@ sub create {
     my $data    = $self->req->json();
     my $nowait  = scalar $self->param('nowait') || 0;
     
-    warn $self->token;
-    
     # ping the router first, make sure we have a valid key
     my $res = $self->cli->ping_write({
         token   => $self->token,
