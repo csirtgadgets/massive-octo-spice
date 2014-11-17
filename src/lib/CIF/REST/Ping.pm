@@ -8,10 +8,19 @@ use Time::HiRes qw(gettimeofday);
 
 sub index { 
     my $self  = shift;
-
-    my $res = $self->cli->ping({
-        token      => $self->token
-    });
+    
+    my $write = scalar $self->param('write') || 0;
+    my $res;
+    
+    if($write){
+        $res = $self->cli->ping_write({
+            token      => $self->token
+        });
+    } else {
+        $res = $self->cli->ping({
+            token      => $self->token
+        });
+    }
 
     if($res){
         $self->render( json => { timestamp => [ gettimeofday() ] } );

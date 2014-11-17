@@ -99,7 +99,7 @@ sub startup {
     });
     
     
-    $protected->get('/ping')->via('GET')->to('ping#index')->name('ping#index');;
+    $protected->get('/ping')->via('GET')->to('ping#index')->name('ping#index');
    
     $protected->get('/observables')->to('observables#index')->name('observables#index');
     $protected->put('/observables')->to('observables#create')->name('observables#create');
