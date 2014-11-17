@@ -1,5 +1,8 @@
 Revision history for massive-octo-spice
 
+2.00.00-alpha.7 2014-11-17
+    - fixes: https://github.com/csirtgadgets/massive-octo-spice/issues/95
+
 2.00.00-alpha.6 2014-11-13
     - bugfix to cif-workers not getting messages
     - set static log4perl version
