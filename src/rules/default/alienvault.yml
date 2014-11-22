@@ -3,6 +3,7 @@ defaults:
   provider: alienvault.com
   tlp: amber
   values: observable
+  confidence: 65
 
 feeds:
   botnet:

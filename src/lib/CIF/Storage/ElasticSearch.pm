@@ -15,6 +15,7 @@ use Carp::Assert;
 use CIF qw/hash_create_random is_hash_sha256 is_ip is_fqdn normalize_timestamp/;
 use Data::Dumper;
 use JSON qw(encode_json);
+use Time::HiRes qw(gettimeofday);
 
 with 'CIF::Storage';
 
@@ -410,9 +411,9 @@ sub _submission {
     my $self = shift;
     my $args = shift;
     
-    my $timestamp = DateTime->from_epoch(epoch => time()); # this is for the record insertion ts
+    my $timestamp = DateTime->from_epoch(epoch => scalar gettimeofday()); # this is for the record insertion ts
     my $date = $timestamp->ymd('.'); # for the index
-    $timestamp = $timestamp->ymd().'T'.$timestamp->hms().'Z';
+    $timestamp = $timestamp->ymd().'T'.$timestamp->hms().'.'.$timestamp->millisecond().'Z';
     
     my ($things,$index,$type);
     
