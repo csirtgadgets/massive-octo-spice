@@ -1,0 +1,27 @@
+{
+	"template": "cif.feeds-*",
+	"feeds": {
+		"properties": {
+			"@version": {
+				"index": "not_analyzed",
+				"type": "string"
+			},
+			"@timestamp": {
+				"type": "date",
+				"format": "date_time"
+			},
+			"group": {
+				"type": "string",
+				"index": "not_analyzed"
+			},
+			"confidence": {
+				"type": "float",
+				"store": "yes"
+			},
+			"cc": {
+				"type": "string",
+				"index": "not_analyzed"
+			}
+		}
+	}
+}
