@@ -32,19 +32,19 @@ case $OS in
         bash ./ubuntu.sh;;
 
     "Debian" )
-        echo 'Debian not yet supported...';;
-        exit 1
+        echo 'Debian not yet supported...'
+        exit 1;;
 
     "Darwin" )
-        echo 'Darwin not yet supported...' ;;
-        exit 1
+        echo 'Darwin not yet supported...'
+        exit 1;;
 
     "Redhat" )
-        echo 'Redhat not yet supported...' ;;
-        exit 1
+        echo 'Redhat not yet supported...'
+        exit 1;;
 
     "CentOS" )
-        echo 'CentOS not yet supported...' ;;
-        exit 1
+        echo 'CentOS not yet supported...'
+        exit 1;;
 
 esac
