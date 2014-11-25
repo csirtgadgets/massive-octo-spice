@@ -7,6 +7,23 @@ if [ `whoami` != 'root' ]; then
     exit 1
 fi
 
+# Check for an Internet Connection as it is required during installation
+HTTP_HOST=http://github.com
+if [ -x /usr/bin/wget ]; then
+    echo "Checking for an Internet connection"
+    wget -q --tries=3 --timeout=10 --spider $HTTP_HOST
+    if [[ $? -eq 0 ]]; then
+        echo "$HTTP_HOST appears to be available via HTTP"
+        echo "Continuing with installation"
+    else
+        echo "$HTTP_HOST does not appear to be available via HTTP"
+        echo "Exiting installation"
+        exit 1
+    fi
+else
+    echo "/usr/bin/wget does not exist, skipping Internet connection test"
+fi
+
 cd hacking/platforms
 
 ARCH=$(uname -m | sed 's/x86_//;s/i[3-6]86/32/')
