@@ -31,7 +31,7 @@ case $OS in
         cd massive-octo-spice
         bash autogen.sh
         sudo bash ./hacking/platforms/easybutton.sh
-        sudo chown `whoami`:`whoami` ~/.cif.yml
+        sudo chown `whoami`:`whoami` ~/.cif.yml;;
 
     "Debian" )
 		echo 'Debian not yet supported...';;
