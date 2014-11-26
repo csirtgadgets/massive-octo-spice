@@ -9,8 +9,9 @@ use strict;
 use warnings;
 use feature 'say';
 
-use CIF qw/init_logging $Logger/;
+use CIF qw/init_logging $Logger parse_config/;
 use CIF::Worker;
+use CIF::Client;
 use Getopt::Long;
 use AnyEvent;
 use Daemon::Control;
@@ -18,8 +19,9 @@ use Try::Tiny;
 use Data::Dumper;
 
 my $help;
-my $router          = CIF::Worker::ROUTER;
+my $remote          = CIF::Worker::ROUTER;
 my $publisher       = CIF::Worker::PUBLISHER;
+my $token;
 my $config          = "$CIF::EtcPath/cif-worker.yml";
 
 # daemon
@@ -46,8 +48,9 @@ Getopt::Long::Configure ("bundling");
 GetOptions(
     'help|h'        => \$help, 
     'config|C=s'    => \$config,
-    'router|R=s'    => \$router,
-    'publisher|P=s' => \$publisher,
+    'remote=s'      => \$remote,
+    'publisher=s'   => \$publisher,
+    'token=s'       => \$token,
     
     # daemon opts
     'daemon|D'      => \$daemon,
@@ -77,6 +80,10 @@ sub usage {
 Usage: $0 [OPTIONS] [status|start|stop|restart|reload]
 
  Options:
+    --remote=STRING         specify a remote to connect to, default $remote
+    --token=STRING          specify a default token/apikey to use, default: $token
+    --publisher=STRING      specify a remote publisher to connect to and receive data, default $publisher
+ 
     -C,  --config=FILE       specify cofiguration file, default: $config
     -d,  --debug             turn on debugging (max verbosity)
     -v+, --verbosity         turn up verbosity
@@ -104,6 +111,15 @@ Usage: $0 [OPTIONS] [status|start|stop|restart|reload]
 EOF
 }
 
+if(-e $config){
+    $config = parse_config($config);
+    $config = $config->{'client'};
+    
+    $token      = $config->{'token'} if($config->{'token'} && !$token);
+    $remote     = $config->{'remote'} if($config->{'remote'} && ($remote eq CIF::Worker::ROUTER));
+    $publisher  = $config->{'publisher'} if($config->{'publisher'} && ($publisher eq CIF::Worker::PUBLISHER));
+}
+
 my $loglevel = ($debug) ? 'DEBUG' : 'INFO';
 
 if($notify){
@@ -117,7 +133,6 @@ if($notify){
 init_logging(
     { 
         level       => $loglevel,
-        #catagory	=> 'cif-worker',
         filename    => ($logging) ? $logfile : 0,
     },
     $notify,   
@@ -127,6 +142,19 @@ if($verbosity){
     unless($debug){ # we're already at TRACE
         $Logger->more_logging($verbosity);
     }
+}
+
+$Logger->info('testing token with cif-router...');
+my $cli = CIF::Client->new({
+    remote  => $remote,
+    token   => $token,
+});
+
+my $ret = $cli->ping_write();
+
+unless($ret){
+    $Logger->fatal('check to make sure the cif-worker token has --write permissions: '.$token);
+    exit(-1);
 }
 
 if($daemon){
@@ -148,7 +176,11 @@ if($daemon){
 $Logger->info('shutting down...');
 
 sub main {
-    my $master = CIF::Worker->new({ publisher => $publisher });
+    my $master = CIF::Worker->new({ 
+        publisher   => $publisher,
+        token       => $token,
+        router      => $remote,
+    });
     $master->workers_socket;
     
     my @workers;
@@ -203,7 +235,8 @@ sub workers {
     $SIG{'INT'} = sub { $d->send(); };
     
     my $worker = CIF::Worker->new({
-        router      => $router,
+        router      => $remote,
+        token       => $token,
     });
     $worker->data_socket;
     my $err;

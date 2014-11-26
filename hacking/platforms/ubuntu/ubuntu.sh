@@ -149,9 +149,14 @@ echo 'starting cif-worker'
 service cif-worker start
 
 echo 'setting up /etc/cif/cif-smrt.yml config...'
-/opt/cif/bin/cif-tokens --username cif-smrt --new --write --generate-config-remote https://localhost --generate-config-path /etc/cif/cif-smrt.yml
+/opt/cif/bin/cif-tokens --username cif-smrt --new --write --generate-config-remote http://localhost:5000 --generate-config-path /etc/cif/cif-smrt.yml
 chown cif:cif /etc/cif/cif-smrt.yml
 chmod 660 /etc/cif/cif-smrt.yml
+
+echo 'setting up /etc/cif/cif-worker.yml config...'
+/opt/cif/bin/cif-tokens --username cif-worker --new --read --write --generate-config-remote tcp://localhost:4961 --generate-config-path /etc/cif/cif-worker.yml
+chown cif:cif /etc/cif/cif-worker.yml
+chmod 660 /etc/cif/cif-worker.yml
 
 echo 'setting up ~/.cif.yml config for user: root@localhost...'
 /opt/cif/bin/cif-tokens --username root@localhost --new --read --write --generate-config-remote https://localhost --generate-config-path ~/.cif.yml
