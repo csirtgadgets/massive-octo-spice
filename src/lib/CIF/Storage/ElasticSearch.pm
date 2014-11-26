@@ -347,7 +347,7 @@ sub _search {
     
     my %search = (
         index   => $index,
-        size    => $filters->{'limit'} || 5000, ##TODO
+        size    => $filters->{'limit'} || 5000,
         body    => $q,
     );
     

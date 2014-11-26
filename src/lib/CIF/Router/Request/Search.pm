@@ -55,7 +55,7 @@ sub process {
     my $results = $self->storage->process($data);
    
     if($data->{'Query'} && $data->{'Query'} ne 'all'){
-        $self->_log_search($data) unless($self->nolog);
+        $self->_log_search($data) unless($data->{'nolog'});
     }
     
     return (-1) unless(ref($results) eq "ARRAY");
