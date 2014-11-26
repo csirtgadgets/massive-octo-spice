@@ -148,7 +148,7 @@ chmod 660 /etc/cif/cif-worker.yml
 echo 'setting up ~/.cif.yml config for user: root@localhost...'
 /opt/cif/bin/cif-tokens --username root@localhost --new --read --write --generate-config-remote https://localhost --generate-config-path ~/.cif.yml
 chmod 660 ~/.cif.yml
-chown `whoami`:`whoami` ~/.cif.yml
+sudo chown `whoami`:`whoami` ~/.cif.yml
 
 echo 'starting cif-router...'
 service cif-router start
