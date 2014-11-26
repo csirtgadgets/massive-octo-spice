@@ -147,3 +147,11 @@ service cif-starman start
 
 echo 'starting cif-worker'
 service cif-worker start
+
+echo 'setting up /etc/cif/cif-smrt.yml config...'
+/opt/cif/bin/cif-tokens --username cif-smrt --write --generate-config-remote https://localhost --generate-config-path /etc/cif/cif-smrt.yml --new
+chown cif:cif /etc/cif/cif-smrt.yml
+chmod 660 /etc/cif/cif-smrt.yml
+
+echo 'setting up ~/.cif.yml config for user: root@localhost...'
+/opt/cif/bin/cif-tokens --username root@localhost --read --write --generate-config-remote https://localhost --generate-config-path ~/.cif.yml --new
