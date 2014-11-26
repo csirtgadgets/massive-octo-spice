@@ -28,13 +28,13 @@ has 'asn_desc'  => (
 
 has 'rir'   => (
     is      => 'ro',
-    isa     => 'CIF::Type::RIR',
+    isa     => 'Maybe[CIF::Type::RIR]',
     reader  => 'get_rir',
 );
 
 has 'peers' => (
     is      => 'ro',
-    isa     => 'ArrayRef', ##TODO -- array of ASN objs
+    isa     => 'Maybe[ArrayRef]',
     reader  => 'get_peers',
     coerce  => 1,
 );
