@@ -64,6 +64,8 @@ die(usage()) unless($action);
 
 croak(usage()."\n\nERROR: --new and --delete are mutually exclusive") if($action->{'new'} && $action->{'delete'});
 
+croak(usage()."\n\nERROR: missing --username") if(($action->{'new'} || $action->{'delete'}) && !$token->{'username'});
+
 my $loglevel = ($debug) ? 'DEBUG' : 'INFO';
 
 init_logging(
@@ -153,7 +155,7 @@ if($action->{'new'}){
         $Logger->info('failed to generate new token...');
         exit(-1);
     }
-    if($generate){
+    if($generate->{'path'}){
         $Logger->info('writing config to: '.$generate->{'path'});
         my $yaml = YAML::Tiny->new({ 
             client => {
@@ -176,7 +178,7 @@ if($action->{'revoke'}){
     });
 }
 
-$rv = $storage->token_list({ username => $token->{'username'}, token => $token->{'token'} });
+$rv = $storage->token_list({ Username => $token->{'username'}, Token => $token->{'token'} });
 
 if($rv){
     my $t = Text::Table->new(@cols);

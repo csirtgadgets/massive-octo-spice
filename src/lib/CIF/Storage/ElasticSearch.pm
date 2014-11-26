@@ -501,10 +501,24 @@ sub token_list {
 	
 	my %search = (
 	   index   => $self->tokens_index,
+	   type    => $self->tokens_type,
 	   body    => $q,
     );
     
-    my $res = $self->handle->search(%search);
+    my ($res,$err);
+    
+    try {
+        $res = $self->handle->search(%search);
+    } catch {
+        $err = shift;
+    };
+    
+    if($err){
+        return 0 if($err =~ 'Missing');
+        $Logger->error($err);
+        return 0;
+    }
+
     return 0 if($res->{'hits'}->{'total'} == 0);
     $res = $res->{'hits'}->{'hits'};
     $res = [ map { $_ = $_->{_source} } @$res ];
