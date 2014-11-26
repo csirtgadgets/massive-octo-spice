@@ -22,13 +22,11 @@ use constant {
     CONFIDENCE_MIN  => 25,
     SND_TIMEOUT     => 320000,
     RCV_TIMEOUT     => 320000,
-    TOKEN           => 1234,
     DATA_PIPE       => 'ipc:///tmp/cif_workers_data',
 };
 
 has 'token' => (
     is  => 'ro',
-    default => sub { TOKEN },
 );
 
 has 'router'   => (
@@ -163,6 +161,7 @@ sub process {
     if($new){
         $Logger->debug('sending to router');
         my $x = $self->send($new);
+        warn Dumper($x);
     } else {
         $Logger->debug('no new msgs to send...');
     }

@@ -22,6 +22,8 @@ USER=cif
 GROUP=cif
 LOG_DIR=/var/log
 DAEMON=/opt/cif/bin/cif-worker
+DEFAULT_CIF=/etc/default/cif
+CONF_DIR=/etc/cif
 
 if [ `id -u` -ne 0 ]; then
     echo "You need root privileges to run this script"
@@ -32,6 +34,11 @@ fi
 
 if [ -r /etc/default/rcS ]; then
     . /etc/default/rcS
+fi
+
+# overwrite settings from default file
+if [ -f "$DEFAULT_CIF" ]; then
+    . "$DEFAULT_CIF"
 fi
 
 LOG_FILE=$LOG_DIR/cif-worker.log
@@ -45,7 +52,7 @@ PID_FILE=/var/run/$NAME.pid
 # Check DAEMON exists
 test -x $DAEMON || exit 0
 
-DAEMON_OPTS="--user $USER --group $GROUP --threads $THREADS --logging --logfile $LOG_FILE -p $PID_FILE -C $CONF_FILE -D start"
+DAEMON_OPTS="--config $CONF_FILE --user $USER --group $GROUP --threads $THREADS --logging --logfile $LOG_FILE -p $PID_FILE -D start"
 
 case "$1" in
   start)

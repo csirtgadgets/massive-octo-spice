@@ -16,9 +16,9 @@ install:
     - cpanm Regexp::Common
     - cpanm http://backpan.perl.org/authors/id/M/MS/MSCHILLI/Log-Log4perl-1.44.tar.gz
     - cpanm http://search.cpan.org/CPAN/authors/id/A/AD/ADIE/Test-Exception-0.32.tar.gz
-    - cpanm git://github.com/csirtgadgets/p5-cif-sdk.git
+    - cpanm https://github.com/csirtgadgets/p5-cif-sdk/archive/master.tar.gz
     - cpanm https://cpan.metacpan.org/authors/id/D/DR/DROLSKY/MaxMind-DB-Reader-0.050005.tar.gz
-    - cpanm git://github.com/maxmind/GeoIP2-perl.git@v0.040005
+    - cpanm https://github.com/maxmind/GeoIP2-perl/archive/v0.040005.tar.gz
     - sudo rm -f /dev/random
     - sudo mknod -m 0666 /dev/random c 1 9
     - echo HRNGDEVICE=/dev/urandom | sudo tee /etc/default/rng-tools

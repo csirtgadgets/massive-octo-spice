@@ -38,9 +38,9 @@ fi
 cpanm -n --mirror http://cpan.metacpan.org Regexp::Common Mouse
 cpanm http://backpan.perl.org/authors/id/M/MS/MSCHILLI/Log-Log4perl-1.44.tar.gz
 cpanm http://search.cpan.org/CPAN/authors/id/A/AD/ADIE/Test-Exception-0.32.tar.gz
-cpanm git://github.com/csirtgadgets/p5-cif-sdk.git
+cpanm https://github.com/csirtgadgets/p5-cif-sdk/archive/master.tar.gz
 cpanm https://cpan.metacpan.org/authors/id/D/DR/DROLSKY/MaxMind-DB-Reader-0.050005.tar.gz
-cpanm git://github.com/maxmind/GeoIP2-perl.git@v0.040005
+cpanm https://github.com/maxmind/GeoIP2-perl/archive/v0.040005.tar.gz
 
 echo 'HRNGDEVICE=/dev/urandom' >> /etc/default/rng-tools
 service rng-tools restart
@@ -134,6 +134,21 @@ update-rc.d cif-router defaults 95 10
 update-rc.d cif-smrt defaults 95 10
 update-rc.d cif-starman defaults 95 10
 update-rc.d cif-worker defaults 95 10
+
+echo 'setting up /etc/cif/cif-smrt.yml config...'
+/opt/cif/bin/cif-tokens --username cif-smrt --new --write --generate-config-remote http://localhost:5000 --generate-config-path /etc/cif/cif-smrt.yml
+chown cif:cif /etc/cif/cif-smrt.yml
+chmod 660 /etc/cif/cif-smrt.yml
+
+echo 'setting up /etc/cif/cif-worker.yml config...'
+/opt/cif/bin/cif-tokens --username cif-worker --new --read --write --generate-config-remote tcp://localhost:4961 --generate-config-path /etc/cif/cif-worker.yml
+chown cif:cif /etc/cif/cif-worker.yml
+chmod 660 /etc/cif/cif-worker.yml
+
+echo 'setting up ~/.cif.yml config for user: root@localhost...'
+/opt/cif/bin/cif-tokens --username root@localhost --new --read --write --generate-config-remote https://localhost --generate-config-path ~/.cif.yml
+chmod 660 ~/.cif.yml
+chown `whoami`:`whoami` ~/.cif.yml
 
 echo 'starting cif-router...'
 service cif-router start

@@ -14,6 +14,7 @@ use Carp;
 use Data::Dumper;
 use Text::Table;
 use CIF::StorageFactory;
+use YAML::Tiny;
 
 use CIF qw/$Logger init_logging/;
 
@@ -26,6 +27,7 @@ my $config          = $ENV{'HOME'}.'/.cif.yml';
 my $token;
 my $action;
 my $localmode;
+my $generate;
 
 Getopt::Long::Configure("bundling");
 GetOptions(
@@ -49,6 +51,10 @@ GetOptions(
     'list'              => \$action->{'list'},
     'revoke'            => \$action->{'revoke'},
     
+    'generate-config-path=s'    => \$generate->{'path'},
+    'generate-config-remote=s'  => \$generate->{'remote'},
+    'generate-config-tls=i'       => \$generate->{'tls'},
+    
     'storage=s'         => $storage,
     
 ) or die(usage());
@@ -57,6 +63,8 @@ die(usage()) if($help);
 die(usage()) unless($action);
 
 croak(usage()."\n\nERROR: --new and --delete are mutually exclusive") if($action->{'new'} && $action->{'delete'});
+
+croak(usage()."\n\nERROR: missing --username") if(($action->{'new'} || $action->{'delete'}) && !$token->{'username'});
 
 my $loglevel = ($debug) ? 'DEBUG' : 'INFO';
 
@@ -71,6 +79,11 @@ if($verbosity){
     unless($debug){ # we're already at TRACE
         $Logger->more_logging($verbosity);
     }
+}
+
+if($generate){
+    $generate->{'remote'} = 'https://localhost' unless($generate->{'remote'});
+    $generate->{'tls'} = 1 unless(defined($generate->{'tls'}));
 }
 
 sub usage {
@@ -93,6 +106,12 @@ Actions:
     --new           generate a new token               
     --delete        remove token
     --revoke        revoke a user / token
+    
+Advanced:
+
+    --generate-config-path      generate a new config with token
+    --generate-config-remote    default: https://localhost
+    --generate-config-tls       default: true
     
  Examples:
     $0 --new --user me\@example.com --expires 2016-07-01 --admin
@@ -136,6 +155,19 @@ if($action->{'new'}){
         $Logger->info('failed to generate new token...');
         exit(-1);
     }
+    if($generate->{'path'}){
+        $Logger->info('writing config to: '.$generate->{'path'});
+        my $yaml = YAML::Tiny->new({ 
+            client => {
+                remote          => $generate->{'remote'},
+                token           => $rv,
+            }
+        });
+        if($generate->{'remote'} eq 'https://localhost'){
+            $yaml->[0]->{'client'}->{'no_verify_ssl'} = 1;
+        }
+        $yaml->write($generate->{'path'});
+    }
 }
 
 if($action->{'revoke'}){
@@ -146,7 +178,7 @@ if($action->{'revoke'}){
     });
 }
 
-$rv = $storage->token_list({ username => $token->{'username'}, token => $token->{'token'} });
+$rv = $storage->token_list({ Username => $token->{'username'}, Token => $token->{'token'} });
 
 if($rv){
     my $t = Text::Table->new(@cols);

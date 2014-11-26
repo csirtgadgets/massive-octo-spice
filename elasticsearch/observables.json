@@ -1,0 +1,50 @@
+{
+	"template": "cif.observables-*",
+	"observables": {
+		"properties": {
+			"@version": {
+				"index": "not_analyzed",
+				"type": "string"
+			},
+			"@timestamp": {
+				"type": "date"
+			},
+			"group": {
+				"type": "string",
+				"index": "not_analyzed"
+			},
+			"observable": {
+				"type": "string",
+				"index": "not_analyzed"
+			},
+			"otype": {
+				"type": "string"
+			},
+			"confidence": {
+				"type": "float",
+				"store": "yes"
+			},
+			"firsttime": {
+				"type": "date"
+			},
+			"lasttime": {
+				"type": "date"
+			},
+			"reporttime": {
+				"type": "date"
+			},
+			"provider": {
+				"type": "string"
+			},
+			"rdata": {
+				"type": "string"
+			},
+			"cc": {
+				"type": "string"
+			},
+			"portlist": {
+				"type": "string"
+			}
+		}
+	}
+}
