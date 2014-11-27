@@ -11,9 +11,12 @@ BEGIN {
     use_ok('CIF::Router');
 };
 
-use CIF qw/is_ip is_url/;
+use CIF qw/is_ip is_url is_ip_private/;
 
 ok(is_ip('192.168.1.1'),'testing ip address...');
 ok(is_url('http://12.12.12.12/example/test.html'), 'testing url...');
+
+ok(is_ip_private('192.168.1.1'),'testing private ip...');
+ok(!is_ip_private('128.205.1.1'),'testing public ip...');
 
 done_testing();

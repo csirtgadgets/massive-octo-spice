@@ -16,7 +16,7 @@ our @ISA = qw(Exporter);
 # will save memory.
 our %EXPORT_TAGS = ( 'all' => [ qw(
     is_address protocol_to_int is_ip is_ipv4 is_ipv6 is_protocol
-    is_ip is_fqdn is_email is_asn is_fqdn_lazy
+    is_ip is_ip_private is_fqdn is_email is_asn is_fqdn_lazy
     is_url is_url_broken
 ) ] );
 
@@ -28,6 +28,7 @@ our @EXPORT = qw(
 require Mail::RFC822::Address;
 use URI; ##TODO -- change from regexs
 use Regexp::Common qw/net/;
+use Net::Patricia;  
 
 use constant RE_FQDN_LAZY       => qr/^$RE{net}{domain}{-rfc1101}{-nospace}$/;
 use constant RE_FQDN            => qr/^(?:[0-9a-zA-Z-]{1,63}\.)+[a-zA-Z]{2,63}$/; # https://groups.google.com/forum/#!topic/ci-framework/VDUxNd5rPf8
@@ -37,6 +38,21 @@ use constant ASN_MAX            => 2**32 - 1;
 use constant RE_URL             => qr/^(http|https|smtp|ftp|sftp):\/\//;
 use constant RE_URL_BROKEN      => qr/^([a-z0-9.-]+[a-z]{2,63}|\b(?:\d{1,3}\.){3}\d{1,3}\b)(:(\d+))?\/+/;
 use constant RE_URL_BROKEN_DUMB      => qr/(\S+):\/\//;
+
+my @ipv4_private_addresses = (
+    "0.0.0.0/8",
+    "10.0.0.0/8",
+    "127.0.0.0/8",
+    "192.168.0.0/16",
+    "169.254.0.0/16",
+    "192.0.2.0/24",
+    "224.0.0.0/4",
+    "240.0.0.0/5",
+    "248.0.0.0/5"
+);
+
+my $ipv4_private = Net::Patricia->new;
+$ipv4_private->add_string($_) for(@ipv4_private_addresses);
 
 my $protocols = {
     icmp    => 1,
@@ -106,6 +122,12 @@ sub is_url_broken {
     # if it really matches 1.2.3.0/16, return 0
     return 0 if($arg =~ /^\b(?:\d{1,3}\.){3}\d{1,3}\b\/(\d{1,2})$/);
     return 1;
+}
+
+sub is_ip_private {
+    my $ip = shift || return 0;
+    return 0 unless(is_ip($ip));
+    return $ipv4_private->match($ip);
 }
 
 sub is_ip {

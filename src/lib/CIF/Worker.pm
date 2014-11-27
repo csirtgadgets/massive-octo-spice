@@ -151,11 +151,12 @@ sub process {
         next unless($data->{'confidence'} && $data->{'confidence'} >= CONFIDENCE_MIN);
         $data = CIF::ObservableFactory->new_plugin($data);
         next unless($p->understands($data));
+        $Logger->debug('processing: '.$p);
         if(my $tmp = $p->new->process($data)){
             foreach my $t (@$tmp){
                 $self->_process_metadata($t);
             }
-            push(@$new,@$tmp);
+            push(@$new,@$tmp) if($#{$tmp} > -1);
         }
     }
     if($new){
