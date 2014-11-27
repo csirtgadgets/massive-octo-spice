@@ -2,7 +2,7 @@ parser: csv
 defaults:
   provider: bambenekconsulting.com
   tlp: amber
-  confidenece: 85
+  confidence: 85
   alt_tlp: green
   values:
       - observable
