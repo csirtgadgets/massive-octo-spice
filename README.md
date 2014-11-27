@@ -1,7 +1,8 @@
 # Getting Started 
+[![Build Status](https://travis-ci.org/csirtgadgets/massive-octo-spice.png?branch=master)](https://travis-ci.org/csirtgadgets/massive-octo-spice)
  * [the Wiki](https://github.com/csirtgadgets/massive-octo-spice/wiki)
  * [FAQ](https://github.com/csirtgadgets/massive-octo-spice/wiki/FAQ)
- * [Known Issues](https://github.com/csirtgadgets/massive-octo-spice/issues?labels=bug&state=open) [![Build Status](https://travis-ci.org/csirtgadgets/massive-octo-spice.png?branch=master)](https://travis-ci.org/csirtgadgets/massive-octo-spice)
+ * [Known Issues](https://github.com/csirtgadgets/massive-octo-spice/issues?labels=bug&state=open) 
 
 # Getting Involved
 There are many ways to get involved with the project. If you have a new and exciting feature, or even a simple bugfix, simply [fork the repo](https://help.github.com/articles/fork-a-repo), create some simple test cases, [generate a pull-request](https://help.github.com/articles/using-pull-requests) and give yourself credit!
