@@ -1,7 +1,4 @@
-# Collective Intelligence Framework
-[![Build Status](https://travis-ci.org/csirtgadgets/massive-octo-spice.png?branch=master)](https://travis-ci.org/csirtgadgets/massive-octo-spice)
-
-# Getting Started
+# Getting Started [![Build Status](https://travis-ci.org/csirtgadgets/massive-octo-spice.png?branch=master)](https://travis-ci.org/csirtgadgets/massive-octo-spice)
  * [the Wiki](https://github.com/csirtgadgets/massive-octo-spice/wiki)
  * [FAQ](https://github.com/csirtgadgets/massive-octo-spice/wiki/FAQ)
  * [Known Issues](https://github.com/csirtgadgets/massive-octo-spice/issues?labels=bug&state=open)  
