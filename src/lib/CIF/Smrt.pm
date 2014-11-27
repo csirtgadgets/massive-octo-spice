@@ -126,11 +126,16 @@ sub process {
     $Logger->info('processing events: '.($#{$data} + 1));
     my @array;
     
+    my $reporttime = DateTime->from_epoch(epoch => time());
+    $reporttime = $reporttime->ymd().'T'.$reporttime->hms().'Z';
+    
     my $ts;
     my $otype;
     foreach (@$data){
         $otype = observable_type($_->{'observable'});
         next unless($otype);
+        
+        $_->{'reporttime'} = $reporttime unless($_->{'reporttime'});
 
         $ts = $_->{'firsttime'} || $_->{'lasttime'} || $_->{'reporttime'} || MAX_DT;
         $ts = normalize_timestamp($ts)->epoch();

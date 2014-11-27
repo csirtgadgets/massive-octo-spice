@@ -2,6 +2,8 @@ Revision history for massive-octo-spice
 
 2.00.00-alpha.10 2014
     - bugfix to bambenek feed...
+    - fixes:
+        https://github.com/csirtgadgets/massive-octo-spice/issues/85
 
 2.00.00-alpha.9 2014-11-27
     - misc bugfixes
