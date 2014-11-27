@@ -3,8 +3,25 @@
 set -e
 
 if [ `whoami` != 'root' ]; then
-	echo "must be run as root"
-	exit 0
+    echo "must be run as root"
+    exit 1
+fi
+
+# Check for an Internet Connection as it is required during installation
+HTTP_HOST=http://github.com
+if [ -x /usr/bin/wget ]; then
+    echo "Checking for an Internet connection"
+    wget -q --tries=3 --timeout=10 --spider $HTTP_HOST
+    if [[ $? -eq 0 ]]; then
+        echo "$HTTP_HOST appears to be available via HTTP"
+        echo "Continuing with installation"
+    else
+        echo "$HTTP_HOST does not appear to be available via HTTP"
+        echo "Exiting installation"
+        exit 1
+    fi
+else
+    echo "/usr/bin/wget does not exist, skipping Internet connection test"
 fi
 
 cd hacking/platforms
@@ -32,15 +49,19 @@ case $OS in
         bash ./ubuntu.sh;;
 
     "Debian" )
-		echo 'Debian not yet supported...';;
+        echo 'Debian not yet supported...'
+        exit 1;;
 
     "Darwin" )
-        echo 'Darwin not yet supported...' ;;
+        echo 'Darwin not yet supported...'
+        exit 1;;
 
     "Redhat" )
-        echo 'Redhat not yet supported...' ;;
+        echo 'Redhat not yet supported...'
+        exit 1;;
 
     "CentOS" )
-        echo 'CentOS not yet supported...' ;;
+        echo 'CentOS not yet supported...'
+        exit 1;;
 
 esac
