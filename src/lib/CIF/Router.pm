@@ -96,6 +96,7 @@ sub startup {
             bind => $self->frontend_listen,
         )
     );
+    
     $Logger->info('frontend started on: '.$self->frontend_listen);
     
     $self->publisher(
