@@ -244,7 +244,7 @@ sub workers {
        while($worker->data_socket->has_pollin()){
            my $msg = $worker->data_socket->recv();
            $Logger->info('worker received msg...');
-           $Logger->debug(Dumper($msg));
+           $Logger->trace(Dumper($msg));
            try {
                 $worker->process($msg);
            } catch {

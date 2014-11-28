@@ -8,6 +8,7 @@ use Net::Abuse::Utils::Spamhaus qw(check_ip check_fqdn);
 
 use constant {
     CONFIDENCE  => 95,
+    PROVIDER    => 'spamhaus.org',
 };
 
 use Mouse;
@@ -19,9 +20,8 @@ sub understands {
     my $self = shift;
     my $args = shift;
     
-    warn Dumper($args);
-    
-    return if($args->{'provider'} && $args->{'povider'} eq 'spamhaus.org');
+    return unless($args->{'provider'} && $args->{'provider'} ne PROVIDER);
+    return if($args->{'provider'} && $args->{'provider'} eq PROVIDER);
 
     return unless(is_fqdn($args->{'observable'}) || is_ip($args->{'observable'}));
     return 1;
@@ -40,7 +40,7 @@ sub process {
         # is fqdn
         $ret = check_fqdn($obs,2);
     }
-    
+
     return unless($ret);
     
     foreach my $rr (@$ret){
@@ -53,7 +53,7 @@ sub process {
             description => $rr->{'description'},
             tlp         => $data->{'tlp'} || CIF::TLP_DEFAULT,
             group       => $data->{'group'} || CIF::GROUP_DEFAULT,
-            provider    => 'spamhaus.org',
+            provider    => PROVIDER,
             confidence  => CONFIDENCE,
             application => $data->{'application'},
             altid       => $rr->{'id'},

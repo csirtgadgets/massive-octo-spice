@@ -218,7 +218,7 @@ sub send {
                 $self->router_socket->set(ZMQ_LINGER,'int',0);
                 return 0;
             }
-            $Logger->critical($err);
+            $Logger->fatal($err);
             return 0;
         }
     }
