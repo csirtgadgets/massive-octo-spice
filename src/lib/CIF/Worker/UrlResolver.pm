@@ -26,6 +26,9 @@ sub process {
     my $obs = $data->{'observable'};
     $obs = URI->new($obs);
     
+    my $ts = DateTime->from_epoch(epoch => time());
+    $ts = $ts->ymd().'T'.$ts->hms().'Z';
+    
     $obs = {
         observable  => $obs->host,
         portlist    => $obs->port,
@@ -40,6 +43,8 @@ sub process {
         protocol    => $data->{'protocol'},
         altid       => $data->{'altid'},
         altid_tlp   => $data->{'altid_tlp'} || $data->{'tlp'} || CIF::TLP_DEFAULT,
+        lasttime    => $ts,
+        reporttime  => $ts,
     };
     return [$obs];
 }   

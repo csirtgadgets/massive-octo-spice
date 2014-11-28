@@ -155,6 +155,7 @@ sub process {
         if(my $tmp = $p->new->process($data)){
             foreach my $t (@$tmp){
                 $self->_process_metadata($t);
+                $t = CIF::ObservableFactory->new_plugin($t);
             }
             push(@$new,@$tmp) if($#{$tmp} > -1);
         }
@@ -162,7 +163,6 @@ sub process {
     if($new){
         $Logger->debug('sending to router');
         my $x = $self->send($new);
-        warn Dumper($x);
     } else {
         $Logger->debug('no new msgs to send...');
     }
@@ -196,8 +196,6 @@ sub send {
     } else {
         $msg = JSON::XS->new->convert_blessed(1)->encode($msg);
     }
-    
-    $Logger->debug($msg);
     
     $Logger->debug('sending upstream...');
     

@@ -206,7 +206,6 @@ sub main {
         while($master->subscriber_socket->has_pollin()){
             my $msg = $master->subscriber_socket->recv();
             $Logger->info('recieved msg...');
-            $Logger->debug($msg);
             $msg = $master->decode($msg);
             foreach (@$msg){
                 $Logger->debug('sending to worker...');
@@ -244,7 +243,6 @@ sub workers {
        while($worker->data_socket->has_pollin()){
            my $msg = $worker->data_socket->recv();
            $Logger->info('worker received msg...');
-           $Logger->trace(Dumper($msg));
            try {
                 $worker->process($msg);
            } catch {
@@ -252,6 +250,8 @@ sub workers {
            };
            if($err){
                 $Logger->error($err);
+                $Logger->trace(Dumper($msg));
+                die;
                 $err = '';
            }
        }

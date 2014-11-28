@@ -15,7 +15,7 @@ has 'portlist' => (
 
 has 'protocol' => (
     is      => 'rw',
-    isa     => 'Maybe[CIF::Type::Protocol]',
+    isa     => 'CIF::Type::Protocol',
     coerce  => 1,
     reader  => 'get_protocol',
 );

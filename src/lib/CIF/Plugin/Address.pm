@@ -108,6 +108,7 @@ sub is_fqdn_lazy {
 sub is_url {
     my $arg = shift || return;
     
+    return 0 if(is_ip($arg));
     return 1 if($arg =~ RE_URL);
     return 2 if($arg =~ RE_URL_BROKEN);
     
@@ -127,7 +128,11 @@ sub is_url_broken {
 sub is_ip_private {
     my $ip = shift || return 0;
     return 0 unless(is_ip($ip));
-    return $ipv4_private->match($ip);
+    if($ip =~ /^(\S+)\/\d+$/){
+        return $ipv4_private->match($1);
+    } else {
+        return $ipv4_private->match($ip);
+    }
 }
 
 sub is_ip {

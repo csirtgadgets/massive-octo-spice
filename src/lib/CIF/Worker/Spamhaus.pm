@@ -43,6 +43,9 @@ sub process {
 
     return unless($ret);
     
+    my $ts = DateTime->from_epoch(epoch => time());
+    $ts = $ts->ymd().'T'.$ts->hms().'Z';
+    
     foreach my $rr (@$ret){
         next if(is_ip_private($obs));
         push(@array, {
@@ -59,6 +62,8 @@ sub process {
             altid       => $rr->{'id'},
             altid_tlp   => 'green',
             related     => $data->{'id'},
+            lasttime    => $ts,
+            reporttime  => $ts,
         });
     }
     return \@array;
