@@ -297,6 +297,8 @@ sub _main {
         
         $r->defaults->{'group'} = 'everyone' unless($r->defaults->{'group'});
         
+        $r->defaults->{'altid'} = $r->defaults->{'remote'} unless($r->defaults->{'altid'});
+        
         my $smrt = CIF::Smrt->new({
             rule            => $r,
             tmp             => $cache,
