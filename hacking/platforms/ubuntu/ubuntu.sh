@@ -30,6 +30,9 @@ debconf-set-selections <<< "postfix postfix/main_mailer_type string 'Internet Si
 apt-get update
 apt-get install -y curl cpanminus build-essential libmodule-build-perl libssl-dev elasticsearch apache2 libapache2-mod-perl2 curl mailutils build-essential git-core automake rng-tools openjdk-7-jre-headless libtool pkg-config vim htop bind9 libzmq3-dev libffi6 libmoose-perl libmouse-perl libanyevent-perl liblwp-protocol-https-perl libxml2-dev libexpat1-dev libgeoip-dev geoip-bin python-dev starman
 
+echo 'installing marvel for elasticsearch...'
+/usr/share/elasticsearch/bin/plugin -i elasticsearch/marvel/latest
+
 if [ $VER == "12.04" ]; then ## 14.04 has it built in and supports cpanfile
 	cpanm --self-upgrade --mirror http://cpan.metacpan.org
 fi
@@ -148,7 +151,7 @@ chmod 660 /etc/cif/cif-worker.yml
 echo 'setting up ~/.cif.yml config for user: root@localhost...'
 /opt/cif/bin/cif-tokens --username root@localhost --new --read --write --generate-config-remote https://localhost --generate-config-path ~/.cif.yml
 chmod 660 ~/.cif.yml
-chown `whoami`:`whoami` ~/.cif.yml
+sudo chown `whoami`:`whoami` ~/.cif.yml
 
 echo 'starting cif-router...'
 service cif-router start

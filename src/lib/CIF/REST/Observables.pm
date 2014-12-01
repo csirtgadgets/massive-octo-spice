@@ -12,7 +12,7 @@ sub index {
     
     $Logger->debug('generating search...');
     my $res = $self->cli->search({
-        token      	=> $self->token,
+        token      	=> scalar $self->token,
         query      	=> scalar $query,
         nolog       => scalar $self->param('nolog'),
         filters     => {
@@ -85,7 +85,11 @@ sub create {
         $self->render(json   => { 'message' => 'unauthorized' }, status => 401 );
         return;
     }
-
+    
+    unless(@{$data}[0]->{'group'}){
+        $self->render(json => { 'message' => 'Bad Request, missing group tag in one of the observables', status => 400 } );
+        return;
+    }
     if($nowait){
         $SIG{CHLD} = 'IGNORE'; # http://stackoverflow.com/questions/10923530/reaping-child-processes-from-perl
         my $child = fork();

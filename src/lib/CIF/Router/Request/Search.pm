@@ -15,7 +15,6 @@ use constant RE_BADCHARS        => qr/(\/?\.\.+\/?|;|\w+\(|=>)/;
 use constant RE_GOODQUERY       => qr/^[a-zA-Z0-9_\.\,\/\-@\:]+$/;
 use constant CONFIDENCE_DEFAULT => 25; ## TODO -- move to router
 use constant TLP_DEFAULT        => 'amber'; ## TODO
-use constant GROUP_DEFAULT      => 'everyone'; ## TODO
 
 sub check {
     my $self    = shift;
@@ -52,6 +51,12 @@ sub process {
     
     return 0 unless($self->user->{'read'});
     
+    if($data->{'Filters'}->{'group'}){
+        return 0 unless($self->in_groups($data->{'Filters'}->{'group'}));
+    } else {
+        $data->{'Filters'}->{'group'} = $self->user->{'groups'};
+    }
+    
     my $results = $self->storage->process($data);
    
     if($data->{'Query'} && $data->{'Query'} ne 'all'){
@@ -83,7 +88,7 @@ sub _log_search {
         confidence  => CONFIDENCE_DEFAULT(),
         tlp         => TLP_DEFAULT(),
         tags        => ['search'],
-        group       => GROUP_DEFAULT(),
+        group       => $data->{'Filters'}->{'group'},
     });
     
     $obs = $obs->TO_JSON();

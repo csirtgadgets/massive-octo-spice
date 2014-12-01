@@ -173,10 +173,9 @@ sub search {
     	$filters->{'tags'} = [split(/,/,$filters->{'tags'})];
     }
     
-    if($filters->{'groups'} && $filters->{'groups'} =~ /,/){
-    	$filters->{'groups'} = [split(/,/,$filters->{'groups'})];
+    if($filters->{'group'} && $filters->{'group'} =~ /,/){
+    	$filters->{'group'} = [split(/,/,$filters->{'group'})];
     }
-    
     my $msg;
     if($args->{'id'}){
     	$msg = CIF::Message->new({
@@ -190,7 +189,7 @@ sub search {
     	$msg = CIF::Message->new({
 	        rtype      => 'search',
 	        mtype      => 'request',
-	        Token      => $args->{'token'} || $self->token(),
+	        Token      => $args->{'token'} || $self->token,
 	        Query      => $args->{'query'},
 	        Filters    => $filters,
 	        feed       => $args->{'feed'},

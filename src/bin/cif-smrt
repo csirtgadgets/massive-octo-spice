@@ -295,6 +295,10 @@ sub _main {
         $Logger->debug($r->defaults->{'provider'}.' - '.$r->feed);
         $Logger->info("processing: $0 -d -r $r->{'rule_path'} -f $r->{'feed'}");
         
+        $r->defaults->{'group'} = 'everyone' unless($r->defaults->{'group'});
+        
+        $r->defaults->{'altid'} = $r->defaults->{'remote'} unless($r->defaults->{'altid'});
+        
         my $smrt = CIF::Smrt->new({
             rule            => $r,
             tmp             => $cache,

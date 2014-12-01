@@ -151,17 +151,18 @@ sub process {
         next unless($data->{'confidence'} && $data->{'confidence'} >= CONFIDENCE_MIN);
         $data = CIF::ObservableFactory->new_plugin($data);
         next unless($p->understands($data));
+        $Logger->debug('processing: '.$p);
         if(my $tmp = $p->new->process($data)){
             foreach my $t (@$tmp){
                 $self->_process_metadata($t);
+                $t = CIF::ObservableFactory->new_plugin($t);
             }
-            push(@$new,@$tmp);
+            push(@$new,@$tmp) if($#{$tmp} > -1);
         }
     }
     if($new){
         $Logger->debug('sending to router');
         my $x = $self->send($new);
-        warn Dumper($x);
     } else {
         $Logger->debug('no new msgs to send...');
     }
@@ -196,8 +197,6 @@ sub send {
         $msg = JSON::XS->new->convert_blessed(1)->encode($msg);
     }
     
-    $Logger->debug($msg);
-    
     $Logger->debug('sending upstream...');
     
     my ($ret,$err);
@@ -217,7 +216,7 @@ sub send {
                 $self->router_socket->set(ZMQ_LINGER,'int',0);
                 return 0;
             }
-            $Logger->critical($err);
+            $Logger->fatal($err);
             return 0;
         }
     }

@@ -36,10 +36,10 @@ sub process {
         $asn_desc = fix_latin($asn_desc);
     }
     
-    $args->{'asn'}          = $asn if($asn);
-    $args->{'asn_desc'}     = $asn_desc if($asn_desc);
-    $args->{'prefix'}       = $prefix if($prefix);
-    $args->{'cc'}  = $cc if($cc && $cc ne '');
+    $args->{'asn'}          = $asn if($asn && !$args->{'asn'});
+    $args->{'asn_desc'}     = $asn_desc if($asn_desc && !$args->{'asn_desc'});
+    $args->{'prefix'}       = $prefix if($prefix && !$args->{'prefix'});
+    $args->{'cc'}           = $cc if($cc && $cc ne '');
     $args->{'rir'}          = $rir if($rir);
 }
 

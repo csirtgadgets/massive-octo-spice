@@ -9,7 +9,7 @@ with 'CIF::Observable';
 
 has 'portlist' => (
     is        => 'rw',
-    #isa       => 'CIF::Type::PortList', ##TODO
+    isa       => 'Maybe[CIF::Type::PortList]',
     reader    => 'get_portlist',
 );
 
@@ -27,7 +27,7 @@ has 'application' => (
 
 has 'cc'   => (
     is      => 'ro',
-    isa     => 'CIF::Type::UpperCaseStr',
+    isa     => 'Maybe[CIF::Type::UpperCaseStr]',
     coerce  => 1,
     reader  => 'get_cc',
 );

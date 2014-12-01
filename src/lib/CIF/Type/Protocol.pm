@@ -7,11 +7,11 @@ use Mouse::Util::TypeConstraints;
 use CIF qw/protocol_to_int/;
 
 subtype 'CIF::Type::Protocol',
-    as 'Maybe[Int]',
+    as 'Int',
     message { "Must be the protocol number" };
     
 coerce 'CIF::Type::Protocol',
-    from 'Str',
+    from 'Maybe[Str]',
     via { protocol_to_int($_) };
     
 no Mouse::Util::TypeConstraints;

@@ -24,7 +24,7 @@ if($pid == 0){
 } else {
     diag('starting client');
     my $cli = CIF::Client->new({
-        remote          => 'tcp://localhost:'.CIF::DEFAULT_PORT(),
+        remote          => 'tcp://localhost:'.(CIF::DEFAULT_PORT() - 1),
         token           => '1234',
         encoder_pretty  => 1,
     });
@@ -42,8 +42,10 @@ sub start_router {
     
     diag('starting router...');
     my $obj = CIF::Router->new({
-        encoder_pretty  => 1,
-        storage         => $storage,
+        encoder_pretty      => 1,
+        storage             => $storage,
+        frontend_listen     => 'tcp://*:'.(CIF::DEFAULT_PORT() - 1),
+        publisher_listen    => 'tcp://*:'.(CIF::DEFAULT_PORT - 2),
     });
 
     my $ret = $obj->startup();

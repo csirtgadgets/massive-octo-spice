@@ -6,7 +6,7 @@ use feature 'say';
 use Data::Dumper;
 
 use Mouse;
-use CIF qw/is_fqdn $Logger/;
+use CIF qw/is_fqdn is_ip $Logger/;
 use CIF::Worker;
 
 with 'CIF::WorkerFqdn';
@@ -42,6 +42,9 @@ sub _rr_to_observation {
     
     my $confidence = $self->degrade_confidence($data->{'confidence'});
     
+    my $ts = DateTime->from_epoch(epoch => time());
+    $ts = $ts->ymd().'T'.$ts->hms().'Z';
+    
     my $ret = $self->resolve($data->{'observable'},$type);
     my @obs;
     foreach my $rr (@$ret){
@@ -64,10 +67,10 @@ sub _rr_to_observation {
                 last;
             }
         }
-        unless($thing){
-            $Logger->error('missing thing type: '.Dumper($rr));
+        unless($thing && (is_ip($thing) || is_fqdn($thing))){
+            $Logger->error('missing/bad thing type: '.Dumper($rr));
         } else {
-            my $o = CIF::ObservableFactory->new_plugin({
+            my $o = {
                 related     => $data->{'id'},
                 observable  => $thing,
                 confidence  => $confidence,
@@ -82,7 +85,9 @@ sub _rr_to_observation {
                 altid       => $data->{'altid'},
                 altid_tlp   => $data->{'altid_tlp'} || $data->{'tlp'} || CIF::TLP_DEFAULT,
                 rtype       => $type,
-            });
+                lasttime    => $ts,
+                reporttime  => $ts,
+            };
             push(@obs,$o);
         }
     }

@@ -96,6 +96,7 @@ sub startup {
             bind => $self->frontend_listen,
         )
     );
+    
     $Logger->info('frontend started on: '.$self->frontend_listen);
     
     $self->publisher(
@@ -167,9 +168,11 @@ sub process {
         rtype   => $msg->{'rtype'},
         mtype   => 'response',
     });
+    my $user;
+    if(lc($msg->{'Token'}) =~ /^[a-z0-9]{64}$/){
+        $user = $self->storage_handle->check_auth($msg->{'Token'});
+    }
     
-    my $user = $self->storage_handle->check_auth($msg->{'Token'});
-
     if($user){
         my $req = CIF::Router::RequestFactory->new_plugin({ 
             msg     => $msg,

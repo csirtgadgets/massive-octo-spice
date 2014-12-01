@@ -4,7 +4,8 @@ use strict;
 use warnings;
 
 use Mouse;
-use CIF qw/is_ip/;
+use Data::Dumper;
+use CIF qw/is_ip $Logger/;
 
 with 'CIF::ObservableAddressIP';
 

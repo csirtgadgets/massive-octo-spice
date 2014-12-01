@@ -45,6 +45,7 @@ sub process {
     
     $self->_merge_defaults($args);
     $self->_normalize_otype($args->{'data'});
+    $self->_normalize_ts($args->{'data'});
     return $args->{'data'};
 }
 
@@ -72,6 +73,27 @@ sub _normalize_url {
     }
     $data = uri_escape_utf8($data,'\x00-\x1f\x7f-\xff');
     $data = URI->new($data)->canonical->as_string;
+    return $data;
+}
+
+sub _normalize_ts {
+    my $self = shift;
+    my $data = shift;
+    
+    $data->{'reporttime'} = normalize_timestamp($data->{'reporttime'});
+    $data->{'reporttime'} = $data->{'reporttime'}->ymd().'T'.$data->{'reporttime'}->hms().'Z';
+    
+    if($data->{'firsttime'}){
+        $data->{'firsttime'} = normalize_timestamp($data->{'firsttime'});
+        $data->{'firsttime'} = $data->{'firsttime'}->ymd().'T'.$data->{'firsttime'}->hms().'Z';
+    }
+    
+    if($data->{'lasttime'}){
+        $data->{'lasttime'} = normalize_timestamp($data->{'lasttime'});
+        $data->{'lasttime'} = $data->{'lasttime'}->ymd().'T'.$data->{'lasttime'}->hms().'Z';
+        $data->{'firsttime'} = $data->{'lasttime'} unless($data->{'firsttime'});
+    }
+    
     return $data;
 }
 

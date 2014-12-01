@@ -202,7 +202,7 @@ sub _search {
     
     return -1 if(ref($args->{'Query'}));
     
-    my $groups = $args->{'group'} || ['everyone'];
+    my $groups = $args->{'group'};
     $groups = [$groups] unless(ref($groups) && ref($groups) eq 'ARRAY');
     
     my ($q,$terms,$ranges,$prefix,$regexp);
@@ -445,8 +445,12 @@ sub _submission {
     );
 
     foreach (@$things){
+        unless($_->{'group'}){
+            $Logger->error('missing group: '.$_->{'observable'});
+            return 0;
+        }
         $_->{'@timestamp'}  = $timestamp;
-        $_->{'@version'}    = 2; ##TODO
+        $_->{'@version'}    = 2;
         $_->{'id'}  = hash_create_random();
         $_->{'confidence'} = ($_->{'confidence'}) ? ($_->{'confidence'} + 0.0) : 0; ## work-around cause ES tries to parse anything with quotes around it
         $bulk->index({ 
