@@ -20,7 +20,7 @@ options {
 	//========================================================================
 	dnssec-validation auto;
 
-	auth-nxdwmain no;    # conformuto RFC1035
+	auth-nxdomain no;    # conformuto RFC1035
 	listen-on-v6 { any; };
     forward only;  
     forwarders {  
