@@ -24,6 +24,8 @@ sub process {
     
     my $results = $self->storage->process($data);
     
+    return 0 unless($results);
+    
     $results = [ $results ] unless(ref($results) eq 'ARRAY');
 
     my $resp = CIF::Message::Submission->new({

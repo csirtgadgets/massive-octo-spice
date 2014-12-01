@@ -31,8 +31,7 @@ has 'provider' => (
 
 has 'group' => (
     is      => 'ro',
-    isa     => 'CIF::Type::LowerCaseStr',
-    default => CIF::DEFAULT_GROUP(),
+    isa     => 'ArrayRef',
     coerce  => 1,
     reader  => 'get_group',
 );
