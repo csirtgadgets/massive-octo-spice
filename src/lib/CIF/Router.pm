@@ -168,6 +168,7 @@ sub process {
         rtype   => $msg->{'rtype'},
         mtype   => 'response',
     });
+    
     my $user;
     if(lc($msg->{'Token'}) =~ /^[a-z0-9]{64}$/){
         $user = $self->storage_handle->check_auth($msg->{'Token'});
