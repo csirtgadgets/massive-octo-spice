@@ -246,6 +246,14 @@ sub _search {
     	$ranges->{'lasttime'}->{'lte'} = $filters->{'lasttime'};
     }
     
+    if($filters->{'reporttime'}){
+    	$ranges->{'reporttime'}->{'gte'} = $filters->{'reporttime'};
+    }
+    
+    if($filters->{'reporttimeend'}){
+        $ranges->{'reporttime'}->{'lte'} = $filters->{'reporttimeend'};
+    }
+    
     if($filters->{'tags'}){
     	$filters->{'tags'} = [$filters->{'tags'}] unless(ref($filters->{'tags'}) eq 'ARRAY');
     	$terms->{'tags'} = $filters->{'tags'};
