@@ -1,6 +1,7 @@
 Revision history for massive-octo-spice
 
-2.00.00-alpha.10 2014
+2.00.00-alpha.10 2014-12-04
+    - bugfix to a few feeds where we use firsttime instead of lasttime
     - bugfix to bambenek feed...
     - fixes:
         https://github.com/csirtgadgets/massive-octo-spice/issues/85
@@ -8,6 +9,7 @@ Revision history for massive-octo-spice
         https://github.com/csirtgadgets/massive-octo-spice/issues/68
         https://github.com/csirtgadgets/massive-octo-spice/issues/93
         https://github.com/csirtgadgets/massive-octo-spice/issues/112
+    - support for new sdk filter features (--today, --last-hour, --reporttime, --reporttimeend)
 
 2.00.00-alpha.9 2014-11-27
     - misc bugfixes
