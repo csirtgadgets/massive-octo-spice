@@ -14,7 +14,7 @@ defaults:
       values: observable
     title:
       pattern: ^\S+\s\((\S+)\)$
-      values: firsttime
+      values: lasttime
 
 feeds:
   binaries:

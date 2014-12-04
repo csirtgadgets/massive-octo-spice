@@ -7,7 +7,7 @@ defaults:
   values:
       - observable
       - description
-      - firsttime
+      - lasttime
   tags:
     - botnet
 

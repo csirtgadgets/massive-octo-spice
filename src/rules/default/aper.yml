@@ -6,7 +6,7 @@ defaults:
   pattern: '^(\S+),[C|D|E],(\S+)$'
   values:
     - observable
-    - firsttime
+    - lasttime
 
 feeds:
   content:
