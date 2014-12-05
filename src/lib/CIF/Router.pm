@@ -134,7 +134,7 @@ sub startup {
                             Data    => 'unknown failure',
                         });
                     } else {
-                        $Logger->debug(Dumper($msg));
+                        $Logger->trace(Dumper($msg));
                         $self->publish($msg) if($resp->{'stype'} eq 'success');
                     }
                         

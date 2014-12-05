@@ -446,12 +446,15 @@ sub _submission {
         es          => $self->handle,
         index       => $index,
         type        => $type,
-        max_count   => $self->max_count,
-        max_size    => $self->max_size,
+        max_count   => 0,
+        max_size    => 0,
         verbose     => 1,
         refresh     => 1,
     );
 
+    # we may want to change this so we're flushing every X count or X size???
+    # http://search.cpan.org/~drtech/Search-Elasticsearch-1.16/lib/Search/Elasticsearch/Bulk.pm
+    # https://github.com/csirtgadgets/massive-octo-spice/issues/117
     foreach (@$things){
         unless($_->{'group'}){
             $Logger->error('missing group: '.$_->{'observable'});
