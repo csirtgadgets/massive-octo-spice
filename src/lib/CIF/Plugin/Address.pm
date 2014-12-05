@@ -28,11 +28,13 @@ our @EXPORT = qw(
 require Mail::RFC822::Address;
 use URI; ##TODO -- change from regexs
 use Regexp::Common qw/net/;
+use Regexp::Common::net::CIDR;
 use Net::Patricia;  
 
 use constant RE_FQDN_LAZY       => qr/^$RE{net}{domain}{-rfc1101}{-nospace}$/;
 use constant RE_FQDN            => qr/^(?:[0-9a-zA-Z-]{1,63}\.)+[a-zA-Z]{2,63}$/; # https://groups.google.com/forum/#!topic/ci-framework/VDUxNd5rPf8
-use constant RE_IPV4            => qr/^$RE{'net'}{'IPv4'}/;
+use constant RE_IPV4            => qr/^$RE{'net'}{'IPv4'}$/;
+use constant RE_IPV4_CIDR       => qr/^$RE{'net'}{'CIDR'}{'IPv4'}$/;
 use constant RE_IPV6            => qr/^$RE{'net'}{'IPv6'}/;
 use constant ASN_MAX            => 2**32 - 1;
 use constant RE_URL             => qr/^(http|https|smtp|ftp|sftp):\/\//;
@@ -112,7 +114,8 @@ sub is_url {
     unless($no_check_ip){
         return 0 if(is_ip($arg));
     }
-    
+
+    return 0 if($arg =~ RE_IPV4_CIDR);
     return 1 if($arg =~ RE_URL);
     return 2 if($arg =~ RE_URL_BROKEN);
     
@@ -142,7 +145,9 @@ sub is_ip_private {
 sub is_ip {
     my $arg = shift || return 0;
     
-    return if is_url($arg,1);
+    return 0 if is_url($arg,1);
+    return 0 if is_fqdn($arg);
+    
     return 'ipv4' if(is_ipv4($arg));
     return 'ipv6' if(is_ipv6($arg));
     
@@ -151,14 +156,16 @@ sub is_ip {
 
 sub is_ipv4 {
     my $arg = shift || return;
+
+    return 1 if($arg =~ RE_IPV4);
+    return 1 if($arg =~ RE_IPV4_CIDR);
     
-    return 1 if($arg =~ RE_IPV4());
 }
 
 sub is_ipv6 {
     my $arg = shift || return;
     
-    return 1 if($arg =~ RE_IPV6());
+    return 1 if($arg =~ RE_IPV6);
 }
 
 1;

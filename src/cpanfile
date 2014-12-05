@@ -36,6 +36,7 @@ requires 'Mojolicious','5.09';
 requires 'Plack', '1.0030';
 requires 'Regexp::Common';
 requires 'Regexp::Common::net';
+requires 'Regexp::Common::net::CIDR';
 requires 'Regexp::IPv6';
 requires 'Search::Elasticsearch';
 requires 'String::Tokenizer';
