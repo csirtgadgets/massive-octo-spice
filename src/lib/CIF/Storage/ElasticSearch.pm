@@ -21,8 +21,8 @@ with 'CIF::Storage';
 
 use constant {
     NODE                => 'localhost:9200',
-    MAX_SIZE            => 104857600,
-    MAX_COUNT           => 5000000,
+    MAX_SIZE            => 524288000,
+    MAX_COUNT           => 5,
     OBSERVABLES         => 'cif.observables',
     FEEDS               => 'cif.feeds',
     OBSERVABLES_TYPE    => 'observables',
@@ -80,7 +80,8 @@ sub _build_handle {
  
     $self->handle(
         Search::Elasticsearch->new(
-            nodes   => $self->nodes,
+            nodes               => $self->nodes,
+            max_content_length  => $self->max_size,
         )
     );
 }
@@ -446,12 +447,10 @@ sub _submission {
         es          => $self->handle,
         index       => $index,
         type        => $type,
-        max_count   => 0,
-        max_size    => 0,
         verbose     => 1,
         refresh     => 1,
     );
-
+    
     # we may want to change this so we're flushing every X count or X size???
     # http://search.cpan.org/~drtech/Search-Elasticsearch-1.16/lib/Search/Elasticsearch/Bulk.pm
     # https://github.com/csirtgadgets/massive-octo-spice/issues/117
