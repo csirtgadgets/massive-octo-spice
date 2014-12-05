@@ -108,7 +108,7 @@ sub startup {
     
     $Logger->info('publisher started on: '.$self->publisher_listen);
     
-    my ($ret,$err,$resp); ##TODO mem leaks?
+    my ($err,$resp); ##TODO mem leaks?
     $self->frontend_watcher(
         $self->frontend->anyevent_watcher(
             sub {
@@ -125,7 +125,6 @@ sub startup {
                     };
                     
                     if($err){
-                        $ret = -1;
                         $Logger->error($err);
                         $resp = CIF::Message->new({
                             stype   => 'failure',
@@ -133,8 +132,8 @@ sub startup {
                             rtype   => $msg->{'rtype'},
                             Data    => 'unknown failure',
                         });
+                        $err = undef;
                     } else {
-                        $Logger->trace(Dumper($msg));
                         $self->publish($msg) if($resp->{'stype'} eq 'success');
                     }
                         
