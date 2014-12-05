@@ -68,7 +68,9 @@ sub _rr_to_observation {
             }
         }
         unless($thing && (is_ip($thing) || is_fqdn($thing))){
-            $Logger->error('missing/bad thing type: '.Dumper($rr));
+            $Logger->debug('missing/bad thing type: '.Dumper($rr));
+            $Logger->debug(Dumper($data));
+            
         } else {
             my $o = {
                 related     => $data->{'id'},

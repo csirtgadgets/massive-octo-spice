@@ -1,5 +1,9 @@
 Revision history for massive-octo-spice
 
+2.00.00-alpha.11 2014
+    - fixes:
+        https://github.com/csirtgadgets/massive-octo-spice/issues/116
+
 2.00.00-alpha.10 2014-12-04
     - bugfix to a few feeds where we use firsttime instead of lasttime
     - bugfix to bambenek feed...

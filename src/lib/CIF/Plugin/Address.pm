@@ -107,8 +107,12 @@ sub is_fqdn_lazy {
 
 sub is_url {
     my $arg = shift || return;
+    my $no_check_ip = shift || 0;
     
-    return 0 if(is_ip($arg));
+    unless($no_check_ip){
+        return 0 if(is_ip($arg));
+    }
+    
     return 1 if($arg =~ RE_URL);
     return 2 if($arg =~ RE_URL_BROKEN);
     
@@ -138,8 +142,10 @@ sub is_ip_private {
 sub is_ip {
     my $arg = shift || return 0;
     
+    return if is_url($arg,1);
     return 'ipv4' if(is_ipv4($arg));
     return 'ipv6' if(is_ipv6($arg));
+    
     return 0;
 }
 
