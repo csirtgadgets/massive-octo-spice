@@ -1,6 +1,6 @@
 parser: rss
 defaults:
-  provider: zeustracker.abuse.ch
+  provider: spyeyetracker.abuse.ch
   tlp: amber
   alt_tlp: green
   confidence: 85
