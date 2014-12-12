@@ -422,6 +422,7 @@ sub _submission {
     
     my $timestamp = DateTime->from_epoch(epoch => scalar gettimeofday()); # this is for the record insertion ts
     my $date = $timestamp->ymd('.'); # for the index
+    my $reportstamp = $timestamp->ymd().'T'.$timestamp->hms().'Z';
     $timestamp = $timestamp->ymd().'T'.$timestamp->hms().'.'.$timestamp->millisecond().'Z';
     
     my ($things,$index,$type);
@@ -463,6 +464,9 @@ sub _submission {
         $_->{'@version'}    = 2;
         $_->{'id'}  = hash_create_random();
         $_->{'confidence'} = ($_->{'confidence'}) ? ($_->{'confidence'} + 0.0) : 0; ## work-around cause ES tries to parse anything with quotes around it
+        $_->{'lasttime'} = $reportstamp unless($_->{'lasttime'});
+        $_->{'reporttime'} = $reportstamp unless($_->{'lreporttime'});
+        $_->{'firsttime'} = $reportstamp unless($_->{'firsttime'});
         $bulk->index({ 
             id      => $_->{'id'}, 
             source => $_ ,
