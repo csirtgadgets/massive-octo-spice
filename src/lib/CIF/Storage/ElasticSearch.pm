@@ -465,7 +465,7 @@ sub _submission {
         $_->{'id'}  = hash_create_random();
         $_->{'confidence'} = ($_->{'confidence'}) ? ($_->{'confidence'} + 0.0) : 0; ## work-around cause ES tries to parse anything with quotes around it
         $_->{'lasttime'} = $reportstamp unless($_->{'lasttime'});
-        $_->{'reporttime'} = $reportstamp unless($_->{'lreporttime'});
+        $_->{'reporttime'} = $reportstamp unless($_->{'reporttime'});
         $_->{'firsttime'} = $reportstamp unless($_->{'firsttime'});
         $bulk->index({ 
             id      => $_->{'id'}, 
