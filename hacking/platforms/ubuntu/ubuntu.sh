@@ -15,8 +15,12 @@ fi
 
 apt-get update
 apt-get install -qq python-software-properties
-echo "yes" | sudo add-apt-repository "ppa:chris-lea/zeromq"
-wget -O - http://packages.elasticsearch.org/GPG-KEY-elasticsearch | apt-key add -
+
+if [ ! -f /etc/apt/sources.list.d/chris-lea-zeromq-trusty.list ]; then
+	echo 'adding updated zmq repo....'
+	echo "yes" | sudo add-apt-repository "ppa:chris-lea/zeromq"
+	wget -O - http://packages.elasticsearch.org/GPG-KEY-elasticsearch | apt-key add -
+fi
 
 if [ -f /etc/apt/sources.list.d/elasticsearch.list ]; then
     echo "sources.list.d/elasticsearch.list already exists, skipping..."
@@ -39,7 +43,6 @@ if [ $VER == "12.04" ]; then ## 14.04 has it built in and supports cpanfile
 	cpanm --self-upgrade --mirror http://cpan.metacpan.org
 fi
 
-# cpan.org has been less than reliable lately
 cpanm -n --mirror http://cpan.metacpan.org Regexp::Common Mouse
 cpanm http://backpan.perl.org/authors/id/M/MS/MSCHILLI/Log-Log4perl-1.44.tar.gz
 cpanm http://search.cpan.org/CPAN/authors/id/A/AD/ADIE/Test-Exception-0.32.tar.gz
@@ -62,7 +65,12 @@ if [ -z `grep -l 'spamhaus.org' /etc/bind/named.conf.local` ]; then
     cat ./named.conf.local >> /etc/bind/named.conf.local
 fi
 
+echo 'restarting bind...'
 service bind9 restart
+
+if [ -z `grep -l '^prepend domain-name-servers 127.0.0.1;' /etc/dhcp/dhclient.conf` ]; then
+	cp dhclient.conf /etc/dhcp/
+fi
 
 if [ -z `grep -l '127.0.0.1' /etc/resolvconf/resolv.conf.d/base` ]; then
     echo 'adding 127.0.0.1 as nameserver'
@@ -71,10 +79,10 @@ if [ -z `grep -l '127.0.0.1' /etc/resolvconf/resolv.conf.d/base` ]; then
     ifdown eth0 && sudo ifup eth0
 fi
 
-echo "prepend domain-name-servers 127.0.0.1;" >> /etc/dhcp/dhclient.conf
-
 echo 'setting up apache'
-cp cif.conf /etc/apache2/
+if [ ! -f /etc/apache2/cif.conf ]; then
+	cp cif.conf /etc/apache2/
+fi
 
 if [ $VER == "12.04" ]; then
 	cp /etc/apache2/sites-available/default-ssl /etc/apache2/sites-available/default-ssl.orig
@@ -98,7 +106,7 @@ fi
 
 echo 'starting elastic search'
 update-rc.d elasticsearch defaults 95 10
-service elasticsearch start
+service elasticsearch restart
 
 cd ../../../
 
@@ -140,30 +148,34 @@ update-rc.d cif-smrt defaults 95 10
 update-rc.d cif-starman defaults 95 10
 update-rc.d cif-worker defaults 95 10
 
-echo 'setting up /etc/cif/cif-smrt.yml config...'
-/opt/cif/bin/cif-tokens --username cif-smrt --new --write --generate-config-remote http://localhost:5000 --generate-config-path /etc/cif/cif-smrt.yml
-chown cif:cif /etc/cif/cif-smrt.yml
-chmod 660 /etc/cif/cif-smrt.yml
+if [ -f /etc/cif/cif-smrt.yml ]; then
+	echo 'setting up /etc/cif/cif-smrt.yml config...'
+	/opt/cif/bin/cif-tokens --username cif-smrt --new --write --generate-config-remote http://localhost:5000 --generate-config-path /etc/cif/cif-smrt.yml
+	chown cif:cif /etc/cif/cif-smrt.yml
+	chmod 660 /etc/cif/cif-smrt.yml
+fi
 
-echo 'setting up /etc/cif/cif-worker.yml config...'
-/opt/cif/bin/cif-tokens --username cif-worker --new --read --write --generate-config-remote tcp://localhost:4961 --generate-config-path /etc/cif/cif-worker.yml
-chown cif:cif /etc/cif/cif-worker.yml
-chmod 660 /etc/cif/cif-worker.yml
+if [ -f /etc/cif/cif-worker.yml ]; then
+	echo 'setting up /etc/cif/cif-worker.yml config...'
+	/opt/cif/bin/cif-tokens --username cif-worker --new --read --write --generate-config-remote tcp://localhost:4961 --generate-config-path /etc/cif/cif-worker.yml
+	chown cif:cif /etc/cif/cif-worker.yml
+	chmod 660 /etc/cif/cif-worker.yml
+fi
 
-echo 'setting up ~/.cif.yml config for user: root@localhost...'
-/opt/cif/bin/cif-tokens --username root@localhost --new --read --write --generate-config-remote https://localhost --generate-config-path ~/.cif.yml
-chmod 660 ~/.cif.yml
-sudo chown `whoami`:`whoami` ~/.cif.yml
+if [ -f ~/.cif.yml ]; then
+	echo 'setting up ~/.cif.yml config for user: root@localhost...'
+	/opt/cif/bin/cif-tokens --username root@localhost --new --read --write --generate-config-remote https://localhost --generate-config-path ~/.cif.yml
+	chmod 660 ~/.cif.yml
+fi
 
 echo 'starting cif-router...'
-service cif-router start
+service cif-router restart
 
 echo 'restarting apache...'
-service apache2 stop
-service apache2 start
+service apache2 restart
 
 echo 'starting cif-starman...'
-service cif-starman start
+service cif-starman restart
 
 echo 'starting cif-worker'
-service cif-worker start
+service cif-worker restart
