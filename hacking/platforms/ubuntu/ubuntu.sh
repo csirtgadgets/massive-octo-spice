@@ -123,10 +123,8 @@ cp ./hacking/packaging/ubuntu/init.d/cif-router /etc/init.d/
 cp ./hacking/packaging/ubuntu/init.d/cif-starman /etc/init.d/
 cp ./hacking/packaging/ubuntu/init.d/cif-worker /etc/init.d/
 
-if [ ! -f /etc/default/cif ]; then
-    echo 'setting /etc/default/cif'
-    cp ./hacking/packaging/ubuntu/default/cif /etc/default/cif
-fi
+echo 'setting /etc/default/cif'
+cp ./hacking/packaging/ubuntu/default/cif /etc/default/cif
 
 if [ ! -f /home/cif/.profile ]; then
 	touch /home/cif/.profile
@@ -148,21 +146,21 @@ update-rc.d cif-smrt defaults 95 10
 update-rc.d cif-starman defaults 95 10
 update-rc.d cif-worker defaults 95 10
 
-if [ -f /etc/cif/cif-smrt.yml ]; then
+if [ ! -f /etc/cif/cif-smrt.yml ]; then
 	echo 'setting up /etc/cif/cif-smrt.yml config...'
 	/opt/cif/bin/cif-tokens --username cif-smrt --new --write --generate-config-remote http://localhost:5000 --generate-config-path /etc/cif/cif-smrt.yml
 	chown cif:cif /etc/cif/cif-smrt.yml
 	chmod 660 /etc/cif/cif-smrt.yml
 fi
 
-if [ -f /etc/cif/cif-worker.yml ]; then
+if [ ! -f /etc/cif/cif-worker.yml ]; then
 	echo 'setting up /etc/cif/cif-worker.yml config...'
 	/opt/cif/bin/cif-tokens --username cif-worker --new --read --write --generate-config-remote tcp://localhost:4961 --generate-config-path /etc/cif/cif-worker.yml
 	chown cif:cif /etc/cif/cif-worker.yml
 	chmod 660 /etc/cif/cif-worker.yml
 fi
 
-if [ -f ~/.cif.yml ]; then
+if [ ! -f ~/.cif.yml ]; then
 	echo 'setting up ~/.cif.yml config for user: root@localhost...'
 	/opt/cif/bin/cif-tokens --username root@localhost --new --read --write --generate-config-remote https://localhost --generate-config-path ~/.cif.yml
 	chmod 660 ~/.cif.yml
