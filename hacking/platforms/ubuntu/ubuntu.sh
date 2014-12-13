@@ -86,6 +86,9 @@ elif [ $VER == "14.04" ]; then
 	cp default-ssl /etc/apache2/sites-available/default-ssl.conf
 	a2dissite 000-default.conf
 	a2ensite default-ssl.conf
+	sed -i '^ServerTokens OS/ServerTokens Prod/' /etc/apache2/conf-enabled/security.conf
+	sed -i '^ServerSignature On/#ServerSignature On/' /etc/apache2/conf-enabled/security.conf
+	sed -i '^#ServerSignature Off/ServerSignature Off/' /etc/apache2/conf-enabled/security.conf
 fi
 
 a2enmod ssl proxy proxy_http
