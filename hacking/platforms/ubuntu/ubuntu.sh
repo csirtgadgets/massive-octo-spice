@@ -17,9 +17,9 @@ apt-get update
 apt-get install -qq python-software-properties
 
 if [ ! -f /etc/apt/sources.list.d/chris-lea-zeromq-trusty.list ]; then
-	echo 'adding updated zmq repo....'
-	echo "yes" | sudo add-apt-repository "ppa:chris-lea/zeromq"
-	wget -O - http://packages.elasticsearch.org/GPG-KEY-elasticsearch | apt-key add -
+    echo 'adding updated zmq repo....'
+    echo "yes" | sudo add-apt-repository "ppa:chris-lea/zeromq"
+    wget -O - http://packages.elasticsearch.org/GPG-KEY-elasticsearch | apt-key add -
 fi
 
 if [ -f /etc/apt/sources.list.d/elasticsearch.list ]; then
@@ -40,7 +40,7 @@ if [ ! -d /usr/share/elasticsearch/plugins/marvel ]; then
 fi
 
 if [ $VER == "12.04" ]; then ## 14.04 has it built in and supports cpanfile
-	cpanm --self-upgrade --mirror http://cpan.metacpan.org
+    cpanm --self-upgrade --mirror http://cpan.metacpan.org
 fi
 
 cpanm -n --mirror http://cpan.metacpan.org Regexp::Common Mouse
@@ -56,9 +56,9 @@ service rng-tools restart
 echo 'setting up bind...'
 
 if [ -z `grep -l '8.8.8.8' /etc/bind/named.conf.options` ]; then
-	echo 'overwriting bind config'
-	cp /etc/bind/named.conf.options /etc/bind/named.conf.options.orig
-	cp named.conf.options /etc/bind/named.conf.options
+    echo 'overwriting bind config'
+    cp /etc/bind/named.conf.options /etc/bind/named.conf.options.orig
+    cp named.conf.options /etc/bind/named.conf.options
 fi
 
 if [ -z `grep -l 'spamhaus.org' /etc/bind/named.conf.local` ]; then
@@ -69,7 +69,7 @@ echo 'restarting bind...'
 service bind9 restart
 
 if [ -z `grep -l '^prepend domain-name-servers 127.0.0.1;' /etc/dhcp/dhclient.conf` ]; then
-	cp dhclient.conf /etc/dhcp/
+    cp dhclient.conf /etc/dhcp/
 fi
 
 if [ -z `grep -l '127.0.0.1' /etc/resolvconf/resolv.conf.d/base` ]; then
@@ -81,33 +81,33 @@ fi
 
 echo 'setting up apache'
 if [ ! -f /etc/apache2/cif.conf ]; then
-	cp cif.conf /etc/apache2/
+    cp cif.conf /etc/apache2/
 fi
 
 if [ $VER == "12.04" ]; then
-	cp /etc/apache2/sites-available/default-ssl /etc/apache2/sites-available/default-ssl.orig
-	cp default-ssl /etc/apache2/sites-available
-	a2dissite default
-	a2ensite default-ssl
-	sed -i '^ServerTokens OS/ServerTokens Prod/' /etc/apache2/conf.d/security
-	sed -i '^ServerSignature On/#ServerSignature On/' /etc/apache2/conf.d/security
-	sed -i '^#ServerSignature Off/ServerSignature Off/' /etc/apache2/conf.d/security
+    cp /etc/apache2/sites-available/default-ssl /etc/apache2/sites-available/default-ssl.orig
+    cp default-ssl /etc/apache2/sites-available
+    a2dissite default
+    a2ensite default-ssl
+    sed -i '^ServerTokens OS/ServerTokens Prod/' /etc/apache2/conf.d/security
+    sed -i '^ServerSignature On/#ServerSignature On/' /etc/apache2/conf.d/security
+    sed -i '^#ServerSignature Off/ServerSignature Off/' /etc/apache2/conf.d/security
 elif [ $VER == "14.04" ]; then
-	cp /etc/apache2/sites-available/default-ssl.conf /etc/apache2/sites-available/default-ssl.conf.orig
-	cp default-ssl /etc/apache2/sites-available/default-ssl.conf
-	a2dissite 000-default.conf
-	a2ensite default-ssl.conf
-	sed -i '^ServerTokens OS/ServerTokens Prod/' /etc/apache2/conf-enabled/security.conf
-	sed -i '^ServerSignature On/#ServerSignature On/' /etc/apache2/conf-enabled/security.conf
-	sed -i '^#ServerSignature Off/ServerSignature Off/' /etc/apache2/conf-enabled/security.conf
+    cp /etc/apache2/sites-available/default-ssl.conf /etc/apache2/sites-available/default-ssl.conf.orig
+    cp default-ssl /etc/apache2/sites-available/default-ssl.conf
+    a2dissite 000-default.conf
+    a2ensite default-ssl.conf
+    sed -i '^ServerTokens OS/ServerTokens Prod/' /etc/apache2/conf-enabled/security.conf
+    sed -i '^ServerSignature On/#ServerSignature On/' /etc/apache2/conf-enabled/security.conf
+    sed -i '^#ServerSignature Off/ServerSignature Off/' /etc/apache2/conf-enabled/security.conf
 fi
 
 a2enmod ssl proxy proxy_http
 
 if [ -z `getent passwd $MYUSER` ]; then
-	echo "adding user: $MYUSER"
-	useradd $MYUSER -m -s /bin/bash
-	adduser www-data $MYUSER
+    echo "adding user: $MYUSER"
+    useradd $MYUSER -m -s /bin/bash
+    adduser www-data $MYUSER
 fi
 
 echo 'starting elastic search'
@@ -133,8 +133,8 @@ echo 'setting /etc/default/cif'
 cp ./hacking/packaging/ubuntu/default/cif /etc/default/cif
 
 if [ ! -f /home/cif/.profile ]; then
-	touch /home/cif/.profile
-	chown $MYUSER:$MYGROUP /home/cif/.profile
+    touch /home/cif/.profile
+    chown $MYUSER:$MYGROUP /home/cif/.profile
 fi
 
 mkdir -p /var/smrt/cache
@@ -153,23 +153,23 @@ update-rc.d cif-starman defaults 95 10
 update-rc.d cif-worker defaults 95 10
 
 if [ ! -f /etc/cif/cif-smrt.yml ]; then
-	echo 'setting up /etc/cif/cif-smrt.yml config...'
-	/opt/cif/bin/cif-tokens --username cif-smrt --new --write --generate-config-remote http://localhost:5000 --generate-config-path /etc/cif/cif-smrt.yml
-	chown cif:cif /etc/cif/cif-smrt.yml
-	chmod 660 /etc/cif/cif-smrt.yml
+    echo 'setting up /etc/cif/cif-smrt.yml config...'
+    /opt/cif/bin/cif-tokens --username cif-smrt --new --write --generate-config-remote http://localhost:5000 --generate-config-path /etc/cif/cif-smrt.yml
+    chown cif:cif /etc/cif/cif-smrt.yml
+    chmod 660 /etc/cif/cif-smrt.yml
 fi
 
 if [ ! -f /etc/cif/cif-worker.yml ]; then
-	echo 'setting up /etc/cif/cif-worker.yml config...'
-	/opt/cif/bin/cif-tokens --username cif-worker --new --read --write --generate-config-remote tcp://localhost:4961 --generate-config-path /etc/cif/cif-worker.yml
-	chown cif:cif /etc/cif/cif-worker.yml
-	chmod 660 /etc/cif/cif-worker.yml
+    echo 'setting up /etc/cif/cif-worker.yml config...'
+    /opt/cif/bin/cif-tokens --username cif-worker --new --read --write --generate-config-remote tcp://localhost:4961 --generate-config-path /etc/cif/cif-worker.yml
+    chown cif:cif /etc/cif/cif-worker.yml
+    chmod 660 /etc/cif/cif-worker.yml
 fi
 
 if [ ! -f ~/.cif.yml ]; then
-	echo 'setting up ~/.cif.yml config for user: root@localhost...'
-	/opt/cif/bin/cif-tokens --username root@localhost --new --read --write --generate-config-remote https://localhost --generate-config-path ~/.cif.yml
-	chmod 660 ~/.cif.yml
+    echo 'setting up ~/.cif.yml config for user: root@localhost...'
+    /opt/cif/bin/cif-tokens --username root@localhost --new --read --write --generate-config-remote https://localhost --generate-config-path ~/.cif.yml
+    chmod 660 ~/.cif.yml
 fi
 
 echo 'starting cif-router...'
