@@ -1,0 +1,27 @@
+# disabled by default, please visit
+# http://www.shadowserver.org/wiki/pmwiki.php/Services/Downloads
+# for access
+defaults:
+  provider: shadowserver.org
+  tlp: green
+  confidence: 60
+  group: everyone
+  tags:
+    - botnet
+
+feeds:
+  domains:
+    remote: http://www.shadowserver.org/ccdns.php
+    pattern: ^(\S+)$
+    values:
+      - observable
+
+  ip:
+    remote: http://www.shadowserver.org/ccfull.php
+    pattern: ^([^:]+):([^:]+):([^:]+):([^:]+):(\S+)$
+    values:
+      - observable
+      - portlist
+      - rdata
+      - asn
+      - cc
