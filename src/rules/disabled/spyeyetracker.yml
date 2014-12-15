@@ -1,3 +1,5 @@
+# issues - down until further notice
+# https://zeustracker.abuse.ch/sorry.php
 parser: rss
 defaults:
   provider: spyeyetracker.abuse.ch
