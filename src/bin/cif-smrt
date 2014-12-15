@@ -18,6 +18,7 @@ use CIF::Rule;
 use CIF::SDK::Client;
 use Data::Dumper;
 use Carp qw/croak/;
+use Try::Tiny;
 
 my $help;
 my $remote      = 'http://localhost:5000'; # https://github.com/csirtgadgets/massive-octo-spice/issues/71
@@ -306,17 +307,28 @@ sub _main {
             not_before      => $notbefore,
         });
         
-        $data = $smrt->process();
+        try {
+            
+            $data = $smrt->process();
+        } catch {
+            $err = shift;
+        };
         
-        if($#{$data} >= 0){
-            $Logger->info('sending '.($#{$data} + 1).' observables...');
-            ($ret,$err) = $cli->submit($data);
-            croak($err) if($err);
-            if(ref($ret) eq 'HASH' && $ret->{'message'}){
-                $Logger->info($ret->{'message'});
-            }
+        if($err){
+            $Logger->error('failed to process data, skipping...');
+            $err =~ s/\n//g;
+            $Logger->error($err);
         } else {
-            $Logger->info('nothing new to send...');
+            if($#{$data} >= 0){
+                $Logger->info('sending '.($#{$data} + 1).' observables...');
+                ($ret,$err) = $cli->submit($data);
+                croak($err) if($err);
+                if(ref($ret) eq 'HASH' && $ret->{'message'}){
+                    $Logger->info($ret->{'message'});
+                }
+            } else {
+                $Logger->info('nothing new to send...');
+            }
         }
     }
     $Logger->info('done');    

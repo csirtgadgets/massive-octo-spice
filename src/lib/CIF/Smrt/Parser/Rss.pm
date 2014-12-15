@@ -6,6 +6,7 @@ use XML::RSS;
 
 use Mouse;
 use CIF qw/$Logger/;
+use Try::Tiny;
 
 with 'CIF::Smrt::Parser';
 
@@ -31,7 +32,18 @@ sub process {
 
     my $rss = XML::RSS->new();
     
-    $rss->parse($data);
+    my $err;
+    try {    
+        $rss->parse($data);
+    } catch {
+        $err = shift;
+    };
+    
+    if($err){
+        $Logger->error('not a well formed RSS document, skipping....');
+        $Logger->debug($err);
+        return;
+    }
     
     my @array;
     foreach my $item (@{$rss->{items}}){
