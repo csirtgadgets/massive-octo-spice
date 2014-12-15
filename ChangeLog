@@ -6,6 +6,7 @@ Revision history for massive-octo-spice
         https://github.com/csirtgadgets/massive-octo-spice/issues/117
         https://github.com/csirtgadgets/massive-octo-spice/issues/122
         https://github.com/csirtgadgets/massive-octo-spice/issues/94
+        https://github.com/csirtgadgets/massive-octo-spice/issues/128
 
 2.00.00-alpha.10 2014-12-04
     - bugfix to a few feeds where we use firsttime instead of lasttime

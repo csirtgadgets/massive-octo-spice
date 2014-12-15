@@ -1,3 +1,8 @@
+# Issues
+# 1. No timestamp
+# 2. URL is not always fully qualified with 'http://'
+# 3. One cannot rely on URL or IP Address being populated with data, may need to be broken into two feeds
+
 parser: xml
 defaults:
   confidence: 65
