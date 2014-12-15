@@ -45,7 +45,7 @@ fi
 
 cpanm -n --mirror http://cpan.metacpan.org Regexp::Common Mouse
 cpanm http://backpan.perl.org/authors/id/M/MS/MSCHILLI/Log-Log4perl-1.44.tar.gz
-cpanm http://search.cpan.org/CPAN/authors/id/A/AD/ADIE/Test-Exception-0.32.tar.gz
+cpanm https://cpan.metacpan.org/authors/id/E/EX/EXODIST/Test-Exception-0.35.tar.gz
 cpanm https://github.com/csirtgadgets/p5-cif-sdk/archive/master.tar.gz
 cpanm https://cpan.metacpan.org/authors/id/D/DR/DROLSKY/MaxMind-DB-Reader-0.050005.tar.gz
 cpanm https://github.com/maxmind/GeoIP2-perl/archive/v0.040005.tar.gz

@@ -2,6 +2,7 @@ Revision history for massive-octo-spice
 
 2.00.00-alpha.11 2014
     - moved zeustracker/spyeye tracker to rules/disabled - both down "until further notice"
+    - depfix - Test-Exception => 0.35
     - fixes:
         https://github.com/csirtgadgets/massive-octo-spice/issues/116
         https://github.com/csirtgadgets/massive-octo-spice/issues/117
