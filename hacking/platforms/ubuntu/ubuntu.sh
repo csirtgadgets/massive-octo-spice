@@ -34,10 +34,10 @@ debconf-set-selections <<< "postfix postfix/main_mailer_type string 'Internet Si
 apt-get update
 apt-get install -y curl cpanminus build-essential libmodule-build-perl libssl-dev elasticsearch apache2 libapache2-mod-perl2 curl mailutils build-essential git-core automake rng-tools openjdk-7-jre-headless libtool pkg-config vim htop bind9 libzmq3-dev libffi6 libmoose-perl libmouse-perl libanyevent-perl liblwp-protocol-https-perl libxml2-dev libexpat1-dev libgeoip-dev geoip-bin python-dev starman
 
-if [ ! -d /usr/share/elasticsearch/plugins/marvel ]; then
-    echo 'installing marvel for elasticsearch...'
-    /usr/share/elasticsearch/bin/plugin -i elasticsearch/marvel/latest
-fi
+#if [ ! -d /usr/share/elasticsearch/plugins/marvel ]; then
+#    echo 'installing marvel for elasticsearch...'
+#    /usr/share/elasticsearch/bin/plugin -i elasticsearch/marvel/latest
+#fi
 
 if [ $VER == "12.04" ]; then ## 14.04 has it built in and supports cpanfile
     cpanm --self-upgrade --mirror http://cpan.metacpan.org
