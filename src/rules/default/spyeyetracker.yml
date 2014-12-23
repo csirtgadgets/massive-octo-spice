@@ -2,38 +2,38 @@
 # https://zeustracker.abuse.ch/sorry.php
 parser: rss
 defaults:
-  provider: zeustracker.abuse.ch
+  provider: spyeyetracker.abuse.ch
   tlp: amber
   alt_tlp: green
   confidence: 85
-  altid: https://zeustracker.abuse.ch/monitor.php?search=<observable>
+  altid: https://spyeyetracker.abuse.ch/monitor.php?host=<observable>
   tags:
     - zeus
     - botnet
   pattern:
     description:
-      pattern: '^URL: ([\s\S]*), status: online, MD5 hash:'
+      pattern: '^SpyEye \S+URL: (\S+), Status:'
       values: observable
     title:
       pattern: ^\S+\s\((\S+)\)$
-      values: lasttime
+      values: lasttime 
 
 feeds:
   binaries:
-    remote: https://zeustracker.abuse.ch/monitor.php?urlfeed=binaries
+    remote: https://spyeyetracker.abuse.ch/monitor.php?rssfeed=binaryurls
     description: binary
 
   configs:
-    remote: https://zeustracker.abuse.ch/monitor.php?urlfeed=configs
+    remote: https://spyeyetracker.abuse.ch/monitor.php?rssfeed=configurls
     description: config
 
   dropzones:
-    remote: https://zeustracker.abuse.ch/monitor.php?urlfeed=configs
+    remote: https://spyeyetracker.abuse.ch/monitor.php?rssfeed=dropurls
     description: dropzone
 
   domains:
     parser: default
-    remote: https://zeustracker.abuse.ch/blocklist.php?download=domainblocklist
+    remote: https://spyeyetracker.abuse.ch/blocklist.php?download=domainblocklist
     pattern: ^(\S+)$
     values:
       - observable
@@ -41,7 +41,7 @@ feeds:
 
   ip:
     parser: default
-    remote: https://zeustracker.abuse.ch/blocklist.php?download=ipblocklist
+    remote: https://spyeyetracker.abuse.ch/blocklist.php?download=ipblocklist
     pattern: ^(\S+)$
     values:
       - observable
