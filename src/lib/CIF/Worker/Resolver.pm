@@ -30,7 +30,10 @@ sub _rr_to_observation {
     my $type    = shift || 'A';
     
     my $tags = $data->{'tags'};
-    $tags = [$tags] unless(ref($tags) && ref($tags) eq 'ARRAY');
+    
+    if ($tags) {
+        $tags = [$tags] unless(ref($tags) && ref($tags) eq 'ARRAY');
+    }
     
     my $found = 0;
     foreach my $t (@$tags){

@@ -7,7 +7,7 @@ use Mouse::Util::TypeConstraints;
 
 subtype 'CIF::Type::RIR',
     as 'Str',
-    where { /^(arin|apnic|ripencc|lacnic|afrinic)$/ },
+    where { /^(arin|apnic|ripencc|lacnic|afrinic|other)$/ },
     message { "Not a valid RIR: ".$_ };
     
 coerce 'CIF::Type::RIR',

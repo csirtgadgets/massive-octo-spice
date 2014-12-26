@@ -65,6 +65,8 @@ my $protocols = {
 sub protocol_to_int {
     my $proto = shift;
     
+    return -1 unless $proto;
+    
     return $protocols->{$proto} || -1;
 }
 

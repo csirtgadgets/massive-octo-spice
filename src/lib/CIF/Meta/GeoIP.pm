@@ -5,7 +5,7 @@ use warnings;
 
 use Mouse;
 use GeoIP2::Database::Reader;
-use CIF qw/is_ip $Logger/;
+use CIF qw/is_ip is_ip_private $Logger/;
 use Try::Tiny;
 use Carp;
 
@@ -32,6 +32,7 @@ sub understands {
 
     return unless($args->{'observable'});
     return unless(is_ip($args->{'observable'}));
+    return unless(!is_ip_private($args->{'observable'}));
 
     return 1;
 }

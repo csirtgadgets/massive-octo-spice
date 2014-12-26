@@ -5,7 +5,7 @@ use warnings;
 
 use Mouse;
 use Net::Abuse::Utils qw(get_as_description get_asn_info get_peer_info);
-use CIF qw/is_ip $Logger/;
+use CIF qw/is_ip is_ip_private $Logger/;
 use Try::Tiny;
 use Encoding::FixLatin qw(fix_latin);
 
@@ -17,6 +17,7 @@ sub understands {
 
     return unless($args->{'observable'});
     return unless(is_ip($args->{'observable'}));
+    return unless(!is_ip_private($args->{'observable'}));
     return 1;
 }
 

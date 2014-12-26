@@ -20,6 +20,8 @@ sub tag_contains {
     my $tags = shift;
     my $arg = shift;
     
+    return 0 unless $tags;
+    
     $tags = [$tags] unless(ref($tags) && ref($tags) eq 'ARRAY');
  
     my $found = 0;

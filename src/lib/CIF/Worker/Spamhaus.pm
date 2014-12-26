@@ -23,7 +23,7 @@ sub understands {
     return unless($args->{'provider'} && $args->{'provider'} ne PROVIDER);
     return if($args->{'provider'} && $args->{'provider'} eq PROVIDER);
 
-    return unless(is_fqdn($args->{'observable'}) || is_ip($args->{'observable'}));
+    return unless(is_fqdn($args->{'observable'}) || (is_ip($args->{'observable'}) && !is_ip_private($args->{'observable'})));
     return 1;
 }
 

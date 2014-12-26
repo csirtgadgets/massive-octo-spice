@@ -250,8 +250,7 @@ sub workers {
            };
            if($err){
                 $Logger->error($err);
-                $Logger->trace(Dumper($msg));
-                die;
+                $Logger->debug(Dumper($msg));
                 $err = '';
            }
        }

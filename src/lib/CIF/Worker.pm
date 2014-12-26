@@ -39,6 +39,8 @@ has 'publisher' => (
     default => sub { PUBLISHER },
 );
 
+has 'dummy' => ( is => 'ro' );
+
 has [qw(context router_socket subscriber_socket workers_socket data_socket)] => (
     is          => 'ro',
     lazy_build  => 1,
@@ -162,9 +164,11 @@ sub process {
     }
     if($new){
         $Logger->debug('sending to router');
-        my $x = $self->send($new);
+        my $x = $self->send($new) unless $self->dummy;
+        return 1;
     } else {
         $Logger->debug('no new msgs to send...');
+        return 1;
     }
 }
 
