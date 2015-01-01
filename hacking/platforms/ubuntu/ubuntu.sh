@@ -32,20 +32,19 @@ debconf-set-selections <<< "postfix postfix/mailname string localhost"
 debconf-set-selections <<< "postfix postfix/main_mailer_type string 'Internet Site'"
 
 apt-get update
-apt-get install -y curl cpanminus build-essential libmodule-build-perl libssl-dev elasticsearch apache2 libapache2-mod-perl2 curl mailutils build-essential git-core automake rng-tools openjdk-7-jre-headless libtool pkg-config vim htop bind9 libzmq3-dev libffi6 libmoose-perl libmouse-perl libanyevent-perl liblwp-protocol-https-perl libxml2-dev libexpat1-dev libgeoip-dev geoip-bin python-dev starman
+apt-get install -y curl build-essential libmodule-build-perl libssl-dev elasticsearch apache2 libapache2-mod-perl2 curl mailutils build-essential git-core automake rng-tools openjdk-7-jre-headless libtool pkg-config vim htop bind9 libzmq3-dev libffi6 libmoose-perl libmouse-perl libanyevent-perl liblwp-protocol-https-perl libxml2-dev libexpat1-dev libgeoip-dev geoip-bin python-dev starman
 
 #if [ ! -d /usr/share/elasticsearch/plugins/marvel ]; then
 #    echo 'installing marvel for elasticsearch...'
 #    /usr/share/elasticsearch/bin/plugin -i elasticsearch/marvel/latest
 #fi
 
-if [ $VER == "12.04" ]; then ## 14.04 has it built in and supports cpanfile
-    cpanm --self-upgrade --mirror http://cpan.metacpan.org
-fi
+echo 'installing cpanm...'
+curl -L https://cpanmin.us | sudo perl - App::cpanminus
 
-cpanm https://cpan.metacpan.org/authors/id/E/ET/ETHER/namespace-autoclean-0.22.tar.gz # work-around #137
+#cpanm https://cpan.metacpan.org/authors/id/E/ET/ETHER/namespace-autoclean-0.22.tar.gz # work-around #137
 cpanm -n --mirror http://cpan.metacpan.org Regexp::Common Mouse
-cpanm --mirror http://cpan.metacpan.org --notest DateTime # workaround for https://github.com/csirtgadgets/massive-octo-spice/issues/131
+#cpanm --mirror http://cpan.metacpan.org --notest DateTime # workaround for https://github.com/csirtgadgets/massive-octo-spice/issues/131
 cpanm http://backpan.perl.org/authors/id/M/MS/MSCHILLI/Log-Log4perl-1.44.tar.gz
 cpanm https://cpan.metacpan.org/authors/id/E/EX/EXODIST/Test-Exception-0.35.tar.gz
 cpanm https://github.com/csirtgadgets/p5-cif-sdk/archive/master.tar.gz
