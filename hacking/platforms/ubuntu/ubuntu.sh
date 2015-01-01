@@ -45,6 +45,7 @@ fi
 
 cpanm -n --mirror http://cpan.metacpan.org Regexp::Common Mouse
 cpanm --mirror http://cpan.metacpan.org --notest DateTime # workaround for https://github.com/csirtgadgets/massive-octo-spice/issues/131
+cpanm --mirror http://cpan.metacpan.org --notest Net::Works::Address # workaround for https://github.com/csirtgadgets/massive-octo-spice/issues/137
 cpanm http://backpan.perl.org/authors/id/M/MS/MSCHILLI/Log-Log4perl-1.44.tar.gz
 cpanm https://cpan.metacpan.org/authors/id/E/EX/EXODIST/Test-Exception-0.35.tar.gz
 cpanm https://github.com/csirtgadgets/p5-cif-sdk/archive/master.tar.gz
