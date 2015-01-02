@@ -174,11 +174,11 @@ fi
 echo 'starting cif-router...'
 service cif-router restart
 
-echo 'restarting apache...'
-service apache2 restart
-
 echo 'starting cif-starman...'
 service cif-starman restart
+
+echo 'restarting apache...'
+service apache2 restart
 
 echo 'starting cif-worker'
 service cif-worker restart
