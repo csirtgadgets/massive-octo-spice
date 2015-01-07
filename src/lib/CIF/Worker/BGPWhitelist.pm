@@ -30,9 +30,14 @@ sub process {
     
     my $ts = DateTime->from_epoch(epoch => time());
     $ts = $ts->ymd().'T'.$ts->hms().'Z';
-   
+    
+    # only take the /24
+    my @bits = split(/\./,$data->{'observable'});
+    pop(@bits);
+    my $o = join('.',@bits).'.0/24';
+       
     my $obs = {
-        observable  => $data->{'prefix'},
+        observable  => $o,
         prefix      => $data->{'prefix'},
         tags        => 'whitelist',
         protocol    => $data->{'protocol'},
