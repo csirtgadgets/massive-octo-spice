@@ -120,7 +120,7 @@ if(-e $config){
     $publisher  = $config->{'publisher'} if($config->{'publisher'} && ($publisher eq CIF::Worker::PUBLISHER));
 }
 
-my $loglevel = ($debug) ? 'DEBUG' : 'INFO';
+my $loglevel = ($debug) ? 'DEBUG' : 'ERROR';
 
 if($notify){
     $notify = { 

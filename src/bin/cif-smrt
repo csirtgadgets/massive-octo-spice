@@ -194,7 +194,7 @@ if($notify){
         min_level   => lc($notify_level) }
 }
 
-my $loglevel = ($debug) ? 'DEBUG' : 'INFO';
+my $loglevel = ($debug) ? 'DEBUG' : 'ERROR';
 
 init_logging(
     {
