@@ -81,8 +81,9 @@ sub _normalize_url {
     my $data = shift;
     
     my $x = is_url($data->{'observable'});
+    return unless(defined($x));
     return if($x == 0 && ($data->{'otype'} && $data->{'otype'} ne 'url'));
-    
+ 
     $data->{'observable'} = 'http://'.$data->{'observable'} if($x == 0 || $x == 2);
     
     $data->{'otype'} = 'url';

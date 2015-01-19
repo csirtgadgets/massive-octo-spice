@@ -121,6 +121,8 @@ sub is_url {
     return 1 if($arg =~ RE_URL);
     return 2 if($arg =~ RE_URL_BROKEN);
     
+    return;
+    
     # https://github.com/csirtgadgets/massive-octo-spice/issues/86
     #return 3 if($arg =~ RE_URL_BROKEN_DUMB && $arg !~ /^(http|https|ftp|sftp)/); 
 }

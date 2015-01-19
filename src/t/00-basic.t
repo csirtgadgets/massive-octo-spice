@@ -13,6 +13,8 @@ BEGIN {
 
 use CIF qw/is_ip is_url is_ip_private is_fqdn/;
 
+warn is_ip('192.168.1.1');
+
 ok(is_ip('192.168.1.1'),'testing ip address...');
 ok(is_url('http://12.12.12.12/example/test.html'), 'testing url...');
 
