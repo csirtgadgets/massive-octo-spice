@@ -202,15 +202,17 @@ sub main {
     my $done = AnyEvent->condvar();
     $SIG{'TERM'} = $SIG{'INT'} = sub { $done->send(); };
     
+    my $msg;
     my $x = $master->start_subscriber(sub {
         while($master->subscriber_socket->has_pollin()){
-            my $msg = $master->subscriber_socket->recv();
+            $msg = $master->subscriber_socket->recv();
             $Logger->info('recieved msg...');
             $msg = $master->decode($msg);
             foreach (@$msg){
                 $Logger->debug('sending to worker...');
                 $master->workers_socket->send($master->encode($_));
             }
+            $msg = undef;
         }
     });
     
@@ -239,9 +241,10 @@ sub workers {
     });
     $worker->data_socket;
     my $err;
+    my $msg;
     my $rv = $worker->start_worker(sub {
        while($worker->data_socket->has_pollin()){
-           my $msg = $worker->data_socket->recv();
+           $msg = $worker->data_socket->recv();
            $Logger->info('worker received msg...');
            try {
                 $worker->process($msg);
@@ -253,6 +256,7 @@ sub workers {
                 $Logger->debug(Dumper($msg));
                 $err = '';
            }
+           $msg = undef;
        }
    });
 
