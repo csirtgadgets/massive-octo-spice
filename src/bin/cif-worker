@@ -144,15 +144,24 @@ if($verbosity){
     }
 }
 
-$Logger->info('testing token with cif-router...');
+
 my $cli = CIF::Client->new({
     remote  => $remote,
     token   => $token,
 });
 
-my $ret = $cli->ping_write();
+my $ret;
 
-unless($ret){
+do {
+    $Logger->info('testing cif-router connection...');
+    $ret = $cli->ping({ timeout => 5000 });
+    unless($ret){
+        $Logger->info('router unavail.. ');
+    }
+} until($ret);
+
+$Logger->info('testing token with cif-router...');
+unless($cli->ping_write()){
     $Logger->fatal('check to make sure the cif-worker token has --write permissions: '.$token);
     exit(-1);
 }

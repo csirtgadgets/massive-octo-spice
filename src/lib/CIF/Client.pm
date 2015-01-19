@@ -68,6 +68,10 @@ sub BUILD {
 sub ping {
     my $self = shift;
     my $args = shift;
+
+    if($args->{'timeout'}){
+        $self->socket->set(ZMQ_RCVTIMEO,'int',$args->{'timeout'});
+    }
     
     $Logger->info('generating ping request...');
     my $msg = CIF::Message->new({
@@ -77,6 +81,12 @@ sub ping {
     });
     $Logger->info('sending ping...');
     my $ret = $self->_send($msg);
+    
+    unless($ret){
+        # timeout
+        $self->{'socket'} = $self->_build_socket();
+        return $ret;
+    }
     
     return 0 if $ret->{'stype'} eq 'unauthorized';
     return [gettimeofday] if $ret->{'stype'} eq 'success';
