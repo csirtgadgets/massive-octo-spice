@@ -254,7 +254,7 @@ sub main {
     
     my $w = AnyEvent->timer(
         after       => $randomstart, 
-        interval    => 1 || $interval,
+        interval    => $interval,
         cb          => sub { 
             _main();
             $done->send() if($testmode);
