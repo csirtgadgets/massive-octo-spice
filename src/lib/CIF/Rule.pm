@@ -8,13 +8,17 @@ use DateTime;
 use Carp;
 use Carp::Assert;
 use CIF::Observable;
-use CIF qw/$Logger parse_config normalize_timestamp is_url/;
+use CIF qw/$Logger parse_config normalize_timestamp is_url is_ip/;
 use URI;
 use URI::Escape;
 use Data::Dumper;
+use Regexp::Common qw/net/;
+use Regexp::Common::net::CIDR;
 
-use constant RE_IGNORE => qw(qr/[\.]$/);
-use constant RE_SKIP => qr/remote|pattern|values|ignore/;
+use constant RE_IGNORE  => qw(qr/[\.]$/);
+use constant RE_SKIP    => qr/remote|pattern|values|ignore/;
+use constant MIN_PREFIX => 14;
+
 
 has [qw(store_content skip rule feed remote parser defaults disabled)] => (
     is      => 'ro',
@@ -53,27 +57,38 @@ sub _normalize_otype {
     my $self = shift;
     my $data = shift;
 
-    if($self->defaults->{'otype'}){
-        for($self->defaults->{'otype'}){
-            if(/^url$/){
-                $data->{'observable'} = _normalize_url($data->{'observable'});
-            }
+    _normalize_ip($data);
+    _normalize_url($data);
+}
+
+sub _normalize_ip {
+    my $data = shift;
+    
+    return if($data->{'otype'} && $data->{'otype'} ne 'ipv4');
+    return unless(is_ip($data->{'observable'}));
+    
+    $data->{'otype'} = 'ipv4';
+    
+    if($data->{'observable'} =~ /^$RE{'net'}{'CIDR'}{'IPv4'}{'-keep'}$/){
+        my $min = $data->{'min_prefix'} || MIN_PREFIX;
+        if($2 < $min){
+            $data->{'observable'} = $1.'/'.$min;
         }
-    } else {
-        $data->{'observable'} = _normalize_url($data->{'observable'});
-    }
+    }      
 }
 
 sub _normalize_url {
     my $data = shift;
-    my $x = is_url($data);
-    return $data unless($x);
-    if ($x == 2){
-        $data = 'http://'.$data;
-    }
+    
+    my $x = is_url($data->{'observable'});
+    return if($x == 0 && ($data->{'otype'} && $data->{'otype'} ne 'url'));
+    
+    $data->{'observable'} = 'http://'.$data->{'observable'} if($x == 0 || $x == 2);
+    
+    $data->{'otype'} = 'url';
+    
     $data = uri_escape_utf8($data,'\x00-\x1f\x7f-\xff');
     $data = URI->new($data)->canonical->as_string;
-    return $data;
 }
 
 sub _normalize_ts {

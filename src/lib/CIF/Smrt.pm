@@ -132,6 +132,8 @@ sub process {
     my $ts;
     my $otype;
     foreach (@$data){
+        #next unless($_->{'observable'} && $_->{'observable'} eq '94.102.63.238/1');
+        
         $otype = observable_type($_->{'observable'});
         next unless($otype);
         
@@ -142,7 +144,7 @@ sub process {
         
         next unless($self->not_before <= $ts );
         $_ = $self->rule->process({ data => $_ });
-
+        die ::Dumper($_);
         push(@array,$_);
     }
 

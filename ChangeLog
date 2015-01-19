@@ -4,6 +4,7 @@ Revision history for massive-octo-spice
     - bugfix to ubuntu service restart order
     fixes:
         - https://github.com/csirtgadgets/massive-octo-spice/issues/136
+        - https://github.com/csirtgadgets/massive-octo-spice/issues/141
 
 2.00.00-alpha.13 2015-01-01
     - fixes: 
