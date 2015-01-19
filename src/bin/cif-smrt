@@ -215,6 +215,8 @@ unless($token){
 	croak('missing token');
 }
 
+
+
 if($daemon){
     $ARGV[0] = 'start' unless($ARGV[0] && $daemon);
     
@@ -252,7 +254,7 @@ sub main {
     
     my $w = AnyEvent->timer(
         after       => $randomstart, 
-        interval    => $interval,
+        interval    => 1 || $interval,
         cb          => sub { 
             _main();
             $done->send() if($testmode);
@@ -262,76 +264,84 @@ sub main {
     
     $done->recv();
 }
-## TODO parser_config {}
 
-sub _main { 
-    _clean_tmp();
-
-    my $rules = parse_rules($rule,$feed);
-    $rules = [ $rules ] unless(ref($rules) && ref($rules) eq 'ARRAY');
-
-    my $cli = CIF::SDK::Client->new({
-        remote      => $remote,
-        token       => $token,
-        timeout     => $timeout,
-        verify_ssl  => ($no_verify_ssl) ? 0 : 1,
-        nowait      => 1,
-    });
-    my ($smrt,$err,$ret,$data);
+sub _main {
+    my $child = fork();
+    if($child){
+        # parent
+        $Logger->debug('running pid: '.$child);
+        waitpid($child,0);
+    } else {
+        # child
+        my ($smrt,$err,$ret,$data,$rules,$cli);
+        
+        _clean_tmp();
     
-    $Logger->info('checking for router...');
-    ($ret,$err) = $cli->ping_write();
-
-    unless($ret){
-        $err = 'unknown error...' unless($err);
-        $Logger->fatal($err);
-        return;
-    }
-
-    foreach my $r (@$rules){
-        if($r->disabled && $r->disabled eq 'true'){
-                $Logger->info("disabled: $r->{'rule_path'} -f $r->{'feed'}");
-                next();
-        }
-        $Logger->debug($r->defaults->{'provider'}.' - '.$r->feed);
-        $Logger->info("processing: $0 -d -r $r->{'rule_path'} -f $r->{'feed'}");
+        $rules = parse_rules($rule,$feed);
+        $rules = [ $rules ] unless(ref($rules) && ref($rules) eq 'ARRAY');
         
-        $r->defaults->{'group'} = 'everyone' unless($r->defaults->{'group'});
-        
-        $r->defaults->{'altid'} = $r->defaults->{'remote'} unless($r->defaults->{'altid'});
-        
-        my $smrt = CIF::Smrt->new({
-            rule            => $r,
-            tmp             => $cache,
-            ignore_journal  => $ignore_journal,
-            not_before      => $notbefore,
+        $cli = CIF::SDK::Client->new({
+            remote      => $remote,
+            token       => $token,
+            timeout     => $timeout,
+            verify_ssl  => ($no_verify_ssl) ? 0 : 1,
+            nowait      => 1,
         });
-        
-        try {
+    
+        $Logger->info('checking for router...');
+        ($ret,$err) = $cli->ping_write();
+    
+        unless($ret){
+            $err = 'unknown error...' unless($err);
+            $Logger->fatal($err);
+            return;
+        }
+    
+        foreach my $r (@$rules){
+            if($r->disabled && $r->disabled eq 'true'){
+                    $Logger->info("disabled: $r->{'rule_path'} -f $r->{'feed'}");
+                    next();
+            }
+            $Logger->debug($r->defaults->{'provider'}.' - '.$r->feed);
+            $Logger->info("processing: $0 -d -r $r->{'rule_path'} -f $r->{'feed'}");
             
-            $data = $smrt->process();
-        } catch {
-            $err = shift;
-        };
-        
-        if($err){
-            $Logger->error('failed to process data, skipping...');
-            $err =~ s/\n//g;
-            $Logger->error($err);
-        } else {
-            if($#{$data} >= 0){
-                $Logger->info('sending '.($#{$data} + 1).' observables...');
-                ($ret,$err) = $cli->submit($data);
-                croak($err) if($err);
-                if(ref($ret) eq 'HASH' && $ret->{'message'}){
-                    $Logger->info($ret->{'message'});
-                }
+            $r->defaults->{'group'} = 'everyone' unless($r->defaults->{'group'});
+            
+            $r->defaults->{'altid'} = $r->defaults->{'remote'} unless($r->defaults->{'altid'});
+            
+            $smrt = CIF::Smrt->new({
+                rule            => $r,
+                tmp             => $cache,
+                ignore_journal  => $ignore_journal,
+                not_before      => $notbefore,
+            });
+            
+            try {
+                $data = $smrt->process();
+            } catch {
+                $err = shift;
+            };
+            
+            if($err){
+                $Logger->error('failed to process data, skipping...');
+                $err =~ s/\n//g;
+                $Logger->error($err);
             } else {
-                $Logger->info('nothing new to send...');
+                if($#{$data} >= 0){
+                    $Logger->info('sending '.($#{$data} + 1).' observables...');
+                    ($ret,$err) = $cli->submit($data);
+                    croak($err) if($err);
+                    if(ref($ret) eq 'HASH' && $ret->{'message'}){
+                        $Logger->info($ret->{'message'});
+                    }
+                } else {
+                    $Logger->info('nothing new to send...');
+                }
             }
         }
+        $Logger->info('done');
+        exit 0;
     }
-    $Logger->info('done');    
 }
 
 ##TODO re-factor
