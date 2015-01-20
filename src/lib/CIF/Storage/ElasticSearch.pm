@@ -21,8 +21,8 @@ with 'CIF::Storage';
 
 use constant {
     NODE                => 'localhost:9200',
-    MAX_SIZE            => 524288000,
-    MAX_COUNT           => 5,
+    MAX_SIZE            => 0,
+    MAX_COUNT           => 0,
     OBSERVABLES         => 'cif.observables',
     FEEDS               => 'cif.feeds',
     OBSERVABLES_TYPE    => 'observables',
@@ -444,12 +444,17 @@ sub _submission {
    
     $Logger->debug('submitting to index: '.$index);
     
-    my $bulk = Search::Elasticsearch::Bulk->new(
-        es          => $self->handle,
+    my $bulk = $self->handle->bulk_helper(
         index       => $index,
         type        => $type,
         verbose     => 1,
         refresh     => 1,
+        max_count   => $self->max_count,
+        max_size    => $self->max_size,
+        on_error    => sub {
+            my ($a,$r,$i) = @_;
+            $Logger->info($r);
+        },
     );
     
     # we may want to change this so we're flushing every X count or X size???
@@ -480,7 +485,8 @@ sub _submission {
     
     if($#results == -1){
         $Logger->error('trying to submit something thats too big...');
-        $Logger->error(Dumper(@{$things}[0]));
+        #$Logger->error(Dumper(@{$things}[0]));
+        #warn Dumper($bulk);
     }  
 
     return \@results;

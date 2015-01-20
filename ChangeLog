@@ -1,5 +1,16 @@
 Revision history for massive-octo-spice
 
+2.00.00-alpha.14 2015-01-20
+    - bugfix to ubuntu service restart order
+    - misc improvements to REST/Feeds
+    fixes:
+        - https://github.com/csirtgadgets/massive-octo-spice/issues/136
+        - https://github.com/csirtgadgets/massive-octo-spice/issues/141
+        - https://github.com/csirtgadgets/massive-octo-spice/issues/109
+        - https://github.com/csirtgadgets/massive-octo-spice/issues/77
+        - https://github.com/csirtgadgets/massive-octo-spice/issues/138
+        - https://github.com/csirtgadgets/massive-octo-spice/issues/140
+
 2.00.00-alpha.13 2015-01-01
     - fixes: 
         https://github.com/csirtgadgets/massive-octo-spice/issues/135

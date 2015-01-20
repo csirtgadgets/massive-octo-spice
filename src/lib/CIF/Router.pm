@@ -108,11 +108,11 @@ sub startup {
     
     $Logger->info('publisher started on: '.$self->publisher_listen);
     
-    my ($err,$resp); ##TODO mem leaks?
+    my ($err,$resp,$msg);
     $self->frontend_watcher(
         $self->frontend->anyevent_watcher(
             sub {
-                while (my $msg = $self->frontend->receive()){
+                while ($msg = $self->frontend->receive()){
                     $Logger->info('received message...');
                     
                     $Logger->info('decoding...');
@@ -148,7 +148,7 @@ sub startup {
                     $Logger->info('replying...');
                     $self->frontend->send($resp);
                     
-                    $resp = undef;
+                    ($resp,$msg) = undef;
                 }
             }
         )
