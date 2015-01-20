@@ -89,7 +89,7 @@ sub _normalize_url {
     $data->{'otype'} = 'url';
     
     $data = uri_escape_utf8($data,'\x00-\x1f\x7f-\xff');
-    $data = URI->new($data)->canonical->as_string;
+    $data = lc(URI->new($data)->canonical->as_string);
 }
 
 sub _normalize_ts {
