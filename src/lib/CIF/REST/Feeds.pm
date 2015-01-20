@@ -1,6 +1,8 @@
 package CIF::REST::Feeds;
 use Mojo::Base 'Mojolicious::Controller';
 
+use CIF qw/$Logger/;
+
 sub index {
     my $self = shift;
 	
@@ -42,25 +44,62 @@ sub show {
 sub create {
     my $self = shift;
     
-    my $data = $self->req->json();
-    $data = [$data] unless(ref($data) eq 'ARRAY');
+    my $nowait = scalar $self->param('nowait') || 0;
     
-    my $res = $self->cli->submit_feed({
-    	token  => $self->token,
-        feed   => $data,
+    my $res = $self->cli->ping_write({
+        token   => $self->token,
     });
     
-    if($#{$res} >= 0){
-        $self->res->headers->add('X-Location' => $self->req->url->to_string());
-        $self->res->headers->add('X-Id' => @{$res}[0]);
+    if($res == 0){
+        $self->render(json   => { 'message' => 'unauthorized' }, status => 401 );
+        return;
+    }
     
-        $self->respond_to(
-            json    => { json => $res, status => 201 },
-        );
+    if($nowait){
+        $Logger->debug('forking...');
+        $SIG{CHLD} = 'IGNORE';
+        my $child = fork();
+        
+        unless(defined($child)){
+            die "fork(): $!";
+        }
+        
+        if($child == 0){
+            my $data = $self->req->json();
+            $data = [$data] unless(ref($data) eq 'ARRAY');
+            
+            my $res = $self->cli->submit_feed({
+            	token  => $self->token,
+                feed   => $data,
+            });
+            exit(0);
+        } else {
+            $self->respond_to(
+                json    => { json => { 'message' => 'submission accepted, processing may take time' }, status => 201 },
+            );
+            return;
+        }
     } else {
-        $self->respond_to(
-            json    => { json => { 'message' => 'failed to create feed' }, status => 403 }
-        );
+        my $data = $self->req->json();
+        $data = [$data] unless(ref($data) eq 'ARRAY');
+        
+        my $res = $self->cli->submit_feed({
+        	token  => $self->token,
+            feed   => $data,
+        });
+        
+        if($#{$res} >= 0){
+            $self->res->headers->add('X-Location' => $self->req->url->to_string());
+            $self->res->headers->add('X-Id' => @{$res}[0]);
+        
+            $self->respond_to(
+                json    => { json => $res, status => 201 },
+            );
+        } else {
+            $self->respond_to(
+                json    => { json => { 'message' => 'failed to create feed' }, status => 403 }
+            );
+        }
     }
 }
     
