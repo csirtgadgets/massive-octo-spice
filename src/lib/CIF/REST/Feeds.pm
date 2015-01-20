@@ -68,10 +68,14 @@ sub create {
             my $data = $self->req->json();
             $data = [$data] unless(ref($data) eq 'ARRAY');
             
+            $Logger->debug('starting submission...');
+            
             my $res = $self->cli->submit_feed({
             	token  => $self->token,
                 feed   => $data,
             });
+            
+            $Logger->debug('submission complete...');
             exit(0);
         } else {
             $self->respond_to(
