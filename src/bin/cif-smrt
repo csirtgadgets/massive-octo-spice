@@ -174,7 +174,6 @@ Usage: $0 [OPTIONS] [-D status|start|stop|restart|reload]
  Advanced Options:
     -M, --meta              apply metadata processors, default: $meta
     -c, --clean             clear cache
-    -x, --test              run in test mode
     -N, --notbefore         not before "[today|yesterday|X days ago]"
     -P, --cache             cache location, default $cache
 
