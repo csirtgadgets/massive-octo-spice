@@ -11,7 +11,7 @@ Our Process
 * Provide a test case unless absolutely impossible.
 * Get familar with [GitHub](https://help.github.com/articles/set-up-git) and [GitFlow](http://datasift.github.io/gitflow/IntroducingGitFlow.html)
 * We always need an issue, test case and [pull-request](https://help.github.com/articles/using-pull-requests).
-* Make your change as a pull request (see below).
+* Make your change as a [pull request](https://github.com/blog/1943-how-to-write-the-perfect-pull-request) (see below).
 * Discuss on the mailing list as needed.
 * Close the issue when your pull request is merged and the test case passes. 
 
