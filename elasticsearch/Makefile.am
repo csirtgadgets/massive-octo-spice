@@ -11,9 +11,9 @@ default:
 	@echo 'nothing to do'
 	
 init:
-	$(CURLCMD) -XPUT '$(HOST)/_template/template_cif_observables/' -d @observables.json
-	$(CURLCMD) -XPUT '$(HOST)/_template/template_cif_feeds/' -d @feeds.json
-	$(CURLCMD) -XPUT '$(HOST)/_template/template_cif_tokens/' -d @tokens.json
+	$(CURLCMD) -XPUT '$(HOST)/_template/cif_observables/' -d @observables.json
+	$(CURLCMD) -XPUT '$(HOST)/_template/cif_feeds/' -d @feeds.json
+	$(CURLCMD) -XPUT '$(HOST)/_template/cif_tokens/' -d @tokens.json
 
 remove:
 	$(CURLCMD) -XDELETE $(HOST)/cif.* -w "\n"
@@ -25,8 +25,8 @@ remove-data:
 reload: remove init
 
 reload-data: remove-data
-	$(CURLCMD) -XPUT '$(HOST)/_template/template_cif_observables/' -d @observables.json
-	$(CURLCMD) -XPUT '$(HOST)/_template/template_cif_feeds/' -d @feeds.json
+	$(CURLCMD) -XPUT '$(HOST)/_template/cif_observables/' -d @observables.json
+	$(CURLCMD) -XPUT '$(HOST)/_template/cif_feeds/' -d @feeds.json
 
 list:
 	$(CURLCMD) -XGET $(HOST)/$(INDICIES)/_mapping?pretty -w "\n"
