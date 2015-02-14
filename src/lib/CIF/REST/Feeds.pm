@@ -17,11 +17,13 @@ sub index {
 			tlp          => scalar $self->param('tlp')          || undef,
 		},
 		feed      => 1,
+		nodecode  => 1,
 	});
 	
-	$self->stash(observables => $res);
-    $self->respond_to(
-        json    => { json => $res },
+	#$self->stash(observables => $res);
+	$self->respond_to(
+        #json    => { json => @{$res}[0] },
+        json    => { text => @{$res}[0] }, # it's already an encoded string
         html    => { template => 'feeds/index' },
     );
 }
@@ -58,10 +60,14 @@ sub create {
     my $data = $self->req->json();
     $data = [$data] unless(ref($data) eq 'ARRAY');
     
-    my $res = $self->cli->submit_feed({
+    $Logger->debug('submitting feed...');
+    
+    $res = $self->cli->submit_feed({
     	token  => $self->token,
         feed   => $data,
     });
+    
+    $Logger->debug('returning...');
     
     if($#{$res} >= 0){
         $self->res->headers->add('X-Location' => $self->req->url->to_string());
