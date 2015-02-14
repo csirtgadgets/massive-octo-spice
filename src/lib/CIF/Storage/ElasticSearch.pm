@@ -453,7 +453,8 @@ sub _submission {
         max_size    => $self->max_size,
         on_error    => sub {
             my ($a,$r,$i) = @_;
-            $Logger->info($r);
+            #$Logger->info(Dumper($r));
+            $Logger->error($r->{'error'});
         },
     );
     

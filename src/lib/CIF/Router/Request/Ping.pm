@@ -27,8 +27,6 @@ sub process {
     my $self = shift;
     my $args = shift;
     
-    $Logger->debug(Dumper($args));
-    
     if($self->msg->{'rtype'} eq 'ping-write'){
         return 0 unless($self->user->{'write'});
     }

@@ -2,6 +2,10 @@
 	"template": "cif.feeds-*",
 	"feeds": {
 		"properties": {
+			"Observables": {
+				"_all": { "enabled": false },
+				"index": "no"
+			},
 			"@version": {
 				"index": "not_analyzed",
 				"type": "string"

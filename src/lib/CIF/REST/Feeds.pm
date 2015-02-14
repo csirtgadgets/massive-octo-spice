@@ -55,55 +55,25 @@ sub create {
         return;
     }
     
-    if($nowait){
-        $Logger->debug('forking...');
-        $SIG{CHLD} = 'IGNORE';
-        my $child = fork();
-        
-        unless(defined($child)){
-            die "fork(): $!";
-        }
-        
-        if($child == 0){
-            my $data = $self->req->json();
-            $data = [$data] unless(ref($data) eq 'ARRAY');
-            
-            $Logger->debug('starting submission...');
-            
-            my $res = $self->cli->submit_feed({
-            	token  => $self->token,
-                feed   => $data,
-            });
-            
-            $Logger->debug('submission complete...');
-            exit(0);
-        } else {
-            $self->respond_to(
-                json    => { json => { 'message' => 'submission accepted, processing may take time' }, status => 201 },
-            );
-            return;
-        }
+    my $data = $self->req->json();
+    $data = [$data] unless(ref($data) eq 'ARRAY');
+    
+    my $res = $self->cli->submit_feed({
+    	token  => $self->token,
+        feed   => $data,
+    });
+    
+    if($#{$res} >= 0){
+        $self->res->headers->add('X-Location' => $self->req->url->to_string());
+        $self->res->headers->add('X-Id' => @{$res}[0]);
+    
+        $self->respond_to(
+            json    => { json => $res, status => 201 },
+        );
     } else {
-        my $data = $self->req->json();
-        $data = [$data] unless(ref($data) eq 'ARRAY');
-        
-        my $res = $self->cli->submit_feed({
-        	token  => $self->token,
-            feed   => $data,
-        });
-        
-        if($#{$res} >= 0){
-            $self->res->headers->add('X-Location' => $self->req->url->to_string());
-            $self->res->headers->add('X-Id' => @{$res}[0]);
-        
-            $self->respond_to(
-                json    => { json => $res, status => 201 },
-            );
-        } else {
-            $self->respond_to(
-                json    => { json => { 'message' => 'failed to create feed' }, status => 403 }
-            );
-        }
+        $self->respond_to(
+            json    => { json => { 'message' => 'failed to create feed' }, status => 403 }
+        );
     }
 }
     

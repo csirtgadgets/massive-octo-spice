@@ -44,6 +44,12 @@
 			},
 			"portlist": {
 				"type": "string"
+			},
+			"latitude": {
+				"type": "float"
+			},
+			"longitude": {
+				"type": "float"
 			}
 		}
 	}
