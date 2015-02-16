@@ -99,6 +99,11 @@ elif [ $VER == "14.04" ]; then
     sed -i 's/^ServerTokens OS/ServerTokens Prod/' /etc/apache2/conf-enabled/security.conf
     sed -i 's/^ServerSignature On/#ServerSignature On/' /etc/apache2/conf-enabled/security.conf
     sed -i 's/^#ServerSignature Off/ServerSignature Off/' /etc/apache2/conf-enabled/security.conf
+
+    if [ ! -f /etc/apache2/conf-available/servername.conf ]; then
+        echo "ServerName localhost" >> /etc/apache2/conf-available/servername.conf
+        a2enconf servername
+    fi
 fi
 
 a2enmod ssl proxy proxy_http
