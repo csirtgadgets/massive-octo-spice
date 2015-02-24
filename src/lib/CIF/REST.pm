@@ -17,7 +17,7 @@ sub random_key {
 use constant {
     SECRET      => $ENV{'SECRET'}       || random_key(),
     EXPIRATION  => $ENV{'EXPIRATION'}   || 84600, # 1 day
-    MODE        => $ENV{'MODE'}         || 'development',
+    MODE        => $ENV{'MOJO_MODE'}    || 'production',
     REMOTE      => $ENV{'REMOTE'}       || 'tcp://localhost:' . CIF::DEFAULT_PORT(),
     VERSION     => $ENV{'VERSION'}      || 2,
 };
