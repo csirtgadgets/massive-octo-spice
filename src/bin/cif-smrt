@@ -231,6 +231,7 @@ if($daemon){
 } elsif($testmode) {
     _main();
 } else {
+    $Logger->more_logging(2);
     main();
 }
 
@@ -246,6 +247,7 @@ sub main {
     
     $Logger->info('delaying start for: '.$randomstart.'min then running every '.$interval.'min there after...');
     $Logger->info('to run immediately, set: --randomstart 0 or --testmode');
+    $Logger->info('to see the list of options, use -h');
     
     $randomstart    = (60 * $randomstart);
     $interval       = (60 * $interval);
