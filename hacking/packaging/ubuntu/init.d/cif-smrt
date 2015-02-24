@@ -18,7 +18,6 @@ DESC="cif-smrt"
 DEFAULT_CIF=/etc/default/cif
 DEFAULT=/etc/default/$NAME
 CACHE=/var/smrt/cache
-CIF_DEBUG=""
 
 if [ `id -u` -ne 0 ]; then
     echo "You need root privileges to run this script"
@@ -48,7 +47,7 @@ fi
 # Define other required variables
 PID_FILE=/var/run/$NAME.pid
 DAEMON=$CIF_HOME/bin/cif-smrt
-DAEMON_OPTS="$CIF_DEBUG --logging --logfile $LOG_FILE -p $PID_FILE -C $CONF_FILE -D start"
+DAEMON_OPTS="$CIF_DEBUGGING --logging --logfile $LOG_FILE -p $PID_FILE -C $CONF_FILE -D start"
 
 # Check DAEMON exists
 test -x $DAEMON || exit 0

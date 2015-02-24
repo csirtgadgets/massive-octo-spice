@@ -17,7 +17,6 @@ NAME=cif-router
 DESC="cif-router"
 DEFAULT_CIF=/etc/default/cif
 DEFAULT=/etc/default/$NAME
-CIF_DEBUG=""
 
 if [ `id -u` -ne 0 ]; then
     echo "You need root privileges to run this script"
@@ -43,15 +42,16 @@ CONF_FILE=$CONF_DIR/cif-router.conf
 # data directory
 DATA_DIR=$DATA_DIR/$NAME
 
+# Define other required variables
+PID_FILE=/var/run/$NAME.pid
+
 # overwrite with my defaults
 if [ -f "$DEFAULT" ]; then
     . "$DEFAULT"
 fi
 
-# Define other required variables
-PID_FILE=/var/run/$NAME.pid
 DAEMON=$CIF_HOME/bin/cif-router
-DAEMON_OPTS="$CIF_DEBUG --logging --logfile $LOG_FILE -p $PID_FILE -C $CONF_FILE -D start"
+DAEMON_OPTS="$CIF_DEBUGGING --logging --logfile $LOG_FILE -p $PID_FILE -C $CONF_FILE -D start"
 
 # Check DAEMON exists
 test -x $DAEMON || exit 0

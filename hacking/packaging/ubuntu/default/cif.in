@@ -17,3 +17,6 @@ LOG_DIR=@ext_localstatedir@/log
 
 # configuration directory
 CONF_DIR=@ext_sysconfdir@
+
+# add -d to turn on debugging
+CIF_DEBUGGING=""
