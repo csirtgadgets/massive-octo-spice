@@ -2,32 +2,27 @@
 
        <div id="helperlicious">
       <div id="routes" class="box infobox spaced">
-            <h3><a href='https://github.com/csirtgadgets/p5-cif-sdk'>Perl SDK</a> :: <a href='https://github.com/csirtgadgets/py-cif-sdk'>Python SDK</a> :: <a href='https://github.com/csirtgadgets/rb-cif-sdk'>Ruby SDK</a></h3>
+            <h3><a href='https://github.com/csirtgadgets/?query=-cif-sdk'>Software Development Kits</a></h3>
             <h3>Examples</h3>
             <table>
                 <tr>
                     <td class="striped value">
-                        <pre>GET /ping?token=1234</pre>
+                        <pre>GET /ping</pre>
                     </td>
                 </tr>
                 <tr>
                     <td class="striped value">
-                        <pre>GET /observables?token=1234&q=example.com</pre>
+                        <pre>GET /observables?q=example.com</pre>
                     </td>
                 </tr>
                 <tr>
                     <td class="striped value">
-                        <pre>GET /observables?token=1234&cc=RU&tags=scanner,botnet</pre>
+                        <pre>GET /observables?&cc=RU&tags=scanner,botnet</pre>
                     </td>
                 </tr>
                 <tr>
                     <td class="striped value">
-                        <pre>GET /observables/dd7610037ea0c3d68dd73634bee223bbdaedce14c707cbadbb1f90688d6312dd?token=1234</pre>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="striped value">
-                        <pre>PUT /observables/new?token=1234 # body is JSON string</pre>
+                        <pre>PUT /observables/new # body is JSON string</pre>
                     </td>
                 </tr>
                 
@@ -37,7 +32,15 @@
        <div id="helperlicious">
       <div id="routes" class="box infobox spaced">
             <h3>Headers</h3>
-            The default version of the API may change in the future. If you're building an application and care about the stability of the API, be sure to request a specific version in the Accept header as shown in the examples below.
+            <div>
+            <h4>API Version</h4>
+            <p>
+            	The default version of the API may change in the future. If you're building an application and care about the stability of the API, be sure to request a specific version in the Accept header as shown in the examples below.
+            </p>
+            <h4>Authorization</h4>
+            <p>
+            	Authorization takes place in the header by setting the token as shown in the example below.
+            </p>
             <table>
                 <thead align="left">
                     <tr>
@@ -46,6 +49,7 @@
                 </thead>
                 % my $enabled = [ 
                 % { header => 'Accept: application/vnd.cif.v2+json' },
+                % { header => 'Authorization: Token token=<<YOUR_TOKEN>>' },
                 % ];
                 % foreach my $p (@{$enabled}){
                 <tr align="left">
@@ -55,6 +59,7 @@
                 </tr>
                 % }
             </table>
+            </div>            
        </div>
        </div>
     <div id="helperlicious">
@@ -70,7 +75,6 @@
                 </thead>
                 % my $enabled_params = [ 
                 % { param => 'q', type => 'STRING', example => 'example.com, 1.2.3.4, 1.2.3.0/24' },
-                % { param => 'token', type => 'STRING', example => '1234' }, 
                 % { param => 'limit', type => 'INT32', example => '500' },
                 % { param => 'confidence', type => 'INT32', example => '65' },
                 % { param => 'group', type => 'STRING', example => 'group1,group2' },
