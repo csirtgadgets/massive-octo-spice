@@ -132,6 +132,7 @@ cp ./hacking/packaging/ubuntu/init.d/cif-smrt /etc/init.d/
 cp ./hacking/packaging/ubuntu/init.d/cif-router /etc/init.d/
 cp ./hacking/packaging/ubuntu/init.d/cif-starman /etc/init.d/
 cp ./hacking/packaging/ubuntu/init.d/cif-worker /etc/init.d/
+cp ./hacking/packaging/ubuntu/init.d/cif-services /etc/init.d/
 
 echo 'setting /etc/default/cif'
 cp ./hacking/packaging/ubuntu/default/cif /etc/default/cif
@@ -151,10 +152,7 @@ if [ -z `grep -l '/opt/cif/bin' /home/cif/.profile` ]; then
     echo 'PATH=/opt/cif/bin:$PATH' >> $MYPROFILE
 fi
 
-update-rc.d cif-router defaults 95 10
-update-rc.d cif-smrt defaults 95 10
-update-rc.d cif-starman defaults 95 10
-update-rc.d cif-worker defaults 95 10
+update-rc.d cif-services defaults 95 10
 
 if [ ! -f /etc/cif/cif-smrt.yml ]; then
     echo 'setting up /etc/cif/cif-smrt.yml config...'
@@ -179,11 +177,11 @@ fi
 echo 'starting cif-router...'
 service cif-router restart
 
+echo 'starting cif-worker'
+service cif-worker restart
+
 echo 'starting cif-starman...'
 service cif-starman restart
 
 echo 'restarting apache...'
 service apache2 restart
-
-echo 'starting cif-worker'
-service cif-worker restart
