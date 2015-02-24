@@ -1,8 +1,6 @@
 defaults:
   tlp: amber
   provider: 'dshield.org'
-  pattern:  '^[^Site](\S+)'
-  values: observable
   tags: scanner
 
 feeds:
