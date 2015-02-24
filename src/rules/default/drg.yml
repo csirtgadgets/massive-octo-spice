@@ -7,8 +7,8 @@ defaults:
   tlp: amber
   confidence: 85
   values:
-    - null
-    - null
+    - asn
+    - asn_desc
     - observable
     - lasttime
     - null

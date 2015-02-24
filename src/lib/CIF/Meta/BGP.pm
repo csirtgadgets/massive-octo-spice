@@ -37,7 +37,11 @@ sub process {
         $asn_desc = fix_latin($asn_desc);
     }
     
-    $args->{'asn'}          = $asn if($asn && !$args->{'asn'});
+    if($asn){
+        # if it's not already specified OR if what's specified isn't a number (ie: something like 'NA')
+        $args->{'asn'} = $asn if(!$args->{'asn'} || $args->{'asn'} !~ /^\d+$/);
+    }
+    
     $args->{'asn_desc'}     = $asn_desc if($asn_desc && !$args->{'asn_desc'});
     $args->{'prefix'}       = $prefix if($prefix && !$args->{'prefix'});
     $args->{'cc'}           = $cc if($cc && $cc ne '');

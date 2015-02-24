@@ -16,7 +16,7 @@ has 'orientation' => (
 
 has 'asn'   => (
     is      => 'ro',
-    isa     => 'Num',
+    isa     => 'Str',
     reader  => 'get_asn',
 );
 
