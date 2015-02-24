@@ -118,6 +118,11 @@ echo 'starting elastic search'
 update-rc.d elasticsearch defaults 95 10
 service elasticsearch restart
 
+echo 'removing old elastic search templates'
+curl -XDELETE http://localhost:9200/_template/template_cif_observables > /dev/null 2>&1
+curl -XDELETE http://localhost:9200/_template/template_cif_tokens > /dev/null 2>&1
+curl -XDELETE http://localhost:9200/_template/template_cif_feeds > /dev/null 2>&1
+
 cd ../../../
 
 ./configure --enable-geoip --sysconfdir=/etc/cif --localstatedir=/var --prefix=/opt/cif
@@ -167,27 +172,27 @@ if [ ! -f ~/.cif.yml ]; then
     chmod 660 ~/.cif.yml
 fi
 
-if [ ! -f /etc/init.d/cif-services ]; then
+if [ -f /etc/init.d/cif-router ]; then
+	update-rc.d cif-router remove 95 10
+	update-rc.d cif-smrt remove 95 10
+	update-rc.d cif-worker remove 95 10
+	update-rc.d cif-starman remove 95 10
+else
 	echo 'copying init.d scripts...'
 	cp ./hacking/packaging/ubuntu/init.d/cif-smrt /etc/init.d/
 	cp ./hacking/packaging/ubuntu/init.d/cif-router /etc/init.d/
 	cp ./hacking/packaging/ubuntu/init.d/cif-starman /etc/init.d/
 	cp ./hacking/packaging/ubuntu/init.d/cif-worker /etc/init.d/
 	cp ./hacking/packaging/ubuntu/init.d/cif-services /etc/init.d/
-	update-rc.d cif-services defaults 95 10
-	
-	echo 'starting cif-router...'
-	service cif-router restart
-	
-	echo 'starting cif-worker'
-	service cif-worker restart
-	
-	echo 'starting cif-starman...'
-	service cif-starman restart
-else
-	echo 'restarting services'
-	service cif-services restart
 fi
+
+if [ ! -f /etc/init.d/cif-services ]; then
+	cp ./hacking/packaging/ubuntu/init.d/cif-services /etc/init.d/
+	update-rc.d cif-services defaults 95 10
+fi
+
+echo 'staring cif-services...'
+sudo service cif-services start
 
 echo 'restarting apache...'
 service apache2 restart
