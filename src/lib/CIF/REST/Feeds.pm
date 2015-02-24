@@ -1,8 +1,11 @@
 package CIF::REST::Feeds;
 use Mojo::Base 'Mojolicious::Controller';
 use POSIX ":sys_wait_h";
+use JSON::XS;
 
 use CIF qw/$Logger/;
+
+use constant TIMEOUT => 115;
 
 sub index {
     my $self = shift;
@@ -21,9 +24,7 @@ sub index {
 		nodecode  => 1,
 	});
 	
-	#$self->stash(observables => $res);
 	$self->respond_to(
-        #json    => { json => @{$res}[0] },
         json    => { text => @{$res}[0] }, # it's already an encoded string
         html    => { template => 'feeds/index' },
     );
@@ -67,7 +68,8 @@ sub create {
             die;
         }
         
-        my $data = $self->req->json();
+        my $data = $self->req->text();
+        $data = JSON::XS->new->decode($data);
         $data = [$data] unless(ref($data) eq 'ARRAY');
         
         $Logger->debug('submitting feed...');
@@ -80,7 +82,7 @@ sub create {
         $Logger->debug('returning...');
         exit(0);
     } else { # parent
-         my $endtime = time() + 55;
+         my $endtime = time() + TIMEOUT;
          my $pid;
          while (1) {
              my $tosleep = $endtime - time();
