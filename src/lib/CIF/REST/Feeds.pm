@@ -1,5 +1,6 @@
 package CIF::REST::Feeds;
 use Mojo::Base 'Mojolicious::Controller';
+use POSIX ":sys_wait_h";
 
 use CIF qw/$Logger/;
 
@@ -46,40 +47,61 @@ sub show {
 sub create {
     my $self = shift;
     
-    my $nowait = scalar $self->param('nowait') || 0;
+    # we do this, since we can't recoup memory in perl
+    $SIG{CHLD} = sub { };
+    my $child = fork();
     
-    my $res = $self->cli->ping_write({
-        token   => $self->token,
-    });
-    
-    if($res == 0){
-        $self->render(json   => { 'message' => 'unauthorized' }, status => 401 );
+    unless(defined($child)){
+        $Logger->error('fork() error: '.$!);
+        $self->render(json => { 'message' => 'unknown error, contact sysadmin' } , status => 500 );
         return;
     }
     
-    my $data = $self->req->json();
-    $data = [$data] unless(ref($data) eq 'ARRAY');
+    if($child == 0){
+        my $res = $self->cli->ping_write({
+            token   => $self->token,
+        });
+        
+        if($res == 0){
+            $self->render(json   => { 'message' => 'unauthorized' }, status => 401 );
+            die;
+        }
+        
+        my $data = $self->req->json();
+        $data = [$data] unless(ref($data) eq 'ARRAY');
+        
+        $Logger->debug('submitting feed...');
+        
+        $res = $self->cli->submit_feed({
+        	token  => $self->token,
+            feed   => $data,
+        });
+        
+        $Logger->debug('returning...');
+        exit(0);
+    } else { # parent
+         my $endtime = time() + 55;
+         my $pid;
+         while (1) {
+             my $tosleep = $endtime - time();
+             last unless($tosleep > 0);
+             
+             $pid = waitpid(-1, WNOHANG);
+             last if($pid > 0);
+         }
+         if ($pid <= 0){
+             $Logger->error('child timed out!');
+             kill 9, $child;
+             $self->respond_to(
+                json    => { json => { 'message' => 'failed to create feed' }, status => 403 }
+            );
+         } else {
+            $self->res->headers->add('X-Location' => $self->req->url->to_string());
     
-    $Logger->debug('submitting feed...');
-    
-    $res = $self->cli->submit_feed({
-    	token  => $self->token,
-        feed   => $data,
-    });
-    
-    $Logger->debug('returning...');
-    
-    if($#{$res} >= 0){
-        $self->res->headers->add('X-Location' => $self->req->url->to_string());
-        $self->res->headers->add('X-Id' => @{$res}[0]);
-    
-        $self->respond_to(
-            json    => { json => $res, status => 201 },
-        );
-    } else {
-        $self->respond_to(
-            json    => { json => { 'message' => 'failed to create feed' }, status => 403 }
-        );
+            $self->respond_to(
+                json    => { json => { 'message' => 'feed successfully created' }, status => 201 },
+            );
+         }
     }
 }
     
