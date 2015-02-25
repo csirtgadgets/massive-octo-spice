@@ -1,7 +1,8 @@
 Revision history for massive-octo-spice
 
-2.00.00-alpha.15 2015-02-24
+2.00.00-alpha.15 2015-02-25
     fixes:
+        - updated easybutton script, down to just a curl command or so.
         - https://github.com/csirtgadgets/massive-octo-spice/issues/139
         - https://github.com/csirtgadgets/massive-octo-spice/issues/145
         - https://github.com/csirtgadgets/massive-octo-spice/issues/143
