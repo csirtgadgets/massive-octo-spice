@@ -8,6 +8,7 @@ if [ `whoami` != 'root' ]; then
 fi
 
 ARCH=$(uname -m | sed 's/x86_//;s/i[3-6]86/32/')
+BRANCH="master"
 
 if [ -f /etc/lsb-release ]; then
     . /etc/lsb-release
@@ -27,7 +28,7 @@ fi
 case $OS in
     "Ubuntu" )
         sudo apt-get update && sudo apt-get upgrade -y && sudo apt-get install -y htop build-essential automake autoconf git
-        git clone https://github.com/csirtgadgets/massive-octo-spice.git -b master
+        git clone https://github.com/csirtgadgets/massive-octo-spice.git -b $BRANCH
         cd massive-octo-spice
         bash autogen.sh
         sudo bash ./hacking/platforms/easybutton.sh

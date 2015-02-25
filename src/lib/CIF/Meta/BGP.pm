@@ -37,11 +37,20 @@ sub process {
         $asn_desc = fix_latin($asn_desc);
     }
     
-    $args->{'asn'}          = $asn if($asn && !$args->{'asn'});
+    if($asn){
+        # if it's not already specified OR if what's specified isn't a number (ie: something like 'NA')
+        $args->{'asn'} = $asn if(!$args->{'asn'} || $args->{'asn'} !~ /^\d+$/);
+    }
+    
     $args->{'asn_desc'}     = $asn_desc if($asn_desc && !$args->{'asn_desc'});
     $args->{'prefix'}       = $prefix if($prefix && !$args->{'prefix'});
     $args->{'cc'}           = $cc if($cc && $cc ne '');
     $args->{'rir'}          = $rir if($rir);
+    
+    # country code work-around for #139
+    if($args->{'asn_desc'} && $args->{'asn_desc'} =~ /\,([A-Z]{2})$/){
+        $args->{'cc'} = $1 if ($args->{'cc'} && $args->{'cc'} eq 'EU');
+    }
 }
 
 # aggregate our cache , we could miss a more specific route, 

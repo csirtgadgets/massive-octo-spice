@@ -54,6 +54,8 @@ has 'feeds_index' => (
     default => sub { FEEDS },
 );
 
+has 'feeds_type' => ( is => 'ro', default => sub { FEEDS_TYPE } );
+
 has 'max_count' => (
     is      => 'ro',
     default => MAX_COUNT,
@@ -341,13 +343,13 @@ sub _search {
 	
 	if($Logger->is_debug()){
 	    my $j = JSON->new();
-        $Logger->debug($j->pretty->encode($q)); ##TODO -- debugging
+        $Logger->debug($j->pretty->encode($q));
 	}
 	
     my $index = $self->observables_index();
     if($args->{'feed'}){
         $filters->{'limit'} = 1;	
-        $index = $self->feeds_index();
+        $index = $self->feeds_index;
     }
     
     $index .= '-*';
@@ -373,12 +375,12 @@ sub _search {
     
     if(defined($args->{'feed'})){
         if($#{$results} >= 0){
-            $results = @{$results}[0]->{'Observables'};
+            $results = [@{$results}[0]->{'Observables'}];
         } else {
             $Logger->debug('no results found...');
         }
     }
-    
+    $Logger->info('returning..');
     return $results;
 }
 
@@ -432,9 +434,9 @@ sub _submission {
         $index = $self->observables_index();
         $type = 'observables';
     } else {
-        $type = 'feed';
+        $type = $self->feeds_type;
         $things = $args->{'Feed'};
-        $index = $self->feeds_index(),
+        $index = $self->feeds_index,
     }
     
     $index = $index.'-'.$date;
@@ -453,7 +455,8 @@ sub _submission {
         max_size    => $self->max_size,
         on_error    => sub {
             my ($a,$r,$i) = @_;
-            $Logger->info($r);
+            $Logger->debug(Dumper($r));
+            $Logger->error($r->{'error'});
         },
     );
     

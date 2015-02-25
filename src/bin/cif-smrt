@@ -148,7 +148,7 @@ Usage: $0 [OPTIONS] [-D status|start|stop|restart|reload]
     -f, --feed=STRING       specify a feed (within a rule)
     -R, --remote=STRING     specify a remote to connect to, default $remote
     -T, --token=STRING      specify a default token/apikey to use, default: $token
-    --not-before=STRING     specify a time to begin processing the data
+    --not-before=STRING     specify a time to begin processing the data "[today|yesterday|X days ago]"
     
  Daemon Options:
     -D, --daemon            run as daemon
@@ -174,8 +174,6 @@ Usage: $0 [OPTIONS] [-D status|start|stop|restart|reload]
  Advanced Options:
     -M, --meta              apply metadata processors, default: $meta
     -c, --clean             clear cache
-    -x, --test              run in test mode
-    -N, --notbefore         not before "[today|yesterday|X days ago]"
     -P, --cache             cache location, default $cache
 
  Examples:
@@ -233,6 +231,7 @@ if($daemon){
 } elsif($testmode) {
     _main();
 } else {
+    $Logger->more_logging(2);
     main();
 }
 
@@ -248,6 +247,7 @@ sub main {
     
     $Logger->info('delaying start for: '.$randomstart.'min then running every '.$interval.'min there after...');
     $Logger->info('to run immediately, set: --randomstart 0 or --testmode');
+    $Logger->info('to see the list of options, use -h');
     
     $randomstart    = (60 * $randomstart);
     $interval       = (60 * $interval);

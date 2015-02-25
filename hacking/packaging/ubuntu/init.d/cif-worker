@@ -23,6 +23,7 @@ GROUP=cif
 LOG_DIR=/var/log
 DAEMON=/opt/cif/bin/cif-worker
 DEFAULT_CIF=/etc/default/cif
+DEFAULT=/etc/default/$NAME
 CONF_DIR=/etc/cif
 
 if [ `id -u` -ne 0 ]; then
@@ -49,10 +50,14 @@ CONF_FILE=$CONF_DIR/cif-worker.yml
 # Define other required variables
 PID_FILE=/var/run/$NAME.pid
 
+if [ -f "$DEFAULT" ]; then
+    . "$DEFAULT"
+fi
+
 # Check DAEMON exists
 test -x $DAEMON || exit 0
 
-DAEMON_OPTS="--config $CONF_FILE --user $USER --group $GROUP --threads $THREADS --logging --logfile $LOG_FILE -p $PID_FILE -D start"
+DAEMON_OPTS="$CIF_DEBUGGING --config $CONF_FILE --user $USER --group $GROUP --threads $THREADS --logging --logfile $LOG_FILE -p $PID_FILE -D start"
 
 case "$1" in
   start)

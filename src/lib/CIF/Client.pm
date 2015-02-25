@@ -231,7 +231,6 @@ sub submit {
     my $self = shift;
     my $args = shift;
     
-    ##TODO this should be spun out to a queue and returned quickly
     foreach (@{$args->{'observables'}}){
         $self->_process_metadata($_) if($args->{'enable_metadata'});
         $_ = CIF::ObservableFactory->new_plugin($_);
