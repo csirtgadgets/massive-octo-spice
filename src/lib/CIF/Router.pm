@@ -108,15 +108,21 @@ sub startup {
     
     $Logger->info('publisher started on: '.$self->publisher_listen);
     
-    my ($err,$resp,$msg);
+    my ($err,$resp,$msg, $encoder);
+    
+    if($Logger->is_debug()){
+        $encoder = JSON::XS->new->pretty->convert_blessed(1);
+    } else {
+        $encoder = JSON::XS->new->convert_blessed(1);
+    }
     $self->frontend_watcher(
         $self->frontend->anyevent_watcher(
             sub {
                 while ($msg = $self->frontend->receive()){
                     $Logger->info('received message...');
-                    
+
                     $Logger->info('decoding...');
-                    $msg = JSON::XS->new->decode(@$msg);
+                    $msg = $encoder->decode(@$msg);
                     $Logger->info('processing...');
                     try {
                         $resp = $self->process($msg);
@@ -138,17 +144,14 @@ sub startup {
                     }
                         
                     $Logger->debug('re-encoding...');
-                    
-                    if($Logger->is_debug()){
-                        $resp = JSON::XS->new->pretty->convert_blessed(1)->encode($resp);
-                    } else {
-                        $resp = JSON::XS->new->convert_blessed(1)->encode($resp);
-                    }
-                    
+                    $resp = $encoder->encode($resp);
+                  
                     $Logger->info('replying...');
                     $self->frontend->send($resp);
                     
-                    ($resp,$msg) = undef;
+                    undef $resp;
+                    undef $msg;
+                    undef $err;
                 }
             }
         )
