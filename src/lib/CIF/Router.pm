@@ -123,8 +123,7 @@ sub startup {
                     $Logger->info('received message...');
 
                     $Logger->info('decoding...');
-                    $msg = $encoder->decode(@$msg);
-                    $Logger->info('processing rtype: '.$msg->{'rtype'});
+                    
                     my $backend = ZMQx::Class->socket('PULL', bind => BACKEND);
                     
                     $SIG{CHLD} = sub { };
@@ -132,8 +131,12 @@ sub startup {
                     
                     if($child == 0){
                         my $socket = ZMQx::Class->socket('PUSH', connect => BACKEND);
+                        $Logger->debug(Dumper($msg));
+                        $msg = $encoder->decode(@$msg);
+                        $Logger->info('processing rtype: '.$msg->{'rtype'});
                         
                         try {
+                            $Logger->debug(Dumper($msg));
                             $resp = $self->process($msg);
                             $Logger->debug('sending resp...');
                             $Logger->debug(Dumper($resp));
@@ -142,31 +145,32 @@ sub startup {
                             $err = shift;
                             $socket->send($err);
                         };
-                        undef $socket;
-                        exit(0);
                     } else {
                         # parent
                         my $endtime = time() + 300;
                         my $pid;
+                        undef $msg;
                         while (1) {
-                            $msg = $backend->receive(1);
-                            
+                            $msg = $backend->receive('blocking');
+
                             $Logger->debug(Dumper($msg));
-                            $msg = @$msg[0];
+                            $msg = @$msg[0] if(ref($msg) eq 'ARRAY');
                             $Logger->debug(Dumper($msg));
                             $msg = $encoder->decode($msg);
-                            
+                        
                             my $tosleep = $endtime - time();
                          
                             $pid = waitpid(-1, WNOHANG);
-                            last if ($msg);
                             last unless($tosleep > 0);
                             last if($pid > 0);
+                            last if($msg);
                         }
                         if ($pid <= 0){
                             $Logger->error('child timed out!');
                             kill 9, $child;
-                        } 
+                        }  else {
+                            $Logger->debug(Dumper($msg));
+                        }
                         
                         if($err){
                             $Logger->error($err);
@@ -181,16 +185,18 @@ sub startup {
                             if(($msg->{'Data'}->{'Observables'} || $msg->{'Data'}->{'Query'}) && $msg->{'stype'} eq 'success'){
                                 $Logger->info('publishing to subscribers...');
                                 $self->publish($msg);
-                                $resp = $msg;
+                                
                             } else {
                                 $Logger->info('skipping subscriber publish..');
                             }
+                            $resp = $msg;
                         }
                             
                         $Logger->debug('re-encoding...');
                         $resp = $encoder->encode($resp);
                       
                         $Logger->info('replying...');
+                        $Logger->debug(Dumper($resp));
                         $self->frontend->send($resp);
                         
                         undef $resp;
@@ -217,7 +223,7 @@ sub process {
     });
     
     my $user;
-    if(lc($msg->{'Token'}) =~ /^[a-z0-9]{64}$/){
+    if($msg->{'Token'} && lc($msg->{'Token'}) =~ /^[a-z0-9]{64}$/){
         $user = $self->storage_handle->check_auth($msg->{'Token'});
     }
     
@@ -248,7 +254,8 @@ sub process {
             $r->Data('ERROR: request type not supported');
         }
     } else {
-        $Logger->info('auth failed for: '.$msg->{'Token'});
+        $Logger->info('auth failed');
+        $Logger->debug('Token: '.$msg->{'Token'}) if($user);
         $r->stype('unauthorized');
     }
     

@@ -93,7 +93,7 @@ sub ping {
         return $ret;
     }
     
-    return 0 if $ret->{'stype'} eq 'unauthorized';
+    return -1 if $ret->{'stype'} eq 'unauthorized';
     return [gettimeofday] if $ret->{'stype'} eq 'success';
 }
 

@@ -118,6 +118,8 @@ if(-e $config){
     $token      = $config->{'token'} if($config->{'token'} && !$token);
     $remote     = $config->{'remote'} if($config->{'remote'} && ($remote eq CIF::Worker::ROUTER));
     $publisher  = $config->{'publisher'} if($config->{'publisher'} && ($publisher eq CIF::Worker::PUBLISHER));
+} else {
+    $Logger->info('config: '.$config.' does not exist...');
 }
 
 my $loglevel = ($debug) ? 'DEBUG' : 'ERROR';
@@ -155,8 +157,16 @@ my $ret;
 do {
     $Logger->info('testing cif-router connection...');
     $ret = $cli->ping({ timeout => 5000 });
+    
     unless($ret){
         $Logger->info('router unavail.. ');
+        $Logger->info('waiting...');
+        sleep(15);
+    }
+    
+    if($ret == -1){
+        $Logger->fatal('unauthorized...');
+        exit(-1);
     }
 } until($ret);
 
