@@ -123,7 +123,7 @@ sub startup {
 
                     $Logger->info('decoding...');
                     $msg = $encoder->decode(@$msg);
-                    $Logger->info('processing...');
+                    $Logger->info('processing rtype: '.$msg->{'rtype'});
                     try {
                         $resp = $self->process($msg);
                     } catch {
@@ -140,7 +140,13 @@ sub startup {
                         });
                         $err = undef;
                     } else {
-                        $self->publish($msg) if($resp->{'stype'} eq 'success');
+                        $Logger->debug(Dumper($msg));
+                        if(($msg->{'Data'}->{'Observables'} || $msg->{'Data'}->{'Query'}) && $resp->{'stype'} eq 'success'){
+                            $Logger->info('publishing to subscribers...');
+                            $self->publish($msg) ;
+                        } else {
+                            $Logger->info('skipping subscriber publish..');
+                        }
                     }
                         
                     $Logger->debug('re-encoding...');
