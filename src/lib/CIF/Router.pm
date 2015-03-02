@@ -11,6 +11,7 @@ use CIF::StorageFactory;
 use ZMQx::Class;
 use JSON::XS;
 use Try::Tiny;
+use POSIX ":sys_wait_h";
 use Data::Dumper;
 
 # constants
@@ -22,6 +23,8 @@ use constant DEFAULT_BACKEND_LISTEN         => 'tcp://*:'.DEFAULT_BACKEND_PORT()
 
 use constant DEFAULT_PUBLISHER_PORT         => CIF::DEFAULT_PUBLISHER_PORT();
 use constant DEFAULT_PUBLISHER_LISTEN       => 'tcp://*:'.DEFAULT_PUBLISHER_PORT();
+
+use constant BACKEND => 'ipc:///tmp/cif-router-backend.ipc';
 
 has 'port'      => (
     is      => 'ro',
@@ -61,8 +64,6 @@ has 'auth' => (
 
 has 'storage'   => (
     is          => 'ro',
-    isa         => 'Str',
-    reader      => 'get_storage',
 );
 
 has 'storage_handle'    => (
@@ -72,7 +73,7 @@ has 'storage_handle'    => (
 
 sub _build_storage_handle {
     my $self = shift;
-    return CIF::StorageFactory->new_plugin({ plugin => $self->get_storage() });
+    return CIF::StorageFactory->new_plugin({ plugin => $self->storage });
 }
 
 sub BUILD {
@@ -124,39 +125,78 @@ sub startup {
                     $Logger->info('decoding...');
                     $msg = $encoder->decode(@$msg);
                     $Logger->info('processing rtype: '.$msg->{'rtype'});
-                    try {
-                        $resp = $self->process($msg);
-                    } catch {
-                        $err = shift;
-                    };
+                    my $backend = ZMQx::Class->socket('PULL', bind => BACKEND);
                     
-                    if($err){
-                        $Logger->error($err);
-                        $resp = CIF::Message->new({
-                            stype   => 'failure',
-                            mtype   => 'response',
-                            rtype   => $msg->{'rtype'},
-                            Data    => 'unknown failure',
-                        });
-                        $err = undef;
-                    } else {
-                        if(($msg->{'Data'}->{'Observables'} || $msg->{'Data'}->{'Query'}) && $resp->{'stype'} eq 'success'){
-                            $Logger->info('publishing to subscribers...');
-                            $self->publish($msg) ;
-                        } else {
-                            $Logger->info('skipping subscriber publish..');
-                        }
-                    }
+                    $SIG{CHLD} = sub { };
+                    my $child = fork();
+                    
+                    if($child == 0){
+                        my $socket = ZMQx::Class->socket('PUSH', connect => BACKEND);
                         
-                    $Logger->debug('re-encoding...');
-                    $resp = $encoder->encode($resp);
-                  
-                    $Logger->info('replying...');
-                    $self->frontend->send($resp);
-                    
-                    undef $resp;
-                    undef $msg;
-                    undef $err;
+                        try {
+                            $resp = $self->process($msg);
+                            $Logger->debug('sending resp...');
+                            $Logger->debug(Dumper($resp));
+                            $socket->send($encoder->encode($resp));
+                        } catch {
+                            $err = shift;
+                            $socket->send($err);
+                        };
+                        undef $socket;
+                        exit(0);
+                    } else {
+                        # parent
+                        my $endtime = time() + 300;
+                        my $pid;
+                        while (1) {
+                            $msg = $backend->receive(1);
+                            
+                            $Logger->debug(Dumper($msg));
+                            $msg = @$msg[0];
+                            $Logger->debug(Dumper($msg));
+                            $msg = $encoder->decode($msg);
+                            
+                            my $tosleep = $endtime - time();
+                         
+                            $pid = waitpid(-1, WNOHANG);
+                            last if ($msg);
+                            last unless($tosleep > 0);
+                            last if($pid > 0);
+                        }
+                        if ($pid <= 0){
+                            $Logger->error('child timed out!');
+                            kill 9, $child;
+                        } 
+                        
+                        if($err){
+                            $Logger->error($err);
+                            $resp = CIF::Message->new({
+                                stype   => 'failure',
+                                mtype   => 'response',
+                                rtype   => $msg->{'rtype'},
+                                Data    => 'unknown failure',
+                            });
+                            $err = undef;
+                        } else {
+                            if(($msg->{'Data'}->{'Observables'} || $msg->{'Data'}->{'Query'}) && $msg->{'stype'} eq 'success'){
+                                $Logger->info('publishing to subscribers...');
+                                $self->publish($msg);
+                                $resp = $msg;
+                            } else {
+                                $Logger->info('skipping subscriber publish..');
+                            }
+                        }
+                            
+                        $Logger->debug('re-encoding...');
+                        $resp = $encoder->encode($resp);
+                      
+                        $Logger->info('replying...');
+                        $self->frontend->send($resp);
+                        
+                        undef $resp;
+                        undef $msg;
+                        undef $err;
+                    }
                 }
             }
         )
