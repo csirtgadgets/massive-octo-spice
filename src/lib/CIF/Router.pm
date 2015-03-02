@@ -12,7 +12,6 @@ use ZMQx::Class;
 use JSON::XS;
 use Try::Tiny;
 use POSIX ":sys_wait_h";
-use Data::Dumper;
 
 # constants
 use constant DEFAULT_FRONTEND_PORT          => CIF::DEFAULT_FRONTEND_PORT();
@@ -131,15 +130,12 @@ sub startup {
                     
                     if($child == 0){
                         my $socket = ZMQx::Class->socket('PUSH', connect => BACKEND);
-                        $Logger->debug(Dumper($msg));
                         $msg = $encoder->decode(@$msg);
                         $Logger->info('processing rtype: '.$msg->{'rtype'});
                         
                         try {
-                            $Logger->debug(Dumper($msg));
                             $resp = $self->process($msg);
                             $Logger->debug('sending resp...');
-                            $Logger->debug(Dumper($resp));
                             $socket->send($encoder->encode($resp));
                         } catch {
                             $err = shift;
@@ -154,9 +150,8 @@ sub startup {
                         while (1) {
                             $msg = $backend->receive('blocking');
 
-                            $Logger->debug(Dumper($msg));
                             $msg = @$msg[0] if(ref($msg) eq 'ARRAY');
-                            $Logger->debug(Dumper($msg));
+
                             $msg = $encoder->decode($msg);
                         
                             my $tosleep = $endtime - time();
@@ -169,8 +164,6 @@ sub startup {
                         if ($pid <= 0){
                             $Logger->error('child timed out!');
                             kill 9, $child;
-                        }  else {
-                            $Logger->debug(Dumper($msg));
                         }
                         
                         if($err){
@@ -197,7 +190,6 @@ sub startup {
                         $resp = $encoder->encode($resp);
                       
                         $Logger->info('replying...');
-                        $Logger->debug(Dumper($resp));
                         $self->frontend->send($resp);
                         
                         undef $resp;
