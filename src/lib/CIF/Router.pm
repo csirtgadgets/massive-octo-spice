@@ -145,6 +145,7 @@ sub startup {
                             $err = shift;
                             $socket->send($err);
                         };
+                        exit(0);
                     } else {
                         # parent
                         my $endtime = time() + 300;
