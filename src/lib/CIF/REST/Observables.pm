@@ -4,6 +4,9 @@ use Mojo::Base 'Mojolicious::Controller';
 use POSIX;
 use CIF qw/$Logger/;
 use Data::Dumper;
+use JSON::XS;
+
+my $encoder = JSON::XS->new->convert_blessed;
 
 sub index {
     my $self = shift;
@@ -35,9 +38,8 @@ sub index {
     
     if(defined($res)){
         if($res){
-            $self->stash(observables => $res, token => $self->token);
             $self->respond_to(
-                json    => { json => $res },
+                json    => { text => $encoder->encode($res) },
                 html    => { template => 'observables/index' },
             );
         } else {

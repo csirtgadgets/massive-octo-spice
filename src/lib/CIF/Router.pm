@@ -140,7 +140,6 @@ sub startup {
                         });
                         $err = undef;
                     } else {
-                        $Logger->debug(Dumper($msg));
                         if(($msg->{'Data'}->{'Observables'} || $msg->{'Data'}->{'Query'}) && $resp->{'stype'} eq 'success'){
                             $Logger->info('publishing to subscribers...');
                             $self->publish($msg) ;
