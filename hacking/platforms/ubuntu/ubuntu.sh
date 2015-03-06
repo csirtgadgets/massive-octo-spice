@@ -188,10 +188,7 @@ else
 	cp ./hacking/packaging/ubuntu/init.d/cif-services /etc/init.d/
 fi
 
-if [ ! -f /etc/init.d/cif-services ]; then
-	cp ./hacking/packaging/ubuntu/init.d/cif-services /etc/init.d/
-	update-rc.d cif-services defaults 95 10
-fi
+update-rc.d cif-services defaults 99 01
 
 echo 'staring cif-services...'
 sudo service cif-services start
