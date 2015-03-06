@@ -12,29 +12,33 @@ sub index {
     my $self = shift;
 
     my $query      	= $self->param('q') || $self->param('observable');
-    
-    $Logger->debug('generating search...');
-    my $res = $self->cli->search({
-        token      	=> scalar $self->token,
-        query      	=> scalar $query,
-        nolog       => scalar $self->param('nolog'),
-        filters     => {
-        	otype          	=> scalar $self->param('otype')           || undef,
-        	cc             	=> scalar $self->param('cc')              || undef,
-        	confidence     	=> scalar $self->param('confidence')      || 0,
-        	group          	=> scalar $self->param('group')           || undef,
-        	limit          	=> scalar $self->param('limit')           || undef,
-        	tags           	=> scalar $self->param('tags')            || undef,
-        	application    	=> scalar $self->param('application')     || undef,
-        	asn            	=> scalar $self->param('asn')             || undef,
-        	provider       	=> scalar $self->param('provider')        || undef,
-        	rdata          	=> scalar $self->param('rdata')           || undef,
-        	firsttime      	=> scalar $self->param('firsttime')       || undef,
-        	lasttime	    => scalar $self->param('lasttime')        || undef,
-        	reporttime      => scalar $self->param('reporttime')      || undef,
-        	reporttimeend   => scalar $self->param('reporttimeend')   || undef,
-        },
-    });
+    my $res;
+    if($query){
+        $Logger->debug('generating search...');
+        $res = $self->cli->search({
+            token      	=> scalar $self->token,
+            query      	=> scalar $query,
+            nolog       => scalar $self->param('nolog'),
+            filters     => {
+            	otype          	=> scalar $self->param('otype')           || undef,
+            	cc             	=> scalar $self->param('cc')              || undef,
+            	confidence     	=> scalar $self->param('confidence')      || 0,
+            	group          	=> scalar $self->param('group')           || undef,
+            	limit          	=> scalar $self->param('limit')           || undef,
+            	tags           	=> scalar $self->param('tags')            || undef,
+            	application    	=> scalar $self->param('application')     || undef,
+            	asn            	=> scalar $self->param('asn')             || undef,
+            	provider       	=> scalar $self->param('provider')        || undef,
+            	rdata          	=> scalar $self->param('rdata')           || undef,
+            	firsttime      	=> scalar $self->param('firsttime')       || undef,
+            	lasttime	    => scalar $self->param('lasttime')        || undef,
+            	reporttime      => scalar $self->param('reporttime')      || undef,
+            	reporttimeend   => scalar $self->param('reporttimeend')   || undef,
+            },
+        });
+    } else {
+        $self->render(json   => { 'message' => 'invalid query' }, status => 404 );
+    }
     
     if(defined($res)){
         if($res){
@@ -46,7 +50,7 @@ sub index {
             $self->render(json   => { 'message' => 'unauthorized' }, status => 401 );
         }
     } else {
-        $self->render(json   => { 'message' => 'unknown failure' }, status => 500 );
+        $self->render(json   => { 'message' => 'unknown failure' }, status => 401 );
     }
 }
 

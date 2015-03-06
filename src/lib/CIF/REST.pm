@@ -63,14 +63,13 @@ sub startup {
     });
     
     $self->helper(auth => sub {
-            my $self = shift;
-            return 0 unless $self->req->headers->authorization();
-        }
-    );
+        my $self = shift;
+        return 0 unless $self->req->headers->authorization;
+    });
     
     $self->helper(token => sub {
         my $self = shift;
-        my $token = scalar $self->req->headers->authorization();
+        my $token = scalar $self->req->headers->authorization;
         $token =~ /^Token token=(\S+)$/;
         $token = $1;
         return $token
@@ -88,6 +87,8 @@ sub startup {
 
     my $r = $self->routes;
     
+    $r->options('*')->to('help#preflight'); # cors pre-flight
+    
     $r->get('/')->to('help#index')->name('help#index');
     $r->get('/help')->to('help#index')->name('help#index');
     
@@ -97,7 +98,6 @@ sub startup {
         $self->render(json   => { 'message' => 'missing token' }, status => 401 );
         return;
     });
-    
     
     $protected->get('/ping')->via('GET')->to('ping#index')->name('ping#index');
    

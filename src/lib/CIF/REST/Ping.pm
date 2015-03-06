@@ -22,7 +22,7 @@ sub index {
         });
     }
 
-    if($res){
+    if($res > 0){
         $self->render( json => { timestamp => [ gettimeofday() ] } );
     } elsif (defined($res) && $res == 0) {
          $self->render(json   => { 'message' => 'unauthorized' }, status => 401 );
