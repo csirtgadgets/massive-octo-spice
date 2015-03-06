@@ -19,6 +19,7 @@ apt-get install -qq python-software-properties
 if [ ! -f /etc/apt/sources.list.d/chris-lea-zeromq-trusty.list ]; then
     echo 'adding updated zmq repo....'
     echo "yes" | sudo add-apt-repository "ppa:chris-lea/zeromq"
+    echo "yes" | sudo add-apt-repository "ppa:maxmind/ppa"
     wget -O - http://packages.elasticsearch.org/GPG-KEY-elasticsearch | apt-key add -
 fi
 
@@ -32,7 +33,7 @@ debconf-set-selections <<< "postfix postfix/mailname string localhost"
 debconf-set-selections <<< "postfix postfix/main_mailer_type string 'Internet Site'"
 
 apt-get update
-apt-get install -y curl build-essential libmodule-build-perl libssl-dev elasticsearch apache2 libapache2-mod-perl2 curl mailutils build-essential git-core automake rng-tools openjdk-7-jre-headless libtool pkg-config vim htop bind9 libzmq3-dev libffi6 libmoose-perl libmouse-perl libanyevent-perl liblwp-protocol-https-perl libxml2-dev libexpat1-dev libgeoip-dev geoip-bin python-dev starman
+apt-get install -y geoipupdate curl build-essential libmodule-build-perl libssl-dev elasticsearch apache2 libapache2-mod-perl2 curl mailutils build-essential git-core automake rng-tools openjdk-7-jre-headless libtool pkg-config vim htop bind9 libzmq3-dev libffi6 libmoose-perl libmouse-perl libanyevent-perl liblwp-protocol-https-perl libxml2-dev libexpat1-dev libgeoip-dev geoip-bin python-dev starman
 
 #if [ ! -d /usr/share/elasticsearch/plugins/marvel ]; then
 #    echo 'installing marvel for elasticsearch...'
@@ -195,3 +196,8 @@ sudo service cif-services start
 
 echo 'restarting apache...'
 service apache2 restart
+
+echo 'setting up geoipupdate...'
+cp ./hacking/platforms/ubuntu/GeoIP.conf /etc/
+cp ./hacking/platforms/ubuntu/geoip.cron /etc/cron.monthly/geoipupdate.sh
+chmod 644 /etc/cron.monthly/geoipupdate.sh
