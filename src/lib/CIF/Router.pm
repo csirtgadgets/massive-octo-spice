@@ -11,7 +11,7 @@ use CIF::StorageFactory;
 use ZMQx::Class;
 use JSON::XS;
 use Try::Tiny;
-use POSIX ":sys_wait_h";
+use Data::Dumper;
 
 # constants
 use constant DEFAULT_FRONTEND_PORT          => CIF::DEFAULT_FRONTEND_PORT();
@@ -22,8 +22,6 @@ use constant DEFAULT_BACKEND_LISTEN         => 'tcp://*:'.DEFAULT_BACKEND_PORT()
 
 use constant DEFAULT_PUBLISHER_PORT         => CIF::DEFAULT_PUBLISHER_PORT();
 use constant DEFAULT_PUBLISHER_LISTEN       => 'tcp://*:'.DEFAULT_PUBLISHER_PORT();
-
-use constant BACKEND => 'ipc:///tmp/cif-router-backend.ipc';
 
 has 'port'      => (
     is      => 'ro',
@@ -63,6 +61,8 @@ has 'auth' => (
 
 has 'storage'   => (
     is          => 'ro',
+    isa         => 'Str',
+    reader      => 'get_storage',
 );
 
 has 'storage_handle'    => (
@@ -70,9 +70,14 @@ has 'storage_handle'    => (
     lazy_build  => 1,
 );
 
+has 'encoder' => (
+    is      => 'ro',
+    default => sub { JSON::XS->new->convert_blessed; }
+);
+
 sub _build_storage_handle {
     my $self = shift;
-    return CIF::StorageFactory->new_plugin({ plugin => $self->storage });
+    return CIF::StorageFactory->new_plugin({ plugin => $self->get_storage() });
 }
 
 sub BUILD {
@@ -108,94 +113,46 @@ sub startup {
     
     $Logger->info('publisher started on: '.$self->publisher_listen);
     
-    my ($err,$resp,$msg, $encoder);
-    
-    if($Logger->is_debug()){
-        $encoder = JSON::XS->new->pretty->convert_blessed(1);
-    } else {
-        $encoder = JSON::XS->new->convert_blessed(1);
-    }
+    my ($err,$resp,$msg);
     $self->frontend_watcher(
         $self->frontend->anyevent_watcher(
             sub {
                 while ($msg = $self->frontend->receive()){
                     $Logger->info('received message...');
-
+                                   
                     $Logger->info('decoding...');
+                    $msg = $self->encoder->decode(@$msg);
+                    $Logger->info('processing...');
+                    try {
+                        $resp = $self->process($msg);
+                    } catch {
+                        $err = shift;
+                    };
                     
-                    my $backend = ZMQx::Class->socket('PULL', bind => BACKEND);
-                    
-                    $SIG{CHLD} = sub { };
-                    my $child = fork();
-                    
-                    if($child == 0){
-                        my $socket = ZMQx::Class->socket('PUSH', connect => BACKEND);
-                        $msg = $encoder->decode(@$msg);
-                        $Logger->info('processing rtype: '.$msg->{'rtype'});
-                        
-                        try {
-                            $resp = $self->process($msg);
-                            $Logger->debug('sending resp...');
-                            $socket->send($encoder->encode($resp));
-                        } catch {
-                            $err = shift;
-                            $socket->send($err);
-                        };
-                        exit(0);
+                    if($err){
+                        $Logger->error($err);
+                        $resp = CIF::Message->new({
+                            stype   => 'failure',
+                            mtype   => 'response',
+                            rtype   => $msg->{'rtype'},
+                            Data    => 'unknown failure',
+                        });
                     } else {
-                        # parent
-                        my $endtime = time() + 300;
-                        my $pid;
-                        undef $msg;
-                        while (1) {
-                            $msg = $backend->receive('blocking');
-
-                            $msg = @$msg[0] if(ref($msg) eq 'ARRAY');
-
-                            $msg = $encoder->decode($msg);
-                        
-                            my $tosleep = $endtime - time();
-                         
-                            $pid = waitpid(-1, WNOHANG);
-                            last unless($tosleep > 0);
-                            last if($pid > 0);
-                            last if($msg);
-                        }
-                        if ($pid <= 0){
-                            $Logger->error('child timed out!');
-                            kill 9, $child;
-                        }
-                        
-                        if($err){
-                            $Logger->error($err);
-                            $resp = CIF::Message->new({
-                                stype   => 'failure',
-                                mtype   => 'response',
-                                rtype   => $msg->{'rtype'},
-                                Data    => 'unknown failure',
-                            });
-                            $err = undef;
-                        } else {
-                            if(($msg->{'Data'}->{'Observables'} || $msg->{'Data'}->{'Query'}) && $msg->{'stype'} eq 'success'){
-                                $Logger->info('publishing to subscribers...');
-                                $self->publish($msg);
-                                
-                            } else {
-                                $Logger->info('skipping subscriber publish..');
-                            }
-                            $resp = $msg;
-                        }
-                            
-                        $Logger->debug('re-encoding...');
-                        $resp = $encoder->encode($resp);
-                      
-                        $Logger->info('replying...');
-                        $self->frontend->send($resp);
-                        
-                        undef $resp;
-                        undef $msg;
-                        undef $err;
+                       if(($msg->{'Data'}->{'Observables'} || $msg->{'Data'}->{'Query'}) && $resp->{'stype'} eq 'success'){
+                            $self->publish($msg) 
+                       }
                     }
+                        
+                    $Logger->debug('re-encoding...');
+                    
+                    $resp = $self->encoder->encode($resp);
+      
+                    $Logger->info('replying...');
+                    $self->frontend->send($resp);
+                    
+                    undef $resp;
+                    undef $msg;
+                    undef $err;
                 }
             }
         )
@@ -248,7 +205,7 @@ sub process {
         }
     } else {
         $Logger->info('auth failed');
-        $Logger->debug('Token: '.$msg->{'Token'}) if($user);
+        $Logger->debug('token: '.$msg->{'Token'}) if($msg->{'Token'});
         $r->stype('unauthorized');
     }
     
@@ -287,8 +244,7 @@ sub publish {
     
     if($m){
         $Logger->debug('publishing...');
-        $m = JSON::XS::encode_json($m);
-        $self->publisher->send($m);
+        $self->publisher->send($self->encoder->encode($m));
     }
     $m = undef;
     return 1;
