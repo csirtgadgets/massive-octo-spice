@@ -4,6 +4,7 @@ Revision history for massive-octo-spice
     fixes:
         - https://github.com/csirtgadgets/massive-octo-spice/issues/164
         - added CORS support for chrome plugin compatability
+        - more memory improvements to the router
 
 2.00.00-alpha.15 2015-02-25
     fixes:
