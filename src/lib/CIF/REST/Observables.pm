@@ -12,29 +12,22 @@ sub index {
     my $self = shift;
 
     my $query      	= $self->param('q') || $self->param('observable');
+    
+    my $filters = {};
+    
+    foreach my $x (qw/provider otype cc confidence group limit tags application asn rdata firsttime lasttime reporttime reporttimeend/){
+        $filters->{$x} = scalar $self->param($x) if $self->param($x);
+    }
+    
     my $res;
-    if($query){
+    if($query or scalar(keys($filters)) > 0){
+        $filters->{'confidence'} = 0 unless($filters->{'confidence'});
         $Logger->debug('generating search...');
         $res = $self->cli->search({
             token      	=> scalar $self->token,
             query      	=> scalar $query,
             nolog       => scalar $self->param('nolog'),
-            filters     => {
-            	otype          	=> scalar $self->param('otype')           || undef,
-            	cc             	=> scalar $self->param('cc')              || undef,
-            	confidence     	=> scalar $self->param('confidence')      || 0,
-            	group          	=> scalar $self->param('group')           || undef,
-            	limit          	=> scalar $self->param('limit')           || undef,
-            	tags           	=> scalar $self->param('tags')            || undef,
-            	application    	=> scalar $self->param('application')     || undef,
-            	asn            	=> scalar $self->param('asn')             || undef,
-            	provider       	=> scalar $self->param('provider')        || undef,
-            	rdata          	=> scalar $self->param('rdata')           || undef,
-            	firsttime      	=> scalar $self->param('firsttime')       || undef,
-            	lasttime	    => scalar $self->param('lasttime')        || undef,
-            	reporttime      => scalar $self->param('reporttime')      || undef,
-            	reporttimeend   => scalar $self->param('reporttimeend')   || undef,
-            },
+            filters     => $filters,
         });
     } else {
         $self->render(json   => { 'message' => 'invalid query' }, status => 404 );
