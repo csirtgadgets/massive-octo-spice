@@ -49,5 +49,5 @@ requires 'URI';
 requires 'URI::Escape';
 requires 'XML::LibXML';
 requires 'XML::RSS';
-requires 'ZMQ::FFI';
+requires 'ZMQ::FFI', '>= 0.17, < 0.18';
 requires 'ZMQx::Class';
