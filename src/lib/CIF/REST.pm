@@ -103,10 +103,12 @@ sub startup {
    
     $protected->get('/observables')->to('observables#index')->name('observables#index');
     $protected->put('/observables')->to('observables#create')->name('observables#create');
+    $protected->post('/observables')->to('observables#create')->name('observables#create');
     $protected->get('/observables/:observable')->to('observables#show')->name('observables#show');
     
     $protected->get('/feeds')->to('feeds#index')->name('feeds#index');
     $protected->put('/feeds')->to('feeds#create')->name('feeds#create');
+    $protected->post('/feeds')->to('feeds#create')->name('feeds#create');
     $protected->get('/feeds/:feed')->to('feeds#show')->name('feeds#show');
 }
 

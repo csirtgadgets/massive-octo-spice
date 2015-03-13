@@ -34,6 +34,7 @@ sub index {
     }
     
     if(defined($res)){
+        $Logger->debug(Dumper($res));
         if($res){
             $self->respond_to(
                 json    => { text => $encoder->encode($res) },
@@ -57,7 +58,8 @@ sub show {
     
     if(defined($res)){
         if($res){
-           $self->stash(observables => $res);
+           #$self->stash(observables => $res);
+           $Logger->debug(Dumper($res));
             $self->respond_to(
                 json    => { json => $res },
                 html    => { template => 'observables/show' },
@@ -76,6 +78,8 @@ sub create {
     my $data    = $self->req->json();
     my $nowait  = scalar $self->param('nowait') || 0;
     
+    $Logger->debug(Dumper($data));
+    
     # ping the router first, make sure we have a valid key
     my $res = $self->cli->ping_write({
         token   => $self->token,
@@ -90,6 +94,7 @@ sub create {
         $self->render(json => { 'message' => 'Bad Request, missing group tag in one of the observables', status => 400 } );
         return;
     }
+    
     if($nowait){
         $SIG{CHLD} = 'IGNORE'; # http://stackoverflow.com/questions/10923530/reaping-child-processes-from-perl
         my $child = fork();
