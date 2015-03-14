@@ -200,5 +200,5 @@ service apache2 restart
 
 echo 'setting up geoipupdate...'
 cp ./hacking/platforms/ubuntu/GeoIP.conf /etc/
-cp ./hacking/platforms/ubuntu/geoip.cron /etc/cron.monthly/geoipupdate.sh
+cp ./hacking/platforms/ubuntu/geoipupdate.cron /etc/cron.monthly/geoipupdate.sh
 chmod 644 /etc/cron.monthly/geoipupdate.sh
