@@ -1,6 +1,6 @@
 Revision history for massive-octo-spice
 
-2.00.00-alpha.17 2015-03
+2.00.00-alpha.17 2015-03-16
     fixes:
         - https://github.com/csirtgadgets/massive-octo-spice/issues/164
         - added CORS support for chrome plugin compatability
