@@ -3,7 +3,7 @@ EXTRA_DIST = contrib src hacking
 
 PERLOPTS=DESTDIR=$(DESTDIR) INSTALL_BASE=$(CIF_PATH) INSTALLPRIVLIB=${siteperldir}
 PERL_INSTALLOPTS=INSTALL="$(INSTALL)" sysconfdir=$(sysconfdir) localstatedir=$(localstatedir) CIF_USER=$(CIF_USER) CIF_GROUP=$(CIF_GROUP)
-CPANMOPTS=-n --mirror http://cpan.metacpan.org
+CPANMOPTS=-n --mirror http://cpan.metacpan.org --wget
 
 .PHONY: src elasticsearch test
 
