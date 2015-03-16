@@ -1,9 +1,10 @@
 defaults:
   tlp: amber
   provider: 'isc.sans.edu'
-  pattern:  '^[^Site](\S+)'
+  pattern:  '^(\S+)$'
   values: observable
   tags: suspicious
+  skip: '^Site$'
 
 feeds:
   domains_low:
@@ -14,4 +15,5 @@ feeds:
     remote:  http://isc.sans.edu/feeds/suspiciousdomains_Medium.txt
   domains_high:
     confidence: 85
-    remote: http://isc.sans.edu/feeds/suspiciousdomains_High.txt
+#    remote: http://isc.sans.edu/feeds/suspiciousdomains_High.txt
+    remote: /tmp/test.txt
