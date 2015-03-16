@@ -44,8 +44,9 @@ apt-get install -y geoipupdate curl build-essential libmodule-build-perl libssl-
 echo 'installing cpanm...'
 curl -L https://cpanmin.us | sudo perl - App::cpanminus
 
-alias cpanm='cpanm --wget --mirror https://cpan.metacpan.org'
+alias cpanm='cpanm --wget --mirror https://cpan.metacpan.org --mirror-only'
 cpanm Regexp::Common
+cpanm Moo@1.007000
 cpanm Mouse@2.4.1
 cpanm ZMQ::FFI@0.17
 cpanm Log::Log4perl@1.44
