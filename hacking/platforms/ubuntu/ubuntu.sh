@@ -43,14 +43,15 @@ apt-get install -y geoipupdate curl build-essential libmodule-build-perl libssl-
 echo 'installing cpanm...'
 curl -L https://cpanmin.us | sudo perl - App::cpanminus
 
-cpanm -n --wget --mirror http://cpan.metacpan.org Regexp::Common
-cpanm -n --wget https://cpan.metacpan.org/authors/id/G/GF/GFUJI/Mouse-2.4.1.tar.gz
-cpanm --wget https://cpan.metacpan.org/authors/id/C/CA/CALID/ZMQ-FFI-0.17.tar.gz
-cpanm --wget http://backpan.perl.org/authors/id/M/MS/MSCHILLI/Log-Log4perl-1.44.tar.gz
-cpanm --wget https://cpan.metacpan.org/authors/id/E/EX/EXODIST/Test-Exception-0.35.tar.gz
-cpanm --wget https://github.com/csirtgadgets/p5-cif-sdk/archive/master.tar.gz
-cpanm --wget https://cpan.metacpan.org/authors/id/D/DR/DROLSKY/MaxMind-DB-Reader-0.050005.tar.gz
-cpanm --wget https://github.com/maxmind/GeoIP2-perl/archive/v0.040005.tar.gz
+alias cpanm='cpanm --mirror https://cpan.metacpan.org --wget'
+cpanm Regexp::Common
+cpanm Mouse@2.4.1
+cpanm ZMQ::FFI@0.17
+cpanm Log::Log4perl@1.44
+cpanm Test::Exception@0.35
+cpanm MaxMind::DB::Reader@0.050005
+cpanm GeoIP2@0.040005
+cpanm https://github.com/csirtgadgets/p5-cif-sdk/archive/master.tar.gz
 
 echo 'HRNGDEVICE=/dev/urandom' >> /etc/default/rng-tools
 service rng-tools restart
