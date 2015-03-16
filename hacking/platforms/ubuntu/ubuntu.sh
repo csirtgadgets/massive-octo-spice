@@ -204,9 +204,10 @@ service apache2 restart
 echo 'setting up geoipupdate...'
 cp ./hacking/platforms/ubuntu/GeoIP.conf /etc/
 cp ./hacking/platforms/ubuntu/geoipupdate.cron /etc/cron.monthly/geoipupdate.sh
-chmod 644 /etc/cron.monthly/geoipupdate.sh
+chmod 755 /etc/cron.monthly/geoipupdate.sh
 
 # work-around for cif-router mem leak
 # https://github.com/csirtgadgets/massive-octo-spice/issues/155
 # it's crappy, but its a work-around atm, perl just doesn't like to give up memory
-cp ./hacking/platforms/ubuntu/cif-router.cron /etc/cron.weekly/cif-router.sh
+cp ./hacking/platforms/ubuntu/cif-router.cron /etc/cron.weekly/cif-router
+chmod 755 /etc/cron.weekly/cif-router
