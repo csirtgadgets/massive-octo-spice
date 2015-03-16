@@ -4,47 +4,47 @@ use Mojo::Base 'Mojolicious::Controller';
 use POSIX;
 use CIF qw/$Logger/;
 use Data::Dumper;
+use JSON::XS;
+
+my $encoder = JSON::XS->new->convert_blessed;
 
 sub index {
     my $self = shift;
 
     my $query      	= $self->param('q') || $self->param('observable');
     
-    $Logger->debug('generating search...');
-    my $res = $self->cli->search({
-        token      	=> scalar $self->token,
-        query      	=> scalar $query,
-        nolog       => scalar $self->param('nolog'),
-        filters     => {
-        	otype          	=> scalar $self->param('otype')           || undef,
-        	cc             	=> scalar $self->param('cc')              || undef,
-        	confidence     	=> scalar $self->param('confidence')      || 0,
-        	group          	=> scalar $self->param('group')           || undef,
-        	limit          	=> scalar $self->param('limit')           || undef,
-        	tags           	=> scalar $self->param('tags')            || undef,
-        	application    	=> scalar $self->param('application')     || undef,
-        	asn            	=> scalar $self->param('asn')             || undef,
-        	provider       	=> scalar $self->param('provider')        || undef,
-        	rdata          	=> scalar $self->param('rdata')           || undef,
-        	firsttime      	=> scalar $self->param('firsttime')       || undef,
-        	lasttime	    => scalar $self->param('lasttime')        || undef,
-        	reporttime      => scalar $self->param('reporttime')      || undef,
-        	reporttimeend   => scalar $self->param('reporttimeend')   || undef,
-        },
-    });
+    my $filters = {};
+    
+    foreach my $x (qw/provider otype cc confidence group limit tags application asn rdata firsttime lasttime reporttime reporttimeend/){
+        $filters->{$x} = scalar $self->param($x) if $self->param($x);
+    }
+    
+    my $res;
+    if($query or scalar(keys($filters)) > 0){
+        $filters->{'confidence'} = 0 unless($filters->{'confidence'});
+        $Logger->debug('generating search...');
+        $res = $self->cli->search({
+            token      	=> scalar $self->token,
+            query      	=> scalar $query,
+            nolog       => scalar $self->param('nolog'),
+            filters     => $filters,
+        });
+    } else {
+        $self->render(json   => { 'message' => 'invalid query' }, status => 404 );
+    }
     
     if(defined($res)){
+        $Logger->debug(Dumper($res));
         if($res){
-            $self->stash(observables => $res, token => $self->token);
             $self->respond_to(
-                json    => { json => $res },
+                json    => { text => $encoder->encode($res) },
                 html    => { template => 'observables/index' },
             );
         } else {
             $self->render(json   => { 'message' => 'unauthorized' }, status => 401 );
         }
     } else {
-        $self->render(json   => { 'message' => 'unknown failure' }, status => 500 );
+        $self->render(json   => { 'message' => 'unknown failure' }, status => 401 );
     }
 }
 
@@ -58,7 +58,8 @@ sub show {
     
     if(defined($res)){
         if($res){
-           $self->stash(observables => $res);
+           #$self->stash(observables => $res);
+           $Logger->debug(Dumper($res));
             $self->respond_to(
                 json    => { json => $res },
                 html    => { template => 'observables/show' },
@@ -77,6 +78,8 @@ sub create {
     my $data    = $self->req->json();
     my $nowait  = scalar $self->param('nowait') || 0;
     
+    $Logger->debug(Dumper($data));
+    
     # ping the router first, make sure we have a valid key
     my $res = $self->cli->ping_write({
         token   => $self->token,
@@ -91,6 +94,7 @@ sub create {
         $self->render(json => { 'message' => 'Bad Request, missing group tag in one of the observables', status => 400 } );
         return;
     }
+    
     if($nowait){
         $SIG{CHLD} = 'IGNORE'; # http://stackoverflow.com/questions/10923530/reaping-child-processes-from-perl
         my $child = fork();

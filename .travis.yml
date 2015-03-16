@@ -4,6 +4,7 @@ perl:
 
 env:
     - VERSION="2.0"
+    - CPANM='cpanm --wget --mirror https://cpan.metacpan.org'
 
 before_install:
     - sudo apt-get install -qq python-software-properties
@@ -13,13 +14,14 @@ before_install:
 
 install:
     - sudo apt-get install -y curl mailutils build-essential git-core automake cpanminus rng-tools openjdk-7-jre-headless libtool pkg-config vim htop bind9 libzmq3-dev libffi6 libmoose-perl libmouse-perl libanyevent-perl liblwp-protocol-https-perl libxml2-dev libexpat-dev python-dev
-    - cpanm Regexp::Common
-    - cpanm https://cpan.metacpan.org/authors/id/C/CA/CALID/ZMQ-FFI-0.17.tar.gz
-    - cpanm http://backpan.perl.org/authors/id/M/MS/MSCHILLI/Log-Log4perl-1.44.tar.gz
-    - cpanm https://cpan.metacpan.org/authors/id/E/EX/EXODIST/Test-Exception-0.35.tar.gz
+    - cpanm --wget --mirror https://cpan.metacpan.org Regexp::Common
+    - cpanm --wget --mirror https://cpan.metacpan.org Mouse@2.4.1
+    - cpanm --wget --mirror https://cpan.metacpan.org ZMQ::FFI@0.17
+    - cpanm --wget --mirror https://cpan.metacpan.org Log::Log4perl@1.44
+    - cpanm --wget --mirror https://cpan.metacpan.org Test::Exception@0.32
+    - cpanm --wget --mirror https://cpan.metacpan.org MaxMind::DB::Reader@0.050005
+    - cpanm --wget --mirror https://cpan.metacpan.org GeoIP2@0.040005
     - cpanm https://github.com/csirtgadgets/p5-cif-sdk/archive/master.tar.gz
-    - cpanm https://cpan.metacpan.org/authors/id/D/DR/DROLSKY/MaxMind-DB-Reader-0.050005.tar.gz
-    - cpanm https://github.com/maxmind/GeoIP2-perl/archive/v0.040005.tar.gz
     - sudo rm -f /dev/random
     - sudo mknod -m 0666 /dev/random c 1 9
     - echo HRNGDEVICE=/dev/urandom | sudo tee /etc/default/rng-tools

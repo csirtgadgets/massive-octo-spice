@@ -63,14 +63,13 @@ sub startup {
     });
     
     $self->helper(auth => sub {
-            my $self = shift;
-            return 0 unless $self->req->headers->authorization();
-        }
-    );
+        my $self = shift;
+        return 0 unless $self->req->headers->authorization;
+    });
     
     $self->helper(token => sub {
         my $self = shift;
-        my $token = scalar $self->req->headers->authorization();
+        my $token = scalar $self->req->headers->authorization;
         $token =~ /^Token token=(\S+)$/;
         $token = $1;
         return $token
@@ -88,6 +87,8 @@ sub startup {
 
     my $r = $self->routes;
     
+    $r->options('*')->to('help#preflight'); # cors pre-flight
+    
     $r->get('/')->to('help#index')->name('help#index');
     $r->get('/help')->to('help#index')->name('help#index');
     
@@ -98,15 +99,16 @@ sub startup {
         return;
     });
     
-    
     $protected->get('/ping')->via('GET')->to('ping#index')->name('ping#index');
    
     $protected->get('/observables')->to('observables#index')->name('observables#index');
     $protected->put('/observables')->to('observables#create')->name('observables#create');
+    $protected->post('/observables')->to('observables#create')->name('observables#create');
     $protected->get('/observables/:observable')->to('observables#show')->name('observables#show');
     
     $protected->get('/feeds')->to('feeds#index')->name('feeds#index');
     $protected->put('/feeds')->to('feeds#create')->name('feeds#create');
+    $protected->post('/feeds')->to('feeds#create')->name('feeds#create');
     $protected->get('/feeds/:feed')->to('feeds#show')->name('feeds#show');
 }
 

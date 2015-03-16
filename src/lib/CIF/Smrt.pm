@@ -111,9 +111,9 @@ sub process {
     
     # parse
     $Logger->debug('parsing...');
-    
-    $data = $self->parser->process($data);
 
+    $data = $self->parser->process($data);
+    
     unless($self->ignore_journal){
         # log
         $Logger->debug('checking journal');
@@ -131,6 +131,7 @@ sub process {
     
     my $ts;
     my $otype;
+    
     foreach (@$data){
         $otype = observable_type($_->{'observable'});
         next unless($otype);

@@ -47,7 +47,7 @@ around BUILDARGS => sub {
 sub TO_JSON {
     my $self = shift;
 
-    my $ret = {
+    return {
         'version'      => $self->version,
         'timestamp'    => $self->timestamp,
         'id'           => $self->id,
@@ -59,7 +59,6 @@ sub TO_JSON {
         'Data'          => $self->Data,
         'Token'         => $self->Token, 
     };
-    return $ret;
 }
 __PACKAGE__->meta()->make_immutable();
 
