@@ -34,7 +34,7 @@ debconf-set-selections <<< "postfix postfix/mailname string localhost"
 debconf-set-selections <<< "postfix postfix/main_mailer_type string 'Internet Site'"
 
 apt-get update
-apt-get install -y geoipupdate curl build-essential libmodule-build-perl libssl-dev elasticsearch apache2 libapache2-mod-perl2 curl mailutils build-essential git-core automake rng-tools openjdk-7-jre-headless libtool pkg-config vim htop bind9 libzmq3-dev libffi6 libmoose-perl libmouse-perl libanyevent-perl liblwp-protocol-https-perl libxml2-dev libexpat1-dev libgeoip-dev geoip-bin python-dev starman
+apt-get install -y monit geoipupdate curl build-essential libmodule-build-perl libssl-dev elasticsearch apache2 libapache2-mod-perl2 curl mailutils build-essential git-core automake rng-tools openjdk-7-jre-headless libtool pkg-config vim htop bind9 libzmq3-dev libffi6 libmoose-perl libmouse-perl libanyevent-perl liblwp-protocol-https-perl libxml2-dev libexpat1-dev libgeoip-dev geoip-bin python-dev starman
 
 #if [ ! -d /usr/share/elasticsearch/plugins/marvel ]; then
 #    echo 'installing marvel for elasticsearch...'
@@ -49,6 +49,7 @@ cpanm Regexp::Common
 cpanm Moo@1.007000
 cpanm Mouse@2.4.1
 cpanm ZMQ::FFI@0.17
+cpanm ZMQx::Class --force
 cpanm Log::Log4perl@1.44
 cpanm Test::Exception@0.32
 cpanm MaxMind::DB::Reader@0.050005
@@ -212,3 +213,9 @@ chmod 755 /etc/cron.monthly/geoipupdate.sh
 # it's crappy, but its a work-around atm, perl just doesn't like to give up memory
 cp ./hacking/platforms/ubuntu/cif-router.cron /etc/cron.weekly/cif-router
 chmod 755 /etc/cron.weekly/cif-router
+
+echo 'setting up monit...'
+cp ./hacking/platforms/ubuntu/cif.monit /etc/monit/conf.d/cif
+cp ./hacking/platforms/ubuntu/elasticsearch.monit /etc/monit/conf.d/elasticsearch
+echo 'restarting monit...'
+service monit restart
