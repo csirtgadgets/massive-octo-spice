@@ -1,5 +1,18 @@
 Revision history for massive-octo-spice
 
+2.00.00-alpha.17 2015-03-16
+    fixes:
+        - https://github.com/csirtgadgets/massive-octo-spice/issues/164
+        - added CORS support for chrome plugin compatability
+        - more memory improvements to the router
+        - https://github.com/csirtgadgets/massive-octo-spice/issues/161
+        - https://github.com/csirtgadgets/massive-octo-spice/issues/162
+        - https://github.com/csirtgadgets/massive-octo-spice/issues/157
+        - https://github.com/csirtgadgets/massive-octo-spice/issues/168
+        - https://github.com/csirtgadgets/massive-octo-spice/issues/170
+        - https://github.com/csirtgadgets/massive-octo-spice/issues/156
+        - https://github.com/csirtgadgets/massive-octo-spice/issues/172
+
 2.00.00-alpha.16 2015-03-10
     fixes:
         - https://github.com/csirtgadgets/massive-octo-spice/issues/167

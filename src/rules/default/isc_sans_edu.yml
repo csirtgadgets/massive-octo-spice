@@ -1,9 +1,10 @@
 defaults:
   tlp: amber
   provider: 'isc.sans.edu'
-  pattern:  '^[^Site](\S+)'
+  pattern:  '^(\S+)$'
   values: observable
   tags: suspicious
+  skip: '^Site$'
 
 feeds:
   domains_low:

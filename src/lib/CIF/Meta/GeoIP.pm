@@ -19,9 +19,12 @@ has 'handle' => (
     lazy_build  => 1,
 );
 
+use Data::Dumper;
+
 sub _build_handle {
     my $self = shift;
-    return GeoIP2::Database::Reader->new(file => FILE_LOC);
+    my $x = GeoIP2::Database::Reader->new(file => '/var/cache/GeoLite2-City.mmdb');
+    return $x;
 }
 
 sub understands {

@@ -1,6 +1,7 @@
 #!/bin/bash
 
 set -e
+shopt -s expand_aliases
 
 . /etc/lsb-release
 
@@ -19,6 +20,7 @@ apt-get install -qq python-software-properties
 if [ ! -f /etc/apt/sources.list.d/chris-lea-zeromq-trusty.list ]; then
     echo 'adding updated zmq repo....'
     echo "yes" | sudo add-apt-repository "ppa:chris-lea/zeromq"
+    echo "yes" | sudo add-apt-repository "ppa:maxmind/ppa"
     wget -O - http://packages.elasticsearch.org/GPG-KEY-elasticsearch | apt-key add -
 fi
 
@@ -32,7 +34,7 @@ debconf-set-selections <<< "postfix postfix/mailname string localhost"
 debconf-set-selections <<< "postfix postfix/main_mailer_type string 'Internet Site'"
 
 apt-get update
-apt-get install -y curl build-essential libmodule-build-perl libssl-dev elasticsearch apache2 libapache2-mod-perl2 curl mailutils build-essential git-core automake rng-tools openjdk-7-jre-headless libtool pkg-config vim htop bind9 libzmq3-dev libffi6 libmoose-perl libmouse-perl libanyevent-perl liblwp-protocol-https-perl libxml2-dev libexpat1-dev libgeoip-dev geoip-bin python-dev starman
+apt-get install -y geoipupdate curl build-essential libmodule-build-perl libssl-dev elasticsearch apache2 libapache2-mod-perl2 curl mailutils build-essential git-core automake rng-tools openjdk-7-jre-headless libtool pkg-config vim htop bind9 libzmq3-dev libffi6 libmoose-perl libmouse-perl libanyevent-perl liblwp-protocol-https-perl libxml2-dev libexpat1-dev libgeoip-dev geoip-bin python-dev starman
 
 #if [ ! -d /usr/share/elasticsearch/plugins/marvel ]; then
 #    echo 'installing marvel for elasticsearch...'
@@ -42,13 +44,16 @@ apt-get install -y curl build-essential libmodule-build-perl libssl-dev elastics
 echo 'installing cpanm...'
 curl -L https://cpanmin.us | sudo perl - App::cpanminus
 
-cpanm -n --mirror http://cpan.metacpan.org Regexp::Common Mouse
-cpanm https://cpan.metacpan.org/authors/id/C/CA/CALID/ZMQ-FFI-0.17.tar.gz
-cpanm http://backpan.perl.org/authors/id/M/MS/MSCHILLI/Log-Log4perl-1.44.tar.gz
-cpanm https://cpan.metacpan.org/authors/id/E/EX/EXODIST/Test-Exception-0.35.tar.gz
+alias cpanm='cpanm --wget --mirror https://cpan.metacpan.org'
+cpanm Regexp::Common
+cpanm Moo@1.007000
+cpanm Mouse@2.4.1
+cpanm ZMQ::FFI@0.17
+cpanm Log::Log4perl@1.44
+cpanm Test::Exception@0.32
+cpanm MaxMind::DB::Reader@0.050005
+cpanm GeoIP2@0.040005
 cpanm https://github.com/csirtgadgets/p5-cif-sdk/archive/master.tar.gz
-cpanm https://cpan.metacpan.org/authors/id/D/DR/DROLSKY/MaxMind-DB-Reader-0.050005.tar.gz
-cpanm https://github.com/maxmind/GeoIP2-perl/archive/v0.040005.tar.gz
 
 echo 'HRNGDEVICE=/dev/urandom' >> /etc/default/rng-tools
 service rng-tools restart
@@ -189,13 +194,21 @@ else
 	cp ./hacking/packaging/ubuntu/init.d/cif-services /etc/init.d/
 fi
 
-if [ ! -f /etc/init.d/cif-services ]; then
-	cp ./hacking/packaging/ubuntu/init.d/cif-services /etc/init.d/
-	update-rc.d cif-services defaults 95 10
-fi
+update-rc.d cif-services defaults 99 01
 
 echo 'staring cif-services...'
 sudo service cif-services start
 
 echo 'restarting apache...'
 service apache2 restart
+
+echo 'setting up geoipupdate...'
+cp ./hacking/platforms/ubuntu/GeoIP.conf /etc/
+cp ./hacking/platforms/ubuntu/geoipupdate.cron /etc/cron.monthly/geoipupdate.sh
+chmod 755 /etc/cron.monthly/geoipupdate.sh
+
+# work-around for cif-router mem leak
+# https://github.com/csirtgadgets/massive-octo-spice/issues/155
+# it's crappy, but its a work-around atm, perl just doesn't like to give up memory
+cp ./hacking/platforms/ubuntu/cif-router.cron /etc/cron.weekly/cif-router
+chmod 755 /etc/cron.weekly/cif-router

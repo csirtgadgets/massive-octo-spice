@@ -157,7 +157,13 @@ sub process {
         if(my $tmp = $p->new->process($data)){
             foreach my $t (@$tmp){
                 $self->_process_metadata($t);
-                $t = CIF::ObservableFactory->new_plugin($t);
+                try {
+                    $t = CIF::ObservableFactory->new_plugin($t);
+                } catch {
+                    $Logger->info(shift);
+                    $Logger->info($t);
+                    $Logger->info('skipping...');
+                };
             }
             push(@$new,@$tmp) if($#{$tmp} > -1);
         }

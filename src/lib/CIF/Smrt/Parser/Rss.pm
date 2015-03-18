@@ -29,7 +29,7 @@ sub process {
     my $defaults = $self->rule->defaults;
     
     my $patterns = $defaults->{'pattern'};
-
+   
     my $rss = XML::RSS->new();
     
     my $err;
@@ -40,7 +40,8 @@ sub process {
     };
     
     if($err){
-        $Logger->error('not a well formed RSS document, skipping....');
+        $Logger->error('not a well formed RSS document from: '.$defaults->{'remote'});
+        $Logger->error('skipping...');
         $Logger->debug($err);
         return;
     }

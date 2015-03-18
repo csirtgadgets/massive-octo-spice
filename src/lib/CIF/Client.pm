@@ -46,6 +46,11 @@ has 'metadata_plugins'  => (
     default => sub { [ CIF::MetaFactory::_metadata_plugins() ] },
 );
 
+has 'decoder' => (
+    is  => 'ro',
+    default => sub { JSON::XS->new->convert_blessed; }
+);
+
 sub _build_socket {
     my $self = shift;
     
@@ -319,7 +324,7 @@ sub _send {
     }
     
     $Logger->debug('decoding...');
-    $msg = JSON::XS->new->decode($msg);
+    $msg = $self->decoder->decode($msg);
     
     $msg = ${$msg}[0] if(ref($msg) && ref($msg) eq 'ARRAY');
     

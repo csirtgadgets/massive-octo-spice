@@ -76,6 +76,9 @@ sub process {
     for (my $i = $start; $i <= $end; $i++){ 
         $x = @{$data}[$i];
         next if($x =~ RE_COMMENTS);
+        if ($self->rule->{'defaults'}->{'skip'}){
+            next if ($x =~ qr/$self->rule->{'defaults'}->{'skip'}/);
+        }
         chomp($x);
         next unless($x =~ $pattern);
 

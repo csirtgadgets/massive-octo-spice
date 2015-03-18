@@ -76,6 +76,11 @@ has 'storage_host'   => (
     reader      => 'get_storage_host',
 );
 
+has 'encoder' => (
+    is      => 'ro',
+    default => sub { JSON::XS->new->convert_blessed; }
+);
+
 sub _build_storage_handle {
     my $self = shift;
     return CIF::StorageFactory->new_plugin({ plugin => $self->get_storage(), nodes => [ $self->get_storage_host() ] });
@@ -120,9 +125,9 @@ sub startup {
             sub {
                 while ($msg = $self->frontend->receive()){
                     $Logger->info('received message...');
-                    
+                                   
                     $Logger->info('decoding...');
-                    $msg = JSON::XS->new->decode(@$msg);
+                    $msg = $self->encoder->decode(@$msg);
                     $Logger->info('processing...');
                     try {
                         $resp = $self->process($msg);
@@ -138,23 +143,22 @@ sub startup {
                             rtype   => $msg->{'rtype'},
                             Data    => 'unknown failure',
                         });
-                        $err = undef;
                     } else {
-                        $self->publish($msg) if($resp->{'stype'} eq 'success');
+                       if(($msg->{'Data'}->{'Observables'} || $msg->{'Data'}->{'Query'}) && $resp->{'stype'} eq 'success'){
+                            $self->publish($msg) 
+                       }
                     }
                         
                     $Logger->debug('re-encoding...');
                     
-                    if($Logger->is_debug()){
-                        $resp = JSON::XS->new->pretty->convert_blessed(1)->encode($resp);
-                    } else {
-                        $resp = JSON::XS->new->convert_blessed(1)->encode($resp);
-                    }
-                    
+                    $resp = $self->encoder->encode($resp);
+      
                     $Logger->info('replying...');
                     $self->frontend->send($resp);
                     
-                    ($resp,$msg) = undef;
+                    undef $resp;
+                    undef $msg;
+                    undef $err;
                 }
             }
         )
@@ -175,7 +179,7 @@ sub process {
     });
     
     my $user;
-    if(lc($msg->{'Token'}) =~ /^[a-z0-9]{64}$/){
+    if($msg->{'Token'} && lc($msg->{'Token'}) =~ /^[a-z0-9]{64}$/){
         $user = $self->storage_handle->check_auth($msg->{'Token'});
     }
     
@@ -206,7 +210,8 @@ sub process {
             $r->Data('ERROR: request type not supported');
         }
     } else {
-        $Logger->info('auth failed for: '.$msg->{'Token'});
+        $Logger->info('auth failed');
+        $Logger->debug('token: '.$msg->{'Token'}) if($msg->{'Token'});
         $r->stype('unauthorized');
     }
     
@@ -245,8 +250,7 @@ sub publish {
     
     if($m){
         $Logger->debug('publishing...');
-        $m = JSON::XS::encode_json($m);
-        $self->publisher->send($m);
+        $self->publisher->send($self->encoder->encode($m));
     }
     $m = undef;
     return 1;
