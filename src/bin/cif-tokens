@@ -116,8 +116,8 @@ Advanced:
 
 Storage:
 
-    --storage       default: elasticsearch
-    --storage-host  default: localhost:9200
+    --storage       default: $storage
+    --storage-host  default: $remote
 
  Examples:
     $0 --new --user me\@example.com --expires 2016-07-01 --admin
