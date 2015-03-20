@@ -31,7 +31,7 @@ has 'agent'     => (
     default => AGENT,
 );
 
-has [qw(rule test_mode tmp)] => (
+has [qw(rule test_mode tmp username password)] => (
     is      => 'ro'
 );
 
@@ -79,21 +79,35 @@ sub process {
             return read_file($self->rule->defaults->{'remote'});
         } else {
             $Logger->debug('pulling: '.$self->rule->defaults->{'remote'});
+            
             try {
-                $ret = $self->handle->mirror($self->rule->defaults->{'remote'},$self->tmp);
+                if($self->rule->defaults->{'username'} && $self->rule->defaults->{'password'}){
+                    my $req = HTTP::Request->new(GET => $self->rule->defaults->{'remote'});
+                    $req->authorization_basic($self->rule->defaults->{'username'},$self->rule->defaults->{'password'});
+                    $ret = $self->handle->request($req);
+                } else {
+                    $ret = $self->handle->mirror($self->rule->defaults->{'remote'},$self->tmp);
+                }
             } catch {
                 $err = shift;
                 $Logger->fatal($err);
                 $Logger->fatal('possible timeout grabbing the feed');
             };
+            
             $Logger->debug('status: '.$ret->status_line());
             unless($ret->is_success() || $ret->status_line() =~ /^304 /){
                 $Logger->error($ret->status_line());
                 return;
+            } else {
+                $ret = $ret->decoded_content();
             }
         }
     }
-    return read_file($self->tmp, binmode => ':raw');
+    if(-e $self->tmp){
+        return read_file($self->tmp, binmode => ':raw');
+    } else {
+        return $ret;
+    }
 }
 
 __PACKAGE__->meta->make_immutable();
