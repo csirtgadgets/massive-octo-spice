@@ -108,7 +108,7 @@ sub startup {
         )
     );
     
-    $Logger->info('frontend started on: '.$self->frontend_listen);
+    $Logger->debug('frontend started on: '.$self->frontend_listen);
     
     $self->publisher(
         ZMQx::Class->socket(
@@ -117,18 +117,18 @@ sub startup {
         )
     );
     
-    $Logger->info('publisher started on: '.$self->publisher_listen);
+    $Logger->debug('publisher started on: '.$self->publisher_listen);
     
     my ($err,$resp,$msg);
     $self->frontend_watcher(
         $self->frontend->anyevent_watcher(
             sub {
                 while ($msg = $self->frontend->receive()){
-                    $Logger->info('received message...');
+                    $Logger->debug('received message...');
                                    
-                    $Logger->info('decoding...');
+                    $Logger->debug('decoding...');
                     $msg = $self->encoder->decode(@$msg);
-                    $Logger->info('processing...');
+                    $Logger->debug('processing...');
                     try {
                         $resp = $self->process($msg);
                     } catch {
@@ -153,7 +153,7 @@ sub startup {
                     
                     $resp = $self->encoder->encode($resp);
       
-                    $Logger->info('replying...');
+                    $Logger->debug('replying...');
                     $self->frontend->send($resp);
                     
                     undef $resp;
@@ -163,7 +163,7 @@ sub startup {
             }
         )
     );
-    $Logger->info('router started...');
+    $Logger->debug('router started...');
     return 1;
 }
 
@@ -198,7 +198,7 @@ sub process {
                 $r->stype('failure');
                 $r->Data('ERROR: contact administrator');
             } elsif ($rv == 0) {
-                $Logger->info('auth failed for: '.$msg->{'Token'});
+                $Logger->debug('auth failed for: '.$msg->{'Token'});
                 $r->stype('unauthorized');
             } else {
                 $r->Data($rv);
@@ -210,7 +210,7 @@ sub process {
             $r->Data('ERROR: request type not supported');
         }
     } else {
-        $Logger->info('auth failed');
+        $Logger->debug('auth failed');
         $Logger->debug('token: '.$msg->{'Token'}) if($msg->{'Token'});
         $r->stype('unauthorized');
     }

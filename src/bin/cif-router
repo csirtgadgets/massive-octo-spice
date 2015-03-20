@@ -143,6 +143,8 @@ if($verbosity){
     }
 }
 
+$Logger->info('staring up..');
+
 if($daemon){
     $ARGV[0] = 'start' unless($ARGV);
 
@@ -189,6 +191,8 @@ sub main {
             $err = undef;
         }
     } until($rv);
+    
+    $Logger->info('started, waiting for messages..');
     
     $done->recv();
 }

@@ -162,7 +162,7 @@ sub check_auth {
         my $dt = DateTime->from_epoch(epoch => time());
         $dt = $dt->ymd().'T'.$dt->hms().'Z';
         if($res->{'expires'} < $dt){
-            $Logger->info('token is expired: '.$token);
+            $Logger->debug('token is expired: '.$token);
             return 0;
         }
     }
@@ -177,7 +177,7 @@ sub process {
         $Logger->warn('storage handle check failed...');
         return -1;
     } else {
-        $Logger->info('storage handle OK');
+        $Logger->debug('storage handle OK');
     }
     
     my $ret;
@@ -380,7 +380,7 @@ sub _search {
             $Logger->debug('no results found...');
         }
     }
-    $Logger->info('returning..');
+    $Logger->debug('returning..');
     return $results;
 }
 
