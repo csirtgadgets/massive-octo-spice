@@ -55,7 +55,8 @@ GetOptions(
     'generate-config-remote=s'  => \$generate->{'remote'},
     'generate-config-tls=i'       => \$generate->{'tls'},
     
-    'storage=s'         => $storage,
+    'storage=s'         => \$storage,
+    'storage-host=s'    => \$remote,
     
 ) or die(usage());
 
@@ -112,7 +113,12 @@ Advanced:
     --generate-config-path      generate a new config with token
     --generate-config-remote    default: https://localhost
     --generate-config-tls       default: true
-    
+
+Storage:
+
+    --storage       default: $storage
+    --storage-host  default: $remote
+
  Examples:
     $0 --new --user me\@example.com --expires 2016-07-01 --admin
 
@@ -121,7 +127,7 @@ EOF
 
 $storage = CIF::StorageFactory->new_plugin({ 
     plugin => $storage,
-    remote  => $remote,
+    nodes  => [ $remote ],
 });
 
 my $rv;
