@@ -17,3 +17,4 @@ feeds:
     confidence: 85
     description: 'address used in replyto/from header'
     pattern: '^(\S+),[A|B],(\S+)$'
+

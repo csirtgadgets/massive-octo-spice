@@ -12,3 +12,4 @@ feed:
     confidence: 75
     pattern: '^([a-zA-Z-\.]+\.[a-z]{2,3})'
     values: observable
+

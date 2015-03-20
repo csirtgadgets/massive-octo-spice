@@ -14,3 +14,4 @@ feeds:
     remote: http://charles.the-haleys.org/ssh_dico_attack_hdeny_format.php/hostsdeny.txt
     application: ssh
     portlist: 22
+
