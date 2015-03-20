@@ -10,3 +10,4 @@ feeds:
   urls:
     pattern: ^(\S+)$
     remote: http://openphish.com/feed.txt
+

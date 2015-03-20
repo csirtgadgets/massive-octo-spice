@@ -87,8 +87,8 @@ sub parse_config {
 	my $config = shift;
     
 	return unless(-e $config);
-    $config = YAML::Tiny->read($config)->[0];
-    return $config;
+    my $config_data = YAML::Tiny->read($config) or croak("Cannot read $config, error: ", YAML::Tiny->errstr);
+    return $config_data->[0];
 }
 
 sub parse_rule {
