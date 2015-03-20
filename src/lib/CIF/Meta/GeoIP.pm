@@ -78,6 +78,10 @@ sub process {
         $args->{'subdivision'}  = $ret->most_specific_subdivision()->iso_code() if($ret->most_specific_subdivision()->iso_code());
         $args->{'timezone'}     = $ret->location()->time_zone()                 if($ret->location()->time_zone());
         $args->{'metrocode'}    = $ret->location()->metro_code()                if($ret->location()->metro_code());
+        
+        if($args->{'latitude'} && $args->{'longitude'}){
+            $args->{'geolocation'} = $args->{'latitude'}.','.$args->{'longitude'};
+        }
     }
 }
 

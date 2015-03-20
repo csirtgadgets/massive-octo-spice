@@ -64,6 +64,10 @@ has 'latitude' => (
     reader   => 'get_latitude',
 );
 
+has 'geolocation' => (
+    is => 'ro',
+);
+
 has 'timezone' => (
     is      => 'ro',
     isa     => 'Str',

@@ -47,10 +47,13 @@
 					"type": "string"
 				},
 				"latitude": {
-					"type": "float"
+					"type": "double"
 				},
 				"longitude": {
-					"type": "float"
+					"type": "double"
+				},
+				"geolocation": {
+					"type": "geo_point"
 				}
 			}
 		}
