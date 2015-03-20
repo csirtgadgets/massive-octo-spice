@@ -20,6 +20,7 @@ my $help;
 my $frontend        = CIF::Router::DEFAULT_FRONTEND_LISTEN();
 my $backend         = CIF::Router::DEFAULT_BACKEND_LISTEN();
 my $storage         = 'elasticsearch';
+my $storage_host    = 'localhost:9200';
 my $auth            = 'dummy',
 my $config          = "$CIF::EtcPath/cif-router.conf";
 
@@ -49,7 +50,10 @@ GetOptions(
     'frontend|F=s'  => \$frontend,
     'backend|B=s'   => \$backend,
     'auth|a=s'      => \$auth,
-    'storage|s=s'   => \$storage,
+
+    # storage
+    'storage|s=s'      => \$storage,
+    'storage-host=s'   => \$storage_host,
     
     # daemon opts
     'daemon|D'      => \$daemon,
@@ -102,7 +106,10 @@ Usage: $0 [OPTIONS] [status|start|stop|restart|reload]
     
  Advanced Options:
     -A, --auth              specify authorization plugin, default: $auth
-    -S, --storage           specify storage plugin, default: $storage
+
+ Storage:
+    -s, --storage           default: $storage
+    --storage-host          default: $storage_host
 
  Examples:
     $0 -C $config
@@ -163,6 +170,7 @@ sub main {
         backend_listen  => $backend,
         auth            => $auth,
         storage         => $storage,
+        storage_host    => $storage_host,
     });
     
     my ($err,$rv);
