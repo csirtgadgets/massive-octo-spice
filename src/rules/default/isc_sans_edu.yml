@@ -16,3 +16,4 @@ feeds:
   domains_high:
     confidence: 85
     remote: http://isc.sans.edu/feeds/suspiciousdomains_High.txt
+

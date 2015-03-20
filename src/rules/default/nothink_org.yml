@@ -13,3 +13,4 @@ feeds:
     remote: http://www.nothink.org/blacklist/blacklist_ssh_day.txt
     application: ssh
     portlist: 22
+

@@ -16,3 +16,4 @@ feeds:
     ignore: '^Backdoor.APT.|\.[dll|exe|hlp|rar]'
     altid: http://www.fireeye.com/blog/technical/targeted-attack/2014/06/clandestine-fox-part-deux.htm
     altid_tlp: green
+
