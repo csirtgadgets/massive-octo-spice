@@ -33,7 +33,7 @@ requires 'Net::DNS','> 0.76';
 requires 'Net::DNS::Match';
 requires 'Net::Patricia';
 requires 'Net::SSL';
-requires 'Mojolicious','5.09';
+requires 'Mojolicious','>= 5.09, < 6.0';
 requires 'Plack', '1.0030';
 requires 'Regexp::Common';
 requires 'Regexp::Common::net';

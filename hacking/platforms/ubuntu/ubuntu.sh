@@ -55,6 +55,7 @@ cpanm Test::Exception@0.32
 cpanm MaxMind::DB::Reader@0.050005
 cpanm GeoIP2@0.040005
 cpanm https://github.com/csirtgadgets/p5-cif-sdk/archive/master.tar.gz
+cpanm https://github.com/kraih/mojo/archive/v5.82.tar.gz
 
 echo 'HRNGDEVICE=/dev/urandom' >> /etc/default/rng-tools
 service rng-tools restart
