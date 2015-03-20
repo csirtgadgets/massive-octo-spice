@@ -192,7 +192,7 @@ if($notify){
         min_level   => lc($notify_level) }
 }
 
-my $loglevel = ($debug) ? 'DEBUG' : 'ERROR';
+my $loglevel = ($debug) ? 'DEBUG' : 'INFO';
 
 init_logging(
     {
@@ -213,7 +213,7 @@ unless($token){
 	croak('missing token');
 }
 
-
+$Logger->info('staring up...');
 
 if($daemon){
     $ARGV[0] = 'start' unless($ARGV[0] && $daemon);
@@ -303,7 +303,8 @@ sub _main {
                     next();
             }
             $Logger->debug($r->defaults->{'provider'}.' - '.$r->feed);
-            $Logger->info("processing: $0 -d -r $r->{'rule_path'} -f $r->{'feed'}");
+            
+            $Logger->info("processing: -r $r->{'rule_path'} -f $r->{'feed'}");
             
             $r->defaults->{'group'} = 'everyone' unless($r->defaults->{'group'});
             
@@ -328,25 +329,25 @@ sub _main {
                 $Logger->error($err);
             } else {
                 if($#{$data} >= 0){
-                    $Logger->info('sending '.($#{$data} + 1).' observables...');
+                    $Logger->debug('sending '.($#{$data} + 1).' observables...');
                     ($ret,$err) = $cli->submit($data);
                     croak($err) if($err);
                     if(ref($ret) eq 'HASH' && $ret->{'message'}){
-                        $Logger->info($ret->{'message'});
+                        $Logger->debug($ret->{'message'});
                     }
                 } else {
                     $Logger->info('nothing new to send...');
                 }
             }
         }
-        $Logger->info('done');
+        $Logger->info('completed');
         exit 0;
     }
 }
 
 ##TODO re-factor
 sub _clean_tmp {
-    $Logger->info('cleaning up tmp: '.$cache);
+    $Logger->debug('cleaning up tmp: '.$cache);
     opendir(F,$cache) || return;
     my $tmp = [ sort { $a cmp $b } grep (/^\d+\.log$/,readdir(F)) ];
     foreach (@$tmp){

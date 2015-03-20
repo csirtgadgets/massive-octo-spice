@@ -90,8 +90,7 @@ sub process {
     my $self = shift;
     my $args = shift;
 
-    ## TODO
-    $Logger->info('starting at: '.
+    $Logger->debug('starting at: '.
         DateTime->from_epoch(epoch => $self->not_before)->datetime(),'Z'
     );
 
@@ -123,7 +122,7 @@ sub process {
         $self->write_journal($data); ##TODO -- should this be after?
     }
     # build
-    $Logger->info('processing events: '.($#{$data} + 1));
+    $Logger->debug('processing events: '.($#{$data} + 1));
     my @array;
     
     my $reporttime = DateTime->from_epoch(epoch => time());
