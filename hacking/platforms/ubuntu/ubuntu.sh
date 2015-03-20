@@ -27,7 +27,7 @@ fi
 if [ -f /etc/apt/sources.list.d/elasticsearch.list ]; then
     echo "sources.list.d/elasticsearch.list already exists, skipping..."
 else
-    echo "deb http://packages.elasticsearch.org/elasticsearch/1.0/debian stable main" >> /etc/apt/sources.list.d/elasticsearch.list
+    echo "deb http://packages.elasticsearch.org/elasticsearch/1.4/debian stable main" >> /etc/apt/sources.list.d/elasticsearch.list
 fi
 
 debconf-set-selections <<< "postfix postfix/mailname string localhost"
