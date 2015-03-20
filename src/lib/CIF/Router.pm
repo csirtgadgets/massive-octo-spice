@@ -70,6 +70,12 @@ has 'storage_handle'    => (
     lazy_build  => 1,
 );
 
+has 'storage_host'   => (
+    is          => 'ro',
+    isa         => 'Str',
+    reader      => 'get_storage_host',
+);
+
 has 'encoder' => (
     is      => 'ro',
     default => sub { JSON::XS->new->convert_blessed; }
@@ -77,7 +83,7 @@ has 'encoder' => (
 
 sub _build_storage_handle {
     my $self = shift;
-    return CIF::StorageFactory->new_plugin({ plugin => $self->get_storage() });
+    return CIF::StorageFactory->new_plugin({ plugin => $self->get_storage(), nodes => [ $self->get_storage_host() ] });
 }
 
 sub BUILD {
