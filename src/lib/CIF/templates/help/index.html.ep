@@ -75,6 +75,7 @@
                 </thead>
                 % my $enabled_params = [ 
                 % { param => 'q', type => 'STRING', example => 'example.com, 1.2.3.4, 1.2.3.0/24' },
+                % { param => 'nolog', type => 'BOOL', example => 'nolog=1' },
                 % { param => 'limit', type => 'INT32', example => '500' },
                 % { param => 'confidence', type => 'INT32', example => '65' },
                 % { param => 'group', type => 'STRING', example => 'group1,group2' },
