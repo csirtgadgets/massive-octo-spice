@@ -11,7 +11,7 @@ If you've never worked on a GitHub project, [this is a good piece](https://guide
 
 * [How To Contribute](contributing.md)  
 * [Mailing List](https://groups.google.com/forum/#!forum/ci-framework)  
-* [Project Page](http://docs.csirtgadgets.org/massive-octo-spice/)
+* [Project Page](http://csirtgadgets.org/collective-intelligence-framework/)
 
 # COPYRIGHT AND LICENCE
 Free use of this software is granted under the terms of the GNU Lesser General Public License (LGPLv3). For details see the files `COPYING` included with the distribution.
