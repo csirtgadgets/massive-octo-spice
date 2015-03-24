@@ -215,6 +215,9 @@ chmod 755 /etc/cron.monthly/geoipupdate.sh
 cp ./hacking/platforms/ubuntu/cif-router.cron /etc/cron.weekly/cif-router
 chmod 755 /etc/cron.weekly/cif-router
 
+cp ./hacking/platforms/ubuntu/cif-worker.cron /etc/cron.weekly/cif-worker
+chmod 755 /etc/cron.weekly/cif-worker
+
 echo 'setting up monit...'
 cp ./hacking/platforms/ubuntu/cif.monit /etc/monit/conf.d/cif
 cp ./hacking/platforms/ubuntu/elasticsearch.monit /etc/monit/conf.d/elasticsearch
