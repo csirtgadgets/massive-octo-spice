@@ -22,6 +22,7 @@ install:
     - cpanm --wget --mirror https://cpan.metacpan.org MaxMind::DB::Reader@0.050005
     - cpanm --wget --mirror https://cpan.metacpan.org GeoIP2@0.040005
     - cpanm https://github.com/csirtgadgets/p5-cif-sdk/archive/master.tar.gz
+    - cpanm https://github.com/kraih/mojo/archive/v5.82.tar.gz
     - sudo rm -f /dev/random
     - sudo mknod -m 0666 /dev/random c 1 9
     - echo HRNGDEVICE=/dev/urandom | sudo tee /etc/default/rng-tools
