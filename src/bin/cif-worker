@@ -81,7 +81,7 @@ Usage: $0 [OPTIONS] [status|start|stop|restart|reload]
 
  Options:
     --remote=STRING         specify a remote to connect to, default $remote
-    --token=STRING          specify a default token/apikey to use, default: $token
+    --token=STRING          specify a default token/apikey to use
     --publisher=STRING      specify a remote publisher to connect to and receive data, default $publisher
  
     -C,  --config=FILE       specify cofiguration file, default: $config
