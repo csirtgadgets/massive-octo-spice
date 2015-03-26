@@ -107,18 +107,6 @@ GetOptions(
 my $smrt_config;
 my $client_config;
 
-if(-e $config){
-    $config = parse_config($config);
-    
-    $config = $config->{'client'};
-    
-    $token          = $token    || $config->{'token'};
-    $remote         = $remote   || $config->{'remote'};
-    $timeout        = $timeout  || $config->{'timeout'};
-    
-    $no_verify_ssl  = $config->{'no_verify_ssl'} if($config->{'no_verify_ssl'} && !$no_verify_ssl); ##TODO
-}
-
 die(usage()) if($help);
 die(usage()) unless($rule);
 
@@ -131,6 +119,18 @@ if($notbefore && $notbefore =~ /^\d+$/){
     print usage();
     print $0.' -N|--notbefore requires quotes around the value (eg: -N "3 days ago")'."\n\n";
     exit(-1);
+}
+
+if(-e $config){
+    $config = parse_config($config);
+    
+    $config = $config->{'client'};
+    
+    $token          = $token    || $config->{'token'};
+    $remote         = $remote   || $config->{'remote'};
+    $timeout        = $timeout  || $config->{'timeout'};
+    
+    $no_verify_ssl  = $config->{'no_verify_ssl'} if($config->{'no_verify_ssl'} && !$no_verify_ssl); ##TODO
 }
 
 sub usage {
@@ -147,7 +147,7 @@ Usage: $0 [OPTIONS] [-D status|start|stop|restart|reload]
     -r, --rule=STRING       specify a rule or a rules directory, default: $rule
     -f, --feed=STRING       specify a feed (within a rule)
     -R, --remote=STRING     specify a remote to connect to, default $remote
-    -T, --token=STRING      specify a default token/apikey to use, default: $token
+    -T, --token=STRING      specify a default token/apikey to use
     --not-before=STRING     specify a time to begin processing the data "[today|yesterday|X days ago]"
     
  Daemon Options:
