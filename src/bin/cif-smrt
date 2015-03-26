@@ -104,20 +104,6 @@ GetOptions(
     'notify-from=s' => \$notify_from,
 ) or die(usage());
 
-die(usage()) if($help);
-die(usage()) unless($rule);
-
-unless(-e $rule){
-	say (usage()."ERROR: $rule doesn't exist or cif-smrt doesn't have permission to access it");
-	exit(-1);
-}
-
-if($notbefore && $notbefore =~ /^\d+$/){
-    print usage();
-    print $0.' -N|--notbefore requires quotes around the value (eg: -N "3 days ago")'."\n\n";
-    exit(-1);
-}
-
 my $smrt_config;
 my $client_config;
 
@@ -131,6 +117,20 @@ if(-e $config){
     $timeout        = $timeout  || $config->{'timeout'};
     
     $no_verify_ssl  = $config->{'no_verify_ssl'} if($config->{'no_verify_ssl'} && !$no_verify_ssl); ##TODO
+}
+
+die(usage()) if($help);
+die(usage()) unless($rule);
+
+unless(-e $rule){
+	say (usage()."ERROR: $rule doesn't exist or cif-smrt doesn't have permission to access it");
+	exit(-1);
+}
+
+if($notbefore && $notbefore =~ /^\d+$/){
+    print usage();
+    print $0.' -N|--notbefore requires quotes around the value (eg: -N "3 days ago")'."\n\n";
+    exit(-1);
 }
 
 sub usage {

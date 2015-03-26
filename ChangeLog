@@ -1,11 +1,12 @@
 Revision history for massive-octo-spice
 
-2.00.00-alpha.18 2015-
+2.00.00-beta.1 2015-03
     PRs:
         - [nixfloyd] https://github.com/csirtgadgets/massive-octo-spice/pull/180
     fixes:
         - https://github.com/csirtgadgets/massive-octo-spice/issues/177
         - reverted mojo from 6.x to 5.82
+        - https://github.com/csirtgadgets/massive-octo-spice/issues/186
 
         - https://github.com/csirtgadgets/massive-octo-spice/issues/179
         - https://github.com/csirtgadgets/massive-octo-spice/issues/166
