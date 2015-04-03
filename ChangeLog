@@ -1,5 +1,9 @@
 Revision history for massive-octo-spice
 
+2.00.00-beta.2 2015-04
+    - fixes:
+        - docfix for cif-tokens
+
 2.00.00-beta.1 2015-03-26
     PRs:
         - [nixfloyd] https://github.com/csirtgadgets/massive-octo-spice/pull/180
