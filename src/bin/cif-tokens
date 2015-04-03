@@ -101,6 +101,7 @@ Options:
     --read          set read permissions for a token
     --write         set write permissions for a token
     --expires       set an expiration date for the token
+    --groups        specify the groups for the user (default: everyone)
     
 Actions:
 
@@ -121,6 +122,7 @@ Storage:
 
  Examples:
     $0 --new --user me\@example.com --expires 2016-07-01 --admin
+    $0 --new --user root --groups everyone,groupA,groupB
 
 EOF
 }
