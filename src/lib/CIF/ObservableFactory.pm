@@ -20,8 +20,6 @@ sub new_plugin {
     my ($self,$args) = @_;
     return unless($args);
     
-    $Logger->debug('observable: '.$args->{'observable'});
-    
     # work-around for now
     if ($args->{'mask'}){
         $args->{'observable'} .= "/" . $args->{"mask"};
