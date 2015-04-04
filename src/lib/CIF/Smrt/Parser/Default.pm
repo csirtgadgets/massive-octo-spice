@@ -80,6 +80,7 @@ sub process {
             next if ($x =~ qr/$self->rule->{'defaults'}->{'skip'}/);
         }
         chomp($x);
+        $x =~ s/^\s+|\s+$//g;
         next unless($x =~ $pattern);
 
         @y = ();
