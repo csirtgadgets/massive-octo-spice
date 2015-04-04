@@ -20,14 +20,21 @@ sub new_plugin {
     my ($self,$args) = @_;
     return unless($args);
     
-    #$Logger->debug('observable: '.$args->{'observable'});
+    $Logger->debug('observable: '.$args->{'observable'});
     
+    # work-around for now
+    if ($args->{'mask'}){
+        $args->{'observable'} .= "/" . $args->{"mask"};
+        delete($args->{"mask"});
+    }
+
     my ($ret,$err);
     try {
         $ret = $finder->construct($args,%{$args});
     } catch {
         $err = shift;
     };
+   
     return $ret if($ret);
     croak($err) if($err);
     

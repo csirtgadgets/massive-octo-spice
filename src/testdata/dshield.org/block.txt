@@ -1,0 +1,56 @@
+
+
+#      
+#   DShield.org Recommended Block List 
+#    (c) 2007 DShield.org
+#   some rights reserved. Details http://creativecommons.org/licenses/by-nc-sa/2.5/
+#   use on your own risk. No warranties implied.
+#   primary URL: http://feeds.dshield.org/block.txt
+#     PGP Sign.: http://feeds.dshield.org/block.txt.asc
+#
+#   comments: info@dshield.org
+#    updated: Sat Apr  4 15:22:31 2015 UTC
+#   
+#    This list summarizes the top 20 attacking class C (/24) subnets
+#   over the last three days. The number of 'attacks' indicates the 
+#   number of targets reporting scans from this subnet.
+#
+#
+#    Columns (tab delimited):
+#
+#    (1) start of netblock  
+#    (2) end of netblock
+#    (3) subnet (/24 for class C)
+#    (4) number of targets scanned
+#    (5) name of Network 
+#    (6) Country
+#    (7) contact email address
+#
+#    If a range is assigned to multiple users, the first one is listed. 
+#     
+Start	End	Netblock	Attacks	Name	Country	email
+5.189.191.0	5.189.191.255	24	1157	RESERVED IANA	US	noemail
+122.228.207.0	122.228.207.255	24	574	CHINANET-BACKBONE No.31,Jin-rong Street	CN	andrewm@123systems.net
+136.159.74.0	136.159.74.255	24	567	University of Calgary (NET-UCALGARY)	CA	clark@ucalgary.ca
+221.229.160.0	221.229.160.255	24	352		CN	abuse@jsinfo.net
+61.147.103.0	61.147.103.255	24	320	CHINANET-BACKBONE No.31,Jin-rong Street	CN	abuse@jsinfo.net
+60.190.101.0	60.190.101.255	24	319	CHINANET-BACKBONE No.31,Jin-rong Street	CN	wang@mail.hf.ah.cninfo.net
+222.161.4.0	222.161.4.255	24	318			
+61.160.247.0	61.160.247.255	24	318	CHINANET-BACKBONE No.31,Jin-rong Street	CN	abuse@cnc-noc.net
+218.77.79.0	218.77.79.255	24	302		CN	liul@hnpta.net.cn
+188.138.9.0	188.138.9.255	24	243			
+222.186.25.0	222.186.25.255	24	226			
+93.180.5.0	93.180.5.255	24	211			
+221.235.188.0	221.235.188.255	24	197	CHINANET-BACKBONE No.31,Jin-rong Street	CN	abuse_hb@public.wh.hb.cn
+58.218.204.0	58.218.204.255	24	195	CHINANET-BACKBONE No.31,Jin-rong Street	CN	abuse@jsinfo.net
+37.203.214.0	37.203.214.255	24	188			
+182.100.67.0	182.100.67.255	24	178			
+141.212.122.0	141.212.122.255	24	171	University of Michigan (NET-UMNET3)	US	paul@engin.umich.edu
+58.218.199.0	58.218.199.255	24	156	CHINANET-BACKBONE No.31,Jin-rong Street	CN	abuse@jsinfo.net
+222.186.21.0	222.186.21.255	24	139			
+76.180.236.0	76.180.236.255	24	134			
+#
+#
+# END
+#
+#  finished list generation: Sat Apr  4 15:22:31 2015 UTC

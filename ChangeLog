@@ -5,6 +5,7 @@ Revision history for massive-octo-spice
         - docfix for cif-tokens
         - https://github.com/csirtgadgets/p5-cif-sdk/issues/17
         - https://github.com/csirtgadgets/massive-octo-spice/issues/170 [again]
+        - https://github.com/csirtgadgets/massive-octo-spice/issues/189
 
 2.00.00-beta.1 2015-03-26
     PRs:

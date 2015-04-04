@@ -81,4 +81,7 @@ has 'subdivision' => (
     reader  => 'get_subdivision',
 );
 
+has 'mask' => (
+    is => 'ro',
+);
 1;
