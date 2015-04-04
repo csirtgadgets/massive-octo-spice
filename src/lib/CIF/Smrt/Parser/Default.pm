@@ -26,6 +26,10 @@ sub process {
     $data = [split(/\n/,$data)];
     
     my $defaults = $self->rule->defaults;
+    my $skip = $defaults->{'skip'};
+    if($skip){
+        delete($defaults->{'skip'});
+    }
     
     my $cols = $defaults->{'values'};
     $cols = [$cols] unless(ref($cols));
@@ -76,11 +80,12 @@ sub process {
     for (my $i = $start; $i <= $end; $i++){ 
         $x = @{$data}[$i];
         next if($x =~ RE_COMMENTS);
-        if ($self->rule->{'defaults'}->{'skip'}){
-            next if ($x =~ qr/$self->rule->{'defaults'}->{'skip'}/);
+
+        if ($skip){
+            next if ($x =~ qr/$skip/);
         }
         chomp($x);
-        $x =~ s/^\s+|\s+$//g;
+        $x =~ s/\s+$//g; # remove any trailing whitespace
         next unless($x =~ $pattern);
 
         @y = ();
