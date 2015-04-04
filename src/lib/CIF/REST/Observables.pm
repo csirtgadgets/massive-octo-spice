@@ -44,7 +44,7 @@ sub index {
             $self->render(json   => { 'message' => 'unauthorized' }, status => 401 );
         }
     } else {
-        $self->render(json   => { 'message' => 'unknown failure' }, status => 401 );
+        $self->render(json   => { 'message' => 'Malformed request' }, status => 422 );
     }
 }
 

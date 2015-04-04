@@ -214,10 +214,17 @@ sub _search {
     	$terms->{'id'} = [$args->{'Id'}];
     } elsif($args->{'Query'}) {
     	if($args->{'Query'} ne 'all'){
-    		if(is_ip($args->{'Query'})){
-                my @array = split(/\./,$args->{'Query'});
-    		    $regexp->{'observable'} = $array[0].'.*';
-    		    $terms->{'otype'} = 'ipv4'; ## TODO ipv6
+    		if(my $otype = is_ip($args->{'Query'})){
+    		    if ($otype eq 'ipv4') {
+                    my @array = split(/\./,$args->{'Query'});
+        		    $regexp->{'observable'} = $array[0].'.*';
+        		    $terms->{'otype'} = 'ipv4';
+    		    } else {
+    		        # v6
+    		        my @array = split(/\:/,$args->{'Query'});
+        		    $regexp->{'observable'} = $array[0].'.*';
+    		        $terms->{'otype'} = 'ipv6';
+    		    }
     		} else {
     		    $terms->{'observable'} = [$args->{'Query'}];
     		}
@@ -388,7 +395,13 @@ sub _ip_results {
     my $query = shift;
     my $results = shift;
     
+    my $type = is_ip($query);
+    
     my $pt = Net::Patricia->new();
+    if ($type eq 'ipv6'){
+        $pt = new Net::Patricia AF_INET6;
+    }
+
     $pt->add_string($query);
     my @ret; my $pt2;
     foreach (@$results){
@@ -396,6 +409,9 @@ sub _ip_results {
             push(@ret,$_);
         } else {
             $pt2 = Net::Patricia->new();
+            if ($type eq 'ipv6'){
+                $pt2 = new Net::Patricia AF_INET6;
+            }
             $pt2->add_string($_->{'observable'});
             push(@ret,$_) if($pt2->match_string($query));
         }

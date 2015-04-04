@@ -25,4 +25,6 @@ ok(is_url('192.168.1.1/html/1.thm'));
 ok(!is_url('192.168.0.0/24'));
 ok(is_fqdn('xn----jtbbmekqknepg3a.xn--p1ai'));
 
+ok(is_ip('2001:4860:4860::8888'));
+
 done_testing();
