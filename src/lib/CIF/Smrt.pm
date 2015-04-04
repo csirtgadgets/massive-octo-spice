@@ -26,7 +26,7 @@ use constant {
     MAX_DT          => '2100-12-31T23:59:59Z' # if you're still using this by then, God help you.
 };
 
-has [qw(ignore_journal config is_test other_attributes test_mode handler rule tmp)] => (
+has [qw(ignore_journal config is_test other_attributes test_mode handler rule tmp limit)] => (
     is      => 'ro',
 );
 
@@ -130,6 +130,10 @@ sub process {
     
     my $ts;
     my $otype;
+    
+    if ($self->limit){
+        $data = [ @$data[0..($self->limit-1)] ];   
+    }
     
     foreach (@$data){
         $otype = observable_type($_->{'observable'});

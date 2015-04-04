@@ -150,6 +150,8 @@ Usage: $0 [OPTIONS] [-D status|start|stop|restart|reload]
     -T, --token=STRING      specify a default token/apikey to use
     --not-before=STRING     specify a time to begin processing the data "[today|yesterday|X days ago]"
     
+    --limit=INT             limit parsing to a subset of records (useful for debugging)
+    
  Daemon Options:
     -D, --daemon            run as daemon
     -u, --user              run daemon as user, default: $user
@@ -315,6 +317,7 @@ sub _main {
                 tmp             => $cache,
                 ignore_journal  => $ignore_journal,
                 not_before      => $notbefore,
+                limit           => $limit,
             });
             
             try {
