@@ -18,7 +18,7 @@ our $RESTR_ALLOWED_SCHEMES = join('|', @ALLOWED_SCHEMES);
 our $RE_ALLOWED_SCHEMES = qr/^($RESTR_ALLOWED_SCHEMES)$/;
 
 subtype 'CIF::Type::Uri',
-    as 'Maybe[CIF::Type::LowerCaseStr]',
+    as 'Maybe[Str]',
     where { 
         my $url_text = shift;
         $url_text = uri_escape_utf8($url_text,'\x00-\x1f\x7f-\xff');
