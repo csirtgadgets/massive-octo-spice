@@ -149,7 +149,7 @@ sub process {
 
         push(@array,$_);
     }
-
+    
     $Logger->info('processed events: '.($#array + 1));
 
     return \@array;

@@ -33,7 +33,7 @@ use Net::Patricia;
 
 use constant RE_FQDN_LAZY       => qr/^$RE{net}{domain}{-rfc1101}{-nospace}$/;
 #use constant RE_FQDN            => qr/^(?:[0-9a-zA-Z-]{1,63}\.)+[a-zA-Z]{2,63}$/; # https://groups.google.com/forum/#!topic/ci-framework/VDUxNd5rPf8
-use constant RE_FQDN            => qr/^((xn--)?(--)?[a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}(--p1ai)?$/; # http://goo.gl/Cztyn2 -- probably needs more work
+use constant RE_FQDN            => qr/^((xn--)?(--)?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*\.)+[a-zA-Z]{2,}(--p1ai)?$/; # http://goo.gl/Cztyn2 -- probably needs more work
 use constant RE_IPV4            => qr/^$RE{'net'}{'IPv4'}$/;
 use constant RE_IPV4_CIDR       => qr/^$RE{'net'}{'CIDR'}{'IPv4'}$/;
 use constant RE_IPV6            => qr/^$RE{'net'}{'IPv6'}/;
