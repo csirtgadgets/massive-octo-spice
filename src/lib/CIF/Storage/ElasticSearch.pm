@@ -285,8 +285,10 @@ sub _search {
     }
     
     if($filters->{'rdata'}){
-        $filters->{'rdata'} = [$filters->{'rdata'}] unless(ref($filters->{'rdata'}));
-        $terms->{'rdata'} = $filters->{'rdata'}
+         unless(ref($filters->{'rdata'})){
+             $filters->{'rdata'} = [ $filters->{'rdata'} ];
+         }
+        $terms->{'rdata'} = $filters->{'rdata'};
     }
 
     if($filters->{'group'}){
@@ -307,7 +309,7 @@ sub _search {
                     push(@or, { term => { $_ => [$e] } } );
                  }
                  push(@and,{ 'or' => \@or });
-            } elsif($_ eq 'group') { ##TODO
+            } elsif($_ eq 'group') {
                 my @or;
                 foreach my $e (@{$terms->{$_}}){
                 	push(@or, { term => { $_ => [$e] } } );
@@ -378,6 +380,8 @@ sub _search {
         $results = _ip_results($args->{'Query'},$results);
     } elsif(is_fqdn($args->{'Query'})){
         $results = _fqdn_results($args->{'Query'},$results);
+    } elsif($args->{'Filters'}->{'rdata'} && is_fqdn($args->{'Filters'}->{'rdata'})) {
+        $results = _fqdn_results($args->{'Filters'}->{'rdata'},$results);
     }
     
     if(defined($args->{'feed'})){

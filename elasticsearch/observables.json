@@ -38,7 +38,8 @@
 					"type": "string"
 				},
 				"rdata": {
-					"type": "string"
+					"type": "string",
+					"index": "not_analyzed"
 				},
 				"cc": {
 					"type": "string"
