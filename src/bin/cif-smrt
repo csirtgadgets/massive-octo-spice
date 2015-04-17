@@ -34,6 +34,7 @@ my $meta        = 0;
 my $timeout     = 900;
 my $no_verify_ssl = 1; ##TODO alphas only!!!
 my $ignore_journal;
+my $proxy;
 
 # daemon
 my $daemon      = 0;
@@ -96,6 +97,7 @@ GetOptions(
     'clean|c'           => \$clean,
     'not-before=s'       => \$notbefore,
     'cache|P=s'         => \$cache,
+    'proxy=s'           => \$proxy,
     
     #notification
     'notify'        => \$notify,
@@ -130,7 +132,9 @@ if(-e $config){
     $remote         = $remote   || $config->{'remote'};
     $timeout        = $timeout  || $config->{'timeout'};
     
-    $no_verify_ssl  = $config->{'no_verify_ssl'} if($config->{'no_verify_ssl'} && !$no_verify_ssl); ##TODO
+    $no_verify_ssl  = $config->{'no_verify_ssl'} if($config->{'no_verify_ssl'} && !$no_verify_ssl);
+    
+    $proxy          = $proxy    || $config->{'proxy'};
 }
 
 sub usage {
@@ -318,6 +322,7 @@ sub _main {
                 ignore_journal  => $ignore_journal,
                 not_before      => $notbefore,
                 limit           => $limit,
+                proxy           => $proxy,
             });
             
             try {

@@ -26,7 +26,7 @@ use constant {
     MAX_DT          => '2100-12-31T23:59:59Z' # if you're still using this by then, God help you.
 };
 
-has [qw(ignore_journal config is_test other_attributes test_mode handler rule tmp limit)] => (
+has [qw(ignore_journal config is_test other_attributes test_mode handler rule tmp limit proxy)] => (
     is      => 'ro',
 );
 
@@ -55,6 +55,7 @@ sub _build_fetcher {
     return CIF::Smrt::Fetcher->new({
         rule    => $self->rule,
         tmp     => $self->tmp_handle,
+        proxy   => $self->proxy,
     });
 }
 

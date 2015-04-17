@@ -237,6 +237,7 @@ sub submit {
     my $args = shift;
     
     foreach (@{$args->{'observables'}}){
+        $_->{'observable'} = lc($_->{'observable'});
         $self->_process_metadata($_) if($args->{'enable_metadata'});
         $_ = CIF::ObservableFactory->new_plugin($_);
     }

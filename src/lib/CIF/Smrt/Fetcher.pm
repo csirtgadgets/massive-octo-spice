@@ -31,7 +31,7 @@ has 'agent'     => (
     default => AGENT,
 );
 
-has [qw(rule test_mode tmp username password)] => (
+has [qw(rule test_mode tmp username password proxy)] => (
     is      => 'ro'
 );
 
@@ -57,14 +57,13 @@ sub _build_handle {
         $agent->ssl_opts(SSL_verify_mode => 'SSL_VERIFY_NONE');
         $agent->ssl_opts(verify_hostname => 0);
     }
-       
-    ##TODO clean this up from v1
-    if($args->{'proxy'}){
-        $agent->proxy(['http','https'],$args->{'proxy'});
+
+    if($self->proxy){
+        $agent->proxy(['http','https'],$self->{'proxy'});
     } else {
         $agent->env_proxy();
     }
-    
+
     return $agent;
 }
 
