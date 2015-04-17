@@ -156,6 +156,8 @@ Usage: $0 [OPTIONS] [-D status|start|stop|restart|reload]
     
     --limit=INT             limit parsing to a subset of records (useful for debugging)
     
+    --proxy                 specify a proxy address for cif-smrt to use in fetching feeds
+    
  Daemon Options:
     -D, --daemon            run as daemon
     -u, --user              run daemon as user, default: $user
