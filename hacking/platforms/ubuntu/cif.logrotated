@@ -1,0 +1,8 @@
+/var/log/cif-*.log {
+    weekly
+    rotate 52
+    compress
+    notifempty
+    missingok
+    nocreate
+}
