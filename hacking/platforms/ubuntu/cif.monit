@@ -20,4 +20,5 @@ check process cif-smrt with pidfile /var/run/cif-smrt.pid
 
 check host cif_connection with address 127.0.0.1
   if failed port 5000 with timeout 15 seconds then alert
+  if failed url http://127.0.0.1:5000/help with timeout 15 seconds then alert
     group cif

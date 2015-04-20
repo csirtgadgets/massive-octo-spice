@@ -4,6 +4,7 @@ use Mojo::Base 'Mojolicious::Controller';
 sub index {
     shift->respond_to(
         html    => { template => 'help/index' },
+        json    => { template => 'help/index' },
     );
 }
 
