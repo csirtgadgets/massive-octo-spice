@@ -90,6 +90,10 @@ sub create {
         return;
     }
     
+    unless (ref($data) eq 'ARRAY') {
+        $data = [ $data ];
+    }
+    
     unless(@{$data}[0]->{'group'}){
         $self->render(json => { 'message' => 'Bad Request, missing group tag in one of the observables', status => 400 } );
         return;
