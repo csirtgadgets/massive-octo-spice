@@ -35,6 +35,7 @@ my $timeout     = 900;
 my $no_verify_ssl = 1; ##TODO alphas only!!!
 my $ignore_journal;
 my $proxy;
+my $https_proxy;
 
 # daemon
 my $daemon      = 0;
@@ -98,6 +99,7 @@ GetOptions(
     'not-before=s'       => \$notbefore,
     'cache|P=s'         => \$cache,
     'proxy=s'           => \$proxy,
+    'https-proxy=s'     => \$https_proxy,
     
     #notification
     'notify'        => \$notify,
@@ -135,6 +137,7 @@ if(-e $config){
     $no_verify_ssl  = $config->{'no_verify_ssl'} if($config->{'no_verify_ssl'} && !$no_verify_ssl);
     
     $proxy          = $proxy    || $config->{'proxy'};
+    $https_proxy    = $https_proxy || $config->{'https_proxy'};
 }
 
 sub usage {
@@ -157,6 +160,7 @@ Usage: $0 [OPTIONS] [-D status|start|stop|restart|reload]
     --limit=INT             limit parsing to a subset of records (useful for debugging)
     
     --proxy                 specify a proxy address for cif-smrt to use in fetching feeds
+    --https-proxy           specify a proxy for cif-smrt to use for feeds hosted on https
     
  Daemon Options:
     -D, --daemon            run as daemon
@@ -325,6 +329,7 @@ sub _main {
                 not_before      => $notbefore,
                 limit           => $limit,
                 proxy           => $proxy,
+                https_proxy     => $https_proxy,
             });
             
             try {
