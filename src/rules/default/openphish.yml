@@ -8,6 +8,7 @@ defaults:
   values: observable
 feeds:
   urls:
+  	otype: url
     pattern: ^(\S+)$
     remote: http://openphish.com/feed.txt
 
