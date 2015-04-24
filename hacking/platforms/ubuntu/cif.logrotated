@@ -1,8 +1,12 @@
 /var/log/cif-*.log {
     weekly
-    rotate 52
+    rotate 4
+    minsize 1M
     compress
     notifempty
     missingok
     nocreate
+    postrotate
+   		invoke-rc.d cif-services reload > /dev/null
+   	endscript
 }
