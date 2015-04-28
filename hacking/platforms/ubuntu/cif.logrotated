@@ -7,6 +7,6 @@
     missingok
     nocreate
     postrotate
-   		invoke-rc.d cif-services reload > /dev/null
+   		invoke-rc.d cif-services restart > /dev/null
    	endscript
 }
