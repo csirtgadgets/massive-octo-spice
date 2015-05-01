@@ -15,7 +15,7 @@ sub index {
     
     my $filters = {};
     
-    foreach my $x (qw/provider otype cc confidence group limit tags application asn rdata firsttime lasttime reporttime reporttimeend/){
+    foreach my $x (qw/provider otype cc confidence group limit tags application asn rdata firsttime lasttime reporttime reporttimeend description/){
         $filters->{$x} = scalar $self->param($x) if $self->param($x);
     }
     

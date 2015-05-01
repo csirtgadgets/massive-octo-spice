@@ -53,6 +53,14 @@ has 'tags'  => (
     coerce  => 1,
 );
 
+has 'description' => (
+    is  => 'ro',
+);
+
+has 'adata' => (
+    is => 'ro',
+);
+
 has 'observable' => (
     is      => 'ro',
     isa     => 'CIF::Type::LowerCaseStr',
