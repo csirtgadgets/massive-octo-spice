@@ -15,7 +15,7 @@ sub index {
     
     my $filters = {};
     
-    foreach my $x (qw/provider otype cc confidence group limit tags application asn rdata firsttime lasttime reporttime reporttimeend/){
+    foreach my $x (qw/provider otype cc confidence group limit tags application asn rdata firsttime lasttime reporttime reporttimeend description/){
         $filters->{$x} = scalar $self->param($x) if $self->param($x);
     }
     
@@ -88,6 +88,10 @@ sub create {
     if($res == 0){
         $self->render(json   => { 'message' => 'unauthorized' }, status => 401 );
         return;
+    }
+    
+    unless (ref($data) eq 'ARRAY') {
+        $data = [ $data ];
     }
     
     unless(@{$data}[0]->{'group'}){

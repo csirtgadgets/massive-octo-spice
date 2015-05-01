@@ -2,4 +2,4 @@
 
 set -e
 
-/etc/init.d/cif-worker restart
+/etc/init.d/cif-worker restart > /dev/null 2>&1

@@ -49,6 +49,7 @@ sub _rr_to_observation {
     $ts = $ts->ymd().'T'.$ts->hms().'Z';
     
     my $ret = $self->resolve($data->{'observable'},$type);
+    my $app = $data->{'application'};
     my @obs;
     foreach my $rr (@$ret){
         my $thing;
@@ -63,10 +64,12 @@ sub _rr_to_observation {
             }
             if(/^NS$/){
                 $thing = $rr->nsdname();
+                $app = 'dns';
                 last;
             }
             if(/^MX$/){
                 $thing = $rr->exchange();
+                $app = 'smtp';
                 last;
             }
         }
@@ -84,7 +87,7 @@ sub _rr_to_observation {
                 group       => $data->{'group'} || CIF::GROUP_DEFAULT,
                 provider    => $data->{'provider'} || CIF::PROVIDER_DEFAULT,
                 rdata       => $data->{'observable'},
-                application => $data->{'application'},
+                application => $app,
                 portlist    => $data->{'portlist'},
                 protocol    => $data->{'protocol'} || undef,
                 altid       => $data->{'altid'},

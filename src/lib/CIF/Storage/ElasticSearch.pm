@@ -269,6 +269,11 @@ sub _search {
     	$terms->{'tags'} = $filters->{'tags'};
     }
     
+    if($filters->{'description'}){
+        $filters->{'description'} = [$filters->{'description'}] unless(ref($filters->{'description'}) eq 'ARRAY');
+    	$terms->{'description'} = $filters->{'description'};
+    }
+    
     if($filters->{'application'}){
     	$filters->{'application'} = [$filters->{'application'}] unless(ref($filters->{'application'}) eq 'ARRAY');
     	$terms->{'application'} = $filters->{'application'};
