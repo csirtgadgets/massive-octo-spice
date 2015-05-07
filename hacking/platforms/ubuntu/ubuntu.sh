@@ -15,7 +15,7 @@ if [ `whoami` != 'root' ]; then
 fi
 
 apt-get update
-apt-get install -qq python-software-properties
+apt-get install -qq software-properties-common python-software-properties
 
 if [ ! -f /etc/apt/sources.list.d/chris-lea-zeromq-trusty.list ]; then
     echo 'adding updated zmq repo....'
