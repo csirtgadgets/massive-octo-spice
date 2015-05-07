@@ -21,7 +21,7 @@ if [ ! -f /etc/apt/sources.list.d/chris-lea-zeromq-trusty.list ]; then
     echo 'adding updated zmq repo....'
     echo "yes" | sudo add-apt-repository "ppa:chris-lea/zeromq"
     echo "yes" | sudo add-apt-repository "ppa:maxmind/ppa"
-    wget -O - http://packages.elasticsearch.org/GPG-KEY-elasticsearch | apt-key add -
+    wget -O - https://packages.elasticsearch.org/GPG-KEY-elasticsearch | apt-key add -
 fi
 
 if [ -f /etc/apt/sources.list.d/elasticsearch.list ]; then
