@@ -2,13 +2,17 @@
 
 set -e
 
+BRANCH="master"
+
 if [ `whoami` != 'root' ]; then
-	echo "must be run as root"
+	echo "ERROR: must be run as root"
 	exit 0
 fi
 
-ARCH=$(uname -m | sed 's/x86_//;s/i[3-6]86/32/')
-BRANCH="master"
+if [ $ARCH != 'x86_64' ]; then
+    echo "ERROR: must install on a 64-bit OS"
+    exit 0
+fi
 
 if [ -f /etc/lsb-release ]; then
     . /etc/lsb-release
