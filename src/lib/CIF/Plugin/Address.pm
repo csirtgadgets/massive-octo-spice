@@ -29,7 +29,8 @@ require Mail::RFC822::Address;
 use URI; ##TODO -- change from regexs
 use Regexp::Common qw/net/;
 use Regexp::Common::net::CIDR;
-use Net::Patricia;  
+use Net::Patricia;
+use Try::Tiny;
 
 use constant RE_FQDN_LAZY       => qr/^$RE{net}{domain}{-rfc1101}{-nospace}$/;
 #use constant RE_FQDN            => qr/^(?:[0-9a-zA-Z-]{1,63}\.)+[a-zA-Z]{2,63}$/; # https://groups.google.com/forum/#!topic/ci-framework/VDUxNd5rPf8
@@ -140,11 +141,17 @@ sub is_url_broken {
 sub is_ip_private {
     my $ip = shift || return 0;
     return 0 unless(is_ip($ip));
-    if($ip =~ /^(\S+)\/\d+$/){
-        return $ipv4_private->match($1);
-    } else {
-        return $ipv4_private->match($ip);
-    }
+    my $err;
+    try {
+        if($ip =~ /^(\S+)\/\d+$/){
+            return $ipv4_private->match($1);
+        } else {
+            return $ipv4_private->match($ip);
+        }
+    } catch {
+        $err = shift;
+    };
+    return 0 if($err);
 }
 
 sub is_ip {
