@@ -141,17 +141,18 @@ sub is_url_broken {
 sub is_ip_private {
     my $ip = shift || return 0;
     return 0 unless(is_ip($ip));
-    my $err;
+    my ($ret, $err);
     try {
         if($ip =~ /^(\S+)\/\d+$/){
-            return $ipv4_private->match($1);
+            $ret = $ipv4_private->match($1);
         } else {
-            return $ipv4_private->match($ip);
+            $ret = $ipv4_private->match($ip);
         }
     } catch {
         $err = shift;
     };
     return 0 if($err);
+    return $ret;
 }
 
 sub is_ip {

@@ -44,7 +44,11 @@ has 'not_before'    => (
 
 sub _build_tmp_handle {
     my $self = shift;
-    my $tmp = $self->tmp.'/'.$self->rule->defaults->{'provider'}.'-'.$self->rule->{'feed'};
+    my $provider = $self->rule->defaults->{'provider'};
+    $provider =~ s/\//\_/g;
+
+    my $tmp = $self->tmp.'/'.$provider.'-'.$self->rule->{'feed'};
+
     assert(-w $tmp, 'temp space is not writeable by user, or file exists and is not owned by user: '.$tmp) if(-e $tmp);
     return $tmp;
 }
