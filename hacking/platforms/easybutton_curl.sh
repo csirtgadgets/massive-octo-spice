@@ -3,6 +3,7 @@
 set -e
 
 BRANCH="master"
+ARCH=`/bin/uname -m`
 
 if [ `whoami` != 'root' ]; then
 	echo "ERROR: must be run as root"
