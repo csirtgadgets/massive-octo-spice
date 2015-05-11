@@ -95,6 +95,7 @@ sub process {
                 $err = shift;
                 $Logger->fatal($err);
                 $Logger->fatal('possible timeout grabbing the feed');
+                return;
             };
             
             $Logger->debug('status: '.$ret->status_line());

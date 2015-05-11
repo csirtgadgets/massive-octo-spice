@@ -35,9 +35,11 @@ sub process {
     my $self = shift;
     my $args = shift;
     
-    my $tmp = $self->get_tmp().'/'.$self->get_rule()->get_defaults()->{'provider'}.'-'.$self->get_rule()->get_feed();
+    my $provider = $self->get_rule()->get_defaults()->{'provider'};
+    $provider =~ s/\/\_//eg;
+    
+    my $tmp = $self->get_tmp().'/'.$provider.'-'.$self->get_rule()->get_feed();
     assert(-w $tmp, 'temp space is not writeable by user, or file exists and is not owned by user: '.$tmp) if(-e $tmp);
-    ##TODO -- umask
     
     $Logger->debug('fetching...');
     my $ret = $self->get_fetcher()->process($args);
@@ -64,8 +66,7 @@ sub process {
 sub process_file {
     my $self = shift;
     my $args = shift;
-    
-    ##TODO - refactor
+
     my $ts = $args->{'ts'} || DateTime->today();
     my ($vol,$dir) = File::Spec->splitpath($args->{'file'});
     my $log = File::Spec->catfile($self->get_tmp(),$ts->ymd('').'.log');
