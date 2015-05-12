@@ -148,6 +148,8 @@ sub process {
         
         next unless($self->not_before <= $ts );
         $_ = $self->rule->process({ data => $_ });
+        local $Data::Dumper::Indent = 0;
+        $Logger->debug(Dumper($_));
 
         push(@array,$_);
     }
