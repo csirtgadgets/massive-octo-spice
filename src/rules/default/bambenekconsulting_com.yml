@@ -1,26 +1,22 @@
-parser: csv
-defaults:
-  provider: bambenekconsulting.com
-  tlp: amber
-  confidence: 85
-  alt_tlp: green
-  values:
-      - observable
-      - description
-      - lasttime
-  tags:
-    - botnet
+ parser: csv
+ defaults:
+   provider: osint.bambenekconsulting.com
+   tlp: amber
+   confidence: 75
+   alt_tlp: green
+   values:
+       - observable
+       - description
+       - lasttime
+       - altid
+ 
+ feeds:
+   c2_masterlist:
+     remote: http://osint.bambenekconsulting.com/feeds/c2-masterlist.txt
+     tags:
+       - botnet
 
-feeds:
-  goz_ip:
-    remote: http://osint.bambenekconsulting.com/feeds/goz-iplist.txt
-    tags:
-      - botnet
-      - gozi
-
-  goz_domains:
-    remote: http://osint.bambenekconsulting.com/feeds/goz-domlist.txt
-    tags:
-      - botnet
-      - gozi
-
+   dga_feed:
+     remote: http://osint.bambenekconsulting.com/feeds/dga-feed.txt
+     tags:
+       - botnet
