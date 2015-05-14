@@ -1,5 +1,3 @@
-# issues - down until further notice
-# https://zeustracker.abuse.ch/sorry.php
 parser: rss
 defaults:
   provider: zeustracker.abuse.ch
@@ -46,4 +44,3 @@ feeds:
     values:
       - observable
     confidence: 65
-
