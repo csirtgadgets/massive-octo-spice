@@ -14,7 +14,6 @@ if [ -x /usr/bin/wget ]; then
     wget -q --tries=3 --timeout=10 --spider $HTTP_HOST
     if [[ $? -eq 0 ]]; then
         echo "$HTTP_HOST appears to be available via HTTP"
-        echo "Continuing with installation"
     else
         echo "$HTTP_HOST does not appear to be available via HTTP"
         echo "Exiting installation"
@@ -45,8 +44,14 @@ fi
 
 case $OS in
     "Ubuntu" )
-        cd ubuntu
-        bash ./ubuntu.sh;;
+    	if [ $VER != "14.04" ]; then
+    		echo "Currently only 14.04 LTS is supported"
+    		echo "We accept Pull Requests! =)"
+    	else
+        	cd ubuntu
+       		bash ./ubuntu.sh
+       	fi
+       	;;
 
     "Debian" )
         echo 'Debian not yet supported...'
