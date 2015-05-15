@@ -11,7 +11,7 @@
        - altid
  
  feeds:
-   c2_masterlist:
-     remote: http://osint.bambenekconsulting.com/feeds/c2-masterlist.txt
+   dga_feed:
+     remote: http://osint.bambenekconsulting.com/feeds/dga-feed.txt
      tags:
        - botnet
