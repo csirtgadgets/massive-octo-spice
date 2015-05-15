@@ -1,0 +1,15 @@
+defaults:
+  provider: rules.emergingthreats.net
+  confidence: 65
+  tlp: amber
+  tags:
+    - malware
+  altid: http://rules.emergingthreats.net/blockrules/compromised-ips.txt
+  altid_tlp: green
+  pattern: '^(\S+)$'
+  values:
+    - observable
+
+feeds:
+  compromised-ips:
+    remote: http://rules.emergingthreats.net/blockrules/compromised-ips.txt

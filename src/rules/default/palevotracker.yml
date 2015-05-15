@@ -1,0 +1,23 @@
+defaults:
+  provider: palevotracker.abuse.ch
+  tlp: amber
+  alt_tlp: green
+  altid: https://palevotracker.abuse.ch/
+  tags:
+    - palevo
+    - botnet
+
+feeds:
+  domains:
+    remote: https://palevotracker.abuse.ch/blocklists.php?download=domainblocklist
+    pattern: ^(\S+)$
+    values:
+      - observable
+    confidence: 75
+
+  ips:
+    remote: https://palevotracker.abuse.ch/blocklists.php?download=ipblocklist
+    pattern: ^(\S+)$
+    values:
+      - observable
+    confidence: 65

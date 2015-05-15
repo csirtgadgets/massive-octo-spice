@@ -1,0 +1,31 @@
+parser: delim
+defaults:
+  protocol: tcp
+  provider: packetmail.net
+  altid_tlp: green
+  tlp: amber
+  confidence: 75
+  pattern: '[;]'
+  values:
+    - observable
+    - lasttime
+    - null
+    - null
+
+feeds:
+  iprep:
+    remote: https://www.packetmail.net/iprep.txt
+    tags: scanner
+    values:
+      - observable
+      - lasttime
+      - null
+      - null
+    description: 'TCP SYN to 206.82.85.196/30 to a non-listening service or daemon'
+  iprep_mail:
+    remote: https://www.packetmail.net/iprep_mail.txt
+    tags: suspicious
+    values:
+      - observable
+      - lasttime
+      - description

@@ -14,7 +14,7 @@ defaults:
 
 feeds:
   drop:
-    remote: http://www.spamhaus.org/drop/drop.lasso
+    remote: http://www.spamhaus.org/drop/drop.txt
   edrop:
     remote: http://www.spamhaus.org/drop/edrop.txt
 
