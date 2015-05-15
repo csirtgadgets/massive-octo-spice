@@ -14,8 +14,9 @@ check process cif-starman with pidfile /var/run/cif-starman.pid
         group cif
 
 check process cif-smrt with pidfile /var/run/cif-smrt.pid
-        start program = "/etc/init.d/cif-smrt start" with timeout 60 seconds
-        stop program = "/etc/init.d/cif-smrt stop"
+        # restarting is disabled by default
+        #start program = "/etc/init.d/cif-smrt start" with timeout 60 seconds
+        #stop program = "/etc/init.d/cif-smrt stop"
         group cif
 
 check host cif_connection with address 127.0.0.1

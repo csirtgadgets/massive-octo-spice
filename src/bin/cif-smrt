@@ -232,6 +232,7 @@ if($daemon){
     
     my $rv = Daemon::Control->new(
      	name    => 'cif-smrt',
+     	#prereq_no_process => 1,
         program => sub { main() },
             
         pid_file    => $pidfile,

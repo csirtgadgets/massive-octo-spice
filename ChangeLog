@@ -1,6 +1,6 @@
 Revision history for massive-octo-spice
 
-2.00.00-beta.4 2015-05
+2.00.00-beta.4 2015-05-15
     -fixes:
         - https://github.com/csirtgadgets/p5-cif-sdk/issues/24
         - https://github.com/csirtgadgets/massive-octo-spice/issues/204
