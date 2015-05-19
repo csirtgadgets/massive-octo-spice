@@ -40,7 +40,7 @@ requires 'Regexp::Common';
 requires 'Regexp::Common::net';
 requires 'Regexp::Common::net::CIDR';
 requires 'Regexp::IPv6';
-requires 'Search::Elasticsearch';
+requires 'Search::Elasticsearch', '1.19';
 requires 'String::Tokenizer';
 requires 'Test::SharedFork';
 requires 'Test::TCP';

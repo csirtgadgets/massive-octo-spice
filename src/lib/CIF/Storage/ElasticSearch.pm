@@ -447,7 +447,7 @@ sub _submission {
     my $self = shift;
     my $args = shift;
     
-    my $timestamp = DateTime->from_epoch(epoch => scalar gettimeofday()); # this is for the record insertion ts
+    my $timestamp = $args->{'timestamp'} || DateTime->from_epoch(epoch => scalar gettimeofday()); # this is for the record insertion ts
     my $date = $timestamp->ymd('.'); # for the index
     my $reportstamp = $timestamp->ymd().'T'.$timestamp->hms().'Z';
     $timestamp = $timestamp->ymd().'T'.$timestamp->hms().'.'.$timestamp->millisecond().'Z';
@@ -555,6 +555,7 @@ sub token_list {
 	   index   => $self->tokens_index,
 	   type    => $self->tokens_type,
 	   body    => $q,
+	   size    => 5000,
     );
     
     my ($res,$err);
@@ -582,7 +583,7 @@ sub token_new {
     my $self = shift;
     my $args = shift;
     
-    my $token = hash_create_random();
+    my $token = $args->{'token'} || hash_create_random();
 	
 	if($args->{'Expires'}){
 	    $args->{'Expires'} = normalize_timestamp($args->{'Expires'},undef,1);
@@ -688,6 +689,7 @@ sub token_delete {
         index       => $self->tokens_index,
         type        => $self->tokens_type,
         refresh     => 1,
+        size        => 10000,
     );
     
     foreach my $id (@$ids){
