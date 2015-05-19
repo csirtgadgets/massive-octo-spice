@@ -3,6 +3,7 @@ Revision history for massive-octo-spice
 2.00.00-beta.6 2015-05
     - fixes:
         - search::elasticsearch dep
+        - https://github.com/csirtgadgets/massive-octo-spice/issues/215
 
 2.00.00-beta.5 2015-05-15
     -fixes:
