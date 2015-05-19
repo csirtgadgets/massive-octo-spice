@@ -1,5 +1,9 @@
 Revision history for massive-octo-spice
 
+2.00.00-beta.6 2015-05
+    - fixes:
+        - search::elasticsearch dep
+
 2.00.00-beta.5 2015-05-15
     -fixes:
         - https://github.com/csirtgadgets/p5-cif-sdk/issues/24
