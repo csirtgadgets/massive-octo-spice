@@ -1,0 +1,15 @@
+defaults:
+  provider: www.us.openbl.org
+  confidence: 75
+  tlp: amber
+  tags:
+    - scanner
+  altid: http://www.us.openbl.org/lists.html
+  altid_tlp: green
+  pattern: '^(\S+)$'
+  values:
+    - observable
+
+feeds:
+  base_1days:
+    remote: http://www.us.openbl.org/lists/base_1days.txt
