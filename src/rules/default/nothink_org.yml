@@ -21,3 +21,7 @@ feeds:
     remote: http://www.nothink.org/blacklist/blacklist_malware_dns.txt
     tags:
       - suspicious
+  malware_irc:
+    remote: http://www.nothink.org/blacklist/blacklist_malware_irc.txt
+    tags:
+      - suspicious
