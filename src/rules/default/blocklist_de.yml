@@ -1,0 +1,39 @@
+defaults:
+  provider: blocklist.de
+  confidence: 75
+  tlp: amber
+  tags:
+    - scanner
+  altid: http://www.blocklist.de/en/view.html?ip=<observable>
+  altid_tlp: green
+  pattern: '^(\S+)$'
+  values:
+    - observable
+
+feeds:
+  ssh:
+    remote: http://lists.blocklist.de/lists/ssh.txt
+    application: ssh
+  mail:
+    remote: http://lists.blocklist.de/lists/mail.txt
+    application: smtp
+  apache:
+    remote: http://lists.blocklist.de/lists/apache.txt
+    application: http
+  imap: 
+    remote: http://lists.blocklist.de/lists/imap.txt
+    application: imap
+  ftp:
+    remote: http://lists.blocklist.de/lists/ftp.txt
+    application: ftp
+  sip:
+    remote: http://lists.blocklist.de/lists/sip.txt
+    application: sip
+  bots:
+    remote: http://lists.blocklist.de/lists/bots.txt
+    tags:
+      - bot
+  bruteforcelogin:
+    remote: http://lists.blocklist.de/lists/bruteforcelogin.txt
+  ircbot:
+    remote: http://lists.blocklist.de/lists/ircbot.txt
