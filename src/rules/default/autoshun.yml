@@ -1,0 +1,16 @@
+parser: csv
+defaults:
+  provider: autoshun.org
+  tlp: amber
+  confidence: 65
+  alt_tlp: green
+  values:
+      - observable
+      - lasttime
+      - description
+
+feeds:
+  c2_masterlist:
+    remote: http://www.autoshun.org/files/shunlist.csv
+    tags:
+      - suspicious
