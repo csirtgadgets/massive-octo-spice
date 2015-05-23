@@ -1,4 +1,5 @@
 requires 'Mozilla::CA';
+requires 'Hijk','0.19';
 requires 'Encoding::FixLatin';
 requires 'HTML::TableExtract';
 requires 'Test::Exception', '<= 0.32';
