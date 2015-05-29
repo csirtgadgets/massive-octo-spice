@@ -1,0 +1,15 @@
+defaults:
+  provider: txt.proxyspy.net
+  confidence: 75
+  tlp: amber
+  tags: proxy
+  altid_tlp: green
+  pattern: '(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}):([0-9]+)\s([A-Za-z-]+)'
+  values:
+    - observable
+    - portlist
+    - null
+
+feeds:
+  proxy:
+    remote: http://txt.proxyspy.net/proxy.txt

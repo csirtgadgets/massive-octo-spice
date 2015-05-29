@@ -1,0 +1,13 @@
+defaults:
+  provider: vxvault.net
+  confidence: 75
+  tlp: amber
+  tags: malware
+  altid_tlp: green
+  values:
+    - observable
+
+feeds:
+  urls:
+    remote: http://vxvault.net/URL_List.php
+    pattern: '^(http:\/\/\S+)$'
