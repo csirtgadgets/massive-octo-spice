@@ -8,7 +8,7 @@ use Carp::Assert;
 
 with 'CIF::Smrt::Parser';
 
-use constant RE_SUPPORTED_PARSERS => qw/^(delim|csv|pipe|default)$/;
+use constant RE_SUPPORTED_PARSERS => qw/^(delim|csv|pipe|regex)$/;
 use constant RE_COMMENTS => qr/^([#|;]+)/;
 
 sub understands {
@@ -41,7 +41,7 @@ sub process {
     my @array;
     
     my $pattern = $defaults->{'pattern'};
-    if(defined($pattern) && (!$defaults->{'parser'} || $defaults->{'parser'} eq 'default')){
+    if(defined($pattern) && (!$defaults->{'parser'} || $defaults->{'parser'} eq 'regex')){
         $pattern = qr/$pattern/;
     } else {
         my $parser = $self->rule->{'parser'} || '';

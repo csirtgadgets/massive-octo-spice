@@ -30,7 +30,7 @@ feeds:
     description: dropzone
 
   domains:
-    parser: default
+    parser: regex
     remote: https://zeustracker.abuse.ch/blocklist.php?download=domainblocklist
     pattern: ^(\S+)$
     values:
@@ -38,7 +38,7 @@ feeds:
     confidence: 65
 
   ip:
-    parser: default
+    parser: regex
     remote: https://zeustracker.abuse.ch/blocklist.php?download=ipblocklist
     pattern: ^(\S+)$
     values:
