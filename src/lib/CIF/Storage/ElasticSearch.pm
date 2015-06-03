@@ -637,11 +637,24 @@ sub token_edit {
     
     my $params = {};
     
-    $params->{'revoked'}    = 1 if($args->{'revoked'});
-    $params->{'read'}       = 1 if($args->{'read'});
-    $params->{'write'}      = 1 if($args->{'write'});
+    if(defined($args->{'read'})){
+        $params->{'read'} = $args->{'read'};
+    }
+    
+    if(defined($args->{'write'})){
+        $params->{'write'} = $args->{'write'};
+    }
+    
+    if(defined($args->{'revoked'})){
+        $params->{'revoked'} = $args->{'revoked'};
+    }
+    
+    if(defined($args->{'admin'})){
+        $params->{'admin'} = $args->{'admin'};
+    }
+    
+    
     $params->{'acl'}        = $params->{'acl'} if($args->{'acl'});
-    $params->{'admin'}      = 1 if($args->{'admin'});
     $params->{'groups'}     = $params->{'groups'} if($args->{'groups'});
     
     if($args->{'Expires'}){

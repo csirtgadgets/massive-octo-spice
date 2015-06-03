@@ -54,6 +54,9 @@ GetOptions(
     'import'            => \$action->{'import'},
     'import-path=s'     => \$action->{'import-path'},
     
+    'write-enable'      => \$action->{'write-enable'},
+    'write-disable'     => \$action->{'write-disable'},
+    
     'generate-config-path=s'    => \$generate->{'path'},
     'generate-config-remote=s'  => \$generate->{'remote'},
     'generate-config-tls=i'       => \$generate->{'tls'},
@@ -113,6 +116,9 @@ Actions:
     --revoke        revoke a user / token
     --import        import tokens list from v1 instance (bin/cif_apikeys_export) using STDIN
     --import-path   specify a path to read for importing tokens (aka: apikeys in v1)
+    
+    --write-enable  enable write access for a specified user / token
+    --write-disable disable write access for a specified user / token
     
 Advanced:
 
@@ -230,6 +236,21 @@ if($action->{'revoke'}){
         Token       => $token->{'token'},
         Username    => $token->{'username'},
         revoked => 1,
+    });
+}
+
+if($action->{'write-enable'}){
+    $rv = $storage->token_edit({
+        Token       => $token->{'token'},
+        Username    => $token->{'username'},
+        'write'     => 1
+    });
+}
+if($action->{'write-disable'}){
+    $rv = $storage->token_edit({
+        Token       => $token->{'token'},
+        Username    => $token->{'username'},
+        'write'     => 0
     });
 }
 
