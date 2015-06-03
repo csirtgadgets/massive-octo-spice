@@ -138,7 +138,7 @@ $storage = CIF::StorageFactory->new_plugin({
 });
 
 my $rv;
-my @cols = ('username','groups','admin','read','write','acl','expires','revoked','token');
+my @cols = ('username','description','groups','admin','read','write','acl','expires','revoked','token');
 
 if($action->{'import'}){
     my $input;

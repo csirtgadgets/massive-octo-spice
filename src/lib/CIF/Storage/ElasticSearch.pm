@@ -596,6 +596,7 @@ sub token_new {
 	   token        => $token,
        username     => $args->{'Username'},
        expires      => $args->{'Expires'},
+       description  => $args->{'description'},
        
        admin        => $args->{'admin'},
        revoked      => $args->{'revoked'},
