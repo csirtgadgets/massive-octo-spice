@@ -240,6 +240,10 @@ if($action->{'revoke'}){
 }
 
 if($action->{'write-enable'}){
+    unless($token->{'username'} || $token->{'token'}){
+        $Logger->crit('--write-enable requires --username or --token');
+        exit(-1);
+    }
     $rv = $storage->token_edit({
         Token       => $token->{'token'},
         Username    => $token->{'username'},
@@ -247,6 +251,10 @@ if($action->{'write-enable'}){
     });
 }
 if($action->{'write-disable'}){
+    unless($token->{'username'} || $token->{'token'}){
+        $Logger->crit('--write-disable requires --username or --token');
+        exit(-1);
+    }
     $rv = $storage->token_edit({
         Token       => $token->{'token'},
         Username    => $token->{'username'},
