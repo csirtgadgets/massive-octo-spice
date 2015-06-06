@@ -84,7 +84,7 @@ sub _log_search {
     
     my $obs = CIF::ObservableFactory->new_plugin({ 
         observable  => $data->{'Query'},
-        provider    => $self->{'username'},
+        provider    => $self->{'user'}->{'username'},
         confidence  => CONFIDENCE_DEFAULT(),
         tlp         => TLP_DEFAULT(),
         tags        => ['search'],
