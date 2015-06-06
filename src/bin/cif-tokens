@@ -132,8 +132,9 @@ Storage:
     --storage-host  default: $remote
 
  Examples:
-    $0 --new --user me\@example.com --expires 2016-07-01 --admin
-    $0 --new --user root --groups everyone,groupA,groupB
+    $0 --new --username me\@example.com --expires 2016-07-01 --admin
+    $0 --new --username root --groups everyone,groupA,groupB
+    $0 --username me\@example.com --write-enable
 
 EOF
 }
