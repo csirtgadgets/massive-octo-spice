@@ -186,6 +186,9 @@ fi
 echo "setting up log rotation"
 cp ./hacking/platforms/ubuntu/cif.logrotated /etc/logrotate.d/cif
 
+echo 'setting default cif-starman.conf'
+cp ./hacking/platforms/ubuntu/cif-starman.conf /etc/cif/
+
 if [ -f /etc/init.d/cif-router ]; then
 	update-rc.d cif-router remove 95 10
 	update-rc.d cif-smrt remove 95 10

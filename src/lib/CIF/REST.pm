@@ -20,6 +20,7 @@ use constant {
     MODE        => $ENV{'MOJO_MODE'}    || 'production',
     REMOTE      => $ENV{'REMOTE'}       || 'tcp://localhost:' . CIF::DEFAULT_PORT(),
     VERSION     => $ENV{'VERSION'}      || 2,
+    CONFIG      => $ENV{'CIF_CONFIG'}   || '/etc/cif/cif-starman.conf',
 };
 
 # Connects once for entire application. For real apps, consider using a helper
@@ -38,6 +39,10 @@ sub startup {
     $self->secrets(SECRET);
     $self->mode(MODE);
     $self->sessions->default_expiration(EXPIRATION);
+    
+    if(-e '/etc/cif/cif-starman.conf'){
+        $self->plugin('Config', {file => CONFIG});
+    }
     
     # via https://developer.github.com/v3/media/#request-specific-version
     $self->hook(after_render => sub {
@@ -59,6 +64,7 @@ sub startup {
     $self->helper(cli => sub {
         CIF::Client->new({
             remote  => REMOTE,
+            tlp_map => $self->config('tlp_map'),
         })
     });
     
