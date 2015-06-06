@@ -1,0 +1,57 @@
+# note: some of these feeds have over 100k entries
+
+defaults:
+  provider: hosts-file.net
+  confidence: 75
+  tlp: amber
+  altid_tlp: green
+  pattern: '^(\S+)\s(\S+)$'
+  values:
+    - null
+    - observable
+
+feeds:
+  ats:
+    remote: http://hosts-file.net/ad_servers.txt
+    tags: suspicious
+    description: ad/tracking server
+  emd:
+    remote: http://hosts-file.net/emd.txt
+    tags: malware
+    description: malware site
+  exp:
+    remote: http://hosts-file.net/exp.txt
+    tags: exploit
+    description: exploit site
+  fsa:
+    remote: http://hosts-file.net/fsa.txt
+    tags: fraud
+    description: fraud site
+  grm:
+    remote: http://hosts-file.net/grm.txt
+    tags: spam
+    description: site involved in spam
+  hfs:
+    remote: http://hosts-file.net/hfs.txt
+    tags: spam
+    description: site spamming hpHosts forums
+  hjk:
+    remote: http://hosts-file.net/hjk.txt
+    tags: hijacked
+    description: hijacked site
+  mmt:
+    remote: http://hosts-file.net/mmt.txt
+    tags: fraud
+    description: site involved in misleading marketing
+  pha:
+    remote: http://hosts-file.net/pha.txt
+    tags: fraud
+    description: illegal pharmacy site
+  psh:
+    remote: http://hosts-file.net/psh.txt
+    tags: phishing
+    description: phishing site
+  wrz:
+    remote: http://hosts-file.net/wrz.txt
+    tags: suspicious
+    description: warez/piracy site

@@ -28,7 +28,7 @@ use constant {
     SEARCH_CONFIDENCE => 25,
 };
 
-has [qw(remote subscriber results token)] => (
+has [qw(remote subscriber results token tlp_map)] => (
     is  => 'ro',
 );
 
@@ -220,7 +220,15 @@ sub search {
     return unless $msg->{'stype'} eq 'success';
     
     unless($args->{'nodecode'}){
-        map { $_ = CIF::ObservableFactory->new_plugin($_) } (@{$msg->{'Data'}->{'Results'}});
+        foreach (@{$msg->{'Data'}->{'Results'}}){
+            $_ = CIF::ObservableFactory->new_plugin($_);
+            if($self->tlp_map && keys($self->tlp_map)){
+                $_->{'tlp'} = $self->tlp_map->{$_->{'tlp'}};
+                if($_->{'alt_tlp'}){
+                    $_->{'alt_tlp'} = $self->tlp_map->{$_->{'alt_tlp'}};
+                }
+            }
+        }
     }
     return (undef, $msg->{'Data'}->{'Results'});
 }

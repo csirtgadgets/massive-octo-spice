@@ -447,7 +447,7 @@ sub _submission {
     my $self = shift;
     my $args = shift;
     
-    my $timestamp = DateTime->from_epoch(epoch => scalar gettimeofday()); # this is for the record insertion ts
+    my $timestamp = $args->{'timestamp'} || DateTime->from_epoch(epoch => scalar gettimeofday()); # this is for the record insertion ts
     my $date = $timestamp->ymd('.'); # for the index
     my $reportstamp = $timestamp->ymd().'T'.$timestamp->hms().'Z';
     $timestamp = $timestamp->ymd().'T'.$timestamp->hms().'.'.$timestamp->millisecond().'Z';
@@ -527,8 +527,9 @@ sub token_list {
     my $q;
     if($args->{'Username'}){
         $q = {
-            default_field   => 'username',
-            query           => $args->{'Username'},
+            default_field           => 'username',
+            query                   => $args->{'Username'},
+            minimum_should_match    => 100
         };
     } elsif($args->{'Token'}) {
         $q = {
@@ -555,6 +556,7 @@ sub token_list {
 	   index   => $self->tokens_index,
 	   type    => $self->tokens_type,
 	   body    => $q,
+	   size    => 5000,
     );
     
     my ($res,$err);
@@ -582,7 +584,7 @@ sub token_new {
     my $self = shift;
     my $args = shift;
     
-    my $token = hash_create_random();
+    my $token = $args->{'token'} || hash_create_random();
 	
 	if($args->{'Expires'}){
 	    $args->{'Expires'} = normalize_timestamp($args->{'Expires'},undef,1);
@@ -595,6 +597,7 @@ sub token_new {
 	   token        => $token,
        username     => $args->{'Username'},
        expires      => $args->{'Expires'},
+       description  => $args->{'description'},
        
        admin        => $args->{'admin'},
        revoked      => $args->{'revoked'},
@@ -635,11 +638,24 @@ sub token_edit {
     
     my $params = {};
     
-    $params->{'revoked'}    = 1 if($args->{'revoked'});
-    $params->{'read'}       = 1 if($args->{'read'});
-    $params->{'write'}      = 1 if($args->{'write'});
+    if(defined($args->{'read'})){
+        $params->{'read'} = $args->{'read'};
+    }
+    
+    if(defined($args->{'write'})){
+        $params->{'write'} = $args->{'write'};
+    }
+    
+    if(defined($args->{'revoked'})){
+        $params->{'revoked'} = $args->{'revoked'};
+    }
+    
+    if(defined($args->{'admin'})){
+        $params->{'admin'} = $args->{'admin'};
+    }
+    
+    
     $params->{'acl'}        = $params->{'acl'} if($args->{'acl'});
-    $params->{'admin'}      = 1 if($args->{'admin'});
     $params->{'groups'}     = $params->{'groups'} if($args->{'groups'});
     
     if($args->{'Expires'}){
@@ -688,6 +704,7 @@ sub token_delete {
         index       => $self->tokens_index,
         type        => $self->tokens_type,
         refresh     => 1,
+        size        => 10000,
     );
     
     foreach my $id (@$ids){
@@ -711,7 +728,7 @@ sub _tokenid_by {
     $q = {
 	    query  => {
 	        query_string   => {
-	            query  => $q
+	            query                  => $q,
 	        }
 	    }
 	};
@@ -734,7 +751,13 @@ sub _tokenid_by_username {
     my $self        = shift;
     my $username    = shift;
 
-    my $q = { default_field => 'username', query => $username };
+    my $q = { 
+        default_field           => 'username',
+        query                   => $username,
+        # https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html
+        minimum_should_match    => 100
+    };
+    
     return $self->_tokenid_by($q);
 }
 
@@ -742,7 +765,11 @@ sub _tokenid_by_token {
     my $self    = shift;
     my $token   = shift;
     
-    my $q = { default_field => 'token', query => $token };
+    my $q = { 
+        default_field           => 'token', 
+        query                   => $token,
+        minimum_should_match    => 100
+    };
     return $self->_tokenid_by($token);
 }
 

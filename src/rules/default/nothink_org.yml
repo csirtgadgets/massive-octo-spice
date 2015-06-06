@@ -1,6 +1,4 @@
 defaults:
-  tags: scanner
-  protocol: tcp
   provider: nothink.org
   altid_tlp: green
   tlp: amber
@@ -13,4 +11,17 @@ feeds:
     remote: http://www.nothink.org/blacklist/blacklist_ssh_day.txt
     application: ssh
     portlist: 22
-
+    tags: scanner
+    protocol: tcp
+  malware_http:
+    remote: http://www.nothink.org/blacklist/blacklist_malware_http.txt
+    tags:
+      - suspicious
+  malware_dns:
+    remote: http://www.nothink.org/blacklist/blacklist_malware_dns.txt
+    tags:
+      - suspicious
+  malware_irc:
+    remote: http://www.nothink.org/blacklist/blacklist_malware_irc.txt
+    tags:
+      - suspicious

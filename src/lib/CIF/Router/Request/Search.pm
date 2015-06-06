@@ -82,13 +82,24 @@ sub _log_search {
     
     $Logger->debug('logging search: '.$data->{'Query'});
     
+    my @groups = @{$data->{'Filters'}->{'group'}};
+    my $group = 'everyone';
+    # get the first group that isn't 'everyone'
+    if($#groups > 0){
+        foreach my $g (@groups){
+            next if $g eq 'everyone';
+            $group = $g;
+            last;
+        }
+    }
+    
     my $obs = CIF::ObservableFactory->new_plugin({ 
         observable  => $data->{'Query'},
-        provider    => $self->{'username'},
+        provider    => $self->{'user'}->{'username'},
         confidence  => CONFIDENCE_DEFAULT(),
         tlp         => TLP_DEFAULT(),
         tags        => ['search'],
-        group       => $data->{'Filters'}->{'group'},
+        group       => $group,
     });
     
     $obs = $obs->TO_JSON();

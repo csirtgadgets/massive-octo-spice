@@ -15,6 +15,7 @@ use Data::Dumper;
 use Text::Table;
 use CIF::StorageFactory;
 use YAML::Tiny;
+use Try::Tiny;
 
 use CIF qw/$Logger init_logging/;
 
@@ -50,6 +51,11 @@ GetOptions(
     'delete'            => \$action->{'delete'},
     'list'              => \$action->{'list'},
     'revoke'            => \$action->{'revoke'},
+    'import'            => \$action->{'import'},
+    'import-path=s'     => \$action->{'import-path'},
+    
+    'write-enable'      => \$action->{'write-enable'},
+    'write-disable'     => \$action->{'write-disable'},
     
     'generate-config-path=s'    => \$generate->{'path'},
     'generate-config-remote=s'  => \$generate->{'remote'},
@@ -108,6 +114,11 @@ Actions:
     --new           generate a new token               
     --delete        remove token
     --revoke        revoke a user / token
+    --import        import tokens list from v1 instance (bin/cif_apikeys_export) using STDIN
+    --import-path   specify a path to read for importing tokens (aka: apikeys in v1)
+    
+    --write-enable  enable write access for a specified user / token
+    --write-disable disable write access for a specified user / token
     
 Advanced:
 
@@ -121,8 +132,9 @@ Storage:
     --storage-host  default: $remote
 
  Examples:
-    $0 --new --user me\@example.com --expires 2016-07-01 --admin
-    $0 --new --user root --groups everyone,groupA,groupB
+    $0 --new --username me\@example.com --expires 2016-07-01 --admin
+    $0 --new --username root --groups everyone,groupA,groupB
+    $0 --username me\@example.com --write-enable
 
 EOF
 }
@@ -133,7 +145,49 @@ $storage = CIF::StorageFactory->new_plugin({
 });
 
 my $rv;
-my @cols = ('username','groups','admin','read','write','acl','expires','revoked','token');
+my @cols = ('username','description','groups','admin','read','write','acl','expires','revoked','token');
+
+if($action->{'import'}){
+    my $input;
+    if($action->{'import-path'}){
+        open(F, $action->{'import-path'}) || die($!);
+        $input = <F>;
+        close(F);
+    } else {
+        $input = <STDIN>;
+    }
+    die "no data" unless($input);
+    require JSON::XS;
+    my $array = JSON::XS::decode_json($input);
+    foreach my $a (@$array){
+        my ($ret,$err);
+        try {
+            $rv = $storage->token_new({
+                token       => $a->{'token'},
+                Username    => $a->{'username'},
+                Expires     => $a->{'expires'},
+                'read'      => $a->{'read'},
+                'write'     => $a->{'write'},
+                acl         => $a->{'acl'},
+                groups      => $a->{'groups'},
+                description => $a->{'description'} || '',
+            });
+            unless($rv){
+                $Logger->info('failed to generate new token...');
+                exit(-1);
+            }
+        } catch {
+            $err = shift;
+        };
+        if($err){
+            if($err =~ 'duplicate key'){
+                warn 'skipping, duplicate key: '.$a->{'uuid_alias'}.' - '.$a->{'uuid'};
+            } else {
+                die($err);
+            }
+        }
+    }
+}
 
 if($action->{'delete'}){
     $rv = $storage->token_delete({
@@ -186,6 +240,29 @@ if($action->{'revoke'}){
     });
 }
 
+if($action->{'write-enable'}){
+    unless($token->{'username'} || $token->{'token'}){
+        $Logger->crit('--write-enable requires --username or --token');
+        exit(-1);
+    }
+    $rv = $storage->token_edit({
+        Token       => $token->{'token'},
+        Username    => $token->{'username'},
+        'write'     => 1
+    });
+}
+if($action->{'write-disable'}){
+    unless($token->{'username'} || $token->{'token'}){
+        $Logger->crit('--write-disable requires --username or --token');
+        exit(-1);
+    }
+    $rv = $storage->token_edit({
+        Token       => $token->{'token'},
+        Username    => $token->{'username'},
+        'write'     => 0
+    });
+}
+
 $rv = $storage->token_list({ Username => $token->{'username'}, Token => $token->{'token'} });
 
 if($rv){
@@ -193,7 +270,7 @@ if($rv){
     foreach my $r (@$rv){
         my @list;
         foreach my $c (@cols){
-            $r->{$c} = 'yes' if($r->{$c} && $r->{$c} eq 1);
+           $r->{$c} = 'yes' if($r->{$c} && $r->{$c} eq 1); 
            if(ref($r->{$c}) eq 'ARRAY'){
                 $r->{$c} = join(',',@{$r->{$c}}); 
            }
