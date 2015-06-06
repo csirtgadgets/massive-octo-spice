@@ -6,6 +6,7 @@ use warnings;
 use Mouse;
 use Carp::Assert;
 use JSON::XS;
+use Try::Tiny;
 
 with 'CIF::Smrt::Parser';
 
@@ -28,6 +29,11 @@ sub process {
     
     my @values = @{ $defaults->{'values'} };
     assert(@values,'missing values param');  
+    
+    # in case they don't send us a json encoded array
+    if($data =~ /^{/ && $data =~ /}$/){
+        $data = '['.$data.']';
+    }
     
     my @feed = @{JSON::XS->new->decode($data)};
     
