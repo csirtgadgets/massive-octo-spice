@@ -527,8 +527,9 @@ sub token_list {
     my $q;
     if($args->{'Username'}){
         $q = {
-            default_field   => 'username',
-            query           => $args->{'Username'},
+            default_field           => 'username',
+            query                   => $args->{'Username'},
+            minimum_should_match    => 100
         };
     } elsif($args->{'Token'}) {
         $q = {
@@ -727,7 +728,7 @@ sub _tokenid_by {
     $q = {
 	    query  => {
 	        query_string   => {
-	            query  => $q
+	            query                  => $q,
 	        }
 	    }
 	};
@@ -750,7 +751,13 @@ sub _tokenid_by_username {
     my $self        = shift;
     my $username    = shift;
 
-    my $q = { default_field => 'username', query => $username };
+    my $q = { 
+        default_field           => 'username',
+        query                   => $username,
+        # https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html
+        minimum_should_match    => 100
+    };
+    
     return $self->_tokenid_by($q);
 }
 
@@ -758,7 +765,11 @@ sub _tokenid_by_token {
     my $self    = shift;
     my $token   = shift;
     
-    my $q = { default_field => 'token', query => $token };
+    my $q = { 
+        default_field           => 'token', 
+        query                   => $token,
+        minimum_should_match    => 100
+    };
     return $self->_tokenid_by($token);
 }
 
