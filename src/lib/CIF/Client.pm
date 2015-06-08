@@ -246,8 +246,22 @@ sub submit {
     
     foreach (@{$args->{'observables'}}){
         $_->{'observable'} = lc($_->{'observable'});
-        $self->_process_metadata($_) if($args->{'enable_metadata'});
-        $_ = CIF::ObservableFactory->new_plugin($_);
+        if($args->{'enable_metadata'}){
+            try {
+                $self->_process_metadata($_);
+            } catch {
+                $Logger->error(shift);
+                return -1;
+            };
+        }
+        
+        try {
+            $_ = CIF::ObservableFactory->new_plugin($_);
+        } catch {
+            $Logger->debug(Dumper($_));
+            $Logger->error(shift);
+            return -1;
+        };
     }
     return $self->_submit($args);
 }
@@ -258,6 +272,7 @@ sub _process_metadata {
     
     foreach my $p (@{$self->metadata_plugins}){
         next unless($p->understands($data));
+        $Logger->debug($p);
         $p->new()->process($data);
     }
 }

@@ -16,7 +16,7 @@ sub understands {
     my $args = shift;
 
     return unless($args->{'observable'});
-    return unless(is_ip($args->{'observable'}));
+    return unless(is_ip($args->{'observable'}) eq 'ipv4');
     return unless(!is_ip_private($args->{'observable'}));
     return 1;
 }

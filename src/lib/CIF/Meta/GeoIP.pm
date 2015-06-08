@@ -34,7 +34,7 @@ sub understands {
     return unless(-e FILE_LOC());
 
     return unless($args->{'observable'});
-    return unless(is_ip($args->{'observable'}));
+    return unless(is_ip($args->{'observable'}) eq 'ipv4'); #TODO - maxmind ipv6 needs some finangling
     return unless(!is_ip_private($args->{'observable'}));
 
     return 1;
