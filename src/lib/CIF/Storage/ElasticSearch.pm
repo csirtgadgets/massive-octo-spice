@@ -172,7 +172,7 @@ sub check_auth {
 sub process {
     my $self = shift;
     my $args = shift;
-    
+   
     unless($self->check_handle()){
         $Logger->warn('storage handle check failed...');
         return -1;
@@ -493,6 +493,9 @@ sub _submission {
             $Logger->error('missing group: '.$_->{'observable'});
             return 0;
         }
+        
+        $_->{'provider'} = $args->{'username'} unless($_->{'provider'});
+
         $_->{'@timestamp'}  = $timestamp;
         $_->{'@version'}    = 2;
         $_->{'id'}  = hash_create_random();

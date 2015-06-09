@@ -21,6 +21,7 @@ sub process {
     my $data    = shift || return -1;
     
     return 0 unless($self->user->{'write'});
+    $data->{'username'} = $self->user->{'username'};
     
     my $results = $self->storage->process($data);
     
