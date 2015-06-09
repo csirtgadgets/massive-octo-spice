@@ -58,7 +58,7 @@ sub process {
     }
     
     my $results = $self->storage->process($data);
-   
+    
     if($data->{'Query'} && $data->{'Query'} ne 'all'){
         $self->_log_search($data) unless($data->{'nolog'});
     }

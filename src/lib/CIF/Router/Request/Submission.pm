@@ -32,6 +32,7 @@ sub process {
     my $resp = CIF::Message::Submission->new({
         Results     => $results,
     });
+    
     return $resp;
 }
 

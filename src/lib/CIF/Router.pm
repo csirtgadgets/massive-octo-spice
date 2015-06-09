@@ -144,9 +144,14 @@ sub startup {
                             Data    => 'unknown failure',
                         });
                     } else {
-                       if(($msg->{'Data'}->{'Observables'} || $msg->{'Data'}->{'Query'}) && $resp->{'stype'} eq 'success'){
-                            $self->publish($msg) 
-                       }
+                        unless($msg->{'Data'}->{'nolog'}){
+                            if(($msg->{'Data'}->{'Observables'} || $msg->{'Data'}->{'Query'}) && $resp->{'stype'} eq 'success'){
+                                if($msg->{'Data'}->{'Query'} && !$msg->{'Data'}->{'provider'}){
+                                    $msg->{'Data'}->{'provider'} = $resp->Data->provider;
+                                }
+                                $self->publish($msg);
+                            }
+                        }
                     }
                         
                     $Logger->debug('re-encoding...');
@@ -203,6 +208,9 @@ sub process {
             } else {
                 $r->Data($rv);
                 $r->stype('success');
+                if($r->Data->{'Query'}){
+                    $r->Data->provider($user->{'username'});
+                }
             }
         } else {
             $Logger->error('request type not supported');
@@ -226,8 +234,14 @@ sub publish {
 
     for($m->{'rtype'}){
         if(/^search$/){
+            
             if($m->{'Data'}->{'Query'}){
-                $m = [{observable => $m->{'Data'}->{'Query'}, confidence => 50, tags => ['search']}]; ##TODO
+                $m = [{
+                    observable  => $m->{'Data'}->{'Query'}, 
+                    confidence  => 50, 
+                    tags        => ['search'],
+                    provider    => $m->{'Data'}->{'provider'},
+                }];
                 last;
             }
             $m = undef;

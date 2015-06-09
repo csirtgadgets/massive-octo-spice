@@ -5,11 +5,11 @@ use warnings;
 
 use Mouse;
 
-has [qw/Id Query Results Filters feed/] => (
+has [qw/Id Query Results Filters provider/] => (
     is  => 'rw',
 );
 
-has [qw/feed nolog/] => (
+has [qw/nolog/] => (
     is  => 'ro',
 );
 	   
@@ -29,8 +29,8 @@ sub TO_JSON {
         'Id'			=> $self->Id,
         'Results'       => $self->Results,
         'Filters'       => $self->Filters,
-        'feed'          => $self->feed,
         'nolog'         => $self->nolog,
+        'provider'      => $self->provider,
     };
     return $ret;
 }
