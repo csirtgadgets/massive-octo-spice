@@ -4,6 +4,7 @@ Revision history for massive-octo-spice
     - fixes:
         - https://github.com/csirtgadgets/p5-cif-sdk/issues/32
         - https://github.com/csirtgadgets/massive-octo-spice/issues/237
+        - setting default provider to username on submission
 
 2.00.00-beta.6 2015-06-06
     - fixes:
