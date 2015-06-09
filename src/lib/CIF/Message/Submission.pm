@@ -10,10 +10,6 @@ has 'Observables' => (
     reader  => 'get_Observables',
 );
 
-has 'Feed' => (
-    is      => 'ro',
-);
-
 has 'Results'   => (
     is      => 'rw',
     reader  => 'get_Results',
@@ -34,7 +30,6 @@ sub TO_JSON {
     my $ret = {
         'Observables'   => $self->get_Observables(),
         'Results'       => $self->get_Results(),
-        'Feed'          => $self->Feed(),
     };
     return $ret;
 }

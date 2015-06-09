@@ -198,7 +198,6 @@ sub search {
 	        mtype      => 'request',
 	        Token      => $args->{'token'} || $self->token,
 	        Id         => $args->{'id'},
-	        feed       => $args->{'feed'},
     	});
     } else {
     	$msg = CIF::Message->new({
@@ -207,7 +206,6 @@ sub search {
 	        Token      => $args->{'token'} || $self->token,
 	        Query      => $args->{'query'},
 	        Filters    => $filters,
-	        feed       => $args->{'feed'},
 	        nolog      => $args->{'nolog'},
 	    });
     }
@@ -231,13 +229,6 @@ sub search {
         }
     }
     return (undef, $msg->{'Data'}->{'Results'});
-}
-
-sub submit_feed {
-    my $self = shift;
-    my $args = shift;
-    
-    return $self->_submit($args);
 }
 
 sub submit {
@@ -286,7 +277,6 @@ sub _submit {
         mtype       => 'request',
         Token       => $args->{'token'} || $self->token() || $self->{'Token'},
         Observables => $args->{'observables'},
-        Feed        => $args->{'feed'},
     });
     
     my $sent = 1;

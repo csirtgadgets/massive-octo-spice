@@ -24,9 +24,7 @@ use constant {
     MAX_SIZE            => 0,
     MAX_COUNT           => 0,
     OBSERVABLES         => 'cif.observables',
-    FEEDS               => 'cif.feeds',
     OBSERVABLES_TYPE    => 'observables',
-    FEEDS_TYPE          => 'feeds',
     LIMIT               => 50000,
     
     TOKENS_INDEX        => 'cif.tokens',
@@ -48,13 +46,6 @@ has 'observables_index'  => (
     is      => 'ro',
     default => sub { OBSERVABLES },
 );
-
-has 'feeds_index' => (
-    is      => 'ro',
-    default => sub { FEEDS },
-);
-
-has 'feeds_type' => ( is => 'ro', default => sub { FEEDS_TYPE } );
 
 has 'max_count' => (
     is      => 'ro',
@@ -181,15 +172,11 @@ sub process {
     }
     
     my $ret;
-    if($args->{'Query'} && $args->{'feed'}){
-    	$Logger->debug('searching for feed...');
-    	$ret = $self->_feed($args);
-    	
-    } elsif($args->{'Query'} || $args->{'Id'} || $args->{'Filters'}){
+    if($args->{'Query'} || $args->{'Id'} || $args->{'Filters'}){
         $Logger->debug('searching...');
         $ret = $self->_search($args);
         
-    } elsif($args->{'Observables'} || $args->{'Feed'}){
+    } elsif($args->{'Observables'}){
         $Logger->debug('submitting...');
         $ret = $self->_submission($args);
         
@@ -361,10 +348,6 @@ sub _search {
 	}
 	
     my $index = $self->observables_index();
-    if($args->{'feed'}){
-        $filters->{'limit'} = 1;	
-        $index = $self->feeds_index;
-    }
     
     $index .= '-*';
     
@@ -389,13 +372,6 @@ sub _search {
         $results = _fqdn_results($args->{'Filters'}->{'rdata'},$results);
     }
     
-    if(defined($args->{'feed'})){
-        if($#{$results} >= 0){
-            $results = [@{$results}[0]->{'Observables'}];
-        } else {
-            $Logger->debug('no results found...');
-        }
-    }
     $Logger->debug('returning..');
     return $results;
 }
@@ -458,10 +434,6 @@ sub _submission {
         $things = $args->{'Observables'};
         $index = $self->observables_index();
         $type = 'observables';
-    } else {
-        $type = $self->feeds_type;
-        $things = $args->{'Feed'};
-        $index = $self->feeds_index,
     }
     
     $index = $index.'-'.$date;

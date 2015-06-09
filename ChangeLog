@@ -7,6 +7,7 @@ Revision history for massive-octo-spice
         - setting default provider to username on submission
         - https://github.com/csirtgadgets/massive-octo-spice/issues/236
         - https://github.com/csirtgadgets/massive-octo-spice/issues/235
+        - removing legacy 'feed' bits (now in bin/cif) 
 
 2.00.00-beta.6 2015-06-06
     - fixes:
