@@ -62,32 +62,6 @@ cpanm Search::Elasticsearch@1.19
 echo 'HRNGDEVICE=/dev/urandom' >> /etc/default/rng-tools
 service rng-tools restart
 
-echo 'setting up bind...'
-
-if [ -z `grep -l '8.8.8.8' /etc/bind/named.conf.options` ]; then
-    echo 'overwriting bind config'
-    cp /etc/bind/named.conf.options /etc/bind/named.conf.options.orig
-    cp named.conf.options /etc/bind/named.conf.options
-fi
-
-if [ -z `grep -l 'spamhaus.org' /etc/bind/named.conf.local` ]; then
-    cat ./named.conf.local >> /etc/bind/named.conf.local
-fi
-
-echo 'restarting bind...'
-service bind9 restart
-
-if [ -z `grep -l '^prepend domain-name-servers 127.0.0.1;' /etc/dhcp/dhclient.conf` ]; then
-    cp dhclient.conf /etc/dhcp/
-fi
-
-if [ -z `grep -l '127.0.0.1' /etc/resolvconf/resolv.conf.d/base` ]; then
-    echo 'adding 127.0.0.1 as nameserver'
-    echo "nameserver 127.0.0.1" >> /etc/resolvconf/resolv.conf.d/base
-    echo "restarting network..."
-    ifdown eth0 && sudo ifup eth0
-fi
-
 echo 'setting up apache'
 if [ ! -f /etc/apache2/cif.conf ]; then
     cp cif.conf /etc/apache2/
@@ -189,6 +163,32 @@ cp ./hacking/platforms/ubuntu/cif.logrotated /etc/logrotate.d/cif
 
 echo 'setting default cif-starman.conf'
 cp ./hacking/platforms/ubuntu/cif-starman.conf /etc/cif/
+
+echo 'setting up bind...'
+
+if [ -z `grep -l '8.8.8.8' /etc/bind/named.conf.options` ]; then
+    echo 'overwriting bind config'
+    cp /etc/bind/named.conf.options /etc/bind/named.conf.options.orig
+    cp named.conf.options /etc/bind/named.conf.options
+fi
+
+if [ -z `grep -l 'spamhaus.org' /etc/bind/named.conf.local` ]; then
+    cat ./named.conf.local >> /etc/bind/named.conf.local
+fi
+
+echo 'restarting bind...'
+service bind9 restart
+
+if [ -z `grep -l '^prepend domain-name-servers 127.0.0.1;' /etc/dhcp/dhclient.conf` ]; then
+    cp dhclient.conf /etc/dhcp/
+fi
+
+if [ -z `grep -l '127.0.0.1' /etc/resolvconf/resolv.conf.d/base` ]; then
+    echo 'adding 127.0.0.1 as nameserver'
+    echo "nameserver 127.0.0.1" >> /etc/resolvconf/resolv.conf.d/base
+    echo "restarting network..."
+    ifdown eth0 && sudo ifup eth0
+fi
 
 if [ -f /etc/init.d/cif-router ]; then
 	update-rc.d cif-router remove 95 10
