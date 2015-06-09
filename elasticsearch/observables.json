@@ -35,7 +35,8 @@
 					"type": "date"
 				},
 				"provider": {
-					"type": "string"
+					"type": "string",
+					"index": "not_analyzed"
 				},
 				"rdata": {
 					"type": "string",

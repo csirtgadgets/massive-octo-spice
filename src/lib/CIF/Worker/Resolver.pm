@@ -78,20 +78,27 @@ sub _rr_to_observation {
             $Logger->debug(Dumper($data));
             
         } else {
+            unless($data->{'tlp'}){
+                $data->{'tlp'} = CIF::TLP_DEFAULT;
+            }
+            if($data->{'altid'} && !$data->{'altid_tlp'}){
+                 $data->{'altid_tlp'} = $data->{'tlp'} || CIF::TLP_DEFAULT;
+            }
+                
             my $o = {
                 related     => $data->{'id'},
                 observable  => $thing,
                 confidence  => $confidence,
                 tags        => $tags,
-                tlp         => $data->{'tlp'} || CIF::TLP_DEFAULT,
+                tlp         => $data->{'tlp'},
                 group       => $data->{'group'} || CIF::GROUP_DEFAULT,
-                provider    => $data->{'provider'} || CIF::PROVIDER_DEFAULT,
+                provider    => $data->{'provider'},
                 rdata       => $data->{'observable'},
                 application => $app,
                 portlist    => $data->{'portlist'},
                 protocol    => $data->{'protocol'} || undef,
                 altid       => $data->{'altid'},
-                altid_tlp   => $data->{'altid_tlp'} || $data->{'tlp'} || CIF::TLP_DEFAULT,
+                altid_tlp   => $data->{'altid_tlp'},
                 rtype       => $type,
                 lasttime    => $ts,
                 reporttime  => $ts,
