@@ -223,8 +223,6 @@ sub process {
         $r->stype('unauthorized');
     }
     
-    $Logger->debug(Dumper($r));
-    
     return $r;
 }
 
