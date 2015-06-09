@@ -21,11 +21,12 @@ sub process {
     my $data    = shift || return -1;
     
     return 0 unless($self->user->{'write'});
-    $data->{'username'} = $self->user->{'username'};
+    
+    $data->{'user'} = $self->user;
     
     my $results = $self->storage->process($data);
     
-    return 0 unless($results);
+    return (0) unless($results);
     
     $results = [ $results ] unless(ref($results) eq 'ARRAY');
 

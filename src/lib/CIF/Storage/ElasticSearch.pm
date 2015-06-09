@@ -485,6 +485,11 @@ sub _submission {
         },
     );
     
+    my $usergroups = {};
+    foreach my $g (@{$args->{'user'}->{'groups'}}){
+        $usergroups->{$g} = 1;
+    }
+    
     # we may want to change this so we're flushing every X count or X size???
     # http://search.cpan.org/~drtech/Search-Elasticsearch-1.16/lib/Search/Elasticsearch/Bulk.pm
     # https://github.com/csirtgadgets/massive-octo-spice/issues/117
@@ -492,6 +497,13 @@ sub _submission {
         unless($_->{'group'}){
             $Logger->error('missing group: '.$_->{'observable'});
             return 0;
+        }
+        
+        foreach my $g (@{$_->{'group'}}){
+            unless($usergroups->{$g}){
+                $Logger->error($args->{'user'}->{'username'} . ' unauthroized to post to group: '.$g);
+                return 0;
+            }
         }
         
         $_->{'provider'} = $args->{'username'} unless($_->{'provider'});

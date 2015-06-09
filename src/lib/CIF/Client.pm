@@ -304,6 +304,7 @@ sub _submit {
         $Logger->info('took: ~'.$t);
         $Logger->info('rate: ~'.($sent/$t).' o/s');
         return $msg->{'Data'} if($msg->{'stype'} eq 'failure');
+        return 0 if($msg->{'stype'} eq 'unauthorized');
         return(undef,$msg->{'Data'}->{'Results'});
     } else {
         $Logger->warn('send failed');
