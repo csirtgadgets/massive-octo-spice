@@ -228,12 +228,12 @@ unless($token){
 $Logger->info('staring up...');
 
 if($daemon){
-    $ARGV[0] = 'start' unless($ARGV[0] && $daemon);
+    $ARGV[0] = 'start';
     
     my $rv = Daemon::Control->new(
-     	name    => 'cif-smrt',
-     	#prereq_no_process => 1,
-        program => sub { main() },
+     	name              => 'cif-smrt',
+     	prereq_no_process => 1,
+        program           => sub { main() },
             
         pid_file    => $pidfile,
         fork        => 2,
