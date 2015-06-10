@@ -64,7 +64,7 @@ service rng-tools restart
 
 echo 'setting up apache'
 if [ ! -f /etc/apache2/cif.conf ]; then
-    cp cif.conf /etc/apache2/
+    /bin/cp cif.conf /etc/apache2/
 fi
 
 if [ $VER == "12.04" ]; then
@@ -191,17 +191,17 @@ if [ -z `grep -l '127.0.0.1' /etc/resolvconf/resolv.conf.d/base` ]; then
 fi
 
 if [ -f /etc/init.d/cif-router ]; then
-	update-rc.d cif-router remove 95 10
-	update-rc.d cif-smrt remove 95 10
-	update-rc.d cif-worker remove 95 10
-	update-rc.d cif-starman remove 95 10
+	update-rc.d -f cif-router remove 95 10
+	update-rc.d -f cif-smrt remove 95 10
+	update-rc.d -f cif-worker remove 95 10
+	update-rc.d -f cif-starman remove 95 10
 else
 	echo 'copying init.d scripts...'
-	cp ./hacking/packaging/ubuntu/init.d/cif-smrt /etc/init.d/
-	cp ./hacking/packaging/ubuntu/init.d/cif-router /etc/init.d/
-	cp ./hacking/packaging/ubuntu/init.d/cif-starman /etc/init.d/
-	cp ./hacking/packaging/ubuntu/init.d/cif-worker /etc/init.d/
-	cp ./hacking/packaging/ubuntu/init.d/cif-services /etc/init.d/
+	/bin/cp ./hacking/packaging/ubuntu/init.d/cif-smrt /etc/init.d/
+	/bin/cp ./hacking/packaging/ubuntu/init.d/cif-router /etc/init.d/
+	/bin/cp ./hacking/packaging/ubuntu/init.d/cif-starman /etc/init.d/
+	/bin/cp ./hacking/packaging/ubuntu/init.d/cif-worker /etc/init.d/
+	/bin/cp ./hacking/packaging/ubuntu/init.d/cif-services /etc/init.d/
 fi
 
 update-rc.d cif-services defaults 99 01
