@@ -1,0 +1,57 @@
+# this is a template cif-smrt configuration file. the purpose of this file
+# is to copy it to a newly named file and edit it as needed
+#
+# cp /etc/cif/rules/example/csv_example.yml /etc/cif/rules/default/filename.yml
+
+# parser: instruct cif-smrt to use which type of parser
+#   values: csv, pipe, regex, json, delim, rss, xml, html, text
+parser: pipe
+
+# values within default apply to all feeds
+defaults:
+
+  # provider: short name of the source, normally the fqdn of the source URL
+  provider: feeds.example.com
+
+  # altid_tlp: traffic light protocol (TLP) of the alternet id
+  #   (red, amber, green, white)
+  altid_tlp: amber
+
+  # tlp: traffic light protocol (TLP) of the observable
+  #   (red, amber, green, white)
+  tlp: amber
+
+  # confidence: confidence in the observable (65,75,85,95)
+  confidence: 75
+
+  # values: columns in the pipe delimited file to be parsed
+  values:
+    - observable
+    - lasttime
+
+# values within the friendly name apply only to that feed
+feeds:
+  # friendly name for feed
+  pipe_example:
+
+    # remote: URL or filepath on host to feed source
+    remote: https://feeds.example.com/scanners.csv
+
+    # tags: tag(s) describing the data (https://goo.gl/OCK8yc)
+    tags:
+      - scanner
+      - suspicious
+
+    # application: application associated with the identified port 
+    #  (ssh, smtp, http, imap, ftp, sip, vnc, irc)
+    application: ssh
+
+    # portlist: Port or a hyphen seperated range of ports
+    #  (22, 25, 6667-7000)
+    portlist: 22
+
+    # protocol: (tcp, udp)
+    protocol: tcp
+
+    # description: text description of the observable
+    description: 'hosts seen scanning ssh servers'
