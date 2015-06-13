@@ -1,7 +1,7 @@
 # this is a template cif-smrt configuration file. the purpose of this file
 # is to copy it to a newly named file and edit it as needed
 #
-# cp /etc/cif/rules/example/csv_example.yml /etc/cif/rules/default/filename.yml
+# cp /etc/cif/rules/example/pipe_example.yml /etc/cif/rules/default/filename.yml
 
 # parser: instruct cif-smrt to use which type of parser
 #   values: csv, pipe, regex, json, delim, rss, xml, html, text
