@@ -1,7 +1,7 @@
 # this is a template cif-smrt configuration file. the purpose of this file
 # is to copy it to a newly named file and edit it as needed
 #
-# cp /etc/cif/rules/example/csv_example.yml /etc/cif/rules/default/filename.yml
+# cp /etc/cif/rules/example/json_example.yml /etc/cif/rules/default/filename.yml
 
 # parser: instruct cif-smrt to use which type of parser
 #   values: csv, pipe, regex, json, delim, rss, xml, html, text
@@ -24,18 +24,13 @@ defaults:
   # confidence: confidence in the observable (65,75,85,95)
   confidence: 75
 
-  # values: columns in the CSV file to be parsed
-  values:
-    - observable
-    - lasttime
-
 # values within the friendly name apply only to that feed
 feeds:
   # friendly name for feed
-  csv_example:
+  json_example:
 
     # remote: URL or filepath on host to feed source
-    remote: https://feeds.example.com/scanners.csv
+    remote: https://feeds.example.com/scanners.json
 
     # map: the keys in the json
     map:
