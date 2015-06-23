@@ -1,0 +1,47 @@
+# this is a template cif-smrt configuration file. the purpose of this file
+# is to copy it to a newly named file and edit it as needed
+#
+# cp /etc/cif/rules/example/text_example.yml /etc/cif/rules/default/filename.yml
+
+# parser: instruct cif-smrt to use which type of parser
+#   values: csv, pipe, regex, json, delim, rss, xml, html, text
+#
+# the text parser works by tokenizing each word and evaluating if the 
+# word is one of the following: url, ipv4, ipv4, fqdn, email, hash, binary
+#
+# text matching should almost always be a low conficence as google.com would
+# certainly match as a fqdn
+parser: text
+
+# values within default apply to all feeds
+defaults:
+
+  # provider: short name of the source, normally the fqdn of the source URL
+  provider: blog.example.com
+
+  # altid_tlp: traffic light protocol (TLP) of the alternet id
+  #   (red, amber, green, white)
+  altid_tlp: amber
+
+  # tlp: traffic light protocol (TLP) of the observable
+  #   (red, amber, green, white)
+  tlp: amber
+
+  # confidence: confidence in the observable (65,75,85,95)
+  confidence: 65
+
+  # tags: tag(s) describing the data (https://goo.gl/OCK8yc)
+  tags: suspicious
+
+  # store_content: do you want to store the text line as "additional data"
+  # where the matching observable was found
+  # (0, 1) - (0 is no, 1 is yes)
+  store_content: 1
+
+# values within the friendly name apply only to that feed
+feeds:
+  # friendly name for feed
+  html_example:
+
+    # remote: URL or filepath on host to feed source
+    remote: http://blog.example.com
