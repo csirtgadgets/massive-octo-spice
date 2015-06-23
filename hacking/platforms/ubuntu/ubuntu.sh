@@ -106,7 +106,6 @@ set +e
 echo 'removing old elastic search templates'
 curl -XDELETE http://localhost:9200/_template/template_cif_observables > /dev/null 2>&1
 curl -XDELETE http://localhost:9200/_template/template_cif_tokens > /dev/null 2>&1
-curl -XDELETE http://localhost:9200/_template/template_cif_feeds > /dev/null 2>&1
 set -e
 
 cd ../../../
