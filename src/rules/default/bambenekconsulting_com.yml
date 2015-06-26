@@ -1,17 +1,29 @@
- parser: csv
- defaults:
-   provider: osint.bambenekconsulting.com
-   tlp: amber
-   confidence: 75
-   alt_tlp: green
-   values:
-       - observable
-       - description
-       - lasttime
-       - altid
- 
- feeds:
-   c2_masterlist:
-     remote: http://osint.bambenekconsulting.com/feeds/c2-masterlist.txt
-     tags:
-       - botnet
+defaults:
+  provider: osint.bambenekconsulting.com
+  tlp: amber
+  confidence: 85
+  alt_tlp: green
+  remote: http://osint.bambenekconsulting.com/feeds/c2-masterlist.txt
+  tags:
+    - botnet
+  values:
+      - observable
+      - description
+      - lasttime
+      - altid
+
+feeds:
+  nameservers:
+    pattern: ^(\S+)\,Nameserver IP used by ([^,]+)\,([^,]+)\,(\S+)$
+    confidence: 35
+    tags:
+      - botnet
+      - nameserver
+
+  # this might just be too many dups of the domains feed
+  # ips:
+    # pattern: ^(\S+)\,IP used by ([^,]+)\,([^,]+)\,(\S+)$
+    # confidence: 65
+
+  domains:
+    pattern: ^(\S+)\,Domain used by ([^,]+)\,([^,]+)\,(\S+)$
