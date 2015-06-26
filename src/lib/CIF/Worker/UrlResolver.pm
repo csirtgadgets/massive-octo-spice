@@ -39,6 +39,7 @@ sub process {
     
     $obs = {
         observable  => $obs->host,
+        rdata       => $data->{'observable'},
         portlist    => $obs->port,
         related     => $data->{'id'},
         tags        => $data->{'tags'} || [],

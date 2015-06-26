@@ -11,7 +11,7 @@ my $encoder = JSON::XS->new->convert_blessed;
 sub index {
     my $self = shift;
 
-    my $query      	= $self->param('q') || $self->param('observable');
+    my $query      	= scalar $self->param('q') || scalar $self->param('observable');
     
     my $filters = {};
     
@@ -20,6 +20,7 @@ sub index {
     }
     
     my $res;
+    warn Dumper($query);
     if($query or scalar(keys($filters)) > 0){
         $filters->{'confidence'} = 0 unless($filters->{'confidence'});
         $Logger->debug('generating search...');

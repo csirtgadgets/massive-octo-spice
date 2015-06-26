@@ -50,6 +50,7 @@ sub process {
         next if(is_ip_private($obs));
         push(@array, {
             observable  => $obs,
+            rdata       => $data->{'observable'},
             portlist    => $data->{'portlist'},
             protocol    => $data->{'protocol'},
             tags        => $rr->{'assessment'},
