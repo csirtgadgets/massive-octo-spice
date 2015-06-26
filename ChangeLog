@@ -10,6 +10,7 @@ Revision history for massive-octo-spice
         - removing legacy 'feed' bits (now in bin/cif) 
 	    - https://github.com/csirtgadgets/massive-octo-spice/issues/234
         - https://github.com/csirtgadgets/massive-octo-spice/issues/248
+        - https://github.com/csirtgadgets/massive-octo-spice/issues/251
 
 2.00.00-beta.6 2015-06-06
     - fixes:
