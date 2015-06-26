@@ -65,11 +65,13 @@ sub _rr_to_observation {
             if(/^NS$/){
                 $thing = $rr->nsdname();
                 $app = 'dns';
+                $confidence = 35;
                 last;
             }
             if(/^MX$/){
                 $thing = $rr->exchange();
                 $app = 'smtp';
+                $confidence = 35;
                 last;
             }
         }
