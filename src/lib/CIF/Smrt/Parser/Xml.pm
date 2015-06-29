@@ -24,18 +24,28 @@ sub process {
     $Logger->debug('parsing as XML....');
     
     my $defaults = $self->rule->defaults;
-    
+
     my $parser      = XML::LibXML->new();
     my $doc         = $parser->load_xml(string => $data);
     my @nodes       = $doc->findnodes('//'.$defaults->{'node'});
+    if($defaults->{'subnode'}){
+        @nodes    = $doc->findnodes('//'.$defaults->{'node'} . '/' . $defaults->{'subnode'});
+    }
     my @map         = @{$defaults->{'map'}};
     my @values      = @{$defaults->{'values'}};
     
     my (@array,$h);
+
     foreach my $node (@nodes){
+        $Logger->debug($node);
         $h = undef;
         foreach my $e (0 ... $#map){
-            my $x = $node->findvalue('./'.$map[$e]);
+            my $x;
+            if($defaults->{'subnode'} && $map[$e] eq $defaults->{'subnode'}){
+                $x = $node->textContent();
+            } else {
+                $x = $node->findvalue('./'.$map[$e]);
+            }
             $h->{$values[$e]} = $x;
         }
         if($h->{'observable'}){
