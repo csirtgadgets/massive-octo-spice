@@ -32,7 +32,7 @@ feeds:
     pattern:
         title:
           # regex pattern to parse the title tag
-          pattern: '(\S+)' 
+          pattern: '(\S+)'
           values: description
         link:
           # regex pattern to parse the link tag
@@ -44,7 +44,7 @@ feeds:
           values: observable
         pubDate:
           # regex pattern to parse the pubDate tag
-          pattern: '(\S+)'
+          pattern: '^([\w|\s,\d:]+)$'
           values: lasttime
 
     # tags: tag(s) describing the data (https://goo.gl/OCK8yc)
