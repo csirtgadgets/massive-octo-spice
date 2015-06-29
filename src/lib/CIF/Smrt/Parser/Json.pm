@@ -39,12 +39,12 @@ sub process {
     
     return unless($#feed > -1);
     
-    my ($start,$end) = (0,($#feed-1));
+    my ($start,$end) = (0,($#feed+1));
     $end = $defaults->{'limit'} if($defaults->{'limit'});
 
     my @array;
     my ($x,$y,$z);
-
+    
     for (my $i = 0; $i <= $end; $i++){
         $x = $feed[$i];
         foreach (0 ... $#map){
