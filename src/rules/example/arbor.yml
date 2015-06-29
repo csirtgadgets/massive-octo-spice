@@ -1,0 +1,15 @@
+parser: xml
+defaults:
+  provider: 'atlas.arbor.net'
+  tlp: amber
+  confidence: 75
+
+feeds:
+  flux:
+    remote: 'http://atlas.arbor.net/summary/fastflux.xml'
+    node: newest
+    subnode: domain
+    map:
+      - domain
+    values:
+      - observable
