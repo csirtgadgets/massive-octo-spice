@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<report>
+  <title>ATLAS Summary Report: Global Fast Flux</title>
+  <newest>
+
+      <domain created="1374711922">stjohnhos.co.uk</domain>
+
+      <domain created="1374366276">newflirtingdates.info</domain>
+
+      <domain created="1373588730">switch-to-dish.com</domain>
+
+      <domain created="1373588727">com-jun-30.us</domain>
+
+      <domain created="1373502225">mybestchoice.biz</domain>
+
+      <domain created="1373415909">joxbox.com</domain>
+
+      <domain created="1373415708">afghandosti.com</domain>
+
+      <domain created="1373070267">com-june-19.us</domain>
+
+      <domain created="1372983866">com-jun-19.us</domain>
+
+      <domain created="1372983866">getghosted.com</domain>
+
+  </newest>
+  <longest>
+
+      <domain start="1200684127">
+        ibank-halifax.com
+      </domain>
+
+      <domain start="1361584586">
+        emltrk.com
+      </domain>
+
+      <domain start="1361591472">
+        brylanehome.com
+      </domain>
+
+  </longest>
+  <networks>
+
+  </networks>
+  <clients>
+
+		<country>
+
+			<entity>
+				<name>United States (US)</name>
+				<hosts>517</hosts>
+				<percent>0.0%</percent>
+			</entity>
+			<entity>
+				<name>5.000000 (5.000000)</name>
+				<hosts>1805924644</hosts>
+				<percent>100.0%</percent>
+			</entity>
+			<entity>
+				<name>European Union (EU)</name>
+				<hosts>1</hosts>
+				<percent>0.0%</percent>
+			</entity>
+		</country>
+
+
+
+
+
+		<host>
+
+			<entity>
+				<name>54.231.8.196 (s3-website-us-east-1.amazonaws.com)</name>
+				<domains>1</domains>
+				<percent>33.3%</percent>
+			</entity>
+			<entity>
+				<name>54.231.16.44 (s3-website-us-east-1.amazonaws.com)</name>
+				<domains>1</domains>
+				<percent>33.3%</percent>
+			</entity>
+			<entity>
+				<name>54.231.16.180 (s3-website-us-east-1.amazonaws.com)</name>
+				<domains>1</domains>
+				<percent>33.3%</percent>
+			</entity>
+			<entity>
+				<name>54.231.18.228 (s3-website-us-east-1.amazonaws.com)</name>
+				<domains>1</domains>
+				<percent>33.3%</percent>
+			</entity>
+			<entity>
+				<name>54.231.1.228 (s3-website-us-east-1.amazonaws.com)</name>
+				<domains>1</domains>
+				<percent>33.3%</percent>
+			</entity>
+			<entity>
+				<name>54.231.14.36 (s3-website-us-east-1.amazonaws.com)</name>
+				<domains>1</domains>
+				<percent>33.3%</percent>
+			</entity>
+			<entity>
+				<name>104.64.67.16 (a104-64-67-16.deploy.static.akamaitechnologies.com)</name>
+				<domains>1</domains>
+				<percent>33.3%</percent>
+			</entity>
+			<entity>
+				<name>2.19.79.165</name>
+				<domains>1</domains>
+				<percent>33.3%</percent>
+			</entity>
+			<entity>
+				<name>23.218.133.130 (a23-218-133-130.deploy.static.akamaitechnologies.com)</name>
+				<domains>1</domains>
+				<percent>33.3%</percent>
+			</entity>
+			<entity>
+				<name>54.231.17.204 (s3-website-us-east-1.amazonaws.com)</name>
+				<domains>1</domains>
+				<percent>33.3%</percent>
+			</entity>
+			<entity>
+				<name>Other</name>
+				<domains>3</domains>
+				<percent>100.0%</percent>
+			</entity>
+		</host>
+
+
+  </clients>
+</report>

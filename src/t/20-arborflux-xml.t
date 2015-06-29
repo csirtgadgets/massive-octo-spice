@@ -13,13 +13,13 @@ BEGIN {
 
 use CIF qw/parse_rules normalize_timestamp/;
 
-my $rule = parse_rules('rules/default/phishtank.yml','urls');
+my $rule = parse_rules('rules/example/arbor.yml','flux');
 
 ok($rule, 'testing rule...');
 
 $rule->set_not_before('10000 days ago');
 
-$rule->{'defaults'}->{'remote'} = 'testdata/phishtank.com/online-valid.json.gz';
+$rule->{'defaults'}->{'remote'} = 'testdata/arbor.com/fastflux.xml';
 
 my $ret = CIF::Smrt->new({
     rule            => $rule,
@@ -27,8 +27,8 @@ my $ret = CIF::Smrt->new({
     ignore_journal  => 1,
     not_before      => '2010-01-01',
 })->process();
-    
+
 ok($#{$ret} >= 0,'testing for results...');
-ok($#{$ret} == 15,'testing for 15 results...');
+ok($#{$ret} == 9,'testing for 9 results...');
 
 done_testing();
