@@ -44,7 +44,7 @@ sub process {
 
     my @array;
     my ($x,$y,$z);
-    
+
     for (my $i = 0; $i <= $end; $i++){
         $x = $feed[$i];
         foreach (0 ... $#map){
