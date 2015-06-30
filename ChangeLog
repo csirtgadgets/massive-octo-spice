@@ -1,5 +1,9 @@
 Revision history for massive-octo-spice
 
+2.00.00-beta.10 2015-06-30
+    - fixes:
+        - moved zmqx-class to github://csirtgadgets, updated ubuntu script
+
 2.00.00-beta.9 2015-06-30
     - fixes:
         - https://github.com/csirtgadgets/massive-octo-spice/issues/249
