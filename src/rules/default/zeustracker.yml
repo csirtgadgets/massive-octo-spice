@@ -10,11 +10,11 @@ defaults:
     - botnet
   pattern:
     description:
-      pattern: '^URL: ([\s\S]*), status: online, MD5 hash:'
+      pattern: '^URL: ([\s\S]*), status: online, version: \d, MD5 hash:'
       values: observable
     title:
       pattern: ^\S+\s\((\S+)\)$
-      values: lasttime 
+      values: lasttime
 
 feeds:
   binaries:
