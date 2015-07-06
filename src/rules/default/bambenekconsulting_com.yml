@@ -3,7 +3,6 @@ defaults:
   tlp: amber
   confidence: 85
   alt_tlp: green
-  remote: http://osint.bambenekconsulting.com/feeds/c2-masterlist.txt
   tags:
     - botnet
   values:
@@ -13,17 +12,6 @@ defaults:
       - altid
 
 feeds:
-  nameservers:
-    pattern: ^(\S+)\,Nameserver IP used by ([^,]+)\,([^,]+)\,(\S+)$
-    confidence: 35
-    tags:
-      - botnet
-      - nameserver
-
-  # this might just be too many dups of the domains feed
-  # ips:
-    # pattern: ^(\S+)\,IP used by ([^,]+)\,([^,]+)\,(\S+)$
-    # confidence: 65
-
   domains:
+    remote: http://osint.bambenekconsulting.com/feeds/c2-dommasterlist.txt
     pattern: ^(\S+)\,Domain used by ([^,]+)\,([^,]+)\,(\S+)$
