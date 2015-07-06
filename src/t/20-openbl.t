@@ -23,7 +23,7 @@ my $ret = CIF::Smrt->new({
         not_before      => '2010-01-01',
 })->process();
 
-ok($ret && $#{$ret} >= 0,'testing for results for: '.$_->{'feed'});
+ok($ret && $#{$ret} >= 0,'testing for results for: '.$rule->{'feed'});
 ok(@$ret[-1]->{'observable'} eq '103.31.75.15', 'testing output...');
 ok($#{$ret} == 117);
 
