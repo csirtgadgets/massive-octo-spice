@@ -355,9 +355,21 @@ sub _search {
     
     my %search = (
         index   => $index,
-        size    => $filters->{'limit'} || 5000,
+        size    => $filters->{'limit'} || 500000,
         body    => $q,
     );
+    
+    # work-around https://github.com/csirtgadgets/massive-octo-spice/issues/257#issuecomment-118855811
+    # cleaner fix in v3
+    if(is_ip($args->{'Query'})){
+        %search = (
+            index   => $index,
+            size    => 500000,
+            body    => $q,
+        );
+    }
+    
+    $Logger->debug(Dumper($filters));
     
     my $results = $self->handle->search(%search);
     $results = $results->{'hits'}->{'hits'};
@@ -371,6 +383,11 @@ sub _search {
     } elsif($args->{'Filters'}->{'rdata'} && is_fqdn($args->{'Filters'}->{'rdata'})) {
         $results = _fqdn_results($args->{'Filters'}->{'rdata'},$results);
     }
+    
+    if($filters->{'limit'} && $filters->{'limit'} < $#{$results}){
+        $#{$results} = ($filters->{'limit'} - 1);
+    }
+    $Logger->debug($#{$results});    
     
     $Logger->debug('returning..');
     return $results;
