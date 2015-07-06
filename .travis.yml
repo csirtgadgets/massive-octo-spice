@@ -3,8 +3,7 @@ perl:
     - 5.18
 
 env:
-    - VERSION="2.0"
-    - CPANM='cpanm --wget --mirror https://cpan.metacpan.org'
+    - VERSION="2.0" CPANM='cpanm --wget --mirror https://cpan.metacpan.org'
 
 before_install:
     - sudo apt-get install -qq python-software-properties
