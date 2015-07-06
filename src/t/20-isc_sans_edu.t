@@ -15,7 +15,7 @@ use CIF qw/parse_rules/;
 
 my $rule = 'rules/default/isc_sans_edu.yml';
 
-$rule = parse_rules($rule,'domains_high');
+$rule = parse_rules($rule,'00_domains_high');
 
 ok($rule);
 

@@ -94,7 +94,7 @@ sub parse_config {
 sub parse_rule {
     my $rule = shift;
     my $feed = shift;
-    
+   
     $rule = parse_config($rule) unless(ref($rule) && ref($rule) eq 'HASH');
     
     croak('missing feed') unless($rule->{'feeds'}->{$feed});
