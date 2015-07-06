@@ -7,7 +7,7 @@
 # 1. Copy and paste the user "root@localhost" token into the variable "EVERYONE_TOKEN" below 
 
 
-EVERYONE_TOKEN='058f54ae10a1ebe01c5bbb067660218df297ee36b83492505e65c4172e31141d'
+EVERYONE_TOKEN=''
 
 FQDN='bobby.com'
 URL='http://bobby.com'
