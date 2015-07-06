@@ -50,7 +50,7 @@ sub process {
     }
     
     return 0 unless($self->user->{'read'});
-    
+
     if($data->{'Filters'}->{'group'}){
         return 0 unless($self->in_groups($data->{'Filters'}->{'group'}));
     } else {
@@ -81,7 +81,7 @@ sub _log_search {
     my $data    = shift;
     
     $Logger->debug('logging search: '.$data->{'Query'});
-    
+
     my @groups = @{$data->{'Filters'}->{'group'}};
     my $group = 'everyone';
     # get the first group that isn't 'everyone'
@@ -104,7 +104,7 @@ sub _log_search {
     
     $obs = $obs->TO_JSON();
     
-    my $res = $self->storage->process({ Observables => [$obs] });
+    my $res = $self->storage->process({ user => $self->user, Observables => [$obs] });
     
     $Logger->debug('search logged');
     return $res;

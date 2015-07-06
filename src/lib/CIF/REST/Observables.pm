@@ -20,7 +20,6 @@ sub index {
     }
     
     my $res;
-    warn Dumper($query);
     if($query or scalar(keys($filters)) > 0){
         $filters->{'confidence'} = 0 unless($filters->{'confidence'});
         $Logger->debug('generating search...');

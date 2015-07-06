@@ -473,7 +473,8 @@ sub _submission {
         
         foreach my $g (@{$_->{'group'}}){
             unless($usergroups->{$g}){
-                $Logger->error($args->{'user'}->{'username'} . ' unauthroized to post to group: '.$g);
+                $Logger->debug(Dumper($args));
+                $Logger->error($args->{'user'}->{'username'} . ' unauthorized to post to group: '.$g);
                 return 0;
             }
         }
