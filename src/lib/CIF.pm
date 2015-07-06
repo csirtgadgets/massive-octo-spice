@@ -134,7 +134,8 @@ sub parse_rules {
             push(@rules, $x);
         } else {
             my $t = parse_config($rule);
-            foreach my $feed (keys %{$t->{'feeds'}}){
+            my @keys = sort { $a cmp $b } keys(%{$t->{'feeds'}});
+            foreach my $feed (@keys){
                 my $x = parse_rule($t,$feed);
                 $x->{'rule_path'} = "$rule";
                 push(@rules,$x);

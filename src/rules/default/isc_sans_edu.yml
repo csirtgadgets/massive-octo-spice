@@ -7,13 +7,12 @@ defaults:
   skip: '^Site$'
 
 feeds:
-  domains_low:
+  02_domains_low:
     confidence: 65
     remote: http://isc.sans.edu/feeds/suspiciousdomains_Low.txt
-  domains_medium:
+  01_domains_medium:
     confidence: 75
     remote:  http://isc.sans.edu/feeds/suspiciousdomains_Medium.txt
-  domains_high:
+  00_domains_high:
     confidence: 85
     remote: http://isc.sans.edu/feeds/suspiciousdomains_High.txt
-
