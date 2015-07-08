@@ -20,7 +20,7 @@ feeds:
   apache:
     remote: http://lists.blocklist.de/lists/apache.txt
     application: http
-  imap: 
+  imap:
     remote: http://lists.blocklist.de/lists/imap.txt
     application: imap
   ftp:
