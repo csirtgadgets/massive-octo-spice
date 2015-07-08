@@ -204,12 +204,12 @@ sub _search {
     		if(my $otype = is_ip($args->{'Query'})){
     		    if ($otype eq 'ipv4') {
                     my @array = split(/\./,$args->{'Query'});
-        		    $regexp->{'observable'} = $array[0].'.*';
+        		    $regexp->{'observable'} = $array[0].'\..*';
         		    $terms->{'otype'} = 'ipv4';
     		    } else {
     		        # v6
     		        my @array = split(/\:/,$args->{'Query'});
-        		    $regexp->{'observable'} = $array[0].'.*';
+        		    $regexp->{'observable'} = $array[0].':.*';
     		        $terms->{'otype'} = 'ipv6';
     		    }
     		} else {
@@ -407,6 +407,8 @@ sub _ip_results {
     $pt->add_string($query);
     my @ret; my $pt2;
     foreach (@$results){
+        $Logger->debug(Dumper($_));
+        $Logger->debug($_->{'observable'});
         if($pt->match_string($_->{'observable'})){
             push(@ret,$_);
         } else {

@@ -29,6 +29,7 @@ my $ret = CIF::Smrt->new({
 })->process();
 
 ok($#{$ret} >= 0,'testing for results: '.$#{$ret});
-ok($#{$ret} == 3,'testing for 3 results...');
+ok($#{$ret} == 49,'testing for 49 results...');
+ok(@$ret[-1]->{'observable'} eq 'http://belorus.tk/logs/file.php');
 
 done_testing();
