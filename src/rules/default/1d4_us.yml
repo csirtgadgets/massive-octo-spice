@@ -1,7 +1,7 @@
 defaults:
   tags: scanner
   protocol: tcp
-  provider: id4.us
+  provider: 1d4.us
   altid_tlp: green
   tlp: amber
   confidence: 65
