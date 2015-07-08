@@ -65,9 +65,12 @@ sub _normalize_ip {
     my $data = shift;
     
     return if($data->{'otype'} && $data->{'otype'} ne 'ipv4');
-    return unless(is_ip($data->{'observable'}));
     
-    $data->{'otype'} = 'ipv4';
+    if(my $x = is_ip($data->{'observable'})){
+        $data->{'otype'} = $x;
+    } else {
+        return;
+    }
     
     if($data->{'observable'} =~ /^$RE{'net'}{'CIDR'}{'IPv4'}{'-keep'}$/){
         my $min = $data->{'min_prefix'} || MIN_PREFIX;
