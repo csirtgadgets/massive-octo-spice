@@ -14,6 +14,10 @@ if [ `whoami` != 'root' ]; then
     exit 0
 fi
 
+if [ -d /opt/cif ]; then
+	bash upgrade.sh
+fi
+
 apt-get update
 apt-get install -qq software-properties-common python-software-properties
 
@@ -35,6 +39,9 @@ debconf-set-selections <<< "postfix postfix/main_mailer_type string 'Internet Si
 
 apt-get update
 apt-get install -y monit geoipupdate curl build-essential libmodule-build-perl libssl-dev elasticsearch apache2 libapache2-mod-perl2 curl mailutils build-essential git-core automake rng-tools openjdk-7-jre-headless libtool pkg-config vim htop bind9 libzmq3-dev libffi6 libmoose-perl libmouse-perl libanyevent-perl liblwp-protocol-https-perl libxml2-dev libexpat1-dev libgeoip-dev geoip-bin python-dev starman ntp
+
+# set up the firewall
+bash firewall.sh
 
 #if [ ! -d /usr/share/elasticsearch/plugins/marvel ]; then
 #    echo 'installing marvel for elasticsearch...'
@@ -62,35 +69,7 @@ cpanm Search::Elasticsearch@1.19
 echo 'HRNGDEVICE=/dev/urandom' >> /etc/default/rng-tools
 service rng-tools restart
 
-echo 'setting up apache'
-if [ ! -f /etc/apache2/cif.conf ]; then
-    /bin/cp cif.conf /etc/apache2/
-fi
-
-if [ $VER == "12.04" ]; then
-    cp /etc/apache2/sites-available/default-ssl /etc/apache2/sites-available/default-ssl.orig
-    cp default-ssl /etc/apache2/sites-available
-    a2dissite default
-    a2ensite default-ssl
-    sed -i 's/^ServerTokens OS/ServerTokens Prod/' /etc/apache2/conf.d/security
-    sed -i 's/^ServerSignature On/#ServerSignature On/' /etc/apache2/conf.d/security
-    sed -i 's/^#ServerSignature Off/ServerSignature Off/' /etc/apache2/conf.d/security
-elif [ $VER == "14.04" ]; then
-    cp /etc/apache2/sites-available/default-ssl.conf /etc/apache2/sites-available/default-ssl.conf.orig
-    cp default-ssl /etc/apache2/sites-available/default-ssl.conf
-    a2dissite 000-default.conf
-    a2ensite default-ssl.conf
-    sed -i 's/^ServerTokens OS/ServerTokens Prod/' /etc/apache2/conf-enabled/security.conf
-    sed -i 's/^ServerSignature On/#ServerSignature On/' /etc/apache2/conf-enabled/security.conf
-    sed -i 's/^#ServerSignature Off/ServerSignature Off/' /etc/apache2/conf-enabled/security.conf
-
-    if [ ! -f /etc/apache2/conf-available/servername.conf ]; then
-        echo "ServerName localhost" >> /etc/apache2/conf-available/servername.conf
-        a2enconf servername
-    fi
-fi
-
-a2enmod ssl proxy proxy_http
+bash apache.sh
 
 if [ -z `getent passwd $MYUSER` ]; then
     echo "adding user: $MYUSER"
@@ -163,19 +142,12 @@ cp ./hacking/platforms/ubuntu/cif.logrotated /etc/logrotate.d/cif
 echo 'setting default cif-starman.conf'
 cp ./hacking/platforms/ubuntu/cif-starman.conf /etc/cif/
 
-if [ -f /etc/init.d/cif-router ]; then
-	update-rc.d -f cif-router remove 95 10
-	update-rc.d -f cif-smrt remove 95 10
-	update-rc.d -f cif-worker remove 95 10
-	update-rc.d -f cif-starman remove 95 10
-else
-	echo 'copying init.d scripts...'
-	/bin/cp ./hacking/packaging/ubuntu/init.d/cif-smrt /etc/init.d/
-	/bin/cp ./hacking/packaging/ubuntu/init.d/cif-router /etc/init.d/
-	/bin/cp ./hacking/packaging/ubuntu/init.d/cif-starman /etc/init.d/
-	/bin/cp ./hacking/packaging/ubuntu/init.d/cif-worker /etc/init.d/
-	/bin/cp ./hacking/packaging/ubuntu/init.d/cif-services /etc/init.d/
-fi
+echo 'copying init.d scripts...'
+/bin/cp ./hacking/packaging/ubuntu/init.d/cif-smrt /etc/init.d/
+/bin/cp ./hacking/packaging/ubuntu/init.d/cif-router /etc/init.d/
+/bin/cp ./hacking/packaging/ubuntu/init.d/cif-starman /etc/init.d/
+/bin/cp ./hacking/packaging/ubuntu/init.d/cif-worker /etc/init.d/
+/bin/cp ./hacking/packaging/ubuntu/init.d/cif-services /etc/init.d/
 
 update-rc.d cif-services defaults 99 01
 
