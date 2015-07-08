@@ -1,33 +1,66 @@
 parser: rss
 defaults:
   provider: zeustracker.abuse.ch
-  tlp: amber
+  tlp: white
   alt_tlp: green
   confidence: 85
   altid: https://zeustracker.abuse.ch/monitor.php?search=<observable>
   tags:
     - zeus
     - botnet
-  pattern:
-    description:
-      pattern: '^URL: ([\s\S]*), status: online, version: \d, MD5 hash:'
-      values: observable
-    title:
-      pattern: ^\S+\s\((\S+)\)$
-      values: lasttime
 
 feeds:
   binaries:
     remote: https://zeustracker.abuse.ch/monitor.php?urlfeed=binaries
     description: binary
+    pattern:
+      description:
+        pattern: '^URL: ([^\,]+), status: [^\,]+, MD5 hash:'
+        values: observable
+      title:
+        pattern: ^\S+\s\((\S+)\)$
+        values: lasttime
+
+  binaries_md5:
+    remote: https://zeustracker.abuse.ch/monitor.php?urlfeed=binaries
+    description: binary
+    pattern:
+      description:
+        pattern: '^URL: [^\,]+, status: [^\,]+, MD5 hash: (\S+)$'
+        values: observable
+      title:
+        pattern: ^\S+\s\((\S+)\)$
+        values: lasttime
 
   configs:
     remote: https://zeustracker.abuse.ch/monitor.php?urlfeed=configs
     description: config
+    pattern:
+      description:
+        pattern: '^URL: ([^\,]+), status: [^\,]+, version: \d, MD5 hash:'
+        values: observable
+      title:
+        pattern: ^\S+\s\((\S+)\)$
+        values: lasttime
+
+  configs_md5:
+    remote: https://zeustracker.abuse.ch/monitor.php?urlfeed=configs
+    description: config
+    pattern:
+      description:
+        pattern: '^URL: [^\,]+, status: [^\,]+, version: \d, MD5 hash: (\S+)$'
+        values: observable
+      title:
+        pattern: ^\S+\s\((\S+)\)$
+        values: lasttime
 
   dropzones:
-    remote: https://zeustracker.abuse.ch/monitor.php?urlfeed=configs
+    remote: https://zeustracker.abuse.ch/monitor.php?urlfeed=dropzones
     description: dropzone
+    pattern:
+      description:
+        pattern: '^URL: ([^\,]+), status: online|offline$'
+        values: observable
 
   domains:
     parser: regex
@@ -37,7 +70,7 @@ feeds:
       - observable
     confidence: 65
 
-  ip:
+  ips:
     parser: regex
     remote: https://zeustracker.abuse.ch/blocklist.php?download=ipblocklist
     pattern: ^(\S+)$
