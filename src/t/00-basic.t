@@ -19,6 +19,11 @@ ok(is_url('http://12.12.12.12/example/test.html'), 'testing url...');
 ok(is_ip_private('192.168.1.1'),'testing private ip...');
 ok(!is_ip_private('128.205.1.1'),'testing public ip...');
 
+ok(is_ip('2001:1608:10:147::21') eq 'ipv6', 'testing ipv6');
+ok(is_ip('2001:da8:8001:2303:b58f:25b4:a6fc:509d') eq 'ipv6', 'testing ipv6');
+ok(is_ip('2001:4860:4860::8888') eq 'ipv6', 'testing ipv6');
+ok(is_ip('2001:4860:4860::8844') eq 'ipv6', 'testing ipv6');
+
 ok(!is_ip('192.168.1.1.example.com'));
 ok(is_fqdn('192.168.1.1.example.com'));
 ok(is_url('192.168.1.1/html/1.thm'));

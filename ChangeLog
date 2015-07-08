@@ -5,6 +5,7 @@ Revision history for massive-octo-spice
         - https://github.com/csirtgadgets/massive-octo-spice/issues/268
         - added src/bin/version.sh to output version number
         - https://github.com/csirtgadgets/massive-octo-spice/issues/271
+        - https://github.com/csirtgadgets/massive-octo-spice/issues/270
 
 2.00.00-beta.11 2015-07-06
     - fixes:
