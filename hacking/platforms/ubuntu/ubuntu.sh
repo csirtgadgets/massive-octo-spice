@@ -36,25 +36,8 @@ debconf-set-selections <<< "postfix postfix/main_mailer_type string 'Internet Si
 apt-get update
 apt-get install -y monit geoipupdate curl build-essential libmodule-build-perl libssl-dev elasticsearch apache2 libapache2-mod-perl2 curl mailutils build-essential git-core automake rng-tools openjdk-7-jre-headless libtool pkg-config vim htop bind9 libzmq3-dev libffi6 libmoose-perl libmouse-perl libanyevent-perl liblwp-protocol-https-perl libxml2-dev libexpat1-dev libgeoip-dev geoip-bin python-dev starman ntp
 
-# check for existing iptables rules
-if [[ -z $(iptables --list-rules | egrep -v '(-P INPUT ACCEPT|-P FORWARD ACCEPT|-P OUTPUT ACCEPT)') ]]; then
-    #check to see if ufw is enabled (active) 
-    if [[ $(ufw status | grep "Status: inactive") ]]; then
-        # Enable firewall if it is determined there are no iptable
-        # rules or ufw is disabled. 
-        echo "Configuring basic firewall rules"
-        echo "Configuring firewall to allow SSH from anywhere"
-        /usr/sbin/ufw allow ssh
-        echo "Configuring firewall to allow HTTPS from anywhere"
-        /usr/sbin/ufw allow https
-        echo "Enabling firewall"
-        /usr/sbin/ufw --force enable
-    else
-        echo "INFO: UFW appears to be enabled, skipping firewall configuration"
-    fi
-else
-    echo "INFO: There are existing IPTABLES firewall rules, skipping firewall configuration"
-fi
+# set up the firewall
+bash firewall.sh
 
 #if [ ! -d /usr/share/elasticsearch/plugins/marvel ]; then
 #    echo 'installing marvel for elasticsearch...'
