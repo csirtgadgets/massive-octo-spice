@@ -8,6 +8,7 @@ Revision history for massive-octo-spice
         - https://github.com/csirtgadgets/massive-octo-spice/issues/270
         - https://github.com/csirtgadgets/massive-octo-spice/pull/276
         - https://github.com/csirtgadgets/massive-octo-spice/pull/273
+        - refactored some upgrade stuff under easybutton
 
 2.00.00-beta.11 2015-07-06
     - fixes:
