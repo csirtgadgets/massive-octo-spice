@@ -138,6 +138,7 @@ if(-e $config){
     
     $proxy          = $proxy    || $config->{'proxy'};
     $https_proxy    = $https_proxy || $config->{'https_proxy'};
+    $notbefore      = $config->{'notbefore'} || $notbefore;
 }
 
 sub usage {
