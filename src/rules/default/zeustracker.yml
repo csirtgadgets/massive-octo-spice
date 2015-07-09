@@ -59,7 +59,7 @@ feeds:
     description: dropzone
     pattern:
       description:
-        pattern: '^URL: ([^\,]+), status: online|offline$'
+        pattern: '^URL: ([^\,]+), status: \w+$'
         values: observable
 
   domains:
