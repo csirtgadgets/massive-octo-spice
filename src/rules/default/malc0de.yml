@@ -11,17 +11,17 @@ feeds:
     otype: url
     pattern:
       description:
-        pattern: '^URL: ([\S\s]+)?, IP Address: \S+?, Country: \S+?, ASN: \S+?, MD5: \S+?'
+        pattern: '^URL: (\S+), IP Address: \S+?, Country: \S+, ASN: \S+, MD5: \S+'
         values: observable
       link:
         pattern: '(\S+)'
         values: altid
-  # malware:
-    # pattern:
-      # description:
-        # pattern: '^URL: [\S+|\s]+?, IP Address: \S+?, Country: \S+?, ASN: \S+?, MD5: (\S+)?'
-        # values: observable
-      # link:
-        # pattern: '(\S+)'
-        # values: altid
+  malware:
+    pattern:
+      description:
+        pattern: '^URL: \S+, IP Address: \S+?, Country: \S+, ASN: \S+, MD5: (\S+)'
+        values: observable
+      link:
+        pattern: '(\S+)'
+        values: altid
 
