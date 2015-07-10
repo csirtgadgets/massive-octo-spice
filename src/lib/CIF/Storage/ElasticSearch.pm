@@ -25,8 +25,7 @@ use constant {
     MAX_COUNT           => 0,
     OBSERVABLES         => 'cif.observables',
     OBSERVABLES_TYPE    => 'observables',
-    LIMIT               => 50000,
-    
+    LIMIT               => 225000, #225,000 tuned for a ES box with 16GB of ram 
     TOKENS_INDEX        => 'cif.tokens',
     TOKENS_TYPE         => 'tokens',
 };
@@ -355,7 +354,7 @@ sub _search {
     
     my %search = (
         index   => $index,
-        size    => $filters->{'limit'} || 500000,
+        size    => $filters->{'limit'} || 225000,
         body    => $q,
     );
     
@@ -364,7 +363,7 @@ sub _search {
     if(is_ip($args->{'Query'})){
         %search = (
             index   => $index,
-            size    => 500000,
+            size    => 225000,
             body    => $q,
         );
     }
