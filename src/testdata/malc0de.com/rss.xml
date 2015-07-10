@@ -1,37 +1,21 @@
 <?xml version='1.0' encoding='ISO-8859-1'?>
-<rss version='2.0'>
-
-<channel>
-<title>Malc0de Database Feed</title>
-<link>http://malc0de.com/database/</link>
-<description>Updated Feed of Malicious Executables</description>
-<language>en-us</language>
-<copyright>Copyright (C) 2010 malc0de.com</copyright>
-<item>
-<title>getapplicationmy.info</title>
-<link>http://malc0de.com/database/index.php?search=getapplicationmy.info</link>
-<description>URL: getapplicationmy.info/v1182/index.html?&amp;&amp;q=Chetan+Bhagat's+Three+Mistakes+Of+my+Life-PDF-&amp;&amp;product_name=Chetan+Bhagat's+Three+Mistakes+Of+my+Life-PDF-&amp;&amp;installer_file_name=Chetan+Bhagat's+Three+Mistak, IP Address: 141.101.117.88, Country: EU, ASN: 13335, MD5: d2355f5fa6afd3aaa39c403532a9e380</description>
-</item>
-<item>
-<title>getapplicationmy.info</title>
-<link>http://malc0de.com/database/index.php?search=getapplicationmy.info</link>
-<description>URL: getapplicationmy.info/v1182/index.html?&amp;&amp;q=[share_ebook]+Cambridge+Preliminary+English+Test+for+Schools+1+Self-study+Pack+(Student's+Book+with+Answers+with+Audio+CDs+(2)):+Official+Examination+Papers+, IP Address: 141.101.117.88, Country: EU, ASN: 13335, MD5: c822b2d6abe2398ec2d044491e9656b6</description>
-</item>
-<item>
-<title>getapplicationmy.info</title>
-<link>http://malc0de.com/database/index.php?search=getapplicationmy.info</link>
-<description>URL: getapplicationmy.info/v1182/index.html?&amp;&amp;q=Chef+Academy+-+La+Grande+Scuola+di+Cucina+Completo+16++Volumi++-+32+DVD's&amp;&amp;product_name=Chef+Academy+-+La+Grande+Scuola+di+Cucina+Completo+16++Volumi++-+32+D, IP Address: 141.101.117.88, Country: EU, ASN: 13335, MD5: ae7f3142f8dd9884eca615e9be009ef3</description>
-</item>
-<item>
-<title>getapplicationmy.info</title>
-<link>http://malc0de.com/database/index.php?search=getapplicationmy.info</link>
-<description>URL: getapplicationmy.info/v1928/index.html?&amp;&amp;&amp;&amp;&amp;external_id=1386680015&amp;installer_file_name=Travelin'+Band+-+Curtis+Stigers+&amp;product_name=Travelin'+Band+-+Curtis+Stigers+&amp;q=Travelin'+Band+-+Curtis+Stigers+, IP Address: 141.101.117.88, Country: EU, ASN: 13335, MD5: 94186aaeab07119ab2b535ac6afaa67c</description>
-</item>
-<item>
-<title>getapplicationmy.info</title>
-<link>http://malc0de.com/database/index.php?search=getapplicationmy.info</link>
-<description>URL: getapplicationmy.info/v1928/index.html?&amp;q;=travelin'+band+-+curtis+stigers+&amp;product;_name=travelin'+band+-+curtis+stigers+&amp;installer;_file_name=travelin'+band+-+curtis+stigers+&amp;external;_i, I
-P Address: 141.101.117.88, Country: EU, ASN: 13335, MD5: 4e879115b827227769bab6dcd6cb1cb1</description>
-</item>
-</channel>
-</rss>
+ <rss version='2.0'>
+ 
+ <channel>
+ <title>Malc0de Database Feed</title>
+ <link>http://malc0de.com/database/</link>
+ <description>Updated Feed of Malicious Executables</description>
+ <language>en-us</language>
+ <copyright>Copyright (C) 2010 malc0de.com</copyright>
+ <item>
+ <title>117.21.175.128</title>
+ <link>http://malc0de.com/database/index.php?search=117.21.175.128</link>
+ <description>URL: 117.21.175.128/and40a361.exe, IP Address: 117.21.175.128, Country: CN, ASN: 4134, MD5: 9017029e8ffe5d0694b95b978f953ff3</description>
+ </item>
+ <item>
+ <title>117.21.175.128</title>
+ <link>http://malc0de.com/database/index.php?search=117.21.175.128</link>
+ <description>URL: 117.21.175.128/nut40a361.exe, IP Address: 117.21.175.128, Country: CN, ASN: 4134, MD5: 28c31288a6ade00531854e145ad0b4c2</description>
+ </item>
+ </channel>
+ </rss>
