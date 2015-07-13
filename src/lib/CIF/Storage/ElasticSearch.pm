@@ -354,7 +354,7 @@ sub _search {
     
     my %search = (
         index   => $index,
-        size    => $filters->{'limit'} || 225000,
+        size    => $filters->{'limit'} || LIMIT,
         body    => $q,
     );
     
@@ -363,7 +363,7 @@ sub _search {
     if(is_ip($args->{'Query'})){
         %search = (
             index   => $index,
-            size    => 225000,
+            size    => LIMIT,
             body    => $q,
         );
     }
