@@ -25,7 +25,7 @@ use constant {
     MAX_COUNT           => 0,
     OBSERVABLES         => 'cif.observables',
     OBSERVABLES_TYPE    => 'observables',
-    LIMIT               => 225000, #225,000 tuned for a ES box with 16GB of ram 
+    LIMIT               => 225000, #225,000 tuned for a ElasticSearch build with 16GB of ram 
     TOKENS_INDEX        => 'cif.tokens',
     TOKENS_TYPE         => 'tokens',
 };
