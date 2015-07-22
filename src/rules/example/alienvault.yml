@@ -1,6 +1,3 @@
-# Issues
-# 1. No timestamp
-
 defaults:
   remote: http://reputation.alienvault.com/reputation.data
   provider: alienvault.com
