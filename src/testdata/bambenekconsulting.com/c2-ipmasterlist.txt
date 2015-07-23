@@ -1,0 +1,25 @@
+#############################################################
+## Master Feed of known, active and non-sinkholed C&Cs IP 
+## addresses
+## 
+## Feed generated at: 2015-07-23 11:40 
+##
+## Feed Provided By: John Bambenek of Bambenek Consulting
+## jcb@bambenekconsulting.com // http://bambenekconsulting.com
+## Use of this feed is governed by the license here: 
+## http://osint.bambenekconsulting.com/license.txt 
+##
+## For more information on this feed go to: 
+## http://osint.bambenekconsulting.com/manual/c2-ipmasterlist.txt
+## 
+## All times are in UTC
+#############################################################
+64.32.26.89,IP used by shiotob/urlzone/bebloh C&C,2015-07-23 11:31,http://osint.bambenekconsulting.com/manual/bebloh-iplist.txt
+199.59.166.108,IP used by shiotob/urlzone/bebloh C&C,2015-07-23 11:31,http://osint.bambenekconsulting.com/manual/bebloh-iplist.txt
+199.59.166.109,IP used by shiotob/urlzone/bebloh C&C,2015-07-23 11:31,http://osint.bambenekconsulting.com/manual/bebloh-iplist.txt
+5.135.16.204,IP used by bedep C&C,2015-07-23 11:38,http://osint.bambenekconsulting.com/manual/bedep-iplist.txt
+83.149.127.8,IP used by bedep C&C,2015-07-23 11:38,http://osint.bambenekconsulting.com/manual/bedep-iplist.txt
+216.144.240.163,IP used by bedep C&C,2015-07-23 11:38,http://osint.bambenekconsulting.com/manual/bedep-iplist.txt
+5.199.165.7,IP used by cryptowall C&C,2015-07-23 11:33,http://osint.bambenekconsulting.com/manual/cryptowall-iplist.txt
+8.5.1.40,IP used by cryptowall C&C,2015-07-23 11:33,http://osint.bambenekconsulting.com/manual/cryptowall-iplist.txt
+31.31.204.59,IP used by cryptowall C&C,2015-07-23 11:33,http://osint.bambenekconsulting.com/manual/cryptowall-iplist.txt
