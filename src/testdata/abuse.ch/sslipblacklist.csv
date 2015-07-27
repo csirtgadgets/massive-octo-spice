@@ -1,0 +1,16 @@
+################################################################
+# abuse.ch SSL IPBL                                            #
+# Last updated: 2015-07-27 15:15:01 (UTC)                      #
+#                                                              #
+# Terms Of Use: https://sslbl.abuse.ch/blacklist/              #
+# For questions please contact sslbl [at] abuse.ch             #
+################################################################
+#
+# DstIP,DstPort
+103.27.232.165,443,KINS C&C
+109.237.47.9,443,KINS C&C
+109.72.120.184,443,KINS C&C
+109.86.230.210,443,KINS C&C
+118.174.151.27,943,Dridex C&C
+124.156.129.29,443,KINS C&C
+144.76.232.59,443,Ransomware 
