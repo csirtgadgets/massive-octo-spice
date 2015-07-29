@@ -33,6 +33,8 @@ ok(!is_url('www'));
 ok(is_url('http://fb.co'));
 ok(!is_url('http://ww'));
 ok(is_url('http://fb.com/1234.html'));
+ok(is_url('http://192.168.1.1/1.html'));
+ok(is_url('http://example.org/?q=12&1=2'));
 
 ok(is_fqdn('update-your-account-information--cgi-bin-webscrcmd-login5w80ah.newageastrology.gr'), 'checking domain');
 ok(is_fqdn('paypal_update_acouunt.joannebradybeauty.co.uk'), 'checking domain');
