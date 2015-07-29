@@ -155,7 +155,6 @@ sub observable_type {
     return 'fqdn'   if(is_fqdn($arg));
     return 'email'  if(is_email($arg));
     return 'hash'   if(is_hash($arg));
-    return 'binary' if(is_binary($arg));
     return 0;
 }
 
