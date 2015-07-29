@@ -1,8 +1,9 @@
 # these top-level configs are the defaults applied to each section
-confidence = 85
-tlp = amber
-provider = garwarner.blogspot.com
-parser = 'text'
+confidence: 85
+tlp: green
+altid_tlp: white
+provider: garwarner.blogspot.com
+parser: 'text'
 
-[blog]
-feed = 'http://garwarner.blogspot.com/feeds/posts/default'
+feeds:
+  remote: 'http://garwarner.blogspot.com/feeds/posts/default'

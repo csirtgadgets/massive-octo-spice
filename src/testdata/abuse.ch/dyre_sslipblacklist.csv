@@ -1,0 +1,19 @@
+################################################################
+# abuse.ch Dyre SSL IPBL                                       #
+# Last updated: 2015-07-27 15:30:01 (UTC)                      #
+#                                                              #
+# Terms Of Use: https://sslbl.abuse.ch/blacklist/              #
+# For questions please contact sslbl [at] abuse.ch             #
+################################################################
+#
+# DstIP,DstPort
+104.174.123.66,443,Dyre C&C
+104.36.232.219,443,Dyre C&C
+107.161.199.58,4443,Dyre C&C
+109.86.16.37,443,Dyre C&C
+109.86.226.85,443,Dyre C&C
+109.87.63.98,443,Dyre C&C
+134.249.63.46,443,Dyre C&C
+159.224.194.188,4443,Dyre C&C
+159.224.247.133,4443,Dyre C&C
+162.248.36.17,443,Dyre C&C

@@ -1,6 +1,18 @@
 Revision history for massive-octo-spice
 
-2.00.00-beta.13 2015-07
+2.00.00-beta.14 2015-07-27
+    - fixes:
+        - https://github.com/csirtgadgets/massive-octo-spice/issues/291
+        - https://github.com/csirtgadgets/massive-octo-spice/issues/293
+        - https://github.com/csirtgadgets/massive-octo-spice/issues/298
+        - https://github.com/csirtgadgets/massive-octo-spice/issues/304
+        - https://github.com/csirtgadgets/massive-octo-spice/issues/306
+        - https://github.com/csirtgadgets/massive-octo-spice/issues/295
+        - https://github.com/csirtgadgets/massive-octo-spice/issues/302
+        - https://github.com/csirtgadgets/massive-octo-spice/issues/312
+        - https://github.com/csirtgadgets/massive-octo-spice/issues/288
+
+2.00.00-beta.13 2015-07-15
     - fixes:
         - https://github.com/csirtgadgets/massive-octo-spice/issues/279
         - https://github.com/csirtgadgets/massive-octo-spice/issues/283

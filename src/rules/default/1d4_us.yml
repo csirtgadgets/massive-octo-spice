@@ -2,8 +2,8 @@ defaults:
   tags: scanner
   protocol: tcp
   provider: 1d4.us
-  altid_tlp: green
-  tlp: amber
+  tlp: green
+  altid_tlp: white
   confidence: 65
   pattern: ^(\S+)$
   values:

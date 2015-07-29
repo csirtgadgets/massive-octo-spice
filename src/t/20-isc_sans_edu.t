@@ -13,13 +13,14 @@ BEGIN {
 
 use CIF qw/parse_rules/;
 
-my $rule = 'rules/default/isc_sans_edu.yml';
+## 00_domains_high
 
-$rule = parse_rules($rule,'00_domains_high');
+my $file = 'rules/default/isc_sans_edu.yml';
+my $rule = parse_rules($file,'00_domains_high');
 
 ok($rule);
 
-$rule->{'defaults'}->{'remote'} = 'file:./testdata/isc_sans_edu/domains_high.txt';
+$rule->{'defaults'}->{'remote'} = 'testdata/isc_sans_edu/domains_high.txt';
 
 my $ret = CIF::Smrt->new({
     rule            => $rule,
@@ -30,4 +31,30 @@ my $ret = CIF::Smrt->new({
 
 ok($#{$ret} >= 0,'testing for results...');
 ok(@{$ret}[-1]->{'observable'} eq 'zzukoni.net');
+
+## block
+
+$rule = parse_rules($file,'block');
+
+ok($rule);
+
+$rule->{'defaults'}->{'remote'} = 'testdata/isc_sans_edu/block.txt';
+
+$ret = CIF::Smrt->new({
+    rule            => $rule,
+    tmp             => '/tmp',
+    ignore_journal  => 1,
+    not_before      => '2010-01-01',
+})->process();
+
+ok($#{$ret} >= 0,'testing for results...');
+ok(@{$ret}[-1]->{'observable'} eq '76.180.236.0');
+ok(@{$ret}[-1]->{'mask'} eq '24');
+
+foreach (@{$ret}){
+    $_ = CIF::ObservableFactory->new_plugin($_);
+}
+
+ok(@{$ret}[-1]->{'observable'} eq '76.180.236.0/24');
+
 done_testing();

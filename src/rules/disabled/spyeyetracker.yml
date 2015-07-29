@@ -3,8 +3,8 @@
 parser: rss
 defaults:
   provider: spyeyetracker.abuse.ch
-  tlp: amber
-  alt_tlp: green
+  tlp: green
+  altid_tlp: white
   confidence: 85
   altid: https://spyeyetracker.abuse.ch/monitor.php?host=<observable>
   tags:
@@ -16,7 +16,7 @@ defaults:
       values: observable
     title:
       pattern: ^\S+\s\((\S+)\)$
-      values: lasttime 
+      values: lasttime
 
 feeds:
   binaries:

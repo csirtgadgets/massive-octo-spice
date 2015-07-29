@@ -1,9 +1,9 @@
 parser: csv
 defaults:
   provider: autoshun.org
-  tlp: amber
+  tlp: green
+  altid_tlp: white
   confidence: 65
-  alt_tlp: green
   values:
       - observable
       - lasttime

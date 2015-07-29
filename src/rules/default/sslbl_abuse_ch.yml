@@ -1,0 +1,18 @@
+parser: csv
+defaults:
+  provider: sslbl.abuse.ch
+  tlp: green
+  altid_tlp: white
+  confidence: 85
+  tags: botnet
+  application: https
+  protocol: tcp
+  values:
+    - observable
+    - portlist
+    - description
+feeds:
+  sslipblacklist:
+    remote: https://sslbl.abuse.ch/blacklist/sslipblacklist.csv
+  dyre_sslipblacklist:
+    remote: https://sslbl.abuse.ch/blacklist/dyre_sslipblacklist.csv

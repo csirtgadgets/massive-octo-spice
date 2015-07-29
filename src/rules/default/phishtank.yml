@@ -1,7 +1,8 @@
 parser: json
 defaults:
   provider: phishtank.com
-  tlp: amber
+  tlp: green
+  altid_tlp: white
   application:
     - http
     - https
@@ -9,7 +10,6 @@ defaults:
   tags: phishing
   protocol: tcp
   remote: http://data.phishtank.com/data/online-valid.json.gz
-  altid_tlp: green
 
 feeds:
   urls:

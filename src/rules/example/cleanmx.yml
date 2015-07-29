@@ -1,0 +1,37 @@
+# This cif-smrt configuration file is an example on how
+# to parse a XML feed but should not used as CleanMX 
+# is known to timeout on large XML queries. The remote 
+# URL below defaults to returning 100 results. 
+#
+# A better solution is to install the CleanMX CIF Application
+# found here:
+#
+# https://github.com/csirtgadgets/py-cifcleanmx
+#
+# This application leverages the ability to request a delta
+# since the last time CIF queried CleanMX. Using the CleanMX
+# CIF Application, you will experience less HTTP timeouts 
+# and ultimately obtain the data served up by CleanMX. 
+
+parser: xml
+defaults:
+  provider: support.clean-mx.de
+  altid_tlp: amber
+  tlp: amber
+  confidence: 85
+feeds:
+  malware:
+    remote: 'http://support.clean-mx.de/clean-mx/xmlviruses.php?'
+    altid: 'http://support.clean-mx.de/clean-mx/viruses.php?id=<id>'
+    node: entry
+    map:
+      - first
+      - virusname
+      - url
+      - id
+    values:
+      - lasttime
+      - description
+      - observable
+      - id
+    tags: malware

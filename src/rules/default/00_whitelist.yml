@@ -8,7 +8,8 @@
 parser: regex
 defaults:
   provider: localhost
-  tlp: amber
+  tlp: green
+  altid_tlp: white
   confidence: 95
   tags: whitelist
 

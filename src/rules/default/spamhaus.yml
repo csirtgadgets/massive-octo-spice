@@ -1,12 +1,12 @@
 defaults:
   provider: spamhaus.org
   confidence: 95
-  tlp: amber
+  tlp: green
+  altid_tlp: white
   tags:
     - suspicious
     - hijacked
   altid: http://www.spamhaus.org/sbl/sbl.lasso?query=<reference>
-  altid_tlp: green
   pattern: '^(\S+)\s;\s(\S+)$'
   values:
     - observable

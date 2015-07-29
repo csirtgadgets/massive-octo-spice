@@ -6,7 +6,8 @@
 parser: xml
 defaults:
   confidence: 65
-  tlp: amber
+  tlp: green
+  altid_tlp: white
   provider: malwaredb.malekal.com
   remote: http://malwaredb.malekal.com/export.php?type=url
   tags: malware

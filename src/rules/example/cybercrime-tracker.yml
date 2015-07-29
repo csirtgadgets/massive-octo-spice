@@ -1,0 +1,24 @@
+parser: rss
+defaults:
+  provider: cybercrime-tracker.net
+  tlp: green
+  altid_tlp: white
+  confidence: 75
+feeds:
+  malware:
+    remote: http://cybercrime-tracker.net/rss.xml
+    otype: url
+    pattern:
+        title:
+          pattern: '(\S+)'
+          values: observable
+        link:
+          pattern: '(\S+)'
+          values: altid
+        description:
+          pattern: '(\S+)'
+          values: description
+        pubDate:
+          pattern: '(\S+)'
+          values: lasttime
+    tags: malware

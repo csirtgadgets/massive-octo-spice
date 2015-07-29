@@ -1,0 +1,16 @@
+parser: regex
+defaults:
+  provider: torstatus.blutmagie.de
+  tlp: green
+  altid_tlp: white
+  confidence: 85
+feeds:
+  tor_exit_nodes:
+    remote: http://torstatus.blutmagie.de/ip_list_exit.php/Tor_ip_list_EXIT.csv
+    pattern: '^(\S+)$'
+    values:
+      - observable
+    tags:
+      - tor
+    protocol: tcp
+    description: 'Tor Exit Node'

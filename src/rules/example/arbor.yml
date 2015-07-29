@@ -1,7 +1,8 @@
 parser: xml
 defaults:
   provider: 'atlas.arbor.net'
-  tlp: amber
+  tlp: green
+  altid_tlp: white
   confidence: 75
 
 feeds:

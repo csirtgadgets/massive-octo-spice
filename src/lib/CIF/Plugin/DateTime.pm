@@ -24,6 +24,7 @@ our @EXPORT = qw(
 );
 
 use DateTime::Format::DateParse;
+use Try::Tiny;
 
 use constant RE_DATETIME_STR    => qr/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/;
 use constant RE_DATETIME_INT    => qr/^\d{6,}/;
@@ -53,7 +54,8 @@ sub normalize_timestamp {
     my $dt  = shift;
     my $now = shift || DateTime->from_epoch(epoch => time()); # better perf in loops if we can pass the default now value
     my $asString = shift;
-
+    
+    my $err;
     return DateTime::Format::DateParse->parse_datetime($dt) if(!$asString && $dt =~ /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/);
 
     # already epoch
@@ -70,6 +72,7 @@ sub normalize_timestamp {
         return $dt->ymd().'T'.$dt->hms().'Z' if($asString);
     }
     return DateTime->today() if(lc($dt) =~ /^today$/);
+    
     # something else
     if($dt && ref($dt) ne 'DateTime'){
         if($dt =~ /^(yesterday)$/){
@@ -91,7 +94,21 @@ sub normalize_timestamp {
             $dt = DateTime::Format::DateParse->parse_datetime($year.'-'.$month.'-'.$day.' '.$hour.':'.$min.':'.$sec,$tz);
         } else {
             $dt =~ s/_/ /g;
-            $dt = DateTime::Format::DateParse->parse_datetime($dt);
+            try {
+                $dt = DateTime::Format::DateParse->parse_datetime($dt);
+            } catch {
+                $err = shift;
+                if($err =~ /^The 'day'/){
+                    my @bits = split(/\//,$dt);
+                    unless($#bits){
+                        @bits = split(/\-/, $dt);
+                    }
+                    $dt = join('/',($bits[1],$bits[0],$bits[2]));
+                    $dt = DateTime::Format::DateParse->parse_datetime($dt);
+                } else {
+                    die $err;
+                }
+            };
             return unless($dt);
         }
     }   

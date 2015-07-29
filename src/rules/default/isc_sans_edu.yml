@@ -1,5 +1,6 @@
 defaults:
-  tlp: amber
+  tlp: green
+  altid_tlp: white
   provider: 'isc.sans.edu'
   pattern:  '^(\S+)$'
   values: observable
@@ -16,3 +17,11 @@ feeds:
   00_domains_high:
     confidence: 85
     remote: http://isc.sans.edu/feeds/suspiciousdomains_High.txt
+  block:
+    remote: https://isc.sans.edu/block.txt
+    confidence: 75
+    pattern: ^(\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b)\t\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b\t(\d+)
+    values:
+      - observable
+      - mask
+    tags: scanner

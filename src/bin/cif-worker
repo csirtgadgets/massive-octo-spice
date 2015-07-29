@@ -272,7 +272,7 @@ sub workers {
            };
            if($err){
                 $Logger->error($err);
-                $Logger->debug(Dumper($msg));
+                $Logger->error(Dumper($msg));
                 $err = '';
            }
            $msg = undef;

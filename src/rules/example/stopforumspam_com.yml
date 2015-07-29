@@ -1,0 +1,23 @@
+parser: regex
+defaults:
+  provider: stopforumspam.com
+  tlp: green
+  altid_tlp: white
+feeds:
+  listed_ip_1_all:
+    remote: http://www.stopforumspam.com/downloads/listed_ip_1_all.zip
+    pattern: '^(\S+),(\S+),(\S+)$'
+    values:
+      - observable
+      - null
+      - lasttime
+    tags: spam
+    confidence: 65
+    description: 'Web Forum Spam'
+  toxic_ip_cidr:
+    remote: http://www.stopforumspam.com/downloads/toxic_ip_cidr.txt
+    pattern: '^(\S+)$'
+    values: observable
+    tags: suspicious
+    confidence: 65
+    description: 'Networks that have large amounts of spambots'

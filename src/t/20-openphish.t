@@ -13,13 +13,13 @@ BEGIN {
 
 use CIF qw/parse_rules normalize_timestamp/;
 
-my $rule = parse_rules('rules/default/phishtank.yml','urls');
+my $rule = parse_rules('rules/default/openphish.yml','urls');
 
 ok($rule, 'testing rule...');
 
 $rule->set_not_before('10000 days ago');
 
-$rule->{'defaults'}->{'remote'} = 'testdata/phishtank.com/online-valid.json.gz';
+$rule->{'defaults'}->{'remote'} = 'testdata/openphish.com/feed.txt';
 
 my $ret = CIF::Smrt->new({
     rule            => $rule,
@@ -29,6 +29,6 @@ my $ret = CIF::Smrt->new({
 })->process();
     
 ok($#{$ret} >= 0,'testing for results...');
-ok($#{$ret} == 16,'testing for 16 results...');
+ok($#{$ret} == 72,'testing for results...');
 
 done_testing();
