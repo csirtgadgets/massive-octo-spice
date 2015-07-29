@@ -1,7 +1,8 @@
 defaults:
-  tlp: amber
+  tlp: green
+  altid_tlp: white
   provider: 'anti-phishing-email-reply'
-  remote: http://aper.svn.sourceforge.net/svnroot/aper/phishing_reply_addresses
+  remote: http://sourceforge.net/p/aper/code/HEAD/tree/phishing_reply_addresses?format=raw
   tags: phishing
   pattern: '^(\S+),[C|D|E],(\S+)$'
   values:
@@ -17,4 +18,3 @@ feeds:
     confidence: 85
     description: 'address used in replyto/from header'
     pattern: '^(\S+),[A|B],(\S+)$'
-

@@ -3,8 +3,8 @@
 defaults:
   provider: hosts-file.net
   confidence: 75
-  tlp: amber
-  altid_tlp: green
+  tlp: green
+  altid_tlp: white
   pattern: '^(\S+)\s(\S+)$'
   values:
     - null

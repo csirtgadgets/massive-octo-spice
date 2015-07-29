@@ -1,7 +1,8 @@
 defaults:
   provider: rules.emergingthreats.net
   confidence: 65
-  tlp: amber
+  tlp: green
+  altid_tlp: white
   tags:
     - malware
   altid: http://rules.emergingthreats.net/blockrules/compromised-ips.txt

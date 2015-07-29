@@ -1,7 +1,8 @@
  parser: csv
  defaults:
    provider: osint.bambenekconsulting.com
-   tlp: amber
+   tlp: green
+  altid_tlp: white
    confidence: 75
    alt_tlp: green
    values:
@@ -9,7 +10,7 @@
        - description
        - lasttime
        - altid
- 
+
  feeds:
    dga_feed:
      remote: http://osint.bambenekconsulting.com/feeds/dga-feed.txt

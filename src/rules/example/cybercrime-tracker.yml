@@ -1,8 +1,8 @@
 parser: rss
 defaults:
   provider: cybercrime-tracker.net
-  altid_tlp: amber
-  tlp: amber
+  tlp: green
+  altid_tlp: white
   confidence: 75
 feeds:
   malware:
@@ -10,7 +10,7 @@ feeds:
     otype: url
     pattern:
         title:
-          pattern: '(\S+)' 
+          pattern: '(\S+)'
           values: observable
         link:
           pattern: '(\S+)'
@@ -20,5 +20,5 @@ feeds:
           values: description
         pubDate:
           pattern: '(\S+)'
-          values: null
+          values: lasttime
     tags: malware

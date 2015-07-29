@@ -1,7 +1,8 @@
 defaults:
   provider: vxvault.net
   confidence: 75
-  tlp: amber
+  tlp: green
+  altid_tlp: white
   tags: malware
   altid_tlp: green
   values:

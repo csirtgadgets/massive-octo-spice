@@ -42,7 +42,7 @@ feeds:
       - scanner
       - suspicious
 
-    # application: application associated with the identified port 
+    # application: application associated with the identified port
     #  (ssh, smtp, http, imap, ftp, sip, vnc, irc)
     application: ssh
 

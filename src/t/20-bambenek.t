@@ -13,11 +13,11 @@ BEGIN {
 
 use CIF qw/parse_rules/;
 
-my $rule = 'rules/default/bambenekconsulting_com.yml';
+my $file = 'rules/default/bambenekconsulting_com.yml';
 
 ## c2-domainmasterlist
 
-$rule = parse_rules($rule,'c2-dommasterlist');
+my $rule = parse_rules($file,'c2-dommasterlist');
 
 ok($rule);
 
@@ -35,7 +35,7 @@ ok(@{$ret}[-1]->{'observable'} eq 'getadobeflashplayer.net');
 
 ## c2-ipmasterlist
 
-$rule = parse_rules($rule,'c2-ipmasterlist');
+$rule = parse_rules($file,'c2-ipmasterlist');
  
  ok($rule);
  

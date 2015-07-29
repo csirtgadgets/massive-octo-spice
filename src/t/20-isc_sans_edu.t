@@ -15,12 +15,12 @@ use CIF qw/parse_rules/;
 
 ## 00_domains_high
 
-my $rule = 'rules/default/isc_sans_edu.yml';
-$rule = parse_rules($rule,'00_domains_high');
+my $file = 'rules/default/isc_sans_edu.yml';
+my $rule = parse_rules($file,'00_domains_high');
 
 ok($rule);
 
-$rule->{'defaults'}->{'remote'} = 'file:./testdata/isc_sans_edu/domains_high.txt';
+$rule->{'defaults'}->{'remote'} = 'testdata/isc_sans_edu/domains_high.txt';
 
 my $ret = CIF::Smrt->new({
     rule            => $rule,
@@ -34,13 +34,13 @@ ok(@{$ret}[-1]->{'observable'} eq 'zzukoni.net');
 
 ## block
 
-$rule = parse_rules($rule,'block');
+$rule = parse_rules($file,'block');
 
 ok($rule);
 
-$rule->{'defaults'}->{'remote'} = 'file:./testdata/isc_sans_edu/block.txt';
+$rule->{'defaults'}->{'remote'} = 'testdata/isc_sans_edu/block.txt';
 
-my $ret = CIF::Smrt->new({
+$ret = CIF::Smrt->new({
     rule            => $rule,
     tmp             => '/tmp',
     ignore_journal  => 1,

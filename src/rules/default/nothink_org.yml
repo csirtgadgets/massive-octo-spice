@@ -1,7 +1,7 @@
 defaults:
   provider: nothink.org
-  altid_tlp: green
-  tlp: amber
+  tlp: green
+  altid_tlp: white
   confidence: 65
   pattern: ^(\S+)$
   values:
@@ -25,3 +25,6 @@ feeds:
     remote: http://www.nothink.org/blacklist/blacklist_malware_irc.txt
     tags:
       - suspicious
+  snmp:
+    remote: http://www.nothink.org/blacklist/blacklist_snmp_2015.txt
+    tags: scanner
