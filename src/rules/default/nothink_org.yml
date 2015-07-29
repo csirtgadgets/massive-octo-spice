@@ -25,3 +25,6 @@ feeds:
     remote: http://www.nothink.org/blacklist/blacklist_malware_irc.txt
     tags:
       - suspicious
+  snmp:
+    remote: http://www.nothink.org/blacklist/blacklist_snmp_2015.txt
+    tags: scanner
