@@ -1,7 +1,7 @@
 defaults:
   provider: palevotracker.abuse.ch
-  tlp: amber
-  alt_tlp: green
+  tlp: green
+  altid_tlp: white
   altid: https://palevotracker.abuse.ch/
   tags:
     - palevo

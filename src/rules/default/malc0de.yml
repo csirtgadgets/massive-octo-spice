@@ -1,7 +1,8 @@
 parser: rss
 defaults:
   confidence: 85
-  tlp: amber
+  tlp: green
+  altid_tlp: white
   provider: malc0de.com
   remote: http://malc0de.com/rss
   tags: malware
@@ -24,4 +25,3 @@ feeds:
       link:
         pattern: '(\S+)'
         values: altid
-

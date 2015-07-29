@@ -1,8 +1,8 @@
 parser: csv
 defaults:
   provider: sslbl.abuse.ch
-  altid_tlp: amber
-  tlp: amber
+  tlp: green
+  altid_tlp: white
   confidence: 85
   tags: botnet
   application: https

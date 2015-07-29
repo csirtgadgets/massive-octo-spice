@@ -2,6 +2,7 @@ defaults:
   provider: 'danger.rulez.sk'
   confidence: 85
   tlp: green
+  altid_tlp: white
 
 feeds:
   ssh:

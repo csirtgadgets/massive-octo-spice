@@ -4,6 +4,7 @@
 defaults:
   provider: shadowserver.org
   tlp: green
+  altid_tlp: white
   confidence: 60
   group: everyone
   tags:

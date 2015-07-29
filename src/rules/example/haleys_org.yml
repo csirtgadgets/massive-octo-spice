@@ -2,8 +2,8 @@ defaults:
   tags: scanner
   protocol: tcp
   provider: charles.the-haleys.org
-  altid_tlp: green
-  tlp: amber
+  tlp: green
+  altid_tlp: white
   confidence: 65
   pattern: ^ALL\s\:\s(\S+) $
   values:

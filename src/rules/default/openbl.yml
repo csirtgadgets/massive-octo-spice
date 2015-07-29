@@ -1,7 +1,8 @@
 defaults:
   provider: www.us.openbl.org
   confidence: 75
-  tlp: amber
+  tlp: green
+  altid_tlp: white
   tags:
     - scanner
   altid: http://www.us.openbl.org/lists.html

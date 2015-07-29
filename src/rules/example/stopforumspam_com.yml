@@ -1,8 +1,8 @@
 parser: regex
 defaults:
   provider: stopforumspam.com
-  altid_tlp: amber
-  tlp: amber
+  tlp: green
+  altid_tlp: white
 feeds:
   listed_ip_1_all:
     remote: http://www.stopforumspam.com/downloads/listed_ip_1_all.zip

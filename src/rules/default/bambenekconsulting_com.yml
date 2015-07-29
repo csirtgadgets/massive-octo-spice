@@ -1,6 +1,7 @@
 defaults:
   provider: osint.bambenekconsulting.com
-  tlp: amber
+  tlp: green
+  altid_tlp: white
   confidence: 85
   alt_tlp: green
   tags:
@@ -19,9 +20,9 @@ feeds:
     remote: http://osint.bambenekconsulting.com/feeds/c2-ipmasterlist.txt
     pattern: ^(\S+)\,IP used by ([^,]+)\,([^,]+)\,(\S+)$
 
-#  Warning: the dga-feed is disabled by default as it is a very large 
-#           feed at ~800K records and 95MB in size. You must have a 
-#           large CIF instance to process this data set. 
+#  Warning: the dga-feed is disabled by default as it is a very large
+#           feed at ~800K records and 95MB in size. You must have a
+#           large CIF instance to process this data set.
 #  dga-feed:
 #    remote: http://osint.bambenekconsulting.com/feeds/dga-feed.txt
 #    pattern: ^(\S+)\,Domain used by ([^,]+)\,([^,]+)\,(\S+)$
