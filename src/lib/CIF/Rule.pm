@@ -130,7 +130,7 @@ sub _merge_defaults {
                 my $val;
                 $val = $args->{'data'}->{$1} || $self->defaults->{$1};
                 unless($val){
-                    warn 'missing: '.$1;
+                    $Logger->error('missing: '.$1 . ' make sure you add it to your mappings');
                     assert($val);
                 }
                 
