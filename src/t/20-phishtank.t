@@ -31,6 +31,4 @@ my $ret = CIF::Smrt->new({
 ok($#{$ret} >= 0,'testing for results...');
 ok($#{$ret} == 16,'testing for 16 results...');
 
-warn $#{$ret};
-
 done_testing();
