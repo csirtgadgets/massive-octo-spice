@@ -97,6 +97,8 @@ sub process {
                 $Logger->fatal('possible timeout grabbing the feed');
             };
             
+            return 0 unless($ret);
+            
             if($ret->status_line()){
                 $Logger->debug('status: '.$ret->status_line());
             }
