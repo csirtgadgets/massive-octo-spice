@@ -6,7 +6,6 @@ defaults:
   tags:
     - scanner
   altid: http://www.blocklist.de/en/view.html?ip=<observable>
-  altid_tlp: green
   pattern: '^(\S+)$'
   values:
     - observable

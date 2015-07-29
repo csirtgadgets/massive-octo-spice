@@ -4,7 +4,6 @@ defaults:
   tlp: green
   altid_tlp: white
   tags: malware
-  altid_tlp: green
   values:
     - observable
 
