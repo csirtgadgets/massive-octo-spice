@@ -1,5 +1,6 @@
 defaults:
-  tlp: amber
+  tlp: green
+  altid_tlp: white
   provider: 'isc.sans.edu'
   pattern:  '^(\S+)$'
   values: observable

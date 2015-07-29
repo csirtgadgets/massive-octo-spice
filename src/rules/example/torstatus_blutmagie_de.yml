@@ -1,8 +1,8 @@
 parser: regex
 defaults:
   provider: torstatus.blutmagie.de
-  altid_tlp: amber
-  tlp: amber
+  tlp: green
+  altid_tlp: white
   confidence: 85
 feeds:
   tor_exit_nodes:

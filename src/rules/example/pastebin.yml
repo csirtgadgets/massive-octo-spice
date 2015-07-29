@@ -1,7 +1,8 @@
 defaults:
   confidence: 50
   provider: pastebin.com
-  tlp: amber
+  tlp: green
+  altid_tlp: white
 
 feed:
   rsa_dump:

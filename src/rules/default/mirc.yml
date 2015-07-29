@@ -2,8 +2,8 @@ defaults:
   tags: whitelist
   provider: mirc.com
   protocol: tcp
-  altid_tlp: green
-  tlp: amber
+  tlp: green
+  altid_tlp: white
   confidence: 85
   application: irc
   remote: http://www.mirc.com/servers.ini

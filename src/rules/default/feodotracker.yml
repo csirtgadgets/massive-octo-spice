@@ -1,7 +1,7 @@
 defaults:
   provider: feodotracker.abuse.ch
-  tlp: amber
-  alt_tlp: green
+  tlp: green
+  altid_tlp: white
   confidence: 75
   altid: https://feodotracker.abuse.ch/host/<observable>
   tags:

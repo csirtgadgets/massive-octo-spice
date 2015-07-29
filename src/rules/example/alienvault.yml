@@ -1,7 +1,8 @@
 defaults:
   remote: http://reputation.alienvault.com/reputation.data
   provider: alienvault.com
-  tlp: amber
+  tlp: green
+  altid_tlp: white
   values: observable
   confidence: 65
 

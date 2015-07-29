@@ -11,9 +11,9 @@ defaults:
       - https
   protocol: tcp
   altid: http://www.alexa.com/siteinfo/<observable>
-  altid_tlp: green
   provider: alexa.com
   tlp: green
+  altid_tlp: white
 
 feeds:
   # there's urls in some of the fields...

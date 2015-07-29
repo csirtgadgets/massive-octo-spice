@@ -1,8 +1,8 @@
 parser: rss
 defaults:
   provider: zeustracker.abuse.ch
-  tlp: amber
-  alt_tlp: green
+  tlp: green
+  alt_tlp: white
   confidence: 85
   altid: https://zeustracker.abuse.ch/monitor.php?search=<observable>
   tags:

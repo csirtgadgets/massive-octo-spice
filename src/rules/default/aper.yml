@@ -1,5 +1,6 @@
 defaults:
-  tlp: amber
+  tlp: green
+  altid_tlp: white
   provider: 'anti-phishing-email-reply'
   remote: http://sourceforge.net/p/aper/code/HEAD/tree/phishing_reply_addresses?format=raw
   tags: phishing

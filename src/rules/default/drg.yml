@@ -3,8 +3,8 @@ defaults:
   tags: scanner
   protocol: tcp
   provider: dragonresearchgroup.org
-  altid_tlp: green
-  tlp: amber
+  tlp: green
+  altid_tlp: white
   confidence: 85
   values:
     - asn

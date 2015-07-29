@@ -1,6 +1,7 @@
 defaults:
   confidence: 95
   tlp: green
+  altid_tlp: white
   tags: passive
 
 feeds:

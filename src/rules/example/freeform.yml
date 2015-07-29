@@ -1,7 +1,8 @@
 parser: text
 defaults:
   tags: suspicious
-  tlp: amber
+  tlp: green
+  altid_tlp: white
   store_content: 1
   confidence: 65
   altid_tlp: green

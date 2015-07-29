@@ -2,8 +2,8 @@ parser: delim
 defaults:
   protocol: tcp
   provider: packetmail.net
-  altid_tlp: green
-  tlp: amber
+  tlp: green
+  altid_tlp: white
   confidence: 75
   pattern: '[;]'
   values:
