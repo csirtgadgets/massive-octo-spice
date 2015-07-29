@@ -10,7 +10,6 @@ defaults:
   tags: phishing
   protocol: tcp
   remote: http://data.phishtank.com/data/online-valid.json.gz
-  altid_tlp: green
 
 feeds:
   urls:

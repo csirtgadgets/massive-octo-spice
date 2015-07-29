@@ -6,7 +6,6 @@ defaults:
   tags:
     - scanner
   altid: http://www.us.openbl.org/lists.html
-  altid_tlp: green
   pattern: '^(\S+)$'
   values:
     - observable

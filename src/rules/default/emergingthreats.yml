@@ -6,7 +6,6 @@ defaults:
   tags:
     - malware
   altid: http://rules.emergingthreats.net/blockrules/compromised-ips.txt
-  altid_tlp: green
   pattern: '^(\S+)$'
   values:
     - observable
