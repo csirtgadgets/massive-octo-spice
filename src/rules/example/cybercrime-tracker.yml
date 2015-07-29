@@ -20,5 +20,5 @@ feeds:
           values: description
         pubDate:
           pattern: '(\S+)'
-          values: null
+          values: lasttime
     tags: malware

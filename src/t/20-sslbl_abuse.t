@@ -30,7 +30,7 @@ ok(@$ret[-1]->{'observable'} eq '144.76.232.59', 'testing output...');
 ok($#{$ret} == 6);
 
 ## dyre_sslipblacklist
-
+$rule = 'rules/default/sslbl_abuse_ch.yml';
 $rule = parse_rules($rule, 'dyre_sslipblacklist');
 
 $rule->set_not_before('10000 days ago');
