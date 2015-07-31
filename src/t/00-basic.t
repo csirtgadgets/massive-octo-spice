@@ -11,7 +11,7 @@ BEGIN {
     use_ok('CIF::Router');
 };
 
-use CIF qw/is_ip is_url is_ip_private is_fqdn/;
+use CIF qw/is_ip is_url is_ip_private is_fqdn is_hash/;
 
 ok(is_ip('192.168.1.1'),'testing ip address...');
 ok(is_url('http://12.12.12.12/example/test.html'), 'testing url...');
@@ -42,5 +42,8 @@ ok(is_fqdn('yahoo.uk'), 'checking domain');
 
 
 ok(is_ip('2001:4860:4860::8888'));
+
+ok(!is_url('73e4ee3b4b76ec339cdf413fdce9c5b8'), 'testing md5 not url');
+ok(is_hash('73e4ee3b4b76ec339cdf413fdce9c5b8') eq 'md5', 'testing md5');
 
 done_testing();

@@ -1,21 +1,51 @@
 <?xml version='1.0' encoding='ISO-8859-1'?>
- <rss version='2.0'>
- 
- <channel>
- <title>Malc0de Database Feed</title>
- <link>http://malc0de.com/database/</link>
- <description>Updated Feed of Malicious Executables</description>
- <language>en-us</language>
- <copyright>Copyright (C) 2010 malc0de.com</copyright>
- <item>
- <title>117.21.175.128</title>
- <link>http://malc0de.com/database/index.php?search=117.21.175.128</link>
- <description>URL: 117.21.175.128/and40a361.exe, IP Address: 117.21.175.128, Country: CN, ASN: 4134, MD5: 9017029e8ffe5d0694b95b978f953ff3</description>
- </item>
- <item>
- <title>117.21.175.128</title>
- <link>http://malc0de.com/database/index.php?search=117.21.175.128</link>
- <description>URL: 117.21.175.128/nut40a361.exe, IP Address: 117.21.175.128, Country: CN, ASN: 4134, MD5: 28c31288a6ade00531854e145ad0b4c2</description>
- </item>
- </channel>
- </rss>
+<rss version='2.0'>
+
+<channel>
+<title>Malc0de Database Feed</title>
+<link>http://malc0de.com/database/</link>
+<description>Updated Feed of Malicious Executables</description>
+<language>en-us</language>
+<copyright>Copyright (C) 2010 malc0de.com</copyright>
+<item>
+<title>104.200.78.119</title>
+<link>http://malc0de.com/database/index.php?search=104.200.78.119</link>
+<description>URL: 104.200.78.119/4.php, IP Address: 104.200.78.119, Country: US, ASN: 60781, MD5: b65b9d16e4c24d4ddcfab79999307c2f</description>
+</item>
+<item>
+<title>104.200.78.119</title>
+<link>http://malc0de.com/database/index.php?search=104.200.78.119</link>
+<description>URL: 104.200.78.119/1.php, IP Address: 104.200.78.119, Country: US, ASN: 60781, MD5: 638403e7a6065efa8f4c783565cb685a</description>
+</item>
+<item>
+<title>104.200.78.119</title>
+<link>http://malc0de.com/database/index.php?search=104.200.78.119</link>
+<description>URL: 104.200.78.119/2.php, IP Address: 104.200.78.119, Country: US, ASN: 60781, MD5: 3a75ff7cf4b28988ac42139953a34326</description>
+</item>
+<item>
+<title>104.200.78.119</title>
+<link>http://malc0de.com/database/index.php?search=104.200.78.119</link>
+<description>URL: 104.200.78.119/5.php, IP Address: 104.200.78.119, Country: US, ASN: 60781, MD5: 3701e6dbe737ffc4fb9bf29d6e125dd5</description>
+</item>
+<item>
+<title>104.200.78.119</title>
+<link>http://malc0de.com/database/index.php?search=104.200.78.119</link>
+<description>URL: 104.200.78.119/1.php, IP Address: 104.200.78.119, Country: US, ASN: 60781, MD5: 210ed30e10548e16503d0f08e652d432</description>
+</item>
+<item>
+<title>nd.lemonwebtoon.co.kr</title>
+<link>http://malc0de.com/database/index.php?search=nd.lemonwebtoon.co.kr</link>
+<description>URL: nd.lemonwebtoon.co.kr/dl/v0722/KeywordMap.dll, IP Address: 121.78.83.70, Country: KR, ASN: 9286, MD5: 6f1c844560d745aed00623ab3778342d</description>
+</item>
+<item>
+<title>monitor.constrax.at</title>
+<link>http://malc0de.com/database/index.php?search=monitor.constrax.at</link>
+<description>URL: monitor.constrax.at/LabTech/Transfer/Tools/ProduKey64.exe, IP Address: 85.125.85.105, Country: AT, ASN: 6830, MD5: 6335f23b6a8439ece9fb5d7054de1089</description>
+</item>
+<item>
+<title>llsw.download3.utorrent.com</title>
+<link>http://malc0de.com/database/index.php?search=llsw.download3.utorrent.com</link>
+<description>URL: llsw.download3.utorrent.com/beta/utorrent.40786.installer.exe, IP Address: 208.111.161.254, Country: US, ASN: 22822, MD5: 25ce8b9b6ffd0842b7fd2eb35244d53b</description>
+</item>
+</channel>
+</rss>

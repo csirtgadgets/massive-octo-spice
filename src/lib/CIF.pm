@@ -154,7 +154,11 @@ sub observable_type {
     return 'ipv6'   if(is_ipv6($arg));
     return 'fqdn'   if(is_fqdn($arg));
     return 'email'  if(is_email($arg));
-    return 'hash'   if(is_hash($arg));
+    
+    if(my $htype = is_hash($arg)){
+        return $htype;
+    }
+    
     return 0;
 }
 

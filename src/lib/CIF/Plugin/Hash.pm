@@ -54,6 +54,7 @@ sub is_hash {
     foreach (keys %$HTYPES){
         return $_ if(lc($arg) =~ $HTYPES->{$_});
     }
+    return 0;
 }
 
 sub is_uuid {

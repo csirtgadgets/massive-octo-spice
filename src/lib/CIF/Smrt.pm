@@ -152,8 +152,8 @@ sub process {
         
         next unless($self->not_before <= $ts );
         $_ = $self->rule->process({ data => $_ });
+        $_->{'otype'} = $otype unless($_->{'otype'});
         local $Data::Dumper::Indent = 0;
-        $Logger->debug(Dumper($_));
 
         push(@array,$_);
     }
