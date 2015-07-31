@@ -29,3 +29,21 @@ feeds:
       - observable
       - lasttime
       - description
+  iprep_ramnode:
+    remote: https://www.packetmail.net/iprep_ramnode.txt
+    tags: scanner
+    values:
+      - observable
+      - lasttime
+      - null
+      - null
+    description: 'TCP SYN to 81.4.103.251 to a non-listening service or daemon'
+  iprep_carisirt:
+    remote: https://www.packetmail.net/iprep_CARISIRT.txt
+    tags: scanner
+    values:
+      - observable
+      - lasttime
+      - null
+      - null
+    description: 'TCP SYN to 66.240.206.5 to a non-listening service or daemon'
