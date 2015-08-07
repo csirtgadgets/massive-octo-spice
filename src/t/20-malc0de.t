@@ -55,6 +55,7 @@ $ret = CIF::Smrt->new({
 
 ok($#{$ret} >= 0,'testing for results...');
 ok(@$ret[-1]->{'observable'} eq '25ce8b9b6ffd0842b7fd2eb35244d53b', 'testing output...') or diag Dumper($ret);
+ok(@$ret[-1]->{'altid'} eq 'http://malc0de.com/database/index.php?search=llsw.download3.utorrent.com', 'testing altid') or diag Dumper($ret);
 
 foreach (@{$ret}){
     ok($_->{'otype'} eq 'md5', "testing: " . $_->{'observable'});
