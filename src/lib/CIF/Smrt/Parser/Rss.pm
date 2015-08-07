@@ -59,7 +59,7 @@ sub process {
                 }
             }
         }
-        map { $h->{$_} = $defaults->{$_} } keys %{$defaults};
+        map { $h->{$_} = $defaults->{$_} unless(exists($h->{$_})) } keys %{$defaults};
         delete($h->{'pattern'});
         push(@array,$h);
     }
