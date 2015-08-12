@@ -26,7 +26,7 @@ use constant {
     MAX_DT          => '2100-12-31T23:59:59Z' # if you're still using this by then, God help you.
 };
 
-has [qw(ignore_journal config is_test other_attributes test_mode handler rule tmp limit proxy https_proxy)] => (
+has [qw(ignore_journal config is_test other_attributes test_mode handler rule tmp limit proxy https_proxy test_observable)] => (
     is      => 'ro',
 );
 
@@ -141,9 +141,19 @@ sub process {
         $data = [ @$data[0..($self->limit-1)] ];   
     }
     
+    if($self->test_observable){
+        $Logger->info('testing observable: ' . $self->test_observable);
+    }
+    
     foreach (@$data){
+        if($self->test_observable){
+            next unless($_->{'observable'} && $_->{'observable'} eq $self->test_observable);
+        }
+        
         $otype = observable_type($_->{'observable'});
         next unless($otype);
+        $_->{'otype'} = $otype unless($_->{'otype'});
+        
         
         $_->{'reporttime'} = $reporttime unless($_->{'reporttime'});
 
@@ -152,8 +162,8 @@ sub process {
         
         next unless($self->not_before <= $ts );
         $_ = $self->rule->process({ data => $_ });
+        
         local $Data::Dumper::Indent = 0;
-        $Logger->debug(Dumper($_));
 
         push(@array,$_);
     }

@@ -18,6 +18,7 @@ feeds:
         pattern: '(\S+)'
         values: altid
   malware:
+    otype: md5
     pattern:
       description:
         pattern: '^URL: \S+, IP Address: \S+?, Country: \S+, ASN: \S+, MD5: (\S+)'

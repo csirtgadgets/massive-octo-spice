@@ -139,7 +139,7 @@ sub _merge_defaults {
                 $default =~ s/<\S+>/$val/;
                 $args->{'data'}->{$k} = $default;
             } else {
-                $args->{'data'}->{$k} = $self->defaults->{$k};
+                $args->{'data'}->{$k} = $self->defaults->{$k} unless($args->{'data'}->{$k});
             }
         }
     }
