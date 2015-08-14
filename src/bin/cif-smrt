@@ -36,6 +36,7 @@ my $no_verify_ssl = 1; ##TODO alphas only!!!
 my $ignore_journal;
 my $proxy;
 my $https_proxy;
+my $test_observable;
 
 # daemon
 my $daemon      = 0;
@@ -100,6 +101,7 @@ GetOptions(
     'cache|P=s'         => \$cache,
     'proxy=s'           => \$proxy,
     'https-proxy=s'     => \$https_proxy,
+    'test-observable=s'   => \$test_observable,
     
     #notification
     'notify'        => \$notify,
@@ -332,6 +334,7 @@ sub _main {
                 limit           => $limit,
                 proxy           => $proxy,
                 https_proxy     => $https_proxy,
+                test_observable => $test_observable,
             });
             
             try {

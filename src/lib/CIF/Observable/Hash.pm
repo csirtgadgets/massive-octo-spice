@@ -9,6 +9,7 @@ use CIF qw/is_hash/;
 with 'CIF::Observable';
 
 has '+otype' => (
+    is => 'ro',
     default => sub { is_hash($_[0]->{'observable'}) },
 );
 

@@ -15,7 +15,6 @@ has '+otype' => (
 
 has '+observable'    => (
     isa     => 'CIF::Type::Uri',
-    coerce  => 1,
 );
 
 sub process {}

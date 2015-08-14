@@ -31,7 +31,10 @@ my $ret = CIF::Smrt->new({
 })->process();
 
 ok($#{$ret} >= 0,'testing for results...');
-ok(@$ret[-1]->{'observable'} eq 'http://117.21.175.128/nut40a361.exe', 'testing output...') or diag Dumper($ret);
+ok(@$ret[-1]->{'observable'} eq 'http://llsw.download3.utorrent.com/beta/utorrent.40786.installer.exe', 'testing output...') or diag Dumper($ret);
+foreach (@{$ret}){
+    ok($_->{'otype'} eq 'url', "testing: " . $_->{'observable'});
+}
 
 #malware (hashes)
 
@@ -51,6 +54,11 @@ $ret = CIF::Smrt->new({
 })->process();
 
 ok($#{$ret} >= 0,'testing for results...');
-ok(@$ret[-1]->{'observable'} eq '28c31288a6ade00531854e145ad0b4c2', 'testing output...') or diag Dumper($ret);
+ok(@$ret[-1]->{'observable'} eq '25ce8b9b6ffd0842b7fd2eb35244d53b', 'testing output...') or diag Dumper($ret);
+ok(@$ret[-1]->{'altid'} eq 'http://malc0de.com/database/index.php?search=llsw.download3.utorrent.com', 'testing altid') or diag Dumper($ret);
+
+foreach (@{$ret}){
+    ok($_->{'otype'} eq 'md5', "testing: " . $_->{'observable'});
+}
 
 done_testing();
