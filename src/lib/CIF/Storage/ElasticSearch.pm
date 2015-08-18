@@ -488,7 +488,7 @@ sub _submission {
             $Logger->error('missing group: '.$_->{'observable'});
             return 0;
         }
-        
+        $_->{'group'} = [ $_->{'group'} ] unless(ref($_->{'group'}) eq 'ARRAY'); 
         foreach my $g (@{$_->{'group'}}){
             unless($usergroups->{$g}){
                 $Logger->debug(Dumper($args));
