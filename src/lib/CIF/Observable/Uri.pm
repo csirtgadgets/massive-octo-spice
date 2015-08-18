@@ -24,6 +24,7 @@ sub understands {
     my $args = shift;
     
     return unless($args->{'observable'});
+    $args->{'observable'} =~ s/\s+$//;
     return unless(is_url($args->{'observable'}));
     return 1;
 }
