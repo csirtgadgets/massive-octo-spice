@@ -39,7 +39,8 @@ use constant RE_IPV4            => qr/^$RE{'net'}{'IPv4'}$/;
 use constant RE_IPV4_CIDR       => qr/^$RE{'net'}{'CIDR'}{'IPv4'}$/;
 use constant RE_IPV6            => qr/^$RE{'net'}{'IPv6'}/;
 use constant ASN_MAX            => 2**32 - 1;
-use constant RE_URL             => qr/^(http|https|smtp|ftp|sftp):\/\/(\S*\.\S*)$/;
+use constant RE_URL             => qr/^(http|https|smtp|ftp|sftp):\/\/((xn--)?(--)?[a-zA-Z0-9-_]+(-[a-zA-Z0-9]+)*\.)+[a-zA-Z]{2,}(--p1ai)?/;
+
 use constant RE_URL_BROKEN      => qr/^([a-z0-9.-]+[a-z]{2,63}|\b(?:\d{1,3}\.){3}\d{1,3}\b)(:(\d+))?\/+/;
 use constant RE_URL_BROKEN_DUMB      => qr/(\S+):\/\//;
 
@@ -113,20 +114,10 @@ sub is_fqdn_lazy {
 
 sub is_url {
     my $arg = shift || return;
-    my $no_check_ip = shift || 0;
-    
-    unless($no_check_ip){
-        return 0 if(is_ip($arg));
-    }
-
-    return 0 if($arg =~ RE_IPV4_CIDR);
-    return 1 if($arg =~ RE_URL);
-    return 2 if($arg =~ RE_URL_BROKEN);
-    
-    return;
-    
-    # https://github.com/csirtgadgets/massive-octo-spice/issues/86
-    #return 3 if($arg =~ RE_URL_BROKEN_DUMB && $arg !~ /^(http|https|ftp|sftp)/); 
+    my $uri = URI->new($arg);
+    return 0 unless($uri->scheme);
+    return 0 unless(is_fqdn($uri->host) or is_ip($uri->host));
+    return 1;
 }
 
 sub is_url_broken {
