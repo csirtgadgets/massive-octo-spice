@@ -39,10 +39,6 @@ use constant RE_IPV4            => qr/^$RE{'net'}{'IPv4'}$/;
 use constant RE_IPV4_CIDR       => qr/^$RE{'net'}{'CIDR'}{'IPv4'}$/;
 use constant RE_IPV6            => qr/^$RE{'net'}{'IPv6'}/;
 use constant ASN_MAX            => 2**32 - 1;
-use constant RE_URL             => qr/^(http|https|smtp|ftp|sftp):\/\/((xn--)?(--)?[a-zA-Z0-9-_]+(-[a-zA-Z0-9]+)*\.)+[a-zA-Z]{2,}(--p1ai)?/;
-
-use constant RE_URL_BROKEN      => qr/^([a-z0-9.-]+[a-z]{2,63}|\b(?:\d{1,3}\.){3}\d{1,3}\b)(:(\d+))?\/+/;
-use constant RE_URL_BROKEN_DUMB      => qr/(\S+):\/\//;
 
 my @ipv4_private_addresses = (
     "0.0.0.0/8",
