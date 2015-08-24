@@ -39,6 +39,7 @@ use constant RE_IPV4            => qr/^$RE{'net'}{'IPv4'}$/;
 use constant RE_IPV4_CIDR       => qr/^$RE{'net'}{'CIDR'}{'IPv4'}$/;
 use constant RE_IPV6            => qr/^$RE{'net'}{'IPv6'}/;
 use constant ASN_MAX            => 2**32 - 1;
+use constant URI_SCHEMES        => qr/^(https?|ftp)$/;
 
 my @ipv4_private_addresses = (
     "0.0.0.0/8",
@@ -112,6 +113,7 @@ sub is_url {
     my $arg = shift || return;
     my $uri = URI->new($arg);
     return 0 unless($uri->scheme);
+    return 0 unless($uri->scheme =~ URI_SCHEMES);
     return 0 unless(is_fqdn($uri->host) or is_ip($uri->host));
     return 1;
 }

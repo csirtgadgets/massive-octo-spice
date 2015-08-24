@@ -135,7 +135,6 @@ sub process {
     $reporttime = $reporttime->ymd().'T'.$reporttime->hms().'Z';
     
     my $ts;
-    my $otype;
     
     if ($self->limit){
         $data = [ @$data[0..($self->limit-1)] ];   
@@ -150,10 +149,10 @@ sub process {
             next unless($_->{'observable'} && $_->{'observable'} eq $self->test_observable);
         }
         
-        $otype = observable_type($_->{'observable'});
-        next unless($otype);
-        $_->{'otype'} = $otype unless($_->{'otype'});
-        
+        unless($_->{'otype'}){
+            $_->{'otype'} = observable_type($_->{'observable'});
+        }
+        next unless($_->{'otype'});
         
         $_->{'reporttime'} = $reporttime unless($_->{'reporttime'});
 
