@@ -227,7 +227,7 @@ sub main {
     
     my $msg;
     my $x = $master->start_subscriber(sub {
-        while($master->subscriber_socket->has_pollin() && !$done-ready()){
+        while($master->subscriber_socket->has_pollin() && !$done->ready()){
             $msg = $master->subscriber_socket->recv();
             $Logger->info('recieved msg...');
             $msg = $master->decode($msg);
