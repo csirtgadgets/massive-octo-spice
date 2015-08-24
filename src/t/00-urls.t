@@ -36,6 +36,7 @@ foreach (@data){
 @data = (
     '192.168.1.1/1.html',
     'http://www41..xzmnt.com',
+    'get.ahoybest.com/n/3.6.16/12205897/microsoft lync server 2010.exe'
 );
 
 foreach (@data){
@@ -48,7 +49,8 @@ foreach (@data){
     'http://fb.com/1234.html',
     'http://www.test.com/example.htm ',
     'http://example.org/?q=12&1=2',
-    'http://192.168.1.1/24/1.html'
+    'http://192.168.1.1/24/1.html',
+    'http://get.ahoybest.com/n/3.6.16/12205897/microsoft lync server 2010.exe',
 );
 
 foreach (@data){

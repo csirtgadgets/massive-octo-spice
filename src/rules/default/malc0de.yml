@@ -12,7 +12,7 @@ feeds:
     otype: url
     pattern:
       description:
-        pattern: '^URL: (\S+), IP Address: \S+?, Country: \S+, ASN: \S+, MD5: \S+'
+        pattern: '^URL: (.+), IP Address: \S+?, Country: \S+, ASN: \S+, MD5: \S+'
         values: observable
       link:
         pattern: '(\S+)'
@@ -21,7 +21,7 @@ feeds:
     otype: md5
     pattern:
       description:
-        pattern: '^URL: \S+, IP Address: \S+?, Country: \S+, ASN: \S+, MD5: (\S+)'
+        pattern: '^URL: .+, IP Address: \S+?, Country: \S+, ASN: \S+, MD5: (\S+)'
         values: observable
       link:
         pattern: '(\S+)'
