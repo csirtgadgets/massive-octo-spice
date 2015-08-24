@@ -162,6 +162,10 @@ sub process {
         next unless($self->not_before <= $ts );
         $_ = $self->rule->process({ data => $_ });
         
+        if($_->{'provider'}){
+            $_->{'provider'} = lc($_->{'provider'});
+        }
+        
         local $Data::Dumper::Indent = 0;
 
         push(@array,$_);
