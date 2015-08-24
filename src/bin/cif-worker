@@ -17,6 +17,7 @@ use AnyEvent;
 use Daemon::Control;
 use Try::Tiny;
 use Data::Dumper;
+use Time::HiRes qw/usleep/;
 
 my $help;
 my $remote          = CIF::Worker::ROUTER;
@@ -219,7 +220,10 @@ sub main {
     }
     
     my $done = AnyEvent->condvar();
-    $SIG{'TERM'} = $SIG{'INT'} = sub { $done->send(); };
+    $SIG{'INT'} = sub {
+        $Logger->info('received INT for master...'); 
+        $done->send(); 
+    };
     
     my $msg;
     my $x = $master->start_subscriber(sub {
@@ -242,6 +246,7 @@ sub main {
     
     $done->recv();
     
+    $Logger->info('signaling INT for workers...');
     foreach (@workers) {
         kill INT => $_;
         my $tmp = waitpid($_, 0);
@@ -252,17 +257,23 @@ sub workers {
     $Logger->debug('staring worker..');
 
     my $d    = AnyEvent->condvar();
-    $SIG{'INT'} = sub { $d->send(); };
+    
+    $SIG{'INT'} = sub {
+        $Logger->info('['.$$.'] worker received INT.. exiting'); 
+        $d->send(); 
+    };
     
     my $worker = CIF::Worker->new({
         router      => $remote,
         token       => $token,
     });
+    
     $worker->data_socket;
     my $err;
     my $msg;
+
     my $rv = $worker->start_worker(sub {
-       while($worker->data_socket->has_pollin()){
+       while($worker->data_socket->has_pollin() && !$d->ready){
            $msg = $worker->data_socket->recv();
            $Logger->info('worker received msg...');
            try {
