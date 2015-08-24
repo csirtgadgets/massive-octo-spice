@@ -148,7 +148,7 @@ sub process {
         if($self->test_observable){
             next unless($_->{'observable'} && $_->{'observable'} eq $self->test_observable);
         }
-        
+
         unless($_->{'otype'}){
             $_->{'otype'} = observable_type($_->{'observable'});
         }
@@ -158,9 +158,10 @@ sub process {
 
         $ts = $_->{'firsttime'} || $_->{'lasttime'} || $_->{'reporttime'} || MAX_DT;
         $ts = normalize_timestamp($ts)->epoch();
-        
+         
         next unless($self->not_before <= $ts );
         $_ = $self->rule->process({ data => $_ });
+       
         
         if($_->{'provider'}){
             $_->{'provider'} = lc($_->{'provider'});
