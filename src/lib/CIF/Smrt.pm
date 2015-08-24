@@ -152,8 +152,7 @@ sub process {
         
         $otype = observable_type($_->{'observable'});
         next unless($otype);
-        $_->{'otype'} = $otype unless($_->{'otype'});
-        
+        $_->{'otype'} = $otype unless($_->{'otype'});        
         
         $_->{'reporttime'} = $reporttime unless($_->{'reporttime'});
 
@@ -162,6 +161,10 @@ sub process {
         
         next unless($self->not_before <= $ts );
         $_ = $self->rule->process({ data => $_ });
+        
+        if($_->{'provider'}){
+            $_->{'provider'} = lc($_->{'provider'});
+        }
         
         local $Data::Dumper::Indent = 0;
 
