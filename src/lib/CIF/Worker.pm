@@ -219,16 +219,20 @@ sub send {
     };
     
     if($err){
+        # o/w queued msgs will hang the context thread
+        $self->router_socket->set(ZMQ_LINGER,'int',0);
         for($err){
             if(/Resource temporarily unavailable/){
                 $Logger->debug('cif-router timeout...');
-                # o/w queued msgs will hang the context thread
-                $self->router_socket->set(ZMQ_LINGER,'int',0);
-                return 0;
+                last;
             }
+            if(/zmq_msg_recv: Interrupted system call/){ # catch upper level INT
+                last;    
+            }
+            
             $Logger->fatal($err);
-            return 0;
         }
+        return 0;
     }
     
     $Logger->debug('decoding...');
