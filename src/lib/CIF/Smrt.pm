@@ -135,7 +135,6 @@ sub process {
     $reporttime = $reporttime->ymd().'T'.$reporttime->hms().'Z';
     
     my $ts;
-    my $otype;
     
     if ($self->limit){
         $data = [ @$data[0..($self->limit-1)] ];   
@@ -149,19 +148,24 @@ sub process {
         if($self->test_observable){
             next unless($_->{'observable'} && $_->{'observable'} eq $self->test_observable);
         }
-        
-        $otype = observable_type($_->{'observable'});
-        next unless($otype);
-        $_->{'otype'} = $otype unless($_->{'otype'});
-        
+
+        unless($_->{'otype'}){
+            $_->{'otype'} = observable_type($_->{'observable'});
+        }
+        next unless($_->{'otype'});
         
         $_->{'reporttime'} = $reporttime unless($_->{'reporttime'});
 
         $ts = $_->{'firsttime'} || $_->{'lasttime'} || $_->{'reporttime'} || MAX_DT;
         $ts = normalize_timestamp($ts)->epoch();
-        
+         
         next unless($self->not_before <= $ts );
         $_ = $self->rule->process({ data => $_ });
+       
+        
+        if($_->{'provider'}){
+            $_->{'provider'} = lc($_->{'provider'});
+        }
         
         local $Data::Dumper::Indent = 0;
 

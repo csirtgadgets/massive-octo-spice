@@ -100,6 +100,14 @@ case "$1" in
     fi
     log_end_msg 0
     ;;
+  force-stop)
+  	PIDS=`ps aux | grep $NAME | grep -v grep | awk -F' ' '{ print $2 }'`
+  	for P in $PIDS
+  	do
+  		echo "forcefully killing: $S"
+  		kill -KILL $S
+  	end
+  	;;
   status)
     status_of_proc -p $PID_FILE cif-worker cif-worker && exit 0 || exit $?
     ;;
