@@ -262,7 +262,7 @@ sub submit {
         try {
             $_ = CIF::ObservableFactory->new_plugin($_);
         } catch {
-            $Logger->debug(Dumper($_));
+            $Logger->info(Dumper($_));
             $Logger->error(shift);
             return -1;
         };
