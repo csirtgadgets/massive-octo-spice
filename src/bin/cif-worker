@@ -123,7 +123,7 @@ if(-e $config){
     $Logger->info('config: '.$config.' does not exist...');
 }
 
-my $loglevel = ($debug) ? 'DEBUG' : 'ERROR';
+my $loglevel = ($debug) ? 'DEBUG' : 'INFO';
 
 if($notify){
     $notify = { 
@@ -220,20 +220,26 @@ sub main {
     }
     
     my $done = AnyEvent->condvar();
-    $SIG{'INT'} = sub {
+    $SIG{'TERM'} = $SIG{'INT'} = sub {
         $Logger->info('received INT for master...'); 
         $done->send(); 
     };
     
     my $msg;
+    my $count = 0;
+    my $batch = 500;
     my $x = $master->start_subscriber(sub {
         while($master->subscriber_socket->has_pollin() && !$done->ready()){
             $msg = $master->subscriber_socket->recv();
-            $Logger->info('recieved msg...');
+            $Logger->debug('recieved msg...');
             $msg = $master->decode($msg);
             foreach (@$msg){
                 $Logger->debug('sending to worker...');
                 $master->workers_socket->send($master->encode($_));
+                $count++;
+                if($count > 0 && ($count % $batch) == 0){
+                    $Logger->info($batch . ' messages sent to workers...');
+                }
             }
             $msg = undef;
         }
@@ -254,7 +260,7 @@ sub main {
 }
 
 sub workers {
-    $Logger->debug('staring worker..');
+    $Logger->info('staring worker..');
 
     my $d    = AnyEvent->condvar();
     
@@ -275,7 +281,7 @@ sub workers {
     my $rv = $worker->start_worker(sub {
        while($worker->data_socket->has_pollin() && !$d->ready){
            $msg = $worker->data_socket->recv();
-           $Logger->info('worker received msg...');
+           $Logger->debug('worker received msg...');
            try {
                 $worker->process($msg);
            } catch {
