@@ -91,8 +91,8 @@ sub _normalize_url {
     
     $data->{'otype'} = 'url';
     
-    $data = uri_escape_utf8($data,'\x00-\x1f\x7f-\xff');
-    $data = lc(URI->new($data)->canonical->as_string);
+    $data->{'observable'} = uri_escape_utf8($data->{'observable'},'\x00-\x1f\x7f-\xff');
+    $data->{'observable'} = lc(URI->new($data->{'observable'})->canonical->as_string);
 }
 
 sub _normalize_ts {
@@ -139,7 +139,7 @@ sub _merge_defaults {
                 $default =~ s/<\S+>/$val/;
                 $args->{'data'}->{$k} = $default;
             } else {
-                $args->{'data'}->{$k} = $self->defaults->{$k};
+                $args->{'data'}->{$k} = $self->defaults->{$k} unless($args->{'data'}->{$k});
             }
         }
     }

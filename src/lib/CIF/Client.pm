@@ -217,13 +217,25 @@ sub search {
     return 0 if $msg->{'stype'} eq 'unauthorized';
     return unless $msg->{'stype'} eq 'success';
     
+    my $err;
+    
     unless($args->{'nodecode'}){
         foreach (@{$msg->{'Data'}->{'Results'}}){
-            $_ = CIF::ObservableFactory->new_plugin($_);
-            if($self->tlp_map && keys($self->tlp_map)){
-                $_->{'tlp'} = $self->tlp_map->{$_->{'tlp'}};
-                if($_->{'alt_tlp'}){
-                    $_->{'alt_tlp'} = $self->tlp_map->{$_->{'alt_tlp'}};
+            try {
+                $_ = CIF::ObservableFactory->new_plugin($_);
+            } catch {
+                $err = shift;
+            };
+            if($err){
+                $Logger->error($err);
+                $Logger->info(Dumper($_));
+                $err = undef;
+            } else {
+                if($self->tlp_map && keys($self->tlp_map)){
+                    $_->{'tlp'} = $self->tlp_map->{$_->{'tlp'}};
+                    if($_->{'alt_tlp'}){
+                        $_->{'alt_tlp'} = $self->tlp_map->{$_->{'alt_tlp'}};
+                    }
                 }
             }
         }
@@ -237,6 +249,7 @@ sub submit {
     
     foreach (@{$args->{'observables'}}){
         $_->{'observable'} = lc($_->{'observable'});
+        $_->{'observable'} =~ s/\s+$//; # trip right side whitespace
         if($args->{'enable_metadata'}){
             try {
                 $self->_process_metadata($_);
@@ -249,7 +262,7 @@ sub submit {
         try {
             $_ = CIF::ObservableFactory->new_plugin($_);
         } catch {
-            $Logger->debug(Dumper($_));
+            $Logger->info(Dumper($_));
             $Logger->error(shift);
             return -1;
         };

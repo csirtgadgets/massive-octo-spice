@@ -26,7 +26,7 @@ use constant {
     MAX_DT          => '2100-12-31T23:59:59Z' # if you're still using this by then, God help you.
 };
 
-has [qw(ignore_journal config is_test other_attributes test_mode handler rule tmp limit proxy https_proxy)] => (
+has [qw(ignore_journal config is_test other_attributes test_mode handler rule tmp limit proxy https_proxy test_observable)] => (
     is      => 'ro',
 );
 
@@ -135,25 +135,39 @@ sub process {
     $reporttime = $reporttime->ymd().'T'.$reporttime->hms().'Z';
     
     my $ts;
-    my $otype;
     
     if ($self->limit){
         $data = [ @$data[0..($self->limit-1)] ];   
     }
     
+    if($self->test_observable){
+        $Logger->info('testing observable: ' . $self->test_observable);
+    }
+    
     foreach (@$data){
-        $otype = observable_type($_->{'observable'});
-        next unless($otype);
+        if($self->test_observable){
+            next unless($_->{'observable'} && $_->{'observable'} eq $self->test_observable);
+        }
+
+        unless($_->{'otype'}){
+            $_->{'otype'} = observable_type($_->{'observable'});
+        }
+        next unless($_->{'otype'});
         
         $_->{'reporttime'} = $reporttime unless($_->{'reporttime'});
 
         $ts = $_->{'firsttime'} || $_->{'lasttime'} || $_->{'reporttime'} || MAX_DT;
         $ts = normalize_timestamp($ts)->epoch();
-        
+         
         next unless($self->not_before <= $ts );
         $_ = $self->rule->process({ data => $_ });
+       
+        
+        if($_->{'provider'}){
+            $_->{'provider'} = lc($_->{'provider'});
+        }
+        
         local $Data::Dumper::Indent = 0;
-        $Logger->debug(Dumper($_));
 
         push(@array,$_);
     }

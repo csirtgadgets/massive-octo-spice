@@ -20,6 +20,8 @@ sub new_plugin {
     my ($self,$args) = @_;
     return unless($args);
     
+    $args->{'observable'} =~ s/\s+$//g;  # trim whitespace 
+    
     # work-around for now
     if ($args->{'mask'}){
         $args->{'observable'} .= "/" . $args->{"mask"};
@@ -35,7 +37,6 @@ sub new_plugin {
    
     return $ret if($ret);
     croak($err) if($err);
-    
 }
 
 1;

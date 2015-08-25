@@ -15,7 +15,6 @@ has '+otype' => (
 
 has '+observable'    => (
     isa     => 'CIF::Type::Uri',
-    coerce  => 1,
 );
 
 sub process {}
@@ -28,8 +27,6 @@ sub understands {
     return unless(is_url($args->{'observable'}));
     return 1;
 }
-
-
 
 __PACKAGE__->meta()->make_immutable();
 
