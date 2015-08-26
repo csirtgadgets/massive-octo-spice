@@ -1,5 +1,8 @@
 Revision history for massive-octo-spice
 
+2.00.00-rc.3 2015-08-25
+    - [@motok] easybutton fixes
+
 2.00.00-rc.2 2015-08-25
     - https://github.com/csirtgadgets/massive-octo-spice/issues/325
     - https://github.com/csirtgadgets/massive-octo-spice/issues/327
