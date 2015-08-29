@@ -21,8 +21,8 @@ use constant {
     PUBLISHER       => 'tcp://localhost:'.CIF::DEFAULT_PUBLISHER_PORT,
     ROUTER          => 'tcp://localhost:'.CIF::DEFAULT_FRONTEND_PORT,
     CONFIDENCE_MIN  => 25,
-    SND_TIMEOUT     => 1000,
-    RCV_TIMEOUT     => 1000,
+    SND_TIMEOUT     => 10000,
+    RCV_TIMEOUT     => 10000,
     DATA_PIPE       => 'ipc:///tmp/cif_workers_data',
 };
 
