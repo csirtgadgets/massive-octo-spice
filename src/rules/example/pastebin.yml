@@ -7,7 +7,6 @@ defaults:
 feed:
   rsa_dump:
     remote: http://pastebin.com/raw.php?i=yKSQd5Z5
-    period: daily
     tags: botnet
     description: 'suspected apt'
     confidence: 75
