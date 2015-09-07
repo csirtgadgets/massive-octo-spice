@@ -1,0 +1,4 @@
+requires 'Google::ProtocolBuffers'
+requires 'ZMQ::FFI'
+requires 'Class::DBI'
+requiers 'Data::UUID'
