@@ -33,7 +33,11 @@ fi
 case $OS in
     "Ubuntu" )
         sudo apt-get update && sudo apt-get upgrade -y && sudo apt-get install -y htop build-essential automake autoconf git
-        git clone https://github.com/csirtgadgets/massive-octo-spice.git -b $BRANCH
+        if [ -d massive-octo-spice ]; then
+        	(cd massive-octo-spice && git checkout $BRANCH && git pull)
+        else
+        	git clone https://github.com/csirtgadgets/massive-octo-spice.git -b $BRANCH
+        fi
         cd massive-octo-spice
         bash autogen.sh
         sudo bash ./hacking/platforms/easybutton.sh

@@ -15,13 +15,14 @@ use Data::Dumper;
 use CIF::ObservableFactory;
 use CIF::WorkerFactory;
 use CIF::MetaFactory;
+use Carp qw/croak/;
 
 use constant {
     PUBLISHER       => 'tcp://localhost:'.CIF::DEFAULT_PUBLISHER_PORT,
     ROUTER          => 'tcp://localhost:'.CIF::DEFAULT_FRONTEND_PORT,
     CONFIDENCE_MIN  => 25,
-    SND_TIMEOUT     => 320000,
-    RCV_TIMEOUT     => 320000,
+    SND_TIMEOUT     => 10000,
+    RCV_TIMEOUT     => 10000,
     DATA_PIPE       => 'ipc:///tmp/cif_workers_data',
 };
 
@@ -42,7 +43,7 @@ has 'publisher' => (
 has 'dummy' => ( is => 'ro' );
 
 has [qw(context router_socket subscriber_socket workers_socket data_socket)] => (
-    is          => 'ro',
+    is          => 'rw',
     lazy_build  => 1,
 );
 
@@ -188,6 +189,64 @@ sub _process_metadata {
     }
 }
 
+sub _send {
+    my $self = shift;
+    my $msg = shift;
+    
+    $Logger->debug('sending upstream...');
+    
+    my ($err, $ret);
+    my $x = 0;
+    my $retries = 5;
+    
+    do {
+        $Logger->debug('try '.$x.' of '.$retries) if($x > 0);
+        try {
+            $ret = $self->router_socket->send($msg);
+            $ret = $self->router_socket->recv;
+        } catch {
+            $err = shift;
+        };
+        if($err){
+            for($err){
+                $Logger->debug($err);
+                $self->router_socket->set(ZMQ_LINGER,'int',0);
+                if(/zmq_msg_recv: Interrupted system call/){ # catch upper level INT
+                    $Logger->debug('sig INT');
+                    croak('SIGINT called');   
+                }
+                if(/Resource temporarily unavailable/){
+                    $Logger->error('cif-router timeout...');
+                    $Logger->debug('resetting router socket...');
+                    $self->router_socket->close();
+                    $self->router_socket($self->_build_router_socket());
+                    $Logger->debug('socket reset');
+                    sleep(1);
+                    last;
+                }
+                if(/Operation cannot be accomplished in current state/){
+                    $Logger->error('lost connection to cif-router');
+                    $Logger->debug('resetting router socket...');
+                    $self->router_socket->close();
+                    $self->router_socket($self->_build_router_socket());
+                    $Logger->debug('socket reset');
+                    sleep(1);
+                    last;
+                }
+                croak($err);
+            }
+            $err = undef;
+        }
+        
+    } while(!$ret && ($x++ < $retries));
+    
+    croak($err) if($err);
+    croak('failed to send message, unable to connect to cif-router...') unless($x < $retries);
+    
+    return $ret;
+        
+}
+
 sub send {
     my $self = shift;
     my $msg  = shift;
@@ -206,39 +265,31 @@ sub send {
     } else {
         $msg = JSON::XS->new->convert_blessed(1)->encode($msg);
     }
-    
-    $Logger->debug('sending upstream...');
-    
-    my ($ret,$err);
-    $ret = $self->router_socket->send($msg);
-    
+
+    my ($ret, $err);
     try {
-        $msg = $self->router_socket->recv;
+        $ret = $self->_send($msg);
     } catch {
         $err = shift;
     };
     
-    if($err){
-        # o/w queued msgs will hang the context thread
-        $self->router_socket->set(ZMQ_LINGER,'int',0);
-        for($err){
-            if(/Resource temporarily unavailable/){
-                $Logger->debug('cif-router timeout...');
-                last;
-            }
-            if(/zmq_msg_recv: Interrupted system call/){ # catch upper level INT
-                last;    
-            }
-            
-            $Logger->fatal($err);
-        }
-        return 0;
-    }
+    croak($err) if($err);
+    $msg = $ret;
     
     $Logger->debug('decoding...');
     $msg = JSON::XS->new->decode($msg);
     
     $msg = ${$msg}[0] if(ref($msg) && ref($msg) eq 'ARRAY');
+    
+    if($msg->{'stype'} ne 'success'){
+        $Logger->error($msg->{'stype'});
+        $Logger->info(Dumper($msg));
+        if($msg->{'stype'} eq 'unauthorized'){
+            $Logger->error('make sure cif-worker has permission to read/write for all groups');
+        }
+    }
+    
+    $Logger->debug('done');
     
     return $msg;
 }

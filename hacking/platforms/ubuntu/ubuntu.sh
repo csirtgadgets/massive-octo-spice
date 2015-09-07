@@ -18,6 +18,8 @@ if [ -d /opt/cif ]; then
 	bash upgrade.sh
 fi
 
+echo "Acquire::ForceIPv4 \"true\";" > /etc/apt/apt.conf.d/99force-ipv4
+
 apt-get update
 apt-get install -qq software-properties-common python-software-properties
 
@@ -50,7 +52,7 @@ bash firewall.sh
 
 echo 'installing cpanm...'
 curl -L https://cpanmin.us | sudo perl - App::cpanminus
-alias cpanm='cpanm --wget --mirror https://cpan.metacpan.org'
+alias cpanm='cpanm --wget --mirror https://cpan.metacpan.org --skip-installed'
 
 cpanm Regexp::Common
 cpanm Moo@1.007000
