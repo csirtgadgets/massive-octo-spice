@@ -145,6 +145,10 @@ sub process {
     }
     
     foreach (@$data){
+        next unless($_->{'observable'});
+        next unless(length($_->{'observable'}) > 2);
+        next if($_->{'observable'} =~ /^\s+$/);
+        
         if($self->test_observable){
             next unless($_->{'observable'} && $_->{'observable'} eq $self->test_observable);
         }

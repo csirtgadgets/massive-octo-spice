@@ -4,6 +4,7 @@ Revision history for massive-octo-spice
     - [@motok] easybutton fixes
 	- https://github.com/csirtgadgets/massive-octo-spice/issues/337
     - reworked cif-worker send function so that cif-worker quits more appropriately
+    - https://github.com/csirtgadgets/massive-octo-spice/issues/345
 
 2.00.00-rc.2 2015-08-25
     - https://github.com/csirtgadgets/massive-octo-spice/issues/325
