@@ -116,7 +116,7 @@ sub process {
     
     # parse
     $Logger->debug('parsing...');
-
+  
     $data = $self->parser->process($data);
     
     unless($self->ignore_journal){
@@ -135,7 +135,7 @@ sub process {
     $reporttime = $reporttime->ymd().'T'.$reporttime->hms().'Z';
     
     my $ts;
-    
+
     if ($self->limit){
         $data = [ @$data[0..($self->limit-1)] ];   
     }
@@ -143,7 +143,7 @@ sub process {
     if($self->test_observable){
         $Logger->info('testing observable: ' . $self->test_observable);
     }
-    
+
     foreach (@$data){
         next unless($_->{'observable'});
         next unless(length($_->{'observable'}) > 2);
