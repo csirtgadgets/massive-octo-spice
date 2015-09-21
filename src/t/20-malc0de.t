@@ -42,7 +42,7 @@ $rule = 'rules/default/malc0de.yml';
 
 $rule = parse_rules($rule,'malware');
 
-ok($rule);
+ok($rule, 'testing rule');
 
 $rule->{'defaults'}->{'remote'} = 'testdata/malc0de.com/rss.xml';
 
@@ -61,4 +61,11 @@ foreach (@{$ret}){
     ok($_->{'otype'} eq 'md5', "testing: " . $_->{'observable'});
 }
 
+my $found = 0;
+foreach (@{$ret}){
+    $found = 1 if($_->{'observable'} eq 'b65b9d16e4c24d4ddcfab79999307c2f');
+}
+
+ok(!$found, 'md5 that should not exist');
+   
 done_testing();

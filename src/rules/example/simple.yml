@@ -1,0 +1,12 @@
+defaults:
+  tlp: green
+  altid_tlp: white
+  provider: 'localhost'
+  pattern:  '^(\S+)$'
+  values: observable
+  tags: suspicious
+
+feeds:
+  simple:
+    confidence: 65
+    remote: /tmp/simple.txt
