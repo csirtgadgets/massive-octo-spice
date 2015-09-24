@@ -25,7 +25,8 @@ use constant {
     MAX_COUNT           => 0,
     OBSERVABLES         => 'cif.observables',
     OBSERVABLES_TYPE    => 'observables',
-    LIMIT               => 225000, #225,000 tuned for a ElasticSearch build with 16GB of ram 
+    LIMIT               => 225000, #225,000 tuned for a ElasticSearch build with 16GB of ram
+    SOFT_LIMIT          => 50000,
     TOKENS_INDEX        => 'cif.tokens',
     TOKENS_TYPE         => 'tokens',
 };
@@ -354,7 +355,7 @@ sub _search {
     
     my %search = (
         index   => $index,
-        size    => $filters->{'limit'} || LIMIT,
+        size    => $filters->{'limit'} || SOFT_LIMIT,
         body    => $q,
     );
     

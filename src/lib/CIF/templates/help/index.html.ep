@@ -80,10 +80,17 @@
                 % { param => 'confidence', type => 'INT32', example => '65' },
                 % { param => 'group', type => 'STRING', example => 'group1,group2' },
                 % { param => 'cc', type => 'STRING', example => 'RU' },
-                % { param => 'tag', type => 'STRING', example => 'botnet,scanner' },
+                % { param => 'tags', type => 'STRING', example => 'botnet,scanner' },
                 % { param => 'otype', type => 'STRING', example => 'ipv4,fqdn' },
                 % { param => 'application', type => 'STRING', example => 'vnc,ssh' },
-                % { param => 'asn', type => 'STRING', example => '1234,3345' },
+                % { param => 'description', type => 'STRING', example => 'zeus' },
+                % { param => 'rdata', type => 'STRING', example => 'example.com' },
+                % { param => 'reporttime', type => 'STRING', example => '2012-12-01T00:00:00Z' },
+                % { param => 'reporttimeend', type => 'STRING', example => '2012-12-01T00:59:59Z' },
+                % { param => 'firsttime', type => 'STRING', example => '2012-12-01T00:00:00Z' },
+                % { param => 'lasttime', type => 'STRING', example => '2012-12-01T00:00:00Z' },
+                % { param => 'provider', type => 'STRING', example => 'csirtgadgets.org' },
+                % { param => 'observable', type => 'STRING', example => 'evilbit.com' },
                 % ];
                 % foreach my $p (@{$enabled_params}){
                 <tr align="left">

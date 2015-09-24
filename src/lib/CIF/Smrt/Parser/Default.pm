@@ -24,6 +24,7 @@ sub process {
     my $data    = shift;
     
     $data = [split(/\n/,$data)];
+    return unless($#{$data} >= 0);
     
     my $defaults = $self->rule->defaults;
     my $skip = $defaults->{'skip'};
@@ -33,10 +34,8 @@ sub process {
     
     my $cols = $defaults->{'values'};
     $cols = [$cols] unless(ref($cols));
-
-    return unless($#{$data} > 0);
+    
     assert($cols,'missing values param');
-    assert($#{$data} > 0, 'no content to parse...');
     
     my @array;
     
