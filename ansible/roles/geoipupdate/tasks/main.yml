@@ -1,0 +1,16 @@
+---
+# tasks file for geoipupdate
+
+- name: Add maxmind ppa
+  apt_repository: repo='ppa:maxmind/ppa' update_cache=yes
+
+- name: Install geoipupdate
+  apt: pkg={{ item }}  state=installed update_cache=true
+  with_items:
+    - geoipupdate
+
+- name: "Setting GeoIP.conf"
+  template: src=GeoIP.conf.j2 dest=/etc/GeoIP.conf
+
+- name: "Setting geoipupdate cron"
+  template: src=geoipupdate.cron.j2 dest=/etc/cron.monthly/geoipupdate.sh mode=755

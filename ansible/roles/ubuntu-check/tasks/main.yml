@@ -1,0 +1,11 @@
+---
+# tasks file for ubuntu-check
+- name: "Check for 64-bit"
+  fail: msg="Must be install 64-bit"
+  when: is_64bit != "x86_64"
+- name: "Check for Ubuntu"
+  fail: msg="Must be Ubuntu"
+  when: is_ubuntu != "Ubuntu"
+- name: "Check for version 14.04"
+  fail: msg="Must be version 14.04"
+  when: is_ubuntu_version != "14.04"

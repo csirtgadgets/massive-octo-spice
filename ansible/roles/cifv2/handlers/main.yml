@@ -1,0 +1,4 @@
+---
+# handlers file for cifv2
+- name: restart rng-tools
+  service: name=rng-tools state=restarted

@@ -1,0 +1,20 @@
+// {{ ansible_managed }}
+// bypass any forwarders
+
+zone "cymru.com" {
+    forward only;
+    type forward;
+    forwarders { };
+};
+
+zone "zen.spamhaus.org" {
+    forward only;
+    type forward;
+    forwarders { };
+};
+
+zone "dbl.spamhaus.org" {
+    forward only;
+    type forward;
+    forwarders { };
+};

@@ -1,0 +1,8 @@
+---
+# tasks file for firewall
+
+- ufw: rule=allow port={{ item }} state=enabled
+  with_items:
+    - 22
+    - 443
+  tags: ufw

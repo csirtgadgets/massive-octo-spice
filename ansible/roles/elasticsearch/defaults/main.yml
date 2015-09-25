@@ -1,0 +1,3 @@
+---
+# defaults file for elasticsearch
+es_heap_size: '8g'

@@ -1,0 +1,200 @@
+---
+# tasks file for cifv2
+
+# Notes:
+
+- name: Install needed software for cifv2
+  apt: pkg={{ item }} state=installed update_cache=true
+  with_items:
+   - vim
+   - htop
+   - git
+   - git-core
+   - curl
+   - pkg-config
+   - rng-tools 
+   - geoip-bin
+   - starman 
+   - python-dev
+   - python-software-properties
+   - software-properties-common
+   - build-essential
+   - automake
+   - autoconf
+   - libmodule-build-perl
+   - libssl-dev
+   - libtool
+   - libffi6
+   - libmoose-perl
+   - libmouse-perl
+   - libanyevent-perl
+   - liblwp-protocol-https-perl
+   - libxml2-dev
+   - libexpat1-dev
+   - libgeoip-dev
+
+#- name: Test for cpanm
+#  shell: perl -MApp::cpanminus -e1
+#  register: cpanm_result
+#  ignore_errors: True
+#  tags: cpanmm
+
+- name: Test for cpanm
+  stat: path=/usr/local/bin/cpanm
+  register: cpanm_result
+  tags: cpanm
+
+- name: Download and install cpnam
+  shell: curl -L https://cpanmin.us | perl - App::cpanminus
+  when: cpanm_result.stat.exists == False
+  tags: cpanm
+
+- name: "Download perl modules - ZMQx-Class, p5-cif-sdk, mojo"
+  get_url: url={{ item }} dest=/tmp/
+  with_items:
+    - https://github.com/csirtgadgets/ZMQx-Class/archive/master.tar.gz
+    - https://github.com/csirtgadgets/p5-cif-sdk/archive/master.tar.gz
+    - https://github.com/kraih/mojo/archive/v5.82.tar.gz
+  tags: cpanm
+
+- name: Install perl modules
+  cpanm: name={{ item }} mirror=https://cpan.metacpan.org
+  with_items:
+    - Regexp::Common
+    - HAARG/Moo-1.007000.tar.gz
+    - GFUJI/Mouse-2.4.1.tar.gz
+    - CALID/ZMQ-FFI-0.17.tar.gz
+    - MSCHILLI/Log-Log4perl-1.44.tar.gz
+    - ADIE/Test-Exception-0.32.tar.gz
+    - DROLSKY/MaxMind-DB-Reader-0.050005.tar.gz
+    - MAXMIND/GeoIP2-0.040005.tar.gz
+    - AVAR/Hijk-0.19.tar.gz
+    - DRTECH/Search-Elasticsearch-1.19.tar.gz
+  tags: cpanm
+
+- name: "Install perl modules - ZMQx-Class, p5-cif-sdk, mojo"
+  cpanm: from_path={{ item.path }} notest={{ item.notest }}
+  with_items:
+    - { path: '/tmp/ZMQx-Class-master.tar.gz', notest: 'True' }
+    - { path: '/tmp/mojo-5.82.tar.gz', notest: 'False' }
+    - { path: '/tmp/p5-cif-sdk-master.tar.gz', notest: 'False' }
+  tags: cpan
+
+- name: "Git clone cifv2 repo"
+  git: repo='https://github.com/csirtgadgets/massive-octo-spice.git'
+       dest='/srv/massive-octo-spice'
+       version='master'
+  tags: git
+
+  # @wes: does it matter we run autogen AFTER we install the packages above?
+- name: "Run /srv/massive-octo-spice/autogen.sh"
+  shell: /srv/massive-octo-spice/autogen.sh chdir=/srv/massive-octo-spice/
+
+- name: "Configure rng-tools"
+  template: src=rng-tools.j2 dest=/etc/default/rng-tools
+  notify:
+    - restart rng-tools
+  tags: rng
+
+- name: "Create cif user"
+  user: name=cif comment="cif" shell=/bin/bash
+  tags: add-user
+
+- name: "Add www-data to cif group"
+  user: name=www-data groups=cif
+  tags: www-data-group
+
+- name: "Remove existing cif elasticsearch templates"
+  shell: "{{ item }}"
+  with_items:
+    - 'curl -XDELETE http://localhost:9200/_template/template_cif_observables > /dev/null 2>&1'
+    - 'curl -XDELETE http://localhost:9200/_template/template_cif_tokens > /dev/null 2>&1'
+  tags: remove-es-templates
+
+- name: "Install cifv2"
+  shell: chdir=/srv/massive-octo-spice/ {{ item }}
+  with_items:
+    - ./configure --enable-geoip --sysconfdir=/etc/cif --localstatedir=/var --prefix=/opt/cif
+    - 'make && make deps NOTESTS=-n'
+    - make test
+    - make install
+    - make fixperms
+    - make elasticsearch
+  tags: install-cif
+
+- name: "Create /var/smrt/cache/"
+  file: path=/var/smrt/cache owner=cif group=cif state=directory
+  tags: create-cache-dir
+
+   # this file must be copied from the massive-octo-spice directory
+   # as values are set during the .configure process
+- name: "Set /etc/default/cif"
+  command: /bin/cp /srv/massive-octo-spice/hacking/packaging/ubuntu/default/cif /etc/default/cif
+  tags: set-cif-conf
+
+- name: "Set /home/cif/.profile/"
+  template: src=profile.j2 dest=/home/cif/.profile
+  tags: set-profile
+
+- name: "Create /etc/cif/cif-smrt.yml"
+  shell: '/opt/cif/bin/cif-tokens --username cif-smrt --new --write --generate-config-remote http://localhost:5000 --generate-config-path /etc/cif/cif-smrt.yml'
+  tags: create-cif-smrt-conf
+
+- name: "Change owner and perms on /etc/cif/cif-smrt.yml"
+  file: path=/etc/cif/cif-smrt.yml owner=cif group=cif mode=660
+  tags: change-cif-smrt-conf
+
+- name: "Create /etc/cif/cif-worker.yml"
+  shell: '/opt/cif/bin/cif-tokens --username cif-worker --new --read --write --generate-config-remote tcp://localhost:4961 --generate-config-path /etc/cif/cif-worker.yml'
+  tags: create-cif-worker-conf
+
+- name: "Change owner and perms on /etc/cif/cif-worker.yml"
+  file: path=/etc/cif/cif-worker.yml owner=cif group=cif mode=660
+  tags: change-cif-worker-conf
+
+- name: "Create ~/.cif.yml config for default user"
+  shell: "/opt/cif/bin/cif-tokens --username {{ ansible_ssh_user }}@localhost --new --read --write --generate-config-remote https://localhost --generate-config-path /home/{{ ansible_ssh_user }}/.cif.yml"
+  tags: create-cif-user-conf
+
+- name: "Change owner and perms on /home/{{ ansible_ssh_user }}/.cif.yml"
+  file: path=/home/{{ ansible_ssh_user }}/.cif.yml owner={{ ansible_ssh_user }} group={{ ansible_ssh_user }} mode=660
+  tags: change-cif-user-conf
+
+- name: "Configuring log rotation"
+  template: src=cif.logrotated.j2 dest=/etc/logrotate.d/cif
+  tags: config-log-rotation
+
+- name: "Configuring default cif-starman.conf"
+  template: src=cif-starman.conf.j2 dest=/etc/cif/cif-starman.conf
+  tags: config-starman-conf
+
+- name: "Configuring init.d scripts"
+  template: src={{ item.src }}  dest={{ item.dest }} mode=755
+  with_items:
+    - { src: 'cif-smrt.j2', dest: '/etc/init.d/cif-smrt' }
+    - { src: 'cif-router.j2', dest: '/etc/init.d/cif-router' }
+    - { src: 'cif-starman.j2', dest: '/etc/init.d/cif-starman' }
+    - { src: 'cif-worker.j2', dest: '/etc/init.d/cif-worker' }
+    - { src: 'cif-services.j2', dest: '/etc/init.d/cif-services' }
+  tags: config-init
+
+- name: "Configure update-rc.d cif-services defaults 99 01"
+  command: update-rc.d cif-services defaults 99 01
+  tags: config-rc-cif-services
+
+ # work-around for cif-router mem leak
+ # https://github.com/csirtgadgets/massive-octo-spice/issues/155
+ # it's crappy, but its a work-around atm, perl just doesn't like to give up memory
+- name: "Configuring cif-router weekly cron"
+  template: src=cif-router.cron.j2 dest=/etc/cron.weekly/cif-router mode=755
+  tags: config-router-cron
+
+- name: "Configuring cif-worker weekly cron"
+  template: src=cif-worker.cron.j2 dest=/etc/cron.weekly/cif-worker mode=755
+  tags: config-worker-cron
+
+- name: "Start cifv2"
+  service: name=cif-services state=started
+
+- name: "Restart apache2"
+  service: name=apache2 state=restarted

@@ -1,0 +1,49 @@
+---
+# tasks file for apache2
+
+- name: Install apache
+  apt: pkg={{ item }} state=installed update_cache=true
+  with_items:
+   - apache2
+   - libapache2-mod-perl2
+
+- name: "Install cif.conf"
+  template: src=cif.conf.j2 dest=/etc/apache2/cif.conf
+  notify:
+    - restart apache2
+
+- name: "Install default-ssl.conf"
+  template: src=default-ssl.conf.j2 dest=/etc/apache2/sites-available/default-ssl.conf
+  notify:
+    - restart apache2
+
+- name: "Disable 000-default.conf"
+  command: a2dissite 000-default.conf
+
+- name: "Enable default-ssl.conf"
+  command: a2ensite default-ssl.conf
+
+- name: "Install security.conf"
+  template: src=security.conf.j2 dest=/etc/apache2/conf-enabled/security.conf
+  notify:
+    - restart apache2
+
+- name: "Install servername.conf"
+  template: src=servername.conf.j2 dest=/etc/apache2/conf-available/servername.conf
+  notify:
+    - restart apache2
+
+- name: "Enable servername.conf"
+  command: a2enconf servername
+
+- name: "Enable apach2 modules - ssl proxy proxy_http"
+  command: a2enmod {{ item }}
+  with_items:
+    - ssl
+    - proxy
+    - proxy_http
+# in an all in one box, we need to restart ES after apache is configured
+# in split roles this may need to be different. 
+- name: restart elasticsearch
+  service: name=elasticsearch state=restarted
+  tags: restart-es

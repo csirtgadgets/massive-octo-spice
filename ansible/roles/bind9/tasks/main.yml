@@ -1,0 +1,21 @@
+---
+# tasks file for bind9
+
+- name: Install bind9
+  apt: pkg=bind9 state=installed update_cache=true cache_valid_time=86400
+  notify: restart bind9
+
+- name: "Setting named.conf.options"
+  template: src=named.conf.options.j2 dest=/etc/bind/named.conf.options
+
+- name: "Setting named.conf.local"
+  template: src=named.conf.local.j2 dest=/etc/bind/named.conf.local
+
+- name: "Setting dhclient.conf"
+  template: src=dhclient.conf.j2 dest=/etc/dhcp/dhclient.conf
+
+- name: "Setting /etc/resolvconf/resolv.conf.d/base"
+  template: src=base.j2 dest=/etc/resolvconf/resolv.conf.d/base
+
+- name: "Restart networking"
+  command: bash -c "ifdown eth0 && ifup eth0"

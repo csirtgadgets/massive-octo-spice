@@ -1,0 +1,17 @@
+---
+# tasks file for postfix
+
+- name: Install postfix
+  apt: pkg={{ item }}  state=installed update_cache=true
+  with_items:
+   - postfix
+   - mailutils
+
+- name: create postfix configuration
+  template: src={{item}}.j2 dest={{postfix_conf_dir}}/{{item}} mode=0644 owner=root group=root
+  notify: restart postfix
+  with_items:
+    - main.cf
+
+- name: ensure postfix is running
+  service: name=postfix state=running enabled=yes

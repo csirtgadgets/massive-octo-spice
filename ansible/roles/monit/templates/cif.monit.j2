@@ -1,0 +1,28 @@
+# {{ ansible_managed }}
+#
+
+check process cif-worker with pidfile /var/run/cif-worker.pid
+        start program = "/etc/init.d/cif-worker start" with timeout 60 seconds
+        stop program = "/etc/init.d/cif-worker stop"
+        group cif
+
+check process cif-router with pidfile /var/run/cif-router.pid
+        start program = "/etc/init.d/cif-router start" with timeout 60 seconds
+        stop program = "/etc/init.d/cif-router stop"
+        group cif
+
+check process cif-starman with pidfile /var/run/cif-starman.pid
+        start program = "/etc/init.d/cif-starman start" with timeout 60 seconds
+        stop program = "/etc/init.d/cif-starman stop"
+        group cif
+
+check process cif-smrt with pidfile /var/run/cif-smrt.pid
+        # restarting is disabled by default
+        #start program = "/etc/init.d/cif-smrt start" with timeout 60 seconds
+        #stop program = "/etc/init.d/cif-smrt stop"
+        group cif
+
+check host cif_connection with address 127.0.0.1
+  if failed port 5000 with timeout 15 seconds then alert
+  if failed url http://127.0.0.1:5000/help with timeout 15 seconds then alert
+    group cif

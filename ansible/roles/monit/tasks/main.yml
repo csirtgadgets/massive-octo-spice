@@ -1,0 +1,12 @@
+---
+# tasks file for monit
+
+- name: Install monit
+  apt: pkg=monit state=installed update_cache=true cache_valid_time=86400
+  notify: restart monit
+
+- name: "Configuring monit for cif"
+  template: src=cif.monit.j2 dest=/etc/monit/conf.d/cif
+
+- name: "Configuring monit for elasticserach"
+  template: src=elasticsearch.monit.j2 dest=/etc/monit/conf.d/elasticsearch

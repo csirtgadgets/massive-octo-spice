@@ -1,0 +1,23 @@
+# {{ ansible_managed }}
+# Directory where the binary distribution resides
+CIF_HOME=@prefix@
+
+PATH=$CIF_HOME/bin:$PATH
+
+if [ -d @siteperldir@ ]; then
+    export PERL5LIB=@siteperldir@
+fi
+
+# Run as this user ID and group ID
+CIF_USER=@CIF_USER@
+CIF_GROUP=@CIF_GROUP@
+
+# data directory
+DATA_DIR=@ext_localstatedir@
+LOG_DIR=@ext_localstatedir@/log
+
+# configuration directory
+CONF_DIR=@ext_sysconfdir@
+
+# add -d to turn on debugging
+CIF_DEBUGGING=""
