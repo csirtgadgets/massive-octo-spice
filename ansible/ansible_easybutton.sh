@@ -40,7 +40,7 @@ case $OS in
             git clone https://github.com/csirtgadgets/massive-octo-spice.git -b $BRANCH
         fi
         cd massive-octo-spice/ansible
-        ansible-playbook localhost.yml                
+        ansible-playbook localhost.yml;;  
 
     "Debian" )
         echo 'Debian not yet supported...';;
