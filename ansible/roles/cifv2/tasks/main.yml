@@ -80,11 +80,17 @@
     - { path: '/tmp/p5-cif-sdk-master.tar.gz', notest: 'False' }
   tags: cpan
 
+- name: "Check for /srv/massive-octo-spice"
+  stat: path=/srv/massive-octo-spice
+  register: p
+  tags: git
+
 - name: "Git clone cifv2 repo"
   git: repo='https://github.com/csirtgadgets/massive-octo-spice.git'
        dest='/srv/massive-octo-spice'
-       version='master'
+       version='develop'
   tags: git
+  when: p.stat.isdir is not defined
 
   # @wes: does it matter we run autogen AFTER we install the packages above?
 - name: "Run /srv/massive-octo-spice/autogen.sh"
