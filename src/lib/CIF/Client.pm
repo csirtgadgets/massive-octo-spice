@@ -32,6 +32,11 @@ has [qw(remote subscriber results token tlp_map)] => (
     is  => 'ro',
 );
 
+has 'enable_metadata' => (
+    is => 'ro',
+    default => 1
+);
+
 has [qw(context socket)] => (
     is          => 'ro',
     lazy_build  => 1,
@@ -247,10 +252,16 @@ sub submit {
     my $self = shift;
     my $args = shift;
     
+    my $enable_metadata = $self->enable_metadata();
+    
+    if(defined($args->{'enable_metadata'})){
+        $enable_metadata = $args->{'enable_metadata'};
+    }
+    
     foreach (@{$args->{'observables'}}){
         $_->{'observable'} = lc($_->{'observable'});
         $_->{'observable'} =~ s/\s+$//; # trip right side whitespace
-        if($args->{'enable_metadata'}){
+        if($enable_metadata){
             try {
                 $self->_process_metadata($_);
             } catch {

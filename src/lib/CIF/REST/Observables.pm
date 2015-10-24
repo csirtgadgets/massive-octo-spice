@@ -148,7 +148,6 @@ sub _submit {
     my $res = $self->cli->submit({
         token           => $self->token,
         observables     => $data,
-        enable_metadata => 1,
     });
     return $res;
 }
