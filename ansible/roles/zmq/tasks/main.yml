@@ -1,0 +1,11 @@
+---
+# tasks file for zmq
+
+- name: Add zeromq3 ppa
+  apt_repository: repo='ppa:chris-lea/zeromq' update_cache=yes
+
+- name: Install zeromq3
+  apt: pkg={{ item }}  state=installed update_cache=true
+  with_items:
+    - libzmq3
+    - libzmq3-dev

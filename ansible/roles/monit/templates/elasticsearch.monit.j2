@@ -1,0 +1,13 @@
+# {{ ansible_managed }}
+#
+
+check host elasticsearch_connection with address 0.0.0.0
+  if failed url http://0.0.0.0:9200/ with timeout 15 seconds then alert
+  group elasticsearch
+
+check host elasticsearch_cluster_health with address 0.0.0.0
+  if failed url http://0.0.0.0:9200/_cluster/health
+    and content == 'yellow'
+    with timeout 60 seconds
+  then alert
+  group elasticsearch

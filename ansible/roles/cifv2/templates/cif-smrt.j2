@@ -1,0 +1,114 @@
+#!/bin/bash
+#
+# {{ ansible_managed }}
+#
+# /etc/init.d/cif-smrt -- startup script
+#
+### BEGIN INIT INFO
+# Provides:          cif-smrt
+# Required-Start:    $network $named
+# Required-Stop:     $network $named
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Starts cif-smrt
+# Description:       Starts cif-smrt using start-stop-daemon
+### END INIT INFO
+
+PATH=/bin:/usr/bin:/sbin:/usr/sbin
+NAME=cif-smrt
+DESC="cif-smrt"
+DEFAULT_CIF=/etc/default/cif
+DEFAULT=/etc/default/$NAME
+CACHE=/var/smrt/cache
+
+if [ `id -u` -ne 0 ]; then
+    echo "You need root privileges to run this script"
+    exit 1
+fi
+
+. /lib/lsb/init-functions
+
+if [ -r /etc/default/rcS ]; then
+    . /etc/default/rcS
+fi
+
+# overwrite settings from default file
+if [ -f "$DEFAULT_CIF" ]; then
+    . "$DEFAULT_CIF"
+fi
+
+LOG_FILE=$LOG_DIR/cif-smrt.log
+
+# configuration file
+CONF_FILE=$CONF_DIR/cif-smrt.yml
+
+if [ -f "$DEFAULT" ]; then
+    . "$DEFAULT"
+fi
+
+# Define other required variables
+PID_FILE=/var/run/$NAME.pid
+DAEMON=$CIF_HOME/bin/cif-smrt
+DAEMON_OPTS="$CIF_DEBUGGING --logging --logfile $LOG_FILE -p $PID_FILE -C $CONF_FILE -D start"
+
+# Check DAEMON exists
+test -x $DAEMON || exit 0
+
+case "$1" in
+  start)
+    log_daemon_msg "Starting $DESC"
+
+    pid=`pidofproc -p $PID_FILE cif-smrt`
+    if [ -n "$pid" ] ; then
+        log_begin_msg "Already running."
+        log_end_msg 0
+        exit 0
+    fi
+
+    # Prepare environment
+    mkdir -p $LOG_DIR && chown "$CIF_USER":"$CIF_GROUP" $LOG_DIR
+    touch "$PID_FILE" && chown "$CIF_USER":"$CIF_GROUP" "$PID_FILE"
+    touch $LOG_FILE && chown "$CIF_USER":"$CIF_GROUP" $LOG_FILE
+    chown -R "$CIF_USER":"$CIF_GROUP" $CACHE
+
+    # Start Daemon
+    start-stop-daemon --start -c "$CIF_USER" --exec $DAEMON -- $DAEMON_OPTS > /dev/null 2>&1
+    log_end_msg $?
+    ;;      
+  stop)
+    log_daemon_msg "Stopping $DESC"
+
+    if [ -f "$PID_FILE" ]; then 
+        start-stop-daemon --stop --pidfile "$PID_FILE" \
+            --user "$CIF_USER" \
+            --retry=TERM/20/KILL/5 >/dev/null
+        if [ $? -eq 1 ]; then
+            log_progress_msg "$DESC is not running but pid file exists, cleaning up"
+        elif [ $? -eq 3 ]; then
+            PID="`cat $PID_FILE`"
+            log_failure_msg "Failed to stop $DESC (pid $PID)"
+            exit 1
+        fi
+        rm -f "$PID_FILE"
+    else
+        log_progress_msg "(not running)"
+    fi
+    log_end_msg 0
+    ;;
+  status)
+    status_of_proc -p $PID_FILE cif-smrt cif-smrt && exit 0 || exit $?
+    ;;
+  restart|force-reload)
+    if [ -f "$PID_FILE" ]; then
+        $0 stop
+        sleep 1
+    fi
+    $0 start
+    ;;
+  *)
+    log_success_msg "Usage: $0 {start|stop|restart|force-reload|status}"
+    exit 1
+    ;;
+esac
+
+exit 0

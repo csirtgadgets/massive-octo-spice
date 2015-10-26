@@ -1,0 +1,5 @@
+---
+# vars file for ubuntu-check
+is_64bit: "{{ ansible_architecture }}"
+is_ubuntu: "{{ ansible_distribution }}"
+is_ubuntu_version: "{{ ansible_distribution_version }}"

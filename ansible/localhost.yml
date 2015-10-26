@@ -1,0 +1,18 @@
+---
+- name: Configure localhost as all-in-one
+  hosts: localhost
+  sudo: True
+  vars:
+  roles:
+    - { role: ubuntu-check, tags: role-ubuntu-check }
+    - { role: firewall, tags: role-firewall }
+    - { role: zmq, tags: role-zmq }
+    - { role: geoipupdate, tags: role-geoipupdate }
+    - { role: elasticsearch, tags: role-elasticsearch }
+    - { role: apache2, tags: role-apache2 }
+    - { role: postfix, tags: role-postfix }
+    - { role: bind9, tags: role-bind9 }
+    - { role: openntpd, tags: role-openntpd }
+    - { role: cifv2, tags: role-cifv2 }
+    - { role: monit, tags: role-monit }
+  tasks:

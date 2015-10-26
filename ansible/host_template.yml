@@ -1,0 +1,7 @@
+---
+- name: Configure host <hostname>
+  hosts: <hostname>
+  sudo: True
+  vars:
+  roles:
+  tasks:

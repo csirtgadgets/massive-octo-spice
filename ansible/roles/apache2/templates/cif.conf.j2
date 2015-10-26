@@ -1,0 +1,15 @@
+# {{ ansible_managed }}
+
+#<Proxy *>
+#    Order deny,allow
+#    Allow from all
+#</Proxy>
+#ProxyRequests Off
+#ProxyPreserveHost On
+#ProxyPass / http://localhost:5000/ keepalive=Off
+#ProxyPassReverse / http://localhost:5000/
+
+<LocationMatch "^/(help|ping|observables)$">
+    ProxyPassMatch http://127.0.0.1:5000/$1
+    ProxyPassReverse http://127.0.0.1:5000/$1
+</LocationMatch>

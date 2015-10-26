@@ -1,0 +1,25 @@
+---
+# defaults file for postfix
+
+postfix_hostname: "{{ansible_hostname}}"
+postfix_networks: "127.0.0.0/8 [::ffff:127.0.0.0]/104 [::1]/128"
+
+## Relay server
+## Empty for direct delivery to Internet
+# postfix_relay_server: "[mail.isp.tld]"
+postfix_relay_server: ""
+postfix_inet_interfaces: loopback-only
+postfix_inet_protocols: all
+postfix_mydestination: "{{postfix_hostname}}, localhost"
+postfix_relay_domains: "{{postfix_mydestination}}"
+
+## List of password for relay
+# postfix_sasl_passwd:
+#	- mail.my-isp.org      test:testpass
+postfix_sasl_passwd: []
+## List of TLS policies
+# postfix_tls_policy:
+#	- mail.my-isp.org      encrypt
+postfix_tls_policy: []
+
+postfix_conf_dir: /etc/postfix

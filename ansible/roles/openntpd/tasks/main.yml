@@ -1,0 +1,5 @@
+---
+# tasks file for ntp
+
+- name: Install openntpd
+  apt: pkg=openntpd state=installed update_cache=true cache_valid_time=86400

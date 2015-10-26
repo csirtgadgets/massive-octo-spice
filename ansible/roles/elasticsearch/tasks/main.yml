@@ -1,0 +1,23 @@
+---
+# tasks file for elasticsearch
+
+# todo: do we want to switch to the oracle JDK?
+# https://www.elastic.co/guide/en/elasticsearch/reference/1.4/setup-service.html#_installing_the_oracle_jdk
+# possible other configs
+# https://github.com/deimosfr/ansible-elasticsearch/blob/master/tasks/main.yml
+
+- name: "add elasticsearch apt signing key"
+  apt_key: url='https://packages.elasticsearch.org/GPG-KEY-elasticsearch' state=present
+
+- name: "Add the elasticsearch 1.4 repo"
+  apt_repository: repo='deb http://packages.elasticsearch.org/elasticsearch/1.4/debian stable main' state=present update_cache=yes
+
+- name: Install elasticsearch 1.4
+  apt: pkg={{ item }}  state=installed update_cache=true
+  with_items:
+   - openjdk-7-jre-headless 
+   - elasticsearch
+  notify: restart elasticsearch
+
+- name: "Configure update-rc.d elasticsearch defaults 95 10"
+  command: update-rc.d elasticsearch defaults 95 10
