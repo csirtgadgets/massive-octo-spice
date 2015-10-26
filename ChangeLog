@@ -1,7 +1,8 @@
 Revision history for massive-octo-spice
 
-2.00.00-rc.6 2015-10
+2.00.00-rc.6 2015-10-26
     - https://github.com/csirtgadgets/massive-octo-spice/issues/358
+    - added example ansible deployment configurations
 
 2.00.00-rc.5 2015-10-24
     - hotfix for local::lib version issue
