@@ -3,6 +3,11 @@
 [production]
 localhost ansible_connection=local
 
-[testing]
-# used for testing
-cif-ansible-host01 ansible_ssh_host=192.168.107.180
+[all_in_one_localhost]
+localhost ansible_connection=local
+
+[all_in_one]
+
+[cif_server]
+
+[elastic_search]
