@@ -79,6 +79,9 @@ elasticsearch:
 elasticsearch-reload:
 	(cd elasticsearch && make reload )
 
+elasticsearch-reload-templates:
+	(cd elasticsearch && make reload-templates)
+
 debian7:
 	@echo 'not yet supported, try make ubuntu14'
 
