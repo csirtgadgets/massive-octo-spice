@@ -20,7 +20,7 @@ my $help;
 my $frontend        = CIF::Router::DEFAULT_FRONTEND_LISTEN();
 my $backend         = CIF::Router::DEFAULT_BACKEND_LISTEN();
 my $storage         = 'elasticsearch';
-my $storage_host    = 'localhost:9200';
+my $storage_host    = $ENV{'CIF_ES_HOST'} || 'localhost:9200';
 my $auth            = 'dummy',
 my $config          = "$CIF::EtcPath/cif-router.conf";
 

@@ -70,6 +70,8 @@ has 'tokens_type'  => (
 sub _build_handle {
     my $self = shift;
     my $args = shift;
+
+    
  
     $self->handle(
         Search::Elasticsearch->new(
@@ -96,8 +98,9 @@ sub shutdown {}
 
 sub check_handle {
     my $self = shift;
-
+    
     $Logger->debug('checking handle...');
+    $Logger->info('storage node: ' . join(',', @{$self->nodes}));
     my ($ret,$err);
     try {
         $self->handle->info();
