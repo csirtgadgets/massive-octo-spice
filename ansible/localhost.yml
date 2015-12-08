@@ -3,6 +3,8 @@
   hosts: localhost
   sudo: True
   vars:
+    cif_ipv4: 'localhost'
+    es01_ipv4: 'localhost'
   roles:
     - { role: ubuntu-check, tags: role-ubuntu-check }
     - { role: firewall, tags: role-firewall }

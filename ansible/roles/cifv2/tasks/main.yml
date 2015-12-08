@@ -88,7 +88,7 @@
 - name: "Git clone cifv2 repo"
   git: repo='https://github.com/csirtgadgets/massive-octo-spice.git'
        dest='/srv/massive-octo-spice'
-       version='develop'
+       version={{ massive_octo_spice_branch }}
   tags: git
   when: p.stat.isdir is not defined
 
@@ -110,21 +110,15 @@
   user: name=www-data groups=cif
   tags: www-data-group
 
-- name: "Remove existing cif elasticsearch templates"
-  shell: "{{ item }}"
-  with_items:
-    - 'curl -XDELETE http://localhost:9200/_template/template_cif_observables > /dev/null 2>&1'
-    - 'curl -XDELETE http://localhost:9200/_template/template_cif_tokens > /dev/null 2>&1'
-  tags: remove-es-templates
-
 - name: "Install cifv2"
   shell: chdir=/srv/massive-octo-spice/ {{ item }}
   with_items:
-    - ./configure --enable-geoip --sysconfdir=/etc/cif --localstatedir=/var --prefix=/opt/cif
+    - ./configure --enable-geoip --sysconfdir=/etc/cif --localstatedir=/var --prefix=/opt/cif --with-es-host={{ es01_ipv4 }}:9200
     - 'make && make deps NOTESTS=-n'
     - make test
     - make install
     - make fixperms
+    - make elasticsearch-remove-templates
     - make elasticsearch
   tags: install-cif
 
@@ -152,6 +146,8 @@
 
 - name: "Create /etc/cif/cif-worker.yml"
   shell: '/opt/cif/bin/cif-tokens --username cif-worker --new --read --write --generate-config-remote tcp://localhost:4961 --generate-config-path /etc/cif/cif-worker.yml'
+  environment:
+    CIF_ES_HOST: "{{ es01_ipv4 }}:9200"
   tags: create-cif-worker-conf
 
 - name: "Change owner and perms on /etc/cif/cif-worker.yml"
@@ -160,6 +156,8 @@
 
 - name: "Create ~/.cif.yml config for default user"
   shell: "/opt/cif/bin/cif-tokens --username {{ ansible_ssh_user }}@localhost --new --read --write --generate-config-remote https://localhost --generate-config-path /home/{{ ansible_ssh_user }}/.cif.yml"
+  environment:
+    CIF_ES_HOST: "{{ es01_ipv4 }}:9200"
   tags: create-cif-user-conf
 
 - name: "Change owner and perms on /home/{{ ansible_ssh_user }}/.cif.yml"

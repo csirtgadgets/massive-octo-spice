@@ -3,7 +3,7 @@ this prototype isn't that interesting as it does the exact same thing as the
 easy_button.sh does currently. What's interesting is the potential using a configuration
 management system gives us.
 
-== Examples ==
+## Examples
 
 1. Creating Ansible Playbooks for each primary role that exsists in cifv2. This would
 facilitate easy configuration of a distributed cifv2 install as well as combining those

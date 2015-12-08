@@ -1,8 +1,9 @@
 ---
 # tasks file for firewall
 
-- ufw: rule=allow port={{ item }} state=enabled
+- name: "ufw - open port 22 and 443 on CIF"
+  ufw: rule=allow port={{ item }} state=enabled
   with_items:
     - 22
     - 443
-  tags: ufw
+  tags: ufw-cif
