@@ -21,12 +21,14 @@ playbooks for a all-in-one install. The anticipated roles are:
 
 1. Configure Ansible hosts file with two ElasticSearch nodes and one CIF node
 1. Copy over ssh keys
+
   ```bash
   - ssh-copy-id -i ~/.ssh/id_rsa.pub ansible@192.168.1.205
   - ssh-copy-id -i ~/.ssh/id_rsa.pub ansible@192.168.1.201
   - ssh-copy-id -i ~/.ssh/id_rsa.pub ansible@192.168.1.202
   ```
 1. Build ElasticSearch Cluster
+
   ```bash
   ansible-playbook -K elasticsearch.yml
   ```
@@ -41,17 +43,20 @@ playbooks for a all-in-one install. The anticipated roles are:
 
 1. Starting with a clean install of Ubuntu 14.04 64-bit
 1. Bash the EasyButton!
-```curl -Ls https://raw.githubusercontent.com/csirtgadgets/massive-octo-spice/develop/ansible/ansible_easybutton.sh | sudo bash -```
+  ```bash
+  curl -Ls https://raw.githubusercontent.com/csirtgadgets/massive-octo-spice/develop/ansible/ansible_easybutton.sh | sudo bash -
+  ```
 
 Using a Ansible server and a clean install of Ubuntu 14.04 64-bit on a second host.
 
 1. Update the remote_user in massive-octo-spice/ansible/ansible.cfg
 1. Update the IP address for cif-ansible-host01 in massive-octo-spice/ansible/hosts
 1. Run the following commands:
-```
-$ cd /srv/massive-octo-spice/ansible
-$ ansible-playbook cif-ansible-host01
-```
+
+  ```basih
+  $ cd /srv/massive-octo-spice/ansible
+  $ ansible-playbook cif-ansible-host01
+  ```
 
 Todo:
 
