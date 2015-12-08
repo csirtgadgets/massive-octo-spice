@@ -33,6 +33,7 @@ playbooks for a all-in-one install. The anticipated roles are:
   ansible-playbook -K elasticsearch.yml
   ```
 1. Build CIF Server
+
   ```bash
   ansible-playbook -K cif.yml
   ```
