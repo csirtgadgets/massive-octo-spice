@@ -8,18 +8,36 @@ management system gives us.
 1. Creating Ansible Playbooks for each primary role that exsists in cifv2. This would
 facilitate easy configuration of a distributed cifv2 install as well as combining those
 playbooks for a all-in-one install. The anticipated roles are:
- * cif-starman
- * cif-router
- * cif-worker
- * cif-smrt
+ * CIF
+  * cif-starman
+  * cif-router
+  * cif-worker
+  * cif-smrt
  * ElasticSearch
-1. Creating ansible playbooks that assist in installing cifv2 on Debian/Ubuntu or
-Redhat/CentOS. Here's an example of how this could be done:
- * Using ```when: ansible_os_family``` as seen in this [playbook](https://github.com/geerlingguy/ansible-role-postfix/blob/master/tasks/main.yml) to choose what [package manager](http://docs.ansible.com/ansible/yum_module.html) and [repo's](https://www.elastic.co/guide/en/elasticsearch/reference/1.4/setup-repositories.html) to use.
 
-Usage:
+### Three node build
 
-All-in-one install
+[process is under development]
+
+1. Configure Ansible hosts file with two ElasticSearch nodes and one CIF node
+1. Copy over ssh keys
+  ```bash
+  - ssh-copy-id -i ~/.ssh/id_rsa.pub ansible@192.168.1.205
+  - ssh-copy-id -i ~/.ssh/id_rsa.pub ansible@192.168.1.201
+  - ssh-copy-id -i ~/.ssh/id_rsa.pub ansible@192.168.1.202
+  ```
+1. Build ElasticSearch Cluster
+  ```bash
+  ansible-playbook -K elasticsearch.yml
+  ```
+1. Build CIF Server
+  ```bash
+  ansible-playbook -K cif.yml
+  ```
+
+### All-in-one install
+
+[process is under development]
 
 1. Starting with a clean install of Ubuntu 14.04 64-bit
 1. Bash the EasyButton!
@@ -38,6 +56,5 @@ $ ansible-playbook cif-ansible-host01
 Todo:
 
 1. Additional testing
-1. Refacter roles to support RHEL/CentOS
 1. Look into breaking out the roles into the major CIF services
 1. Clean up general Ansible inconsistencies (i.e. improve this initial prototype)
