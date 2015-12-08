@@ -20,7 +20,7 @@ use Try::Tiny;
 use CIF qw/$Logger init_logging/;
 
 my $help;
-my $remote          = 'localhost:9200';
+my $remote          = $ENV{'CIF_ES_HOST'} || 'localhost:9200';
 my $storage         = 'elasticsearch';
 my $debug           = 0;
 my $verbosity       = 0;
