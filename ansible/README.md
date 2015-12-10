@@ -1,9 +1,9 @@
-# Introductioni
+# Introduction
 
 This is an initial prototype of using Ansible to install and configure
 a multi-node CIFv2 installation. If you are creating a single node
 all-in-one you should use the [easy install
-script]i(https://github.com/csirtgadgets/massive-octo-spice/wiki/PlatformUbuntu)
+script](https://github.com/csirtgadgets/massive-octo-spice/wiki/PlatformUbuntu)
 as it has been throughly tested.
 
 ## Example Four node CIFv2 installation
@@ -13,7 +13,7 @@ as it has been throughly tested.
 1. Build four Ubuntu 14.04.3 64-bit Server machines using the following specifications:
   * CIF node: CPU: x, Mem: y, Disk: Z
   * ES nodes: CPU: x, Mem: y, Disk: Z
-1. Build and [Install](http://docs.ansible.com/ansible/intro_installation.html) Ansible on a management host
+1. Build and [install](http://docs.ansible.com/ansible/intro_installation.html) Ansible on a management host
   * Ansible node: CPU: 1 core, Mem: 1024MB, Disk: 8GB
 1. SSH into the management host
 1. Clone the CIFv2 repository to the management host
@@ -28,9 +28,7 @@ as it has been throughly tested.
   cd ~/massive-octo-spice/ansible
   vim hosts
   ```
-
-Update the following with the correct IP addresses:
-
+  Update the following with the correct IP addresses:
   ```
   [cif_server]
   cif ansible_ssh_host=192.168.1.205
@@ -40,6 +38,7 @@ Update the following with the correct IP addresses:
   es02 ansible_ssh_host=192.168.1.202
   es03 ansible_ssh_host=192.168.1.203
   ```
+
 1. Create a ssh key to be used by Ansible
 
   ```bash
