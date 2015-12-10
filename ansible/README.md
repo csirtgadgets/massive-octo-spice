@@ -65,7 +65,7 @@ as it has been throughly tested.
 
 ### Testing
 
-1. SSH into cif01
+1. SSH into the cif node
   ```bash
   ssh <username>@192.168.1.205
   ```
