@@ -1,28 +1,20 @@
-This is an initial prototype of using Ansible to install and configure cifv2; in of itself
-this prototype isn't that interesting as it does the exact same thing as the
-easy_button.sh does currently. What's interesting is the potential using a configuration
-management system gives us.
+# Introductioni
 
-## Examples
+This is an initial prototype of using Ansible to install and configure
+a multi-node CIFv2 installation. If you are creating a single node
+all-in-one you should use the [easy install
+script]i(https://github.com/csirtgadgets/massive-octo-spice/wiki/PlatformUbuntu)
+as it has been throughly tested.
 
-1. Creating Ansible Playbooks for each primary role that exsists in cifv2. This would
-facilitate easy configuration of a distributed cifv2 install as well as combining those
-playbooks for a all-in-one install. The anticipated roles are:
- * CIF
-  * cif-starman
-  * cif-router
-  * cif-worker
-  * cif-smrt
- * ElasticSearch
+## Example Four node CIFv2 installation
 
-### Four node CIF build
-
-#### Setting up the Environment
+### Setting up the Environment
 
 1. Build four Ubuntu 14.04.3 64-bit Server machines using the following specifications:
   * CIF node: CPU: x, Mem: y, Disk: Z
   * ES nodes: CPU: x, Mem: y, Disk: Z
 1. Build and [Install](http://docs.ansible.com/ansible/intro_installation.html) Ansible on a management host
+  * Ansible node: CPU: 1 core, Mem: 1024MB, Disk: 8GB
 1. SSH into the management host
 1. Clone the CIFv2 repository to the management host
 
@@ -72,7 +64,7 @@ Update the following with the correct IP addresses:
   ansible-playbook -K cif.yml
   ```
 
-#### Testing
+### Testing
 
 1. SSH into cif01
   ```bash
@@ -136,7 +128,7 @@ $ curl 'http://192.168.1.201:9200/_cluster/health?pretty'
   $ cif --otype ipv4 --cc cn
   ```
 
-### All-in-one install
+## All-in-one install
 
 [process is under development]
 
@@ -156,9 +148,3 @@ Using a Ansible server and a clean install of Ubuntu 14.04 64-bit on a second ho
   $ cd /srv/massive-octo-spice/ansible
   $ ansible-playbook cif-ansible-host01
   ```
-
-Todo:
-
-1. Additional testing
-1. Look into breaking out the roles into the major CIF services
-1. Clean up general Ansible inconsistencies (i.e. improve this initial prototype)
