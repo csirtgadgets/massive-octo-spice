@@ -1,16 +1,17 @@
 ---
-- name: Configure localhost as all-in-one
-  hosts: localhost
+- name: "Configure a CIF host"
+  hosts: cif_server
+  remote_user: ansible
   sudo: True
   vars:
-    cif_ipv4: 'localhost'
-    es01_ipv4: 'localhost'
+    cif_ipv4: "{{ hostvars['cif']['ansible_ssh_host'] }}"
+    es01_ipv4: "{{ hostvars['es01']['ansible_ssh_host'] }}"
   roles:
     - { role: ubuntu-check, tags: role-ubuntu-check }
     - { role: firewall, tags: role-firewall }
+    - { role: python27, tags: role-python27 }
     - { role: zmq, tags: role-zmq }
     - { role: geoipupdate, tags: role-geoipupdate }
-    - { role: elasticsearch, tags: role-elasticsearch }
     - { role: apache2, tags: role-apache2 }
     - { role: postfix, tags: role-postfix }
     - { role: bind9, tags: role-bind9 }

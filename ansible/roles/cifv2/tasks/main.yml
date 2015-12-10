@@ -53,7 +53,7 @@
   get_url: url={{ item }} dest=/tmp/
   with_items:
     - https://github.com/csirtgadgets/ZMQx-Class/archive/master.tar.gz
-    - https://github.com/csirtgadgets/p5-cif-sdk/archive/master.tar.gz
+    - https://github.com/csirtgadgets/p5-cif-sdk/archive/2.00_30.tar.gz
     - https://github.com/kraih/mojo/archive/v5.82.tar.gz
   tags: cpanm
 
@@ -70,6 +70,7 @@
     - MAXMIND/GeoIP2-0.040005.tar.gz
     - AVAR/Hijk-0.19.tar.gz
     - DRTECH/Search-Elasticsearch-1.19.tar.gz
+    - HAARG/local-lib-2.000015.tar.gz
   tags: cpanm
 
 - name: "Install perl modules - ZMQx-Class, p5-cif-sdk, mojo"
@@ -77,7 +78,7 @@
   with_items:
     - { path: '/tmp/ZMQx-Class-master.tar.gz', notest: 'True' }
     - { path: '/tmp/mojo-5.82.tar.gz', notest: 'False' }
-    - { path: '/tmp/p5-cif-sdk-master.tar.gz', notest: 'False' }
+    - { path: '/tmp/p5-cif-sdk-2.00_30.tar.gz', notest: 'False' }
   tags: cpan
 
 - name: "Check for /srv/massive-octo-spice"
@@ -88,7 +89,7 @@
 - name: "Git clone cifv2 repo"
   git: repo='https://github.com/csirtgadgets/massive-octo-spice.git'
        dest='/srv/massive-octo-spice'
-       version='develop'
+       version={{ massive_octo_spice_branch }}
   tags: git
   when: p.stat.isdir is not defined
 
@@ -110,21 +111,15 @@
   user: name=www-data groups=cif
   tags: www-data-group
 
-- name: "Remove existing cif elasticsearch templates"
-  shell: "{{ item }}"
-  with_items:
-    - 'curl -XDELETE http://localhost:9200/_template/template_cif_observables > /dev/null 2>&1'
-    - 'curl -XDELETE http://localhost:9200/_template/template_cif_tokens > /dev/null 2>&1'
-  tags: remove-es-templates
-
 - name: "Install cifv2"
   shell: chdir=/srv/massive-octo-spice/ {{ item }}
   with_items:
-    - ./configure --enable-geoip --sysconfdir=/etc/cif --localstatedir=/var --prefix=/opt/cif
+    - ./configure --enable-geoip --sysconfdir=/etc/cif --localstatedir=/var --prefix=/opt/cif --with-es-host={{ es01_ipv4 }}:9200
     - 'make && make deps NOTESTS=-n'
     - make test
     - make install
     - make fixperms
+    - make elasticsearch-remove-templates
     - make elasticsearch
   tags: install-cif
 
@@ -144,6 +139,8 @@
 
 - name: "Create /etc/cif/cif-smrt.yml"
   shell: '/opt/cif/bin/cif-tokens --username cif-smrt --new --write --generate-config-remote http://localhost:5000 --generate-config-path /etc/cif/cif-smrt.yml'
+  environment:
+    CIF_ES_HOST: "{{ es01_ipv4 }}:9200"
   tags: create-cif-smrt-conf
 
 - name: "Change owner and perms on /etc/cif/cif-smrt.yml"
@@ -152,6 +149,8 @@
 
 - name: "Create /etc/cif/cif-worker.yml"
   shell: '/opt/cif/bin/cif-tokens --username cif-worker --new --read --write --generate-config-remote tcp://localhost:4961 --generate-config-path /etc/cif/cif-worker.yml'
+  environment:
+    CIF_ES_HOST: "{{ es01_ipv4 }}:9200"
   tags: create-cif-worker-conf
 
 - name: "Change owner and perms on /etc/cif/cif-worker.yml"
@@ -160,6 +159,8 @@
 
 - name: "Create ~/.cif.yml config for default user"
   shell: "/opt/cif/bin/cif-tokens --username {{ ansible_ssh_user }}@localhost --new --read --write --generate-config-remote https://localhost --generate-config-path /home/{{ ansible_ssh_user }}/.cif.yml"
+  environment:
+    CIF_ES_HOST: "{{ es01_ipv4 }}:9200"
   tags: create-cif-user-conf
 
 - name: "Change owner and perms on /home/{{ ansible_ssh_user }}/.cif.yml"
