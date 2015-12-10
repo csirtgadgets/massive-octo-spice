@@ -42,7 +42,7 @@ as it has been throughly tested.
 1. Create a ssh key to be used by Ansible
 
   ```bash
-  <todo>
+  ssh-keygen -t rsa -b 4096 -C "your_email@example.com"
   ```
 1. Copy over ssh keys
 
