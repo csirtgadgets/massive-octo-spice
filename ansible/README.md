@@ -15,17 +15,51 @@ playbooks for a all-in-one install. The anticipated roles are:
   * cif-smrt
  * ElasticSearch
 
-### Three node build
+### Four node CIF build
 
-[process is under development]
+#### Setting up the Environment
 
-1. Configure Ansible hosts file with two ElasticSearch nodes and one CIF node
+1. Build four Ubuntu 14.04.3 64-bit Server machines using the following specifications:
+  * CIF node: CPU: x, Mem: y, Disk: Z
+  * ES nodes: CPU: x, Mem: y, Disk: Z
+1. Build and [Install](http://docs.ansible.com/ansible/intro_installation.html) Ansible on a management host
+1. SSH into the management host
+1. Clone the CIFv2 repository to the management host
+
+  ```bash
+  cd ~/
+  git clone https://github.com/csirtgadgets/massive-octo-spice.git
+  ```
+1. Configure the Ansible hosts file with the IP addresses of the four nodes you built previously
+
+  ```bash
+  cd ~/massive-octo-spice/ansible
+  vim hosts
+  ```
+
+Update the following with the correct IP addresses:
+
+  ```
+  [cif_server]
+  cif ansible_ssh_host=192.168.1.205
+
+  [elastic_search]
+  es01 ansible_ssh_host=192.168.1.201
+  es02 ansible_ssh_host=192.168.1.202
+  es03 ansible_ssh_host=192.168.1.203
+  ```
+1. Create a ssh key to be used by Ansible
+
+  ```bash
+  <todo>
+  ```
 1. Copy over ssh keys
 
   ```bash
-  - ssh-copy-id -i ~/.ssh/id_rsa.pub ansible@192.168.1.205
-  - ssh-copy-id -i ~/.ssh/id_rsa.pub ansible@192.168.1.201
-  - ssh-copy-id -i ~/.ssh/id_rsa.pub ansible@192.168.1.202
+  ssh-copy-id -i ~/.ssh/id_rsa.pub ansible@192.168.1.201
+  ssh-copy-id -i ~/.ssh/id_rsa.pub ansible@192.168.1.202
+  ssh-copy-id -i ~/.ssh/id_rsa.pub ansible@192.168.1.203
+  ssh-copy-id -i ~/.ssh/id_rsa.pub ansible@192.168.1.205
   ```
 1. Build ElasticSearch Cluster
 
@@ -36,6 +70,70 @@ playbooks for a all-in-one install. The anticipated roles are:
 
   ```bash
   ansible-playbook -K cif.yml
+  ```
+
+#### Testing
+
+1. SSH into cif01
+  ```bash
+  ssh <username>@192.168.1.205
+  ```
+
+1. Verify the ElasticSearch cluster is setup correctly
+
+  ```bash
+  ssh <username>@192.168.1.205
+$ curl 'http://192.168.1.201:9200/_cluster/health?pretty'
+{
+  "cluster_name" : "elasticsearch",
+  "status" : "green",
+  "timed_out" : false,
+  "number_of_nodes" : 3,
+  "number_of_data_nodes" : 3,
+  "active_primary_shards" : 10,
+  "active_shards" : 20,
+  "relocating_shards" : 0,
+  "initializing_shards" : 0,
+  "unassigned_shards" : 0
+}
+  ```
+
+1. test connectivity to the router 
+ 
+  ```bash
+  $ cif -p
+  roundtrip: 0.518286 ms
+  roundtrip: 0.487317 ms
+  roundtrip: 0.47499 ms
+  roundtrip: 0.518493 ms
+  ```
+1. perform an initial `cif-smrt` test run  
+
+  ```bash
+  $ sudo service monit stop
+  $ sudo service cif-smrt stop
+  $ sudo -u cif /opt/cif/bin/cif-smrt --testmode
+  [2014-10-21T15:17:10,668Z][INFO][main:322]: cleaning up tmp: /var/smrt/cache
+  [2014-10-21T15:17:10,691Z][DEBUG][main:294]: id4.us - ssh
+  [2014-10-21T15:17:10,691Z][INFO][main:295]: processing: /opt/cif/bin/cif-smrt -d -r /etc/cif/rules/default/1d4_us.yml -f ssh
+  [2014-10-21T15:17:10,692Z][INFO][CIF::Smrt:92]: starting at: 2014-10-21T00:00:00Z
+  [2014-10-21T15:17:10,692Z][DEBUG][CIF::Smrt:97]: fetching...
+  ...
+  ```
+1. re-start cif-smrt  
+
+  ```bash
+  $ sudo service cif-smrt start
+  $ sudo service monit start
+  ```
+
+1. test out a query:
+
+  ```bash
+  $ cif --cc US
+  $ cif --cc CN
+  $ cif --tags scanner --cc us
+  $ cif --otype ipv4 --cc cn
   ```
 
 ### All-in-one install

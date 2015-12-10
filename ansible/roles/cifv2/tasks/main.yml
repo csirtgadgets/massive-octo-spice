@@ -53,7 +53,7 @@
   get_url: url={{ item }} dest=/tmp/
   with_items:
     - https://github.com/csirtgadgets/ZMQx-Class/archive/master.tar.gz
-    - https://github.com/csirtgadgets/p5-cif-sdk/archive/master.tar.gz
+    - https://github.com/csirtgadgets/p5-cif-sdk/archive/2.00_30.tar.gz
     - https://github.com/kraih/mojo/archive/v5.82.tar.gz
   tags: cpanm
 
@@ -70,6 +70,7 @@
     - MAXMIND/GeoIP2-0.040005.tar.gz
     - AVAR/Hijk-0.19.tar.gz
     - DRTECH/Search-Elasticsearch-1.19.tar.gz
+    - HAARG/local-lib-2.000015.tar.gz
   tags: cpanm
 
 - name: "Install perl modules - ZMQx-Class, p5-cif-sdk, mojo"
@@ -77,7 +78,7 @@
   with_items:
     - { path: '/tmp/ZMQx-Class-master.tar.gz', notest: 'True' }
     - { path: '/tmp/mojo-5.82.tar.gz', notest: 'False' }
-    - { path: '/tmp/p5-cif-sdk-master.tar.gz', notest: 'False' }
+    - { path: '/tmp/p5-cif-sdk-2.00_30.tar.gz', notest: 'False' }
   tags: cpan
 
 - name: "Check for /srv/massive-octo-spice"
@@ -138,6 +139,8 @@
 
 - name: "Create /etc/cif/cif-smrt.yml"
   shell: '/opt/cif/bin/cif-tokens --username cif-smrt --new --write --generate-config-remote http://localhost:5000 --generate-config-path /etc/cif/cif-smrt.yml'
+  environment:
+    CIF_ES_HOST: "{{ es01_ipv4 }}:9200"
   tags: create-cif-smrt-conf
 
 - name: "Change owner and perms on /etc/cif/cif-smrt.yml"

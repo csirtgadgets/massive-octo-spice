@@ -7,6 +7,7 @@
     cif_ipv4: "{{ hostvars['cif']['ansible_ssh_host'] }}"
     es01_ipv4: "{{ hostvars['es01']['ansible_ssh_host'] }}"
     es02_ipv4: "{{ hostvars['es02']['ansible_ssh_host'] }}"
+    es03_ipv4: "{{ hostvars['es03']['ansible_ssh_host'] }}"
   roles:
     - debops.elasticsearch
   tasks:
