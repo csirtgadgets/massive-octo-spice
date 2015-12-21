@@ -20,8 +20,8 @@ elasticsearch_path_lib: '{{ elasticsearch_path_home }}/lib'
 
 # --- Memory ---
 
-elasticsearch_memory_heap_size: '{{ (ansible_memtotal_mb | int * elasticsearch_memory_heap_size_multiplier) | round | int }}m'
-
+#elasticsearch_memory_heap_size: '{{ (ansible_memtotal_mb | int * elasticsearch_memory_heap_size_multiplier) | round | int }}m'
+elasticsearch_memory_heap_size: '{{ recommended_es_heap_size.stdout_lines[0] }}'
 
 # --- Discovery ---
 

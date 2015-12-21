@@ -29,13 +29,13 @@ elasticsearch_version: '1.4'
 
 # ---- Cluster ----
 
-elasticsearch_cluster_name: 'elasticsearch'
+elasticsearch_cluster_name: 'cifv2_elasticsearch'
 
 
 # ---- Node ----
 
 # An empty name will let elasticsearch randomly generate one for you.
-elasticsearch_node_name: ''
+elasticsearch_node_name: '{{ ansible_hostname }}'
 
 elasticsearch_node_master: true
 elasticsearch_node_data: true
