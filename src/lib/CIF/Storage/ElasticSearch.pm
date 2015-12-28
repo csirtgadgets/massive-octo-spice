@@ -281,6 +281,11 @@ sub _search {
         $terms->{'provider'} = $filters->{'provider'}
     }
     
+    if($filters->{'tlp'}){
+        $filters->{'tlp'} = [$filters->{'tlp'}] unless(ref($filters->{'tlp'}));
+        $terms->{'tlp'} = $filters->{'tlp'}
+    }
+    
     if($filters->{'rdata'}){
          unless(ref($filters->{'rdata'})){
              $filters->{'rdata'} = [ $filters->{'rdata'} ];
