@@ -8,5 +8,5 @@
 - name: "Configuring monit for cif"
   template: src=cif.monit.j2 dest=/etc/monit/conf.d/cif
 
-- name: "Configuring monit for elasticserach"
-  template: src=elasticsearch.monit.j2 dest=/etc/monit/conf.d/elasticsearch
+#- name: "Configuring monit for elasticserach"
+#  template: src=elasticsearch.monit.j2 dest=/etc/monit/conf.d/elasticsearch

@@ -42,8 +42,16 @@
     - ssl
     - proxy
     - proxy_http
-# in an all in one box, we need to restart ES after apache is configured
-# in split roles this may need to be different. 
-- name: restart elasticsearch
+
+  # check to see if ElasticSearch is installed (eg: all-in-one)
+- name: "Check to see if ElasticSearch is installed"
+  command: dpkg-query -W elasticsearch
+  register: is_elasticsearch_installed
+  failed_when: is_elasticsearch_installed.rc > 1
+  changed_when: is_elasticsearch_installed.rc == 1
+
+  # Restart ElasticSearch if installed
+- name: "Restart ElasticSearch post Apache configuration"
   service: name=elasticsearch state=restarted
   tags: restart-es
+  when: is_elasticsearch_installed.rc == 0

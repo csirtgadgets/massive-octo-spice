@@ -1,0 +1,16 @@
+---
+# tasks file for python27
+- name: Add python repo
+  apt_repository: repo='ppa:fkrull/deadsnakes-python2.7'
+- name: install deps
+  apt:
+    state: latest
+    pkg: "{{ item }}"
+  with_items:
+    - python2.7
+    - python-support
+    - python-pytest
+    - python-pip
+    - python-dev
+    - virtualenvwrapper
+    - python-virtualenv
