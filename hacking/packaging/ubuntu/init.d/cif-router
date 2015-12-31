@@ -50,6 +50,8 @@ if [ -f "$DEFAULT" ]; then
     . "$DEFAULT"
 fi
 
+export CIF_ES_HOST=$CIF_ES_HOST
+
 DAEMON=$CIF_HOME/bin/cif-router
 DAEMON_OPTS="$CIF_DEBUGGING --logging --logfile $LOG_FILE -p $PID_FILE -C $CONF_FILE -D start"
 

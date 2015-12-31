@@ -1,5 +1,14 @@
 Revision history for massive-octo-spice
 
+2.00.00-rc.7 2015-12-31
+    - misc makefile fixes, make elasticsearch deployment / configuration easier
+    - https://github.com/csirtgadgets/massive-octo-spice/issues/372
+    - https://github.com/csirtgadgets/massive-octo-spice/issues/373
+    - https://github.com/csirtgadgets/massive-octo-spice/issues/374
+    - https://github.com/csirtgadgets/massive-octo-spice/issues/375
+    - https://github.com/csirtgadgets/massive-octo-spice/issues/379
+    - https://github.com/csirtgadgets/p5-cif-sdk/issues/52
+
 2.00.00-rc.6 2015-10-26
     - https://github.com/csirtgadgets/massive-octo-spice/issues/358
     - added example ansible deployment configurations

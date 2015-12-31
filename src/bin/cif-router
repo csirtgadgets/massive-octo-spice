@@ -20,9 +20,10 @@ my $help;
 my $frontend        = CIF::Router::DEFAULT_FRONTEND_LISTEN();
 my $backend         = CIF::Router::DEFAULT_BACKEND_LISTEN();
 my $storage         = 'elasticsearch';
-my $storage_host    = 'localhost:9200';
+my $storage_host    = $ENV{'CIF_ES_HOST'} || 'localhost:9200';
 my $auth            = 'dummy',
 my $config          = "$CIF::EtcPath/cif-router.conf";
+my $retries         = 5;
 
 # daemon
 my $daemon          = 0;
@@ -50,7 +51,8 @@ GetOptions(
     'frontend|F=s'  => \$frontend,
     'backend|B=s'   => \$backend,
     'auth|a=s'      => \$auth,
-
+    'retries=i'     => \$retries,
+    
     # storage
     'storage|s=s'      => \$storage,
     'storage-host=s'   => \$storage_host,
@@ -88,6 +90,8 @@ Usage: $0 [OPTIONS] [status|start|stop|restart|reload]
     -d,  --debug             turn on debugging (max verbosity)
     -v+, --verbosity         turn up verbosity
     -h,  --help              this message
+    
+    --retries                number of retries before giving up on elasticsearch service, default $retries
     
  Daemon Options:
     -D, --daemon            run as daemon
@@ -144,6 +148,40 @@ if($verbosity){
 }
 
 $Logger->info('staring up..');
+
+my $test_router  = CIF::Router->new({
+    frontend_listen => $frontend,
+    backend_listen  => $backend,
+    auth            => $auth,
+    storage         => $storage,
+    storage_host    => $storage_host,
+});
+    
+my ($e,$r);
+
+do {
+    try {
+        $r = $test_router->storage_handle;
+    } catch {
+        $e = shift;
+    };
+    unless($r){
+        $Logger->warn($e) if($e);
+        warn 'retrying ' . $retries . ' more times';
+        $Logger->warn('elasticsearch connection failed, retrying ' . $retries . ' more times');
+        sleep(5);
+        $e = undef;
+    }
+    $retries--;
+    if($retries == 0){
+        $e = 'elasticsearch connection failed, unable to start cif-router';
+        warn $e;
+        $Logger->fatal($e);
+        exit(-1);
+    }
+} until($r);
+
+$test_router = undef;
 
 if($daemon){
     $ARGV[0] = 'start' unless($ARGV);

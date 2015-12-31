@@ -1,2 +1,4 @@
 ---
 # defaults file for cifv2
+
+massive_octo_spice_branch: 'develop'

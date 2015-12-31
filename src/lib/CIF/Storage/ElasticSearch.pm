@@ -70,6 +70,8 @@ has 'tokens_type'  => (
 sub _build_handle {
     my $self = shift;
     my $args = shift;
+
+    
  
     $self->handle(
         Search::Elasticsearch->new(
@@ -96,8 +98,9 @@ sub shutdown {}
 
 sub check_handle {
     my $self = shift;
-
+    
     $Logger->debug('checking handle...');
+    $Logger->info('storage node: ' . join(',', @{$self->nodes}));
     my ($ret,$err);
     try {
         $self->handle->info();
@@ -267,13 +270,20 @@ sub _search {
     }
     
     if($filters->{'asn'}){
-    	$filters->{'asn'} = [$filters->{'asn'}] unless(ref($filters->{'asn'}));
-    	$terms->{'asn'} = $filters->{'asn'}
+        unless(ref($filters->{'asn'}) eq 'ARRAY'){
+            $filters->{'asn'} = [ split(',',$filters->{'asn'}) ];
+        }
+        $terms->{'asn'} = $filters->{'asn'}
     }
     
     if($filters->{'provider'}){
         $filters->{'provider'} = [$filters->{'provider'}] unless(ref($filters->{'provider'}));
         $terms->{'provider'} = $filters->{'provider'}
+    }
+    
+    if($filters->{'tlp'}){
+        $filters->{'tlp'} = [$filters->{'tlp'}] unless(ref($filters->{'tlp'}));
+        $terms->{'tlp'} = $filters->{'tlp'}
     }
     
     if($filters->{'rdata'}){
@@ -302,6 +312,12 @@ sub _search {
                  }
                  push(@and,{ 'or' => \@or });
             } elsif($_ eq 'group') {
+                my @or;
+                foreach my $e (@{$terms->{$_}}){
+                	push(@or, { term => { $_ => [$e] } } );
+                }
+                push(@and, { 'or' => \@or });
+            } elsif($_ eq 'asn') {
                 my @or;
                 foreach my $e (@{$terms->{$_}}){
                 	push(@or, { term => { $_ => [$e] } } );

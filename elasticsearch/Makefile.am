@@ -27,3 +27,7 @@ reload-data: remove-data
 
 list:
 	$(CURLCMD) -XGET $(HOST)/$(INDICIES)/_mapping?pretty -w "\n"
+
+remove-templates:
+	$(CURLCMD) -XDELETE $(HOST)/_template/template_cif_observables
+	$(CURLCMD) -XDELETE $(HOST)/_template/template_cif_tokens

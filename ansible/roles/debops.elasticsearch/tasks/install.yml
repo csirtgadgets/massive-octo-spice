@@ -1,0 +1,48 @@
+---
+
+- name: Add Elasticsearch APT key
+  apt_key: url=http://packages.elasticsearch.org/GPG-KEY-elasticsearch
+           id={{ elasticsearch_key_id }}
+           state=present
+
+- name: Add Elasticsearch repository
+  apt_repository: repo='deb {{ elasticsearch_repository }}/{{ elasticsearch_version }}/debian stable main'
+                  state=present update_cache=True
+
+- name: Install Elasticsearch
+  apt: pkg=elasticsearch state=present install_recommends=False
+
+- name: Divert original configs
+  command: dpkg-divert --quiet --local --divert {{ elasticsearch_path_conf }}/{{ item }}.yml.dpkg-divert --rename {{ elasticsearch_path_conf }}/{{ item }}.yml creates={{ elasticsearch_path_conf }}/{{ item }}.yml.dpkg-divert
+  with_items: [ 'elasticsearch', 'logging' ]
+
+- name: Copy determine_es_heap_size.py to es host
+  copy: src=determine_es_heap_size.py dest=/tmp/determine_es_heap_size.py
+        owner=root group=root mode=0644
+
+- name: Execute determine_es_heap_size.py to get recommended es_heap_size
+  command: /usr/bin/python /tmp/determine_es_heap_size.py
+  register: recommended_es_heap_size
+
+- name: Configure Elasticsearch
+  template: src={{ item[1:] }}.j2 dest={{ item }}
+            owner=root group=elasticsearch mode=0644
+  with_items:
+    - '/etc/default/elasticsearch'
+    - '{{ elasticsearch_path_conf }}/elasticsearch.yml'
+    - '{{ elasticsearch_path_conf }}/logging.yml'
+  notify: [ 'Restart Elasticsearch' ]
+
+- name: Configure limits.conf
+  template: src=etc/security/limits.conf.j2 dest=/etc/security/limits.conf
+            mode=0644 owner=root group=root
+
+- name: Configure sysctl.conf
+  template: src=etc/sysctl.conf.j2 dest=/etc/sysctl.conf
+            mode=0644 owner=root group=root
+
+- name: "Run sysctl to enable sysctl vm.swappiness=1"
+  command: sysctl vm.swappiness=1
+
+- name: Start Elasticsearch
+  service: name=elasticsearch state=started enabled=True

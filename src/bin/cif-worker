@@ -44,6 +44,7 @@ my $debug           = 0;
 my $verbosity       = 0;
 my $logging         = 0;
 my $logfile         = $CIF::LogPath.'/cif-worker.log';
+my $retries         = 5;
 
 Getopt::Long::Configure ("bundling");
 GetOptions(
@@ -52,6 +53,7 @@ GetOptions(
     'remote=s'      => \$remote,
     'publisher=s'   => \$publisher,
     'token=s'       => \$token,
+    'retries=i'     => \$retries,
     
     # daemon opts
     'daemon|D'      => \$daemon,
@@ -89,6 +91,8 @@ Usage: $0 [OPTIONS] [status|start|stop|restart|reload]
     -d,  --debug             turn on debugging (max verbosity)
     -v+, --verbosity         turn up verbosity
     -h,  --help              this message
+    
+    --retries                specify number of times to retry cif-router before giving up
     
  Daemon Options:
     -D, --daemon            run as daemon
@@ -160,13 +164,21 @@ do {
     $ret = $cli->ping({ timeout => 5000 });
     
     unless($ret){
-        $Logger->info('router unavail.. ');
+        $Logger->info('router unavailable.. ');
+        warn 'cif-router unavailable, waiting to retry ' . $retries . ' more times...';
         $Logger->info('waiting...');
-        sleep(15);
+        sleep(5);
     }
     
     if($ret == -1){
         $Logger->fatal('unauthorized...');
+        exit(-1);
+    }
+    $retries--;
+    if($retries == 0){
+        my $errmsg = 'router unavailable, giving up';
+        warn $errmsg;
+        $Logger->fatal($errmsg);
         exit(-1);
     }
 } until($ret);
