@@ -277,7 +277,9 @@ sub _search {
     }
     
     if($filters->{'provider'}){
-        $filters->{'provider'} = [$filters->{'provider'}] unless(ref($filters->{'provider'}));
+        unless(ref($filters->{'provider'} eq 'ARRAY')){
+            $filters->{'provider'} = [ split(',', $filters->{'provider'}) ]
+        }
         $terms->{'provider'} = $filters->{'provider'}
     }
     
@@ -318,6 +320,12 @@ sub _search {
                 }
                 push(@and, { 'or' => \@or });
             } elsif($_ eq 'asn') {
+                my @or;
+                foreach my $e (@{$terms->{$_}}){
+                	push(@or, { term => { $_ => [$e] } } );
+                }
+                push(@and, { 'or' => \@or });
+            } elsif($_ eq 'provider'){
                 my @or;
                 foreach my $e (@{$terms->{$_}}){
                 	push(@or, { term => { $_ => [$e] } } );
