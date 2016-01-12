@@ -15,20 +15,28 @@ sub index {
     
     my $filters = {};
     
-    foreach my $x (qw/provider otype cc confidence group limit tags application asn rdata firsttime lasttime reporttime reporttimeend description/){
+    foreach my $x (qw/id provider otype cc confidence group limit tags application asn rdata firsttime lasttime reporttime reporttimeend description/){
         $filters->{$x} = scalar $self->param($x) if $self->param($x);
     }
+    $Logger->debug($filters);
     
     my $res;
     if($query or scalar(keys($filters)) > 0){
         $filters->{'confidence'} = 0 unless($filters->{'confidence'});
         $Logger->debug('generating search...');
-        $res = $self->cli->search({
-            token      	=> scalar $self->token,
-            query      	=> scalar $query,
-            nolog       => scalar $self->param('nolog'),
-            filters     => $filters,
-        });
+        if($filters->{'id'}){
+            $res = $self->cli->search({
+                token      	=> scalar $self->token,
+                id          => $filters->{'id'}
+            });
+        } else {
+            $res = $self->cli->search({
+                token      	=> scalar $self->token,
+                query      	=> scalar $query,
+                nolog       => scalar $self->param('nolog'),
+                filters     => $filters,
+            });
+        }
     } else {
         $self->render(json   => { 'message' => 'invalid query' }, status => 404 );
     }

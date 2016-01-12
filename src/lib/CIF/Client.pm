@@ -198,6 +198,7 @@ sub search {
     }
     
     $Logger->debug(Dumper($filters));
+
     my $msg;
     if($args->{'id'}){
     	$msg = CIF::Message->new({
