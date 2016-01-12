@@ -423,7 +423,9 @@ sub _process_message {
     $data = @$data[0];
     return '-1' unless $data;
     
-    $data->{'address'} =~ s/hxxp\:\/\///g;
+    if($data->{'address'}){
+        $data->{'address'} =~ s/hxxp\:\/\///g;
+    }
     
     $data = {
         'observable'    => $data->{'address'},
