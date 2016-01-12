@@ -229,10 +229,6 @@ sub _search {
     	$terms->{'otype'} = [$filters->{'otype'}];
 	}
 	my $missing;
-
-	if($filters->{'cc'}){
-		$terms->{'cc'} = [lc($filters->{'cc'})];
-	}
     
     if($filters->{'confidence'}){
     	$ranges->{'confidence'}->{'gte'} = $filters->{'confidence'};
@@ -274,6 +270,20 @@ sub _search {
             $filters->{'asn'} = [ split(',',$filters->{'asn'}) ];
         }
         $terms->{'asn'} = $filters->{'asn'}
+    }
+    
+    if($filters->{'cc'}){
+        unless(ref($filters->{'cc'}) eq 'ARRAY'){
+            $filters->{'cc'} = [ split(',',$filters->{'cc'}) ];
+        }
+        $terms->{'cc'} = $filters->{'cc'}
+    }
+    
+    if($filters->{'otype'}){
+        unless(ref($filters->{'otype'}) eq 'ARRAY'){
+            $filters->{'otype'} = [ split(',',$filters->{'otype'}) ];
+        }
+        $terms->{'otype'} = $filters->{'otype'}
     }
     
     if($filters->{'provider'}){
@@ -326,6 +336,18 @@ sub _search {
                 }
                 push(@and, { 'or' => \@or });
             } elsif($_ eq 'provider'){
+                my @or;
+                foreach my $e (@{$terms->{$_}}){
+                	push(@or, { term => { $_ => [$e] } } );
+                }
+                push(@and, { 'or' => \@or });
+            } elsif($_ eq 'cc'){
+                my @or;
+                foreach my $e (@{$terms->{$_}}){
+                	push(@or, { term => { $_ => [$e] } } );
+                }
+                push(@and, { 'or' => \@or });
+            } elsif($_ eq 'otype'){
                 my @or;
                 foreach my $e (@{$terms->{$_}}){
                 	push(@or, { term => { $_ => [$e] } } );

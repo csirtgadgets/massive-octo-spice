@@ -4,6 +4,9 @@ Revision history for massive-octo-spice
     - small bugfix to v1migration/cpanfile
     - fixes #363
     - https://github.com/csirtgadgets/p5-cif-sdk/issues/59
+    - https://github.com/csirtgadgets/p5-cif-sdk/issues/58
+    - https://github.com/csirtgadgets/p5-cif-sdk/issues/57
+    - https://github.com/csirtgadgets/p5-cif-sdk/issues/56
 
 2.00.00-rc.7 2015-12-31
     - misc makefile fixes, make elasticsearch deployment / configuration easier
