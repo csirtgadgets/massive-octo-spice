@@ -2,6 +2,7 @@ Revision history for massive-octo-spice
 
 2.00.00-rc.8 2016-01-
     - small bugfix to v1migration/cpanfile
+    - fixes #363
 
 2.00.00-rc.7 2015-12-31
     - misc makefile fixes, make elasticsearch deployment / configuration easier

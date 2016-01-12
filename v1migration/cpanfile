@@ -2,3 +2,4 @@ requires 'Google::ProtocolBuffers';
 requires 'ZMQ::FFI';
 requires 'Class::DBI';
 requires 'Data::UUID';
+requiers 'DBD::Pg';

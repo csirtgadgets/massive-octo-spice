@@ -32,7 +32,6 @@ use constant WORKER_CONNECTION          => 'ipc:///tmp/workers';
 use constant WRITER_CONNECTION          => 'ipc:///tmp/writer';
 
 # bi-directional pipe for return counts, figure out when we're done
-use constant MSGS_PROCESSED_CONNECTION  => 'ipc:///tmp/msgs_processed';
 use constant MSGS_WRITTEN_CONNECTION    => 'ipc:///tmp/msgs_written';
 
 # the lower this is, the higher the chance of 
@@ -41,7 +40,7 @@ use constant MSGS_WRITTEN_CONNECTION    => 'ipc:///tmp/msgs_written';
 use constant NSECS_PER_MSEC     => 1_000_000;
 
 # used for SIGINT cleanup
-my @pipes = ('msgs_written','workers','msgs_processed','writer','ctrl');
+my @pipes = ('msgs_written','workers','writer','ctrl');
 
 my $help;
 my $es_host = '127.0.0.1';
@@ -219,9 +218,6 @@ sub pager_routine {
     my $msgs_written = $context->socket(ZMQ_PULL);
     $msgs_written->bind(MSGS_WRITTEN_CONNECTION());
 
-    my $msgs_processed = $context->socket(ZMQ_PULL);
-    $msgs_processed->bind(MSGS_PROCESSED_CONNECTION());
-    
     my ($ret,$err,$data,$tmp,$sth);
     
     $Logger->debug('connecting to archive..');
@@ -294,12 +290,9 @@ sub pager_routine {
                     $ret = $msgs_written->recv();
                     $completed += $ret;
                     $total -= $ret;
-                }        
-                #sleep(1); # so ->poll() doesn't crush us and we can INT out
-                nanosleep NSECS_PER_MSEC;
+                }
             } while(($completed < $archive->{'limit'}) && $total > 0);
-            
-            #debug('completed: '.$completed.'/'.$archive->{'limit'}) if($::debug > 1););
+
             $Logger->debug('remaining: '.$total.' ('.int(($total/$archive->{'total'})*100).'%)');
             
             set_journal($keys[$#keys]);
@@ -319,6 +312,58 @@ sub pager_routine {
     nanosleep NSECS_PER_MSEC;
 }
 
+sub _writer_routine {
+    my $total       = shift;
+    my $commit_size = shift;
+
+    my $context = ZMQ::FFI->new();
+    $Logger->info('starting writer thread...');
+    
+    my $writer = $context->socket(ZMQ_PULL);
+    $writer->bind(WRITER_CONNECTION());
+    
+    my $msgs_written = $context->socket(ZMQ_PUSH);
+    $msgs_written->connect(MSGS_WRITTEN_CONNECTION());
+    
+    my $dbi = init_db();
+    
+    my ($msg,$tmsg);
+    my $tmp_total = 0;
+    
+    my ($ret,$err);
+    my ($done,$total_r,$total_w) = (0,0,0);
+    
+    my @user_groups;
+    foreach (keys(%$group_map)){
+        push(@user_groups, $group_map->{$_});
+    }
+    
+    my $sent = 0;
+    do {
+        nanosleep NSECS_PER_MSEC;
+        if($writer->has_pollin){
+            $msg = $writer->recv();
+            if($msg ne '-1'){
+                $msg = JSON::XS::decode_json($msg);
+                if($msg->{'confidence'} && $msg->{'confidence'} >= $confidence){
+                    $ret = $storage->_submission({
+                        Observables => [$msg],
+                        timestamp => DateTime::Format::DateParse->parse_datetime($msg->{'reporttime'}),
+                        user => {
+                            groups => \@user_groups
+                        },
+                    });
+                }
+            }
+            $msgs_written->send('1');
+            $sent += 1;
+            $Logger->info($sent) if($sent % $commit_size == 0);
+        }
+    } while(!$done);
+    
+    $Logger->debug('writer done...');
+}
+
 sub _worker_routine {
     my $context = ZMQ::FFI->new();
     
@@ -330,9 +375,6 @@ sub _worker_routine {
     my $writer = $context->socket(ZMQ_PUSH);
     $writer->connect(WRITER_CONNECTION());
     
-    my $msgs_processed = $context->socket(ZMQ_PUSH);
-    $msgs_processed->connect(MSGS_PROCESSED_CONNECTION());
-    
     my $ctrl = $context->socket(ZMQ_SUB);
     $ctrl->subscribe('');
     $ctrl->connect(CTRL_CONNECTION());
@@ -342,7 +384,6 @@ sub _worker_routine {
     my $tmp_total = 0;
     my $err;
     while(!$done){
-        #nanosleep NSECS_PER_MSEC;
         if($ctrl->has_pollin()){
             my $msg = $ctrl->recv();
             $Logger->debug('ctrl sig received: '.$msg) if($msg eq 'WRK_DONE');
@@ -354,12 +395,10 @@ sub _worker_routine {
             try {
                 $msg = _process_message($msg);
                 $writer->send($msg);
-                $msgs_processed->send('1');
             } catch {
                 $err = shift;
                 $Logger->error($err);
                 $writer->send('-1');
-                $msgs_processed->send('1');
             };
         }
         $tmp_total++;
@@ -408,56 +447,4 @@ sub _process_message {
     $data = JSON::XS::encode_json($data);
     
     return $data;
-}
-
-sub _writer_routine {
-    my $total       = shift;
-    my $commit_size = shift;
-
-    my $context = ZMQ::FFI->new();
-    $Logger->info('starting writer thread...');
-    
-    my $writer = $context->socket(ZMQ_PULL);
-    $writer->bind(WRITER_CONNECTION());
-    
-    my $msgs_written = $context->socket(ZMQ_PUSH);
-    $msgs_written->connect(MSGS_WRITTEN_CONNECTION());
-    
-    my $dbi = init_db();
-    
-    my ($msg,$tmsg);
-    my $tmp_total = 0;
-    
-    my ($ret,$err);
-    my ($done,$total_r,$total_w) = (0,0,0);
-    
-    my @user_groups;
-    foreach (keys(%$group_map)){
-        push(@user_groups, $group_map->{$_});
-    }
-    
-    my $sent = 0;
-    do {
-        if($writer->has_pollin){
-            $Logger->debug('found message...');
-            $msg = $writer->recv();
-            if($msg ne '-1'){
-                $msg = JSON::XS::decode_json($msg);
-                if($msg->{'confidence'} && $msg->{'confidence'} >= $confidence){
-                    $ret = $storage->_submission({
-                        Observables => [$msg],
-                        timestamp => DateTime::Format::DateParse->parse_datetime($msg->{'reporttime'}),
-                        user => {
-                            groups => \@user_groups
-                        },
-                    });
-                }
-            }
-            $msgs_written->send('1');
-            $sent += 1;
-            $Logger->info($sent) if($sent % $commit_size == 0);
-        }
-    } while(!$done);
-    
-    $Logger->debug('writer done...');
 }
