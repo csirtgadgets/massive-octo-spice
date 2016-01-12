@@ -339,19 +339,36 @@ sub _writer_routine {
     }
     
     my $sent = 0;
+    my $buckets = {};
     do {
+        nanosleep NSECS_PER_MSEC;
         if($writer->has_pollin){
             $msg = $writer->recv();
             if($msg ne '-1'){
                 $msg = JSON::XS::decode_json($msg);
-                if($msg->{'confidence'} && $msg->{'confidence'} >= $confidence){
-                    $ret = $storage->_submission({
-                        Observables => [$msg],
-                        timestamp => DateTime::Format::DateParse->parse_datetime($msg->{'reporttime'}),
-                        user => {
-                            groups => \@user_groups
-                        },
-                    });
+                if($msg->{'group'}){
+                    my $b = DateTime::Format::DateParse->parse_datetime($msg->{'reporttime'})->ymd();
+                    $buckets->{$b} = [] unless(exists($buckets->{$b}));
+                    push(@{$buckets->{$b}}, $msg);
+                    
+                    $tmp_total += 1;
+                    
+                    if($tmp_total % $commit_size == 0){
+                        foreach my $k (keys %$buckets){
+                            $ret = $storage->_submission({
+                                Observables => $buckets->{$k},
+                                timestamp => DateTime::Format::DateParse->parse_datetime($k),
+                                user => {
+                                    groups => \@user_groups
+                                },
+                            });
+                            if(!$ret){
+                                die Dumper($buckets->{$k});
+                            }
+                        }
+                        $buckets = undef;
+                        $tmp_total = 0;
+                    }
                 }
             }
             $msgs_written->send('1');
