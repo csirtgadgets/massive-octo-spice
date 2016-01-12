@@ -223,7 +223,7 @@ sub _search {
     
     my $filters = $args->{'Filters'};
     
-    #$Logger->debug(Dumper($filters));
+    $Logger->debug(Dumper($filters));
     
     if($filters->{'otype'}){
     	$terms->{'otype'} = [$filters->{'otype'}];
@@ -256,8 +256,10 @@ sub _search {
     }
     
     if($filters->{'description'}){
-        $filters->{'description'} = [$filters->{'description'}] unless(ref($filters->{'description'}) eq 'ARRAY');
-    	$terms->{'description'} = $filters->{'description'};
+        unless(ref($filters->{'description'}) eq 'ARRAY'){
+            $filters->{'description'} = [ split(',',$filters->{'description'}) ];
+        }
+        $terms->{'description'} = $filters->{'description'}
     }
     
     if($filters->{'application'}){
@@ -348,6 +350,12 @@ sub _search {
                 }
                 push(@and, { 'or' => \@or });
             } elsif($_ eq 'otype'){
+                my @or;
+                foreach my $e (@{$terms->{$_}}){
+                	push(@or, { term => { $_ => [$e] } } );
+                }
+                push(@and, { 'or' => \@or });
+            } elsif($_ eq 'description'){
                 my @or;
                 foreach my $e (@{$terms->{$_}}){
                 	push(@or, { term => { $_ => [$e] } } );

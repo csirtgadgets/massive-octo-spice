@@ -137,6 +137,11 @@ $Logger->info('staring up..');
 
 my $group_map = {
     '8c864306-d21a-37b1-8705-746a786719bf' => 'everyone',
+    '9278dd5e-8448-31ea-af04-ac969b8be85f' => 'xsec.ren-isac.net',
+    '0146a333-cfa7-3464-b890-0e37b96a741d' => 'splinter.ren-isac.net',
+    '7dab14d9-9750-3e2e-a0dd-0da9dbdb73d0' => 'leo.ren-isac.net',
+    '07107c87-5605-36d3-850b-ee219fece62b' => 'partners.ren-isac.net',
+    '0f3421e5-c4d7-323c-af8c-eb32c12f08c5' => 'general.ren-isac.net',
 };
 
 my $tlp_map = {
@@ -340,7 +345,6 @@ sub _writer_routine {
     
     my $sent = 0;
     do {
-        nanosleep NSECS_PER_MSEC;
         if($writer->has_pollin){
             $msg = $writer->recv();
             if($msg ne '-1'){
@@ -424,6 +428,8 @@ sub _process_message {
     $data = @$data[0];
     return '-1' unless $data;
     
+    $data->{'address'} =~ s/hxxp\:\/\///g;
+    
     $data = {
         'observable'    => $data->{'address'},
         'asn'           => $data->{'asn'},
@@ -438,7 +444,7 @@ sub _process_message {
         'prefix'        => $data->{'prefix'},
         'tlp'           => $tlp_map->{$data->{'restriction'}},
         'altid'         => $data->{'alternativeid'},
-        'altid_tlp'     => $tlp_map->{$data->{'alternativeid_restriction'}},
+        'altid_tlp'     => $tlp_map->{$data->{'alternativeid_restriction'} || 'private'},
         'rir'           => $data->{'rir'},
         'cc'            => $data->{'cc'},
     };

@@ -196,6 +196,8 @@ sub search {
     if($filters->{'group'} && $filters->{'group'} =~ /,/){
     	$filters->{'group'} = [split(/,/,$filters->{'group'})];
     }
+    
+    $Logger->debug(Dumper($filters));
     my $msg;
     if($args->{'id'}){
     	$msg = CIF::Message->new({

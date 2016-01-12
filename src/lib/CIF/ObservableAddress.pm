@@ -34,8 +34,8 @@ has 'cc'   => (
 
 has 'rdata' => (
     is      => 'ro',
-    isa     => 'ArrayRef',
-    coerce  => 1,
+    #isa     => 'ArrayRef',
+    #coerce  => 1,
 );
 
 has 'rtype' => (
