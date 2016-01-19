@@ -1,3 +1,4 @@
+requires 'Gzip::Faster', '0.14';
 requires 'Mozilla::CA';
 requires 'Hijk','0.19';
 requires 'Encoding::FixLatin';
