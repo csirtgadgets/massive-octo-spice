@@ -5,13 +5,27 @@ use POSIX;
 use CIF qw/$Logger/;
 use Data::Dumper;
 use JSON::XS;
+ use Gzip::Faster;
+ use MIME::Base64 qw/encode_base64 decode_base64/;
 
 my $encoder = JSON::XS->new->convert_blessed;
+
+sub _json {
+    my $data = shift;
+    my $gzip = shift;
+    
+    $data = $encoder->encode($data);
+    if($gzip){
+        $data = encode_base64(gzip($data));
+    }
+    return $data;
+}
 
 sub index {
     my $self = shift;
 
     my $query      	= scalar $self->param('q') || scalar $self->param('observable');
+    my $gzip        = scalar $self->param('gzip') || 0;
     
     my $filters = {};
     
@@ -42,10 +56,10 @@ sub index {
     }
     
     if(defined($res)){
-        $Logger->debug(Dumper($res));
+        #$Logger->debug(Dumper($res));
         if($res){
             $self->respond_to(
-                json    => { text => $encoder->encode($res) },
+                json    => { text => _json($res,$gzip) },
                 html    => { template => 'observables/index' },
             );
         } else {

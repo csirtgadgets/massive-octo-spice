@@ -444,6 +444,10 @@ sub _process_message {
         $data->{'address'} =~ s/hxxp\:\/\///g;
     }
     
+    if($data->{'rir'}){
+        $data->{'rir'} = lc($data->{'rir'});
+    }
+    
     $data = {
         'observable'    => $data->{'address'},
         'asn'           => $data->{'asn'},

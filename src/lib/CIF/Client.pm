@@ -360,7 +360,7 @@ sub _send {
                 $self->socket->set(ZMQ_LINGER,'int',0);
                 return 0;
             }
-            $Logger->critical($err);
+            $Logger->crit($err);
             return 0;
         }
     }

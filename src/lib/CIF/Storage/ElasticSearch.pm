@@ -100,7 +100,7 @@ sub check_handle {
     my $self = shift;
     
     $Logger->debug('checking handle...');
-    $Logger->info('storage node: ' . join(',', @{$self->nodes}));
+    $Logger->debug('storage node: ' . join(',', @{$self->nodes}));
     my ($ret,$err);
     try {
         $self->handle->info();

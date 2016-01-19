@@ -16,19 +16,19 @@ has 'orientation' => (
 
 has 'asn'   => (
     is      => 'ro',
-    isa     => 'Str',
+#    isa     => 'Str',
     reader  => 'get_asn',
 );
 
 has 'asn_desc'  => (
     is      => 'ro',
-    isa     => 'Str',
+#    isa     => 'Str',
     reader  => 'get_asn_desc',
 );
 
 has 'rir'   => (
     is      => 'ro',
-    isa     => 'Maybe[CIF::Type::RIR]',
+#    isa     => 'Maybe[CIF::Type::RIR]',
     reader  => 'get_rir',
 );
 
@@ -41,7 +41,7 @@ has 'peers' => (
 
 has 'prefix'    => (
     is      => 'ro',
-    isa     => 'Str',
+#    isa     => 'Str',
     reader  => 'get_prefix',
 );
 
