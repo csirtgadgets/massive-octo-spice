@@ -228,6 +228,9 @@ if($action->{'new'}){
         if($generate->{'remote'} eq 'https://localhost'){
             $yaml->[0]->{'client'}->{'no_verify_ssl'} = 1;
         }
+        unless($generate->{'tls'}){
+            $yaml->[0]->{'client'}->{'no_verify_ssl'} = 1;
+        }
         $yaml->write($generate->{'path'});
     }
 }
