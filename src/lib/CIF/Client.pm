@@ -241,8 +241,8 @@ sub search {
             } else {
                 if($self->tlp_map && keys($self->tlp_map)){
                     $_->{'tlp'} = $self->tlp_map->{$_->{'tlp'}};
-                    if($_->{'alt_tlp'}){
-                        $_->{'alt_tlp'} = $self->tlp_map->{$_->{'alt_tlp'}};
+                    if($_->{'altid_tlp'}){
+                        $_->{'altid_tlp'} = $self->tlp_map->{$_->{'altid_tlp'}};
                     }
                 }
             }
