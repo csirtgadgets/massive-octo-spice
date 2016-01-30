@@ -82,14 +82,16 @@ sub process {
             return read_file($self->rule->defaults->{'remote'});
         } else {
             $Logger->debug('pulling: '.$self->rule->defaults->{'remote'});
-            
             try {
                 if($self->rule->defaults->{'username'} && $self->rule->defaults->{'password'}){
                     my $req = HTTP::Request->new(GET => $self->rule->defaults->{'remote'});
                     $req->authorization_basic($self->rule->defaults->{'username'},$self->rule->defaults->{'password'});
                     $ret = $self->handle->request($req);
                 } else {
-                    $ret = $self->handle->mirror($self->rule->defaults->{'remote'},$self->tmp);
+                    if($self->rule->token){
+                        $self->handle->default_header('Authorization' => 'Token token='.$self->rule->token);
+                    }
+                    $ret = $self->handle->mirror($self->rule->defaults->{'remote'}, $self->tmp);
                 }
             } catch {
                 $err = shift;

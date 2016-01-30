@@ -20,7 +20,7 @@ use constant RE_SKIP    => qr/remote|pattern|values|ignore/;
 use constant MIN_PREFIX => 14;
 
 
-has [qw(store_content skip rule feed remote parser defaults disabled)] => (
+has [qw(store_content skip rule feed remote parser defaults disabled token)] => (
     is      => 'ro',
 );
 
