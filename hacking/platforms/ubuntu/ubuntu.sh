@@ -64,7 +64,7 @@ cpanm Test::Exception@0.32
 cpanm MaxMind::DB::Reader@0.050005
 cpanm GeoIP2@0.040005
 cpanm Hijk@0.19
-cpanm https://github.com/csirtgadgets/p5-cif-sdk/archive/2.00_33.tar.gz
+cpanm https://github.com/csirtgadgets/p5-cif-sdk/archive/2.00_34.tar.gz
 cpanm https://github.com/kraih/mojo/archive/v5.82.tar.gz
 cpanm Search::Elasticsearch@1.19
 cpanm http://search.cpan.org/CPAN/authors/id/H/HA/HAARG/local-lib-2.000015.tar.gz

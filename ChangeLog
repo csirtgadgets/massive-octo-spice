@@ -1,6 +1,6 @@
 Revision history for massive-octo-spice
 
-2.00.00-rc.9 2016-01
+2.00.00-rc.9 2016-02-01
     - minor bugfix to bin/cif-tokens
     - minor bugfix to cif-starman tlp mapping
     - https://github.com/csirtgadgets/massive-octo-spice/issues/384
