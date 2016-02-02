@@ -23,7 +23,7 @@ use Try::Tiny;
 use constant CIF_REMOTE => 'http://localhost:5000';
 
 my $help;
-my $remote      = CIF_RMOTE; # https://github.com/csirtgadgets/massive-octo-spice/issues/71
+my $remote      = CIF_REMOTE; # https://github.com/csirtgadgets/massive-octo-spice/issues/71
 my $token;
 my $rule        = $CIF::SmrtRulesDefault;
 my $feed        = '';
