@@ -20,8 +20,10 @@ use Data::Dumper;
 use Carp qw/croak/;
 use Try::Tiny;
 
+use constant CIF_REMOTE => 'http://localhost:5000';
+
 my $help;
-my $remote      = 'http://localhost:5000'; # https://github.com/csirtgadgets/massive-octo-spice/issues/71
+my $remote      = CIF_RMOTE; # https://github.com/csirtgadgets/massive-octo-spice/issues/71
 my $token;
 my $rule        = $CIF::SmrtRulesDefault;
 my $feed        = '';
@@ -133,7 +135,9 @@ if(-e $config){
     $config = $config->{'client'};
     
     $token          = $token    || $config->{'token'};
-    $remote         = $remote   || $config->{'remote'};
+    if($config->{'remote'} && ($remote eq CIF_REMOTE)){
+        $remote = $config->{'remote'};
+    }
     $timeout        = $timeout  || $config->{'timeout'};
     
     $no_verify_ssl  = $config->{'no_verify_ssl'} if($config->{'no_verify_ssl'} && !$no_verify_ssl);
