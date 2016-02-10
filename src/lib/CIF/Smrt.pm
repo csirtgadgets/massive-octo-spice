@@ -172,7 +172,7 @@ sub process {
         }
         
         local $Data::Dumper::Indent = 0;
-
+        $Logger->debug(Dumper($_));
         push(@array,$_);
     }
     

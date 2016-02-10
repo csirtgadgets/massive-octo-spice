@@ -2,6 +2,7 @@ Revision history for massive-octo-spice
 
 2.00.00-rc.10 2016-02
     - small bugfix to cif-smrt remote config
+    - bugfix to cif-smrt where fork() does not exit properly
 
 2.00.00-rc.9 2016-02-01
     - minor bugfix to bin/cif-tokens

@@ -314,7 +314,7 @@ sub _main {
         unless($ret){
             $err = 'unknown error...' unless($err);
             $Logger->fatal($err);
-            return;
+            exit 0;
         }
     
         foreach my $r (@$rules){
