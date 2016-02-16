@@ -100,6 +100,8 @@ node.max_local_storage_nodes: {{ elasticsearch_node_max_local_storage_nodes }}
 #
 #index.number_of_shards: 5
 
+index.number_of_shards: "{{ es_number_of_shards }}"
+
 # Set the number of replicas (additional copies) of an index (1 by default):
 #
 #index.number_of_replicas: 1
