@@ -60,6 +60,8 @@ GetOptions(
     'generate-config-path=s'    => \$generate->{'path'},
     'generate-config-remote=s'  => \$generate->{'remote'},
     'generate-config-tls=i'       => \$generate->{'tls'},
+
+    'description=s'     => \$token->{'description'},
     
     'storage=s'         => \$storage,
     'storage-host=s'    => \$remote,
@@ -108,6 +110,7 @@ Options:
     --write         set write permissions for a token
     --expires       set an expiration date for the token
     --groups        specify the groups for the user (default: everyone)
+    --description   specify a description for the key
     
 Actions:
 
@@ -212,6 +215,7 @@ if($action->{'new'}){
         'write'     => $token->{'write'},
         acl         => $token->{'acl'},
         groups      => $token->{'groups'},
+        description => $token->{'description'},
     });
     unless($rv){
         $Logger->info('failed to generate new token...');

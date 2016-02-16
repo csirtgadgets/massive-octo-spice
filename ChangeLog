@@ -4,6 +4,7 @@ Revision history for massive-octo-spice
     - small bugfix to cif-smrt remote config
     - bugfix to cif-smrt where fork() does not exit properly
     - adjustment to default ansible all-in-one es shard allocation
+    - adding description flag to cif-tokens
 
 2.00.00-rc.9 2016-02-01
     - minor bugfix to bin/cif-tokens
