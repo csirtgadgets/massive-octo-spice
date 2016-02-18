@@ -147,7 +147,7 @@ if($verbosity){
     }
 }
 
-$Logger->info('staring up..');
+$Logger->info('starting up..');
 
 my $test_router  = CIF::Router->new({
     frontend_listen => $frontend,
