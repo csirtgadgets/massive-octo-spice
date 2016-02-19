@@ -208,12 +208,12 @@ sub _search {
     		    if ($otype eq 'ipv4') {
                     my @array = split(/\./,$args->{'Query'});
         		    $regexp->{'observable'} = $array[0].'\..*';
-        		    $terms->{'otype'} = 'ipv4';
+        		    $terms->{'otype'} =  ['ipv4'];
     		    } else {
     		        # v6
     		        my @array = split(/\:/,$args->{'Query'});
         		    $regexp->{'observable'} = $array[0].':.*';
-    		        $terms->{'otype'} = 'ipv6';
+    		        $terms->{'otype'} = ['ipv6'];
     		    }
     		} else {
     		    $terms->{'observable'} = [$args->{'Query'}];

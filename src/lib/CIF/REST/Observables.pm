@@ -38,7 +38,7 @@ sub index {
             }
         }
     }
-    $Logger->debug($filters);
+    $Logger->debug(Dumper($filters));
     
     my $res;
     if($query or scalar(keys($filters)) > 0){
