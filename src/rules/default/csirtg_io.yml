@@ -1,0 +1,62 @@
+# cif-smrt configuration file to pull feeds from csirtg.io
+# For more information see https://csirtg.io
+#
+# If no token is given, the feed by default is a "limited feed"
+# provided by https://csirtg.io. The limits of the "limited feed"
+# are:
+#
+# 1. Only results from the last hour are returned
+# 2. A maximum of 25 results are returned per feed
+#
+# To remove the limits, sign up for an API key at https://csirtg.io
+
+parser: csv
+#token: < token here -> get one at https://csirtg.io >
+defaults:
+  provider: csirtg.io
+  altid_tlp: white
+  altid: https://csirtg.io/search?q=<observable>
+  tlp: white
+  confidence: 85
+  values:
+    - null
+    - observable
+    - otype
+    - portlist
+    - null
+    - null
+    - protocol
+    - application
+    - null
+    - null
+    - lasttime
+    - description
+    - null
+
+feeds:
+  # A feed of IP addresses block by a firewall (e.g. port scanners)
+  port-scanners:
+    remote: https://csirtg.io/api/users/csirtgadgets/feeds/port-scanners.csv
+    tags:
+      - scanner
+  # A feed of URLs seen in the message body of UCE email. Do not alert or block
+  # on these urls without additional post-processing.
+  uce-urls:
+    remote: https://csirtg.io/api/users/csirtgadgets/feeds/uce-urls.csv
+    tags:
+      - uce
+      - uce-url
+  # A feed of email addresses seen in UCE email. Do not alert or block on these
+  # email addresses without additional post-processing. 
+  uce-email-address:
+    remote: https://csirtg.io/api/users/csirtgadgets/feeds/uce-email-addresses.csv
+    tags:
+      - uce
+      - uce-email-address
+  # A feed of IP addresses seen delivering UCE email. This could be a machine that
+  # is compromised or a user account has been compromised and used to send UCE. 
+  uce-ip:
+    remote: https://csirtg.io/api/users/csirtgadgets/feeds/uce-ip.csv
+    tags:
+      - uce
+      - uce-ip
