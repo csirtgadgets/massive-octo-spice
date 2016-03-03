@@ -276,7 +276,7 @@ sub _search {
     
     if($filters->{'cc'}){
         unless(ref($filters->{'cc'}) eq 'ARRAY'){
-            $filters->{'cc'} = [ split(',',$filters->{'cc'}) ];
+            $filters->{'cc'} = [ split(',',lc($filters->{'cc'})) ];
         }
         $terms->{'cc'} = $filters->{'cc'}
     }
