@@ -45,7 +45,7 @@ GetOptions(
     'admin'             => \$token->{'admin'},
     'read'              => \$token->{'read'},
     'write'             => \$token->{'write'},
-    'acl'               => \$token->{'acl'},
+    'acl=s'             => \$token->{'acl'},
     
     'new'               => \$action->{'new'},
     'delete'            => \$action->{'delete'},

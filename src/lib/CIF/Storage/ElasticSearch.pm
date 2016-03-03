@@ -160,6 +160,8 @@ sub check_auth {
             return 0;
         }
     }
+    
+    $Logger->debug(Dumper($res));
     return $res;
 }
 
@@ -220,6 +222,8 @@ sub _search {
     		}
     	}
     }
+    
+    $Logger->debug(Dumper($args));
     
     my $filters = $args->{'Filters'};
     

@@ -57,6 +57,12 @@ sub process {
         $data->{'Filters'}->{'group'} = $self->user->{'groups'};
     }
     
+    if($self->user->{'acl'}){
+        return 0 unless($data->{'Filters'}->{'otype'}); # unless it's specified
+        return 0 if(ref($data->{'Filters'}->{'otype'})); # unless a string
+        return 0 unless($self->user->{'acl'} eq $data->{'Filters'}->{'otype'}); # unless they are equal
+    }
+    
     my $results = $self->storage->process($data);
     
     if($data->{'Query'} && $data->{'Query'} ne 'all'){
