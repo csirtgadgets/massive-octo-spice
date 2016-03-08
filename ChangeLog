@@ -3,6 +3,7 @@ Revision history for massive-octo-spice
 2.00.00-rc.11 2016-03-
     - https://github.com/csirtgadgets/massive-octo-spice/issues/392 -- cc fix 
     - https://github.com/csirtgadgets/massive-octo-spice/issues/393 -- acl fix
+    - https://github.com/csirtgadgets/massive-octo-spice/issues/394 -- ransomware feed
 
 2.00.00-rc.10 2016-02-23
     - small bugfix to cif-smrt remote config
