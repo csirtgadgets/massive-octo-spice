@@ -21,6 +21,7 @@ my $frontend        = CIF::Router::DEFAULT_FRONTEND_LISTEN();
 my $backend         = CIF::Router::DEFAULT_BACKEND_LISTEN();
 my $storage         = 'elasticsearch';
 my $storage_host    = $ENV{'CIF_ES_HOST'} || 'localhost:9200';
+my $storage_index_partition = $ENV{'CIF_STORAGE_INDEX_PARTITION'} || 'day';
 my $auth            = 'dummy',
 my $config          = "$CIF::EtcPath/cif-router.conf";
 my $retries         = 5;
@@ -56,6 +57,7 @@ GetOptions(
     # storage
     'storage|s=s'      => \$storage,
     'storage-host=s'   => \$storage_host,
+    'storage-index-partition=s' => \$storage_index_partition,
     
     # daemon opts
     'daemon|D'      => \$daemon,
@@ -114,6 +116,8 @@ Usage: $0 [OPTIONS] [status|start|stop|restart|reload]
  Storage:
     -s, --storage           default: $storage
     --storage-host          default: $storage_host
+    
+    --storage-index-partition   default: day [month]
 
  Examples:
     $0 -C $config
@@ -155,6 +159,7 @@ my $test_router  = CIF::Router->new({
     auth            => $auth,
     storage         => $storage,
     storage_host    => $storage_host,
+    storage_index_partition => $storage_index_partition,
 });
     
 my ($e,$r);
@@ -211,6 +216,7 @@ sub main {
         auth            => $auth,
         storage         => $storage,
         storage_host    => $storage_host,
+        storage_index_partition => $storage_index_partition,
     });
     
     my ($err,$rv);
