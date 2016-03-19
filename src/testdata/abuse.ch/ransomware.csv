@@ -1,0 +1,23 @@
+##############################################################################
+# Ransomware Tracker CSV Feed                                                #
+# Generated on 2016-03-08 20:06:23 UTC                                       #
+#                                                                            #
+# For questions please refer to:                                             #
+# https://ransomwaretracker.abuse.ch/feeds/                                  #
+##############################################################################
+#
+# Firstseen (UTC),Threat,Malware,Host,URL,Status,Registrar,IP address(es),ASN(s),Country
+"2016-03-08 15:38:25","C2","Locky","89.108.85.163","http://89.108.85.163/main.php","online","","89.108.85.163","43146","RU"
+"2016-03-08 15:34:43","C2","Locky","149.154.157.14","http://149.154.157.14/main.php","online","","149.154.157.14","20836","IT"
+"2016-03-08 13:55:56","Distribution Site","Locky","51457642.de.strato-hosting.eu","http://51457642.de.strato-hosting.eu/980k7j6h5","offline","STRATO AG","81.169.145.153","6724","DE"
+"2016-03-08 13:55:40","Distribution Site","Locky","het-havenhuis.nl","http://het-havenhuis.nl/099oj6hg","online","Hosting2GO B.V.","83.137.194.70","34233","NL"
+"2016-03-08 13:55:34","Distribution Site","Locky","kokoko.himegimi.jp","http://kokoko.himegimi.jp/54g4","online","","112.140.42.29","23637","JP"
+"2016-03-08 13:55:28","Distribution Site","Locky","lahmar.choukri.perso.neuf.fr","http://lahmar.choukri.perso.neuf.fr/78hg4wg","online","SociÃ©tÃ© FranÃ§aise du RadiotÃ©lÃ©phone - SFR","86.65.123.70","15557","FR"
+"2016-03-08 13:55:19","Distribution Site","Locky","ministerepuissancejesus.com","http://ministerepuissancejesus.com/o097jhg4g5","offline","DYNADOT, LLC","69.89.31.133","46606","US"
+"2016-03-08 13:55:12","Distribution Site","Locky","ozono.org.es","http://ozono.org.es/k7j6h5gf","online","","217.160.232.15","8560","DE"
+"2016-03-08 13:55:03","Distribution Site","Locky","www.vtipnetriko.cz","http://www.vtipnetriko.cz/9oi86j5hg4","online","REG-MEDIA4WEB","95.80.214.221","29208","CZ"
+"2016-03-08 11:58:18","Payment Site","TorrentLocker","rzss2zfue73dfvmj.onlinerpgame.ch","http://rzss2zfue73dfvmj.onlinerpgame.ch/","offline","","185.43.223.13","59939|58269|12695","CZ"
+"2016-03-08 08:05:03","Distribution Site","TeslaCrypt","greetingsjamajcaff.com","http://greetingsjamajcaff.com/69.exe","offline","WEB COMMERCE COMMUNICATIONS LIMITED DBA WEBNIC.CC","","36352|40824",""
+"2016-03-08 08:04:46","Distribution Site","TeslaCrypt","greetingsjamajcaff.com","http://greetingsjamajcaff.com/80.exe ","offline","WEB COMMERCE COMMUNICATIONS LIMITED DBA WEBNIC.CC","","36352|40824",""
+"2016-03-08 08:04:12","Payment Site","TeslaCrypt","t54ndnku456ngkwsudqer.wallymac.com","http://t54ndnku456ngkwsudqer.wallymac.com/","online","KEY-SYSTEMS GMBH","65.79.162.20|65.79.162.20|81.62.82.91","55824|7381|3303|7922","US|CH"
+"2016-03-08 08:03:45","Payment Site","TeslaCrypt","hrfgd74nfksjdcnnklnwefvdsf.materdunst.com","http://hrfgd74nfksjdcnnklnwefvdsf.materdunst.com/","online","KEY-SYSTEMS GMBH","65.79.162.20|65.79.162.20|81.62.82.91","55824|7381|3303|7922","US|CH"
