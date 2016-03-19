@@ -29,6 +29,8 @@ use constant {
     SOFT_LIMIT          => 50000,
     TOKENS_INDEX        => 'cif.tokens',
     TOKENS_TYPE         => 'tokens',
+    TIMEOUT             => 120,
+    INDEX_PARTITION     => 'day'
 };
 
 has 'handle' => (
@@ -67,6 +69,11 @@ has 'tokens_type'  => (
     default => sub { TOKENS_TYPE },
 );
 
+has 'index_partition' => (
+    is => 'ro',
+    default => sub { INDEX_PARTITION }
+);
+
 sub _build_handle {
     my $self = shift;
     my $args = shift;
@@ -77,6 +84,7 @@ sub _build_handle {
         Search::Elasticsearch->new(
             nodes               => $self->nodes,
             max_content_length  => $self->max_size,
+            request_timeout     => 120,
         )
     );
 }
@@ -415,6 +423,7 @@ sub _search {
         index   => $index,
         size    => $filters->{'limit'} || SOFT_LIMIT,
         body    => $q,
+        timeout => 12000000 # 120s
     );
     
     # work-around https://github.com/csirtgadgets/massive-octo-spice/issues/257#issuecomment-118855811
@@ -465,7 +474,10 @@ sub _ip_results {
     $pt->add_string($query);
     my @ret; my $pt2;
     foreach (@$results){
-        $Logger->debug(Dumper($_));
+        if(is_ip($_->{'observable'}) ne $type){
+            $Logger->error('skipping: '.$_->{'observable'});
+            next;
+        }
         $Logger->debug($_->{'observable'});
         if($pt->match_string($_->{'observable'})){
             push(@ret,$_);
@@ -502,6 +514,9 @@ sub _submission {
     
     my $timestamp = $args->{'timestamp'} || DateTime->from_epoch(epoch => scalar gettimeofday()); # this is for the record insertion ts
     my $date = $timestamp->ymd('.'); # for the index
+    if($self->index_partition eq 'month'){
+        $date = $timestamp->strftime("%Y.%m");
+    }
     my $reportstamp = $timestamp->ymd().'T'.$timestamp->hms().'Z';
     $timestamp = $timestamp->ymd().'T'.$timestamp->hms().'.'.$timestamp->millisecond().'Z';
     
