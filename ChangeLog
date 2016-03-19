@@ -1,6 +1,6 @@
 Revision history for massive-octo-spice
 
-2.00.00-rc.11 2016-03-
+2.00.00-rc.11 2016-03-19
     - https://github.com/csirtgadgets/massive-octo-spice/issues/392 -- cc fix 
     - https://github.com/csirtgadgets/massive-octo-spice/issues/393 -- acl fix
     - adding --storage-index-partition option [CIF_STORAGE_INDEX_PARTITION] to cif-router for monthly indicies
