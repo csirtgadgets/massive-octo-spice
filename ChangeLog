@@ -1,5 +1,8 @@
 Revision history for massive-octo-spice
 
+2.00.00-rc.12 2016-03-19
+    - bugfix that didn't surface in tests
+
 2.00.00-rc.11 2016-03-19
     - https://github.com/csirtgadgets/massive-octo-spice/issues/392 -- cc fix 
     - https://github.com/csirtgadgets/massive-octo-spice/issues/393 -- acl fix

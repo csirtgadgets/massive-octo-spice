@@ -78,7 +78,6 @@ has 'storage_host'   => (
 
 has 'storage_index_partition' => (
     is  => 'ro',
-    lazy_build => 1,
 );
 
 has 'encoder' => (
