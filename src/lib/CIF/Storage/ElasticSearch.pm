@@ -26,7 +26,7 @@ use constant {
     OBSERVABLES         => 'cif.observables',
     OBSERVABLES_TYPE    => 'observables',
     LIMIT               => 225000, #225,000 tuned for a ElasticSearch build with 16GB of ram
-    SOFT_LIMIT          => 50000,
+    SOFT_LIMIT          => 100000,
     TOKENS_INDEX        => 'cif.tokens',
     TOKENS_TYPE         => 'tokens',
     TIMEOUT             => 120,
@@ -217,7 +217,7 @@ sub _search {
     		if(my $otype = is_ip($args->{'Query'})){
     		    if ($otype eq 'ipv4') {
                     my @array = split(/\./,$args->{'Query'});
-        		    $regexp->{'observable'} = $array[0].'\..*';
+        		    $regexp->{'observable'} = $array[0].'.'.$array[1].'\..*';
         		    $terms->{'otype'} =  ['ipv4'];
     		    } else {
     		        # v6
@@ -431,7 +431,7 @@ sub _search {
     if(is_ip($args->{'Query'})){
         %search = (
             index   => $index,
-            size    => LIMIT,
+            size    => SOFT_LIMIT,
             body    => $q,
         );
     }
@@ -478,7 +478,7 @@ sub _ip_results {
             $Logger->error('skipping: '.$_->{'observable'});
             next;
         }
-        $Logger->debug($_->{'observable'});
+        #$Logger->debug($_->{'observable'});
         if($pt->match_string($_->{'observable'})){
             push(@ret,$_);
         } else {

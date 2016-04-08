@@ -2,6 +2,7 @@ Revision history for massive-octo-spice
 
 2.00.00-rc.13 2016-04-
     - changed default index to monthly from daily
+    - changing the way we do ipv4 searches for performance reasons
 
 2.00.00-rc.12 2016-03-19
     - bugfix that didn't surface in tests
