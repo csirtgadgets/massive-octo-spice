@@ -30,7 +30,7 @@ use constant {
     TOKENS_INDEX        => 'cif.tokens',
     TOKENS_TYPE         => 'tokens',
     TIMEOUT             => 120,
-    INDEX_PARTITION     => 'day'
+    INDEX_PARTITION     => 'month'
 };
 
 has 'handle' => (
