@@ -29,7 +29,7 @@ use constant {
     SOFT_LIMIT          => 100000,
     TOKENS_INDEX        => 'cif.tokens',
     TOKENS_TYPE         => 'tokens',
-    TIMEOUT             => 120,
+    TIMEOUT             => 300,
     INDEX_PARTITION     => 'month'
 };
 
@@ -217,12 +217,12 @@ sub _search {
     		if(my $otype = is_ip($args->{'Query'})){
     		    if ($otype eq 'ipv4') {
                     my @array = split(/\./,$args->{'Query'});
-        		    $regexp->{'observable'} = $array[0].'.'.$array[1].'\..*';
+        		    $prefix->{'observable'} = $array[0].'.'.$array[1].'.';
         		    $terms->{'otype'} =  ['ipv4'];
     		    } else {
     		        # v6
     		        my @array = split(/\:/,$args->{'Query'});
-        		    $regexp->{'observable'} = $array[0].':.*';
+        		    $prefix->{'observable'} = $array[0].':'.$array[1].':';
     		        $terms->{'otype'} = ['ipv6'];
     		    }
     		} else {
@@ -384,6 +384,12 @@ sub _search {
 		    push(@and, { regexp => { $_ => $regexp->{$_} } } );
 		}
 	}
+	
+	if($prefix){
+        foreach (keys %$prefix){
+                push(@and, { prefix => { $_ => $prefix->{$_} } } );
+        }
+    }
     
     if($ranges){
     	foreach (keys %$ranges){
@@ -400,11 +406,14 @@ sub _search {
 	    	filtered    => {
 	        	filter  => {
 	        		'and' => \@and,
-	        	}
+	        	},
+	        	query => {
+	        	    'match_all': {},
+	        	},
 	        },
 	    },
 	    'sort' =>  [
-            { '@timestamp' => { 'order' => 'desc'}},
+            { 'reporttime' => { 'order' => 'desc'}},
         ],
 	};
 	
@@ -423,7 +432,7 @@ sub _search {
         index   => $index,
         size    => $filters->{'limit'} || SOFT_LIMIT,
         body    => $q,
-        timeout => 12000000 # 120s
+        timeout => 30000000 # 300s
     );
     
     # work-around https://github.com/csirtgadgets/massive-octo-spice/issues/257#issuecomment-118855811
@@ -431,7 +440,7 @@ sub _search {
     if(is_ip($args->{'Query'})){
         %search = (
             index   => $index,
-            size    => SOFT_LIMIT,
+            size    => LIMIT,
             body    => $q,
         );
     }
