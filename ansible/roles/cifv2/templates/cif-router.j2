@@ -53,6 +53,7 @@ if [ -f "$DEFAULT" ]; then
 fi
 
 export CIF_ES_HOST=$CIF_ES_HOST
+export CIF_STORAGE_INDEX_PARTITION=$CIF_STORAGE_INDEX_PARTITION
 
 DAEMON=$CIF_HOME/bin/cif-router
 DAEMON_OPTS="$CIF_DEBUGGING --logging --logfile $LOG_FILE -p $PID_FILE -C $CONF_FILE -D start"
