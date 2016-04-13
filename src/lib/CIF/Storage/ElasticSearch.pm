@@ -30,7 +30,8 @@ use constant {
     TOKENS_INDEX        => 'cif.tokens',
     TOKENS_TYPE         => 'tokens',
     TIMEOUT             => 300,
-    INDEX_PARTITION     => 'month'
+    INDEX_PARTITION     => 'month',
+    FEED_DAYS           => 90,
 };
 
 has 'handle' => (
@@ -84,7 +85,7 @@ sub _build_handle {
         Search::Elasticsearch->new(
             nodes               => $self->nodes,
             max_content_length  => $self->max_size,
-            request_timeout     => 120,
+            request_timeout     => TIMEOUT,
         )
     );
 }
@@ -209,6 +210,9 @@ sub _search {
     $groups = [$groups] unless(ref($groups) && ref($groups) eq 'ARRAY');
     
     my ($q,$terms,$ranges,$prefix,$regexp);
+    
+    $Logger->debug(Dumper($args));
+    my $filters = $args->{'Filters'};
        
     if($args->{'Id'}){
     	$terms->{'id'} = [$args->{'Id'}];
@@ -228,12 +232,15 @@ sub _search {
     		} else {
     		    $terms->{'observable'} = [$args->{'Query'}];
     		}
+    	} elsif(!$filters->{'reporttime'} && !$filters->{'reporttimeend'}) {
+    	    # if we're querying for something specific and don't specify a reporttime
+    	    # cap default otype queries (feed queries) to DEFAULT_FEED_DAYS to improve search performance
+    	    my $dt = DateTime->from_epoch(epoch => time());
+            $filters->{'reporttime'} = DateTime->now()->subtract(days => FEED_DAYS);
+            $filters->{'reporttime'} = $filters->{'reporttime'}->ymd().'T'.$filters->{'reporttime'}->hms().'Z';
+            $filters->{'reporttimeend'} = $dt->ymd().'T'.$dt->hms().'Z';
     	}
     }
-    
-    $Logger->debug(Dumper($args));
-    
-    my $filters = $args->{'Filters'};
     
     $Logger->debug(Dumper($filters));
     
@@ -408,7 +415,7 @@ sub _search {
 	        		'and' => \@and,
 	        	},
 	        	query => {
-	        	    'match_all': {},
+	        	    'match_all' => {},
 	        	},
 	        },
 	    },
