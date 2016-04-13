@@ -6,7 +6,7 @@
   vars:
     cif_ipv4: "{{ hostvars['cif']['ansible_ssh_host'] }}"
     es01_ipv4: "{{ hostvars['es01']['ansible_ssh_host'] }}"
-    es_number_of_shards: "1" # change this if youre doing more than 1 es node
+    es_number_of_shards: 1
   roles:
     - { role: ubuntu-check, tags: role-ubuntu-check }
     - { role: firewall, tags: role-firewall }
