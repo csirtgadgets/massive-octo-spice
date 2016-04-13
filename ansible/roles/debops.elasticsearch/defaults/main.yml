@@ -45,8 +45,8 @@ elasticsearch_node_max_local_storage_nodes: 50
 
 # ---- Index ----
 
-elasticsearch_index_shards: 5
-elasticsearch_index_replicas: 1
+elasticsearch_index_shards: 1
+elasticsearch_index_replicas: 0
 
 
 # ---- Plugins ----

@@ -1,21 +1,5 @@
 ---
 
-- name: "ufw - allow ssh from anywhere on elasticsearch hosts"
-  ufw: rule=allow port=22 proto=tcp state=enabled
-  tags: ufw-ssh-es-nodes
-
-- name: "ufw - allow all firewall access between es nodes"
-  ufw: rule=allow src={{ item }} state=enabled
-  with_items:
-    - "{{ es01_ipv4 }}"
-  tags: ufw-all-es-nodes
-
-- name: "ufw - allow all firewall access between cif nodes"
-  ufw: rule=allow src={{ item }} state=enabled
-  with_items:
-    - "{{ cif_ipv4 }}"
-  tags: ufw-all-cif-nodes
-
 - include: install.yml
 
 - include: plugins.yml
