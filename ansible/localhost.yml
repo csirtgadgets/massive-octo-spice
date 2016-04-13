@@ -10,7 +10,7 @@
     - { role: firewall, tags: role-firewall }
     - { role: zmq, tags: role-zmq }
     - { role: geoipupdate, tags: role-geoipupdate }
-    - { role: elasticsearch, tags: role-elasticsearch }
+    - { role: debops.elasticsearch, tags: role-elasticsearch } 
     - { role: apache2, tags: role-apache2 }
     - { role: postfix, tags: role-postfix }
     - { role: bind9, tags: role-bind9 }

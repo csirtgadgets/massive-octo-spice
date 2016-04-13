@@ -8,8 +8,6 @@
   ufw: rule=allow src={{ item }} state=enabled
   with_items:
     - "{{ es01_ipv4 }}"
-    - "{{ es02_ipv4 }}"
-    - "{{ es03_ipv4 }}"
   tags: ufw-all-es-nodes
 
 - name: "ufw - allow all firewall access between cif nodes"
