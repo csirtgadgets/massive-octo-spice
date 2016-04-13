@@ -100,11 +100,13 @@ node.max_local_storage_nodes: {{ elasticsearch_node_max_local_storage_nodes }}
 #
 #index.number_of_shards: 5
 
-index.number_of_shards: "{{ es_number_of_shards }}"
+index.number_of_shards: {{ elasticsearch_index_shards }}
 
 # Set the number of replicas (additional copies) of an index (1 by default):
 #
 #index.number_of_replicas: 1
+
+index.number_of_replicas: {{ elasticsearch_index_replicas }}
 
 # Note, that for development on a local machine, with small indices, it usually
 # makes sense to "disable" the distributed features:
@@ -132,8 +134,6 @@ index.number_of_shards: "{{ es_number_of_shards }}"
 
 # Use the Index Status API (<http://localhost:9200/A/_status>) to inspect
 # the index status.
-index.number_of_shards: {{ elasticsearch_index_shards }}
-index.number_of_replicas: {{ elasticsearch_index_replicas }}
 
 #################################### Paths ####################################
 
