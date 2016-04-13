@@ -408,7 +408,7 @@ sub _search {
 	        		'and' => \@and,
 	        	},
 	        	query => {
-	        	    'match_all': {},
+	        	    'match_all' => {},
 	        	},
 	        },
 	    },
