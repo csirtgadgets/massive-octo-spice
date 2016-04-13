@@ -26,7 +26,7 @@ use constant {
     OBSERVABLES         => 'cif.observables',
     OBSERVABLES_TYPE    => 'observables',
     LIMIT               => 225000, #225,000 tuned for a ElasticSearch build with 16GB of ram
-    SOFT_LIMIT          => 100000,
+    SOFT_LIMIT          => 50000,
     TOKENS_INDEX        => 'cif.tokens',
     TOKENS_TYPE         => 'tokens',
     TIMEOUT             => 300,
@@ -232,15 +232,15 @@ sub _search {
     		} else {
     		    $terms->{'observable'} = [$args->{'Query'}];
     		}
-    	} elsif(!$filters->{'reporttime'} && !$filters->{'reporttimeend'}) {
-    	    # if we're querying for something specific and don't specify a reporttime
-    	    # cap default otype queries (feed queries) to DEFAULT_FEED_DAYS to improve search performance
-    	    my $dt = DateTime->from_epoch(epoch => time());
-            $filters->{'reporttime'} = DateTime->now()->subtract(days => FEED_DAYS);
-            $filters->{'reporttime'} = $filters->{'reporttime'}->ymd().'T'.$filters->{'reporttime'}->hms().'Z';
-            $filters->{'reporttimeend'} = $dt->ymd().'T'.$dt->hms().'Z';
     	}
-    }
+    } elsif(!$filters->{'reporttime'} && !$filters->{'reporttimeend'}) {
+        # if we're querying for something specific and don't specify a reporttime
+        # cap default otype queries (feed queries) to DEFAULT_FEED_DAYS to improve search performance
+        my $dt = DateTime->from_epoch(epoch => time());
+        $filters->{'reporttime'} = DateTime->now()->subtract(days => FEED_DAYS);
+        $filters->{'reporttime'} = $filters->{'reporttime'}->ymd().'T'.$filters->{'reporttime'}->hms().'Z';
+        $filters->{'reporttimeend'} = $dt->ymd().'T'.$dt->hms().'Z';
+	}
     
     $Logger->debug(Dumper($filters));
     
