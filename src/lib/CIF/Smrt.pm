@@ -166,6 +166,10 @@ sub process {
         next unless($self->not_before <= $ts );
         $_ = $self->rule->process({ data => $_ });
        
+       foreach my $f (qw/username password realm netloc remote/){
+            next unless(exists($_->{$f}));
+            delete($_->{$f});
+        }
         
         if($_->{'provider'}){
             $_->{'provider'} = lc($_->{'provider'});

@@ -84,9 +84,14 @@ sub process {
             $Logger->debug('pulling: '.$self->rule->defaults->{'remote'});
             try {
                 if($self->rule->defaults->{'username'} && $self->rule->defaults->{'password'}){
-                    my $req = HTTP::Request->new(GET => $self->rule->defaults->{'remote'});
-                    $req->authorization_basic($self->rule->defaults->{'username'},$self->rule->defaults->{'password'});
-                    $ret = $self->handle->request($req);
+                    if($self->rule->defaults->{'realm'}){
+                        $self->handle->credentials($self->rule->defaults->{'netloc'}, $self->rule->defaults->{'realm'}, $self->rule->defaults->{'username'}, $self->rule->defaults->{'password'});
+                        $ret = $self->handle->get($self->rule->defaults->{'remote'});
+                    } else {
+                        my $req = HTTP::Request->new(GET => $self->rule->defaults->{'remote'});
+                        $req->authorization_basic($self->rule->defaults->{'username'},$self->rule->defaults->{'password'});
+                        $ret = $self->handle->request($req);
+                    }
                 } else {
                     if($self->rule->token){
                         $self->handle->default_header('Authorization' => 'Token token='.$self->rule->token);

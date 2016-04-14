@@ -1,5 +1,8 @@
 Revision history for massive-octo-spice
 
+2.00.00-rc.14 2016-04-
+    - adding realm https support to cif-smrt fetcher
+
 2.00.00-rc.13 2016-04-13
     - changed default index to monthly from daily
     - changing the way we do ipv4 searches for performance reasons
