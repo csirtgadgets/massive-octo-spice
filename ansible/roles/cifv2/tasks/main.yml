@@ -201,7 +201,7 @@
   tags: config-worker-cron
 
 - name: "Start cifv2"
-  service: name=cif-services state=started
+  command: service cif-services start
 
 - name: "Restart apache2"
   service: name=apache2 state=restarted
