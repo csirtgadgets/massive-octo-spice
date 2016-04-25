@@ -701,7 +701,6 @@ sub token_new {
        'read'       => $args->{'read'},
        'write'      => $args->{'write'},
        groups       => $args->{'groups'} || ['everyone'],
-       'no-everyone' => $args->{'no-everyone'},
    };
 
    my $found;
