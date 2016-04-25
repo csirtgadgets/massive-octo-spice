@@ -264,6 +264,7 @@ sub submit {
     foreach (@{$args->{'observables'}}){
         $_->{'observable'} = lc($_->{'observable'});
         $_->{'observable'} =~ s/\s+$//; # trip right side whitespace
+        
         if($enable_metadata){
             try {
                 $self->_process_metadata($_);
