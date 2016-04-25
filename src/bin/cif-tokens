@@ -46,6 +46,7 @@ GetOptions(
     'read'              => \$token->{'read'},
     'write'             => \$token->{'write'},
     'acl=s'             => \$token->{'acl'},
+    'no-everyone'       => \$token->{'no-everyone'},
     
     'new'               => \$action->{'new'},
     'delete'            => \$action->{'delete'},
@@ -111,6 +112,7 @@ Options:
     --expires       set an expiration date for the token
     --groups        specify the groups for the user (default: everyone)
     --description   specify a description for the key
+    --no-everyone   do not include the everyone group when creating a new token
     
 Actions:
 
@@ -216,6 +218,7 @@ if($action->{'new'}){
         acl         => $token->{'acl'},
         groups      => $token->{'groups'},
         description => $token->{'description'},
+        'no-everyone' => $token->{'no-everyone'},
     });
     unless($rv){
         $Logger->info('failed to generate new token...');
