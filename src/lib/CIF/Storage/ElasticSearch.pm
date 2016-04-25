@@ -681,40 +681,44 @@ sub token_new {
     my $args = shift;
     
     my $token = $args->{'token'} || hash_create_random();
-	
-	if($args->{'Expires'}){
-	    $args->{'Expires'} = normalize_timestamp($args->{'Expires'},undef,1);
-	}
-	
-	$args->{'read'} = 1 unless($args->{'read'} || $args->{'write'});
-	
-	
-	my $prof = {
-	   token        => $token,
+
+    if($args->{'Expires'}){
+        $args->{'Expires'} = normalize_timestamp($args->{'Expires'},undef,1);
+    }
+
+    $args->{'read'} = 1 unless($args->{'read'} || $args->{'write'});
+
+
+    my $prof = {
+       token        => $token,
        username     => $args->{'Username'},
        expires      => $args->{'Expires'},
        description  => $args->{'description'},
-       
+
        admin        => $args->{'admin'},
        revoked      => $args->{'revoked'},
        acl          => $args->{'acl'},
        'read'       => $args->{'read'},
        'write'      => $args->{'write'},
        groups       => $args->{'groups'} || ['everyone'],
-	};
-	
-	my $found;
-	foreach my $g (@{$prof->{'groups'}}){
-	    $found = 1 if($g eq 'everyone');
-	}
-	push(@{$prof->{'groups'}},'everyone') unless($found);
-	
-	my $res = $self->handle->index(
-	   index   => $self->tokens_index,
-	   id      => hash_create_random(),
-	   type    => $self->tokens_type,
-	   body    => $prof,
-	   refresh => 1,
+   };
+
+   my $found;
+
+   foreach my $g (@{$prof->{'groups'}}){
+       $found = 1 if($g eq 'everyone');
+   }
+
+   unless($prof->{'no-everyone'}) {
+       push(@{$prof->{'groups'}},'everyone') unless($found);
+   }
+
+   my $res = $self->handle->index(
+       index   => $self->tokens_index,
+       id      => hash_create_random(),
+       type    => $self->tokens_type,
+       body    => $prof,
+       refresh => 1,
     );
     return $token if($res->{_id});
 }
