@@ -706,13 +706,6 @@ sub token_new {
 
    my $found;
 
-   if ($prof->{'no-everyone'}){
-       print "yes\n";
-   }
-   else {
-       print "no\n";
-   } 
-
    foreach my $g (@{$prof->{'groups'}}){
        $found = 1 if($g eq 'everyone');
    }
