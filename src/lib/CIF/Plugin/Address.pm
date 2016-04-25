@@ -160,7 +160,17 @@ sub is_ipv4 {
     my $arg = shift || return;
 
     return 1 if($arg =~ RE_IPV4);
-    return 1 if($arg =~ RE_IPV4_CIDR);
+    if($arg =~ RE_IPV4_CIDR){
+        if($arg =~ /^\S+\/(\d+)$/){
+            if($1 && $1 < 8){
+                return 0;
+            } else {
+                return 1;
+            }
+        } else {
+            return 1;
+        }
+    };
     
 }
 

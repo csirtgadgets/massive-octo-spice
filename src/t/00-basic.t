@@ -27,10 +27,13 @@ ok(!is_ip('192.168.1.1.example.com'));
 ok(is_fqdn('192.168.1.1.example.com'));
 ok(is_fqdn('xn----jtbbmekqknepg3a.xn--p1ai'));
 ok(!is_fqdn('www41..xzmnt.com'), 'www41..xzmnt.com');
+ok(!is_fqdn('1.0.0.0/1'));
 
 ok(is_fqdn('update-your-account-information--cgi-bin-webscrcmd-login5w80ah.newageastrology.gr'), 'checking domain');
 ok(is_fqdn('paypal_update_acouunt.joannebradybeauty.co.uk'), 'checking domain');
 ok(is_fqdn('yahoo.uk'), 'checking domain');
+
+ok(!is_ip('1.0.0.0/1'));
 
 
 ok(is_ip('2001:4860:4860::8888'));
