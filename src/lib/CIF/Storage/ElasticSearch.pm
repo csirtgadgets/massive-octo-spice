@@ -701,13 +701,25 @@ sub token_new {
        'read'       => $args->{'read'},
        'write'      => $args->{'write'},
        groups       => $args->{'groups'} || ['everyone'],
+       'no-everyone' => $args->{'no-everyone'},
    };
 
    my $found;
+
+   if ($prof->{'no-everyone'}){
+       print "yes\n";
+   }
+   else {
+       print "no\n";
+   } 
+
    foreach my $g (@{$prof->{'groups'}}){
        $found = 1 if($g eq 'everyone');
    }
-   push(@{$prof->{'groups'}},'everyone') unless($found);
+
+   unless($prof->{'no-everyone'}) {
+       push(@{$prof->{'groups'}},'everyone') unless($found);
+   }
 
    my $res = $self->handle->index(
        index   => $self->tokens_index,
