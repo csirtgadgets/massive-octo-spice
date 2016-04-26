@@ -32,6 +32,9 @@ sub process {
 
     foreach (@$peers){
         $_->{'asn_description'} = get_as_description($_->{'asn'});
+        if($_->{'date'} && $_->{'date'} eq 'NA'){
+            $_->{'date'} = '';
+        }
     }
 
     $args->{'peers'}        = $peers if($peers);
