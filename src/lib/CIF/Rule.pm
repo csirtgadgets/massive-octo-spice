@@ -16,11 +16,11 @@ use Regexp::Common qw/net/;
 use Regexp::Common::net::CIDR;
 
 use constant RE_IGNORE  => qw(qr/[\.]$/);
-use constant RE_SKIP    => qr/remote|pattern|values|ignore/;
+use constant RE_SKIP    => qr/remote|pattern|values|ignore|filters/;
 use constant MIN_PREFIX => 14;
 
 
-has [qw(store_content skip rule feed remote parser defaults disabled token)] => (
+has [qw(store_content skip rule feed remote parser defaults disabled token cif_token cif_no_verify_ssl tlp_map)] => (
     is      => 'ro',
 );
 

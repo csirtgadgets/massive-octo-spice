@@ -18,6 +18,8 @@ use CIF qw/$Logger/;
 use File::Slurp; ## we can always re-factorize this
 Net::SSLeay::SSLeay_add_ssl_algorithms(); ## TODO -- this needs cleaning up
 use Try::Tiny;
+use CIF::SDK::Client;
+use Data::Dumper;
 
 use constant {
     CAPACITY   => 5,
@@ -83,7 +85,44 @@ sub process {
         } else {
             $Logger->debug('pulling: '.$self->rule->defaults->{'remote'});
             try {
-                if($self->rule->defaults->{'username'} && $self->rule->defaults->{'password'}){
+                if($self->rule->{'parser'} && $self->rule->{'parser'} eq 'cif'){  
+                    my $dt = DateTime->from_epoch(epoch => time());
+                    my $filters = $self->rule->defaults->{'filters'} || {};
+                    $filters->{'period'} = 'hour' if(!$filters->{'period'} && !$filters->{'reporttime'});
+                    if($filters->{'period'}){
+                        for(lc($filters->{'period'})){
+                            if(/^hour$/){
+                                $filters->{'reporttime'} = $dt->ymd().'T'.$dt->hour.':00:00Z';
+                                $filters->{'reporttimeend'} = $dt->ymd().'T'.$dt->hour.':59:59Z';
+                                last;
+                            }
+                            if(/^day$/){
+                                $filters->{'reporttime'} = DateTime->now()->subtract(hours => 23, minutes => 59, seconds => 59);
+                                $filters->{'reporttime'} = $filters->{'reporttime'}->ymd().'T'.$filters->{'reporttime'}->hms().'Z';
+                                $filters->{'reporttimeend'} = $dt->ymd().'T'.$dt->hms().'Z';
+                                last;
+                            }
+                            $filters->{'reporttime'} = $dt->ymd().'T'.$dt->hour.':00:00Z';
+                            $filters->{'reporttimeend'} = $dt->ymd().'T'.$dt->hour.':59:59Z';
+                        }
+                    }
+                    
+                    $filters->{'limit'} = 50000 if(!$filters->{'limit'});
+                    $filters->{'otype'} = 'ipv4' if(!$filters->{'otype'});
+                    $filters->{'confidence'} = 65 if(!$filters->{'confidence'});
+                    
+                    my $cli = CIF::SDK::Client->new({
+                        token       => $self->rule->{'cif_token'},
+                        remote      => $self->rule->defaults->{'remote'},
+                        verify_ssl  => ($self->rule->{'cif_no_verify_ssl'}) ? 0 : 1,
+                        timeout     => 300
+                    });
+                    ($ret,$err) = $cli->search($filters);
+                    if($err){
+                        $Logger->error($err);
+                        return 0;
+                    }
+                } elsif($self->rule->defaults->{'username'} && $self->rule->defaults->{'password'}){
                     if($self->rule->defaults->{'realm'}){
                         $self->handle->credentials($self->rule->defaults->{'netloc'}, $self->rule->defaults->{'realm'}, $self->rule->defaults->{'username'}, $self->rule->defaults->{'password'});
                         $ret = $self->handle->get($self->rule->defaults->{'remote'});
@@ -102,9 +141,15 @@ sub process {
                 $err = shift;
                 $Logger->fatal($err);
                 $Logger->fatal('possible timeout grabbing the feed');
+                return 0;
             };
             
             return 0 unless($ret);
+            
+            # if we're not an HTTP handle (ie: cif feed array)
+            if(ref($ret) eq 'ARRAY'){
+                return $ret;
+            }
             
             if($ret->status_line()){
                 $Logger->debug('status: '.$ret->status_line());

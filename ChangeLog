@@ -1,9 +1,10 @@
 Revision history for massive-octo-spice
 
-2.00.00-rc.15 2016-04
+2.00.00-rc.15 2016-05
     - guarding against prefixes < 8
     - bugfix to cif-smrt croak errors leaving zombie pids
     - bugfix to bgp peers info gathering
+    - adding the ability to parse existing cif feeds natively
 
 2.00.00-rc.14 2016-04-14
     - adding realm https support to cif-smrt fetcher
