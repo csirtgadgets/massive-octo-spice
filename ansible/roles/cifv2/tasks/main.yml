@@ -53,7 +53,7 @@
   get_url: url={{ item }} dest=/tmp/
   with_items:
     - https://github.com/csirtgadgets/ZMQx-Class/archive/master.tar.gz
-    - https://github.com/csirtgadgets/p5-cif-sdk/archive/2.00_34.tar.gz
+    - https://github.com/csirtgadgets/p5-cif-sdk/archive/2.00_37.tar.gz
     - https://github.com/kraih/mojo/archive/v5.82.tar.gz
   tags: cpanm
 
@@ -78,7 +78,7 @@
   with_items:
     - { path: '/tmp/ZMQx-Class-master.tar.gz', notest: 'True' }
     - { path: '/tmp/mojo-5.82.tar.gz', notest: 'False' }
-    - { path: '/tmp/p5-cif-sdk-2.00_34.tar.gz', notest: 'False' }
+    - { path: '/tmp/p5-cif-sdk-2.00_37.tar.gz', notest: 'False' }
   tags: cpan
 
 - name: "Check for /srv/massive-octo-spice"
