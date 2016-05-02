@@ -158,13 +158,13 @@
   tags: change-cif-worker-conf
 
 - name: "Create ~/.cif.yml config for default user"
-  shell: "/opt/cif/bin/cif-tokens --username {{ ansible_ssh_user }}@localhost --new --read --write --generate-config-remote https://localhost --generate-config-path /home/{{ ansible_ssh_user }}/.cif.yml"
+  shell: "/opt/cif/bin/cif-tokens --username {{ ansible_env.SUDO_USER }}@localhost --new --read --write --generate-config-remote https://localhost --generate-config-path /home/{{ ansible_env.SUDO_USER }}/.cif.yml"
   environment:
     CIF_ES_HOST: "{{ es01_ipv4 }}:9200"
   tags: create-cif-user-conf
 
-- name: "Change owner and perms on /home/{{ ansible_ssh_user }}/.cif.yml"
-  file: path=/home/{{ ansible_ssh_user }}/.cif.yml owner={{ ansible_ssh_user }} group={{ ansible_ssh_user }} mode=660
+- name: "Change owner and perms on /home/{{ ansible_env.SUDO_USER }}/.cif.yml"
+  file: path=/home/{{ ansible_env.SUDO_USER }}/.cif.yml owner={{ ansible_env.SUDO_USER }} group={{ ansible_env.SUDO_USER }} mode=660
   tags: change-cif-user-conf
 
 - name: "Configuring log rotation"
