@@ -35,11 +35,15 @@ sub process {
     my @array;
     foreach my $e (@{$data}){
         my $o = {};
-        foreach (ATTRIBUTES){     
-            if(ref($e->{$_}) eq 'ARRAY'){
-                $o->{$_} = join(',', @{$e->{$_}});
+        foreach (ATTRIBUTES){
+            if(exists($defaults->{$_})){
+                $o->{$_} = $defaults->{$_};
             } else {
-                $o->{$_} = $e->{$_};
+                if(ref($e->{$_}) eq 'ARRAY'){
+                    $o->{$_} = join(',', @{$e->{$_}});
+                } else {
+                    $o->{$_} = $e->{$_};
+                }
             }
         }
         if(keys(%$tlp_map)){
