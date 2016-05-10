@@ -151,15 +151,21 @@ sub create {
     }
     
     if(defined($res)){
-        if($res){
+        if($res && $res != -1){
             $self->respond_to(
                 json    => { json => $res, status => 201 },
             );
-            $self->res->headers->add('X-Location' => $self->req->url->to_string());
-            $self->res->headers->add('X-Id' => @{$res}[0]); ## TODO
+            if($#{$res} >= 0){
+                $self->res->headers->add('X-Location' => $self->req->url->to_string());
+                $self->res->headers->add('X-Id' => @{$res}[0]); ## TODO
+            } else {
+                $self->respond_to(
+                    json => { json => { "error" => "timeout" }, status => 422 },
+                );
+            }
         } elsif($res == -1 ){
            $self->respond_to(
-                json => { json => { "error" => "timeout" }, status => 408 },
+                json => { json => { "error" => "timeout" }, status => 422 },
            );
         } else {
             $self->render(json   => { 'message' => 'unauthorized' }, status => 401 );
