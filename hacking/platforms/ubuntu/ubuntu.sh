@@ -56,11 +56,11 @@ alias cpanm='cpanm --wget --mirror https://cpan.metacpan.org --skip-installed'
 
 cpanm Regexp::Common
 cpanm Moo@1.007000
+cpanm Test::Simple@1.001014
 cpanm Mouse@2.4.1
 cpanm ZMQ::FFI@0.17
 cpanm --force --notest https://github.com/csirtgadgets/ZMQx-Class/archive/master.tar.gz
 cpanm Log::Log4perl@1.44
-cpanm Test::Simple@1.001014
 cpanm Test::Exception@0.32
 cpanm MaxMind::DB::Reader@0.050005
 cpanm GeoIP2@0.040005
