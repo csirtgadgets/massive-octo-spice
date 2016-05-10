@@ -52,11 +52,11 @@ cpanm Mouse@2.4.1
 cpanm ZMQ::FFI@0.17
 cpanm ZMQx::Class --force
 cpanm Log::Log4perl@1.44
+cpanm Test::Simple@1.001014
 cpanm Test::Exception@0.32
 cpanm MaxMind::DB::Reader@0.050005
 cpanm GeoIP2@0.040005
 cpanm https://github.com/csirtgadgets/p5-cif-sdk/archive/master.tar.gz
 cpanm https://github.com/kraih/mojo/archive/v5.82.tar.gz
-cpanm Test::Simple@1.001014
 
 cpanm --installdeps ./src
