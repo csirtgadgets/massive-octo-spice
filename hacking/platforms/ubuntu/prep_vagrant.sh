@@ -48,6 +48,7 @@ curl -L https://cpanmin.us | sudo perl - App::cpanminus
 alias cpanm='cpanm --wget --mirror https://cpan.metacpan.org'
 cpanm Regexp::Common
 cpanm Moo@1.007000
+cpanm Test::Simple@1.001014
 cpanm Mouse@2.4.1
 cpanm ZMQ::FFI@0.17
 cpanm ZMQx::Class --force
