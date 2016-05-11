@@ -1,0 +1,39 @@
+# this is a template cif-smrt configuration file. the purpose of this file
+# is to copy it to a newly named file and edit it as needed
+#
+# cp /etc/cif/rules/example/cif_example.yml /etc/cif/rules/default/filename.yml
+
+# parser: instruct cif-smrt to use which type of parser
+#   values: csv, pipe, regex, json, delim, rss, xml, html, text, cif
+parser: cif
+
+# cif_token: remote cif api token
+cif_token: 123412341234
+cif_no_verify_ssl: 1
+
+# values within default apply to all feeds
+defaults:
+  provider: 'me.feeds.example.com'
+
+# in case we need to remap our custom TLP
+#tlp_map:
+#  public: white
+#  limited: green
+#  privileged: amber
+#  restricted: red
+
+# values within the friendly name apply only to that feed
+feeds:
+  # friendly name for feed
+  cif_example:
+
+    # remote: URL or filepath on host to feed source
+    remote: https://feeds.example.com
+
+    # filters to query by
+    filters:
+      provider: 'security.example.com'
+      period: hour # hour|day, this resets the reporttime|reporttimeend filter
+      limit: 50000 # best to use hourly and keep this low..
+      confidence: 65 # default
+      otype: ipv4 # default

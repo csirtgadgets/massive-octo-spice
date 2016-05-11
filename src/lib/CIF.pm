@@ -104,8 +104,12 @@ sub parse_rule {
     }
     
     $rule->{'feed'} = $feed;
-     
-    $rule->{'defaults'} = { %{$rule->{'defaults'}}, %{$rule->{'feeds'}->{$feed}} };
+    
+    if($rule->{'defaults'}){   
+        $rule->{'defaults'} = { %{$rule->{'defaults'}}, %{$rule->{'feeds'}->{$feed}} };
+    } else {
+        $rule->{'defaults'} = {};
+    }
 
     $rule = CIF::Rule->new($rule);
 
