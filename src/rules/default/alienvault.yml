@@ -1,0 +1,18 @@
+parser: regex
+defaults:
+  provider: reputation.alienvault.com
+
+feeds:
+  reputation:
+    remote: https://reputation.alienvault.com/reputation.data
+    pattern: '[+-]?(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})#\d\d?#\d\d?#(.*)#.*#.*#.*#.*$'
+    values:
+      - observable
+      - description
+    confidence: 65
+    tags:
+      - suspicious
+    period: hourly
+    tlp: white
+    otype: ipv4
+    altid_tlp: white
