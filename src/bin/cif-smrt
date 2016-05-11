@@ -300,12 +300,15 @@ sub _main {
         $rules = parse_rules($rule,$feed);
         $rules = [ $rules ] unless(ref($rules) && ref($rules) eq 'ARRAY');
         
+        my $nowait = 1;
+        $nowait = 0 if($testmode);
+        
         $cli = CIF::SDK::Client->new({
             remote      => $remote,
             token       => $token,
             timeout     => $timeout,
             verify_ssl  => ($no_verify_ssl) ? 0 : 1,
-            nowait      => 1,
+            nowait      => $nowait,
         });
     
         $Logger->info('checking for router...');

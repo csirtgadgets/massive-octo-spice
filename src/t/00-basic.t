@@ -11,7 +11,7 @@ BEGIN {
     use_ok('CIF::Router');
 };
 
-use CIF qw/is_ip is_url is_ip_private is_fqdn is_hash/;
+use CIF qw/is_ip is_url is_ip_private is_fqdn is_hash is_email/;
 
 ok(is_ip('192.168.1.1'),'testing ip address...');
 
@@ -39,5 +39,8 @@ ok(!is_ip('1.0.0.0/1'));
 ok(is_ip('2001:4860:4860::8888'));
 
 ok(is_hash('73e4ee3b4b76ec339cdf413fdce9c5b8') eq 'md5', 'testing md5');
+
+ok(is_email('wes@csirtgadgets.org'));
+ok(!is_email('.now.@forest.ocn.ne.jp'));
 
 done_testing();

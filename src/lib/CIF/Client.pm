@@ -261,27 +261,32 @@ sub submit {
         $enable_metadata = $args->{'enable_metadata'};
     }
     
-    foreach (@{$args->{'observables'}}){
-        $_->{'observable'} = lc($_->{'observable'});
-        $_->{'observable'} =~ s/\s+$//; # trip right side whitespace
+    my @array;
+    
+    foreach my $o (@{$args->{'observables'}}){
+        $o->{'observable'} = lc($o->{'observable'});
+        $o->{'observable'} =~ s/\s+$//; # trip right side whitespace
         
         if($enable_metadata){
             try {
-                $self->_process_metadata($_);
+                $self->_process_metadata($o);
             } catch {
                 $Logger->error(shift);
                 return -1;
             };
         }
-        
+        my $err;
         try {
-            $_ = CIF::ObservableFactory->new_plugin($_);
+            $o = CIF::ObservableFactory->new_plugin($o);
+            push(@array, $o);
         } catch {
-            $Logger->info(Dumper($_));
-            $Logger->error(shift);
-            return -1;
+            $err = shift;
+            $Logger->debug(Dumper($o));
+            $Logger->error($err);
+            $Logger->error('skipping invalid observable...: '.$o->{'observable'});
         };
     }
+    $args->{'observables'} = \@array;
     return $self->_submit($args);
 }
 
