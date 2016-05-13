@@ -27,13 +27,13 @@ if [ ! -f /etc/apt/sources.list.d/chris-lea-zeromq-trusty.list ]; then
     echo 'adding updated zmq repo....'
     echo "yes" | sudo add-apt-repository "ppa:chris-lea/zeromq"
     echo "yes" | sudo add-apt-repository "ppa:maxmind/ppa"
-    wget -O - https://packages.elasticsearch.org/GPG-KEY-elasticsearch | apt-key add -
+    wget -qO - https://packages.elastic.co/GPG-KEY-elasticsearch | sudo apt-key add -
 fi
 
-if [ -f /etc/apt/sources.list.d/elasticsearch.list ]; then
+if [ -f /etc/apt/sources.list.d/elasticsearch-2.x.list ]; then
     echo "sources.list.d/elasticsearch.list already exists, skipping..."
 else
-    echo "deb http://packages.elasticsearch.org/elasticsearch/1.4/debian stable main" >> /etc/apt/sources.list.d/elasticsearch.list
+    echo "deb https://packages.elastic.co/elasticsearch/2.x/debian stable main" >> /etc/apt/sources.list.d/elasticsearch-2.x.list
 fi
 
 debconf-set-selections <<< "postfix postfix/mailname string localhost"
@@ -67,7 +67,7 @@ cpanm GeoIP2@0.040005
 cpanm Hijk@0.19
 cpanm https://github.com/csirtgadgets/p5-cif-sdk/archive/2.00_37.tar.gz
 cpanm https://github.com/kraih/mojo/archive/v5.82.tar.gz
-cpanm Search::Elasticsearch@1.19
+cpanm Search::Elasticsearch@2.02
 cpanm http://search.cpan.org/CPAN/authors/id/H/HA/HAARG/local-lib-2.000015.tar.gz
 
 echo 'HRNGDEVICE=/dev/urandom' >> /etc/default/rng-tools
