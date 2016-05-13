@@ -1,3 +1,0 @@
-680          |  DFN Verein zur Foerderung eine  |   141.52.251.250  |  2013-12-27 01:47:51  |  sshpwauth
-701          |  UUNET - MCI Communications Ser  |    70.104.144.30  |  2013-12-21 00:00:29  |  sshpwauth
-1267         |  ASN-INFOSTRADA WIND Telecomuni  |     151.11.201.3  |  2013-12-25 22:39:59  |  sshpwauth
