@@ -439,7 +439,7 @@ sub _search {
         index   => $index,
         size    => $filters->{'limit'} || SOFT_LIMIT,
         body    => $q,
-        timeout => 30000000 # 300s
+        timeout => '300s'
     );
     
     # work-around https://github.com/csirtgadgets/massive-octo-spice/issues/257#issuecomment-118855811
