@@ -6,6 +6,8 @@ Revision history for massive-octo-spice
     - bugfix to bgp peers info gathering
     - adding the ability to parse existing cif feeds natively
     - bugfix to invalid observable passing through (fixes #413)
+    - removed drg feeds <sad-trombone>
+    - added alienvault feeds
 
 2.00.00-rc.14 2016-04-14
     - adding realm https support to cif-smrt fetcher
