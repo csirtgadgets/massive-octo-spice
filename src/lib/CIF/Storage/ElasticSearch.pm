@@ -34,11 +34,11 @@ use constant {
     FEED_DAYS           => 90,
 };
 
-has 'handle' => (
-    is          => 'rw',
-    isa         => 'Search::Elasticsearch::Client::Direct',
-    lazy_build  => 1,
-);
+#has 'handle' => (
+#    is          => 'rw',
+#    isa         => 'Search::Elasticsearch::Client::Direct',
+#    lazy_build  => 1,
+#);
 
 has 'nodes' => (
     is      => 'ro',
