@@ -1,6 +1,6 @@
 Revision history for massive-octo-spice
 
-2.00.00-rc.15 2016-05
+2.00.00-rc.15 2016-05-16
     - guarding against prefixes < 8
     - bugfix to cif-smrt croak errors leaving zombie pids
     - bugfix to bgp peers info gathering
