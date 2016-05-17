@@ -688,7 +688,16 @@ sub token_new {
 
     $args->{'read'} = 1 unless($args->{'read'} || $args->{'write'});
 
+    my $found;
 
+    foreach my $g (@{$args->{'groups'}}){
+        $found = 1 if($g eq 'everyone');
+    }
+
+    unless($args->{'no-everyone'}) {
+        push(@{$args->{'groups'}},'everyone') unless($found);
+    }
+    
     my $prof = {
        token        => $token,
        username     => $args->{'Username'},
@@ -700,18 +709,8 @@ sub token_new {
        acl          => $args->{'acl'},
        'read'       => $args->{'read'},
        'write'      => $args->{'write'},
-       groups       => $args->{'groups'} || ['everyone'],
+       groups       => $args->{'groups'},
    };
-
-   my $found;
-
-   foreach my $g (@{$prof->{'groups'}}){
-       $found = 1 if($g eq 'everyone');
-   }
-
-   unless($prof->{'no-everyone'}) {
-       push(@{$prof->{'groups'}},'everyone') unless($found);
-   }
 
    my $res = $self->handle->index(
        index   => $self->tokens_index,
