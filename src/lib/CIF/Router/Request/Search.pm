@@ -12,7 +12,7 @@ use Data::Dumper;
 with 'CIF::Router::Request';
 
 use constant RE_BADCHARS        => qr/(\/?\.\.+\/?|;|\w+\(|=>)/;
-use constant RE_GOODQUERY       => qr/^[a-zA-Z0-9_\.\,\/\-@\:\?=]+$/;
+use constant RE_GOODQUERY       => qr/^[a-zA-Z0-9_\.\,\/\-@\:\?=\&\%]+$/;
 use constant CONFIDENCE_DEFAULT => 25;
 use constant TLP_DEFAULT        => 'amber'; 
 
