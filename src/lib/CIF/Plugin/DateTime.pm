@@ -59,7 +59,7 @@ sub normalize_timestamp {
     return DateTime::Format::DateParse->parse_datetime($dt) if(!$asString && $dt =~ /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/);
 
     # already epoch
-    if($dt =~ /^\d{10}+$/){
+    if($dt =~ /^\d{10}$/){
         return DateTime->from_epoch(epoch => $dt) unless($asString);
         $dt = DateTime->from_epoch(epoch => $dt);
         return $dt->ymd().'T'.$dt->hms().'Z';
