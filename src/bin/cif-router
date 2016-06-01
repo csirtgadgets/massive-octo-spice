@@ -130,14 +130,14 @@ EOF
 if(-e $config){
     $config = parse_config($config);
     $config = $config->{'router'};
-    $storage        = $storage || $config->{'storage'};
-    $storage_host   = $storage_host || $config->{'storage_host'};
+    $storage                 = $storage || $config->{'storage'};
+    $storage_host            = $storage_host || $config->{'storage_host'};
     $storage_index_partition = $storage_index_partition || $config->{'storage_index_partition'};
-    $notify         = $notify || $config->{'notify'};
-    $notify_to      = $notify_to || $config->{'notify_to'};
-    $notify_subject = $nofigy_subject || $config->{'notify_subject'};
-    $notify_from    = $notify_form || $config->{'notify_from'};
-    $notify_level   = $notify_level || $config->{'notify_level'};
+    $notify                  = $notify || $config->{'notify'};
+    $notify_to               = $notify_to || $config->{'notify_to'};
+    $notify_subj             = $notify_subj || $config->{'notify_subj'};
+    $notify_from             = $notify_from || $config->{'notify_from'};
+    $notify_level            = $notify_level || $config->{'notify_level'};
 }
 
 my $loglevel = ($debug) ? 'DEBUG' : 'INFO';
