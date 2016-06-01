@@ -239,7 +239,7 @@ sub search {
                 $Logger->info(Dumper($_));
                 $err = undef;
             } else {
-                if($self->tlp_map && keys($self->tlp_map)){
+                if($self->tlp_map && keys(%{$self->tlp_map})){
                     $_->{'tlp'} = $self->tlp_map->{$_->{'tlp'}};
                     if($_->{'altid_tlp'}){
                         $_->{'altid_tlp'} = $self->tlp_map->{$_->{'altid_tlp'}};
