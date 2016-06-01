@@ -8,7 +8,7 @@ BEGIN {
 use strict;
 use warnings;
 
-use CIF qw/init_logging $Logger/;
+use CIF qw/init_logging $Logger parse_config/;
 use CIF::Router;
 use Getopt::Long;
 use AnyEvent;
@@ -70,6 +70,7 @@ GetOptions(
     'notify-to=s'   => \$notify_to,
     'notify-subj=s' => \$notify_subj,
     'notify-from=s' => \$notify_from,
+    'notify-level=s'=> \$notify_level,
     
     # logging
     'verbosity|v+'  => \$verbosity,
@@ -124,6 +125,19 @@ Usage: $0 [OPTIONS] [status|start|stop|restart|reload]
     $0 -D start -C $config -p $pidfile
 
 EOF
+}
+
+if(-e $config){
+    $config = parse_config($config);
+    $config = $config->{'router'};
+    $storage        = $storage || $config->{'storage'};
+    $storage_host   = $storage_host || $config->{'storage_host'};
+    $storage_index_partition = $storage_index_partition || $config->{'storage_index_partition'};
+    $notify         = $notify || $config->{'notify'};
+    $notify_to      = $notify_to || $config->{'notify_to'};
+    $notify_subject = $nofigy_subject || $config->{'notify_subject'};
+    $notify_from    = $notify_form || $config->{'notify_from'};
+    $notify_level   = $notify_level || $config->{'notify_level'};
 }
 
 my $loglevel = ($debug) ? 'DEBUG' : 'INFO';
