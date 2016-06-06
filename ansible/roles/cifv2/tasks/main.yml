@@ -52,6 +52,7 @@
 - name: "Download perl modules - ZMQx-Class, p5-cif-sdk, mojo"
   get_url: url={{ item }} dest=/tmp/
   with_items:
+    - https://github.com/csirtgadgets/Net-Abuse-Utils/archive/master.tar.gz
     - https://github.com/csirtgadgets/ZMQx-Class/archive/master.tar.gz
     - https://github.com/csirtgadgets/p5-cif-sdk/archive/2.00_37.tar.gz
     - https://github.com/kraih/mojo/archive/v5.82.tar.gz
