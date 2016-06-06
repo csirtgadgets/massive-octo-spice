@@ -13,7 +13,7 @@ before_install:
 
 install:
     - sudo apt-get install -y curl mailutils build-essential git-core automake cpanminus rng-tools openjdk-7-jre-headless libtool pkg-config vim htop bind9 libzmq3-dev libffi6 libmoose-perl libmouse-perl libanyevent-perl liblwp-protocol-https-perl libxml2-dev libexpat-dev python-dev
-    - cpanm ttps://github.com/csirtgadgets/Net-Abuse-Utils/archive/master.tar.gz
+    - cpanm https://github.com/csirtgadgets/Net-Abuse-Utils/archive/master.tar.gz
     - cpanm --wget --mirror https://cpan.metacpan.org Regexp::Common
     - cpanm --wget --mirror https://cpan.metacpan.org Moo@1.007000
     - cpanm --wget --mirror https://cpan.metacpan.org Test::Simple@1.001014
