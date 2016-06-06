@@ -36,13 +36,15 @@ sub process {
     foreach my $e (@{$data}){
         my $o = {};
         foreach (ATTRIBUTES){
-            if(exists($defaults->{$_})){
-                $o->{$_} = $defaults->{$_};
-            } else {
+            if(exists($e->{$_})){
                 if(ref($e->{$_}) eq 'ARRAY'){
                     $o->{$_} = join(',', @{$e->{$_}});
                 } else {
                     $o->{$_} = $e->{$_};
+                }
+            } else {
+                if(exists($defaults->{$_})){
+                    $o->{$_} = $defaults->{$_};
                 }
             }
         }
@@ -52,7 +54,6 @@ sub process {
         } 
         push(@array,$o);
     }
-    
     return(\@array);
 }
 

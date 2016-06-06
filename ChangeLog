@@ -4,6 +4,7 @@ Revision history for massive-octo-spice
     - bugfix to url queries
     - fixes #425 cif-tokens --no-everyone flag
     - work-around for net-abuse-utils #401
+    - bugfix to cif feed parser and group mapping
 
 2.00.00-rc.15 2016-05-16
     - guarding against prefixes < 8
