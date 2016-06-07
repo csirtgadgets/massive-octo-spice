@@ -530,9 +530,11 @@ sub _submission {
     
     my $timestamp = $args->{'timestamp'} || DateTime->from_epoch(epoch => scalar gettimeofday()); # this is for the record insertion ts
     my $date = $timestamp->ymd('.'); # for the index
+    $Logger->debug($self->index_partition);
     if($self->index_partition eq 'month'){
         $date = $timestamp->strftime("%Y.%m");
     }
+    $Logger->debug($date);
     my $reportstamp = $timestamp->ymd().'T'.$timestamp->hms().'Z';
     $timestamp = $timestamp->ymd().'T'.$timestamp->hms().'.'.$timestamp->millisecond().'Z';
     
