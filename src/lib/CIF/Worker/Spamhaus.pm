@@ -61,7 +61,7 @@ sub process {
             confidence  => CONFIDENCE,
             application => $data->{'application'},
             altid       => $rr->{'id'},
-            altid_tlp   => 'green',
+            altid_tlp   => 'white',
             related     => $data->{'id'},
             lasttime    => $ts,
             reporttime  => $ts,
