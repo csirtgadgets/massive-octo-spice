@@ -31,7 +31,7 @@ requires 'Module::PluginFinder';
 requires 'Mouse', '>= 2.4.1, < 2.4.2';
 requires 'Moo', '>= 1.007000, < 1.008000';
 requires 'Net::Abuse::Utils';
-requires 'Net::Abuse::Utils::Spamhaus', '>= 0.08';
+requires 'Net::Abuse::Utils::Spamhaus', '>= 0.07';
 requires 'Net::DNS','> 0.76';
 requires 'Net::DNS::Match';
 requires 'Net::Patricia';
