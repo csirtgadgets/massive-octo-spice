@@ -5,6 +5,8 @@ Revision history for massive-octo-spice
     - fixes #425 cif-tokens --no-everyone flag
     - work-around for net-abuse-utils #401
     - bugfix to cif feed parser and group mapping
+    - bugfix to monthly index partitions and cif-router default
+    - bugfix to spamhaus zen plugin
 
 2.00.00-rc.15 2016-05-16
     - guarding against prefixes < 8
