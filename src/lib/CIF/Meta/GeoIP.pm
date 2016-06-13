@@ -23,7 +23,7 @@ use Data::Dumper;
 
 sub _build_handle {
     my $self = shift;
-    my $x = GeoIP2::Database::Reader->new(file => '/var/cache/GeoLite2-City.mmdb');
+    my $x = GeoIP2::Database::Reader->new(file => FILE_LOC());
     return $x;
 }
 
