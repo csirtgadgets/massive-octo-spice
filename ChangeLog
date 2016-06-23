@@ -1,5 +1,9 @@
 Revision history for massive-octo-spice
 
+2.00.00-rc.17 2016-06-
+    - bugfix to geoip
+    - other small misc fixes
+
 2.00.00-rc.16 2016-05-07
     - bugfix to url queries
     - fixes #425 cif-tokens --no-everyone flag
