@@ -125,7 +125,8 @@ sub _merge_defaults {
         next if($k =~ RE_SKIP); 
         for($self->defaults->{$k}){
             if($_ && $_ =~ /<(\S+)>/){
-                while ($_ =~ m/<(\S+)>/g) {
+                my $default = $_;
+                while ($default =~ m/<(\S+)>/g) {
                     # if we have something that requires expansion
                     # < >'s
                     my $val;
@@ -135,9 +136,9 @@ sub _merge_defaults {
                         assert($val);
                     }
                     # replace the 'variable'
-                    $_ =~ s/<\S+>/$val/;
+                    $default =~ s/<\S+>/$val/;
                 }
-                $args->{'data'}->{$k} = $_;
+                $args->{'data'}->{$k} = $default;
             } else {
                 $args->{'data'}->{$k} = $self->defaults->{$k} unless($args->{'data'}->{$k});
             }
