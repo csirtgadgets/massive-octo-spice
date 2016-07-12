@@ -125,19 +125,19 @@ sub _merge_defaults {
         next if($k =~ RE_SKIP); 
         for($self->defaults->{$k}){
             if($_ && $_ =~ /<(\S+)>/){
-                # if we have something that requires expansion
-                # < >'s
-                my $val;
-                $val = $args->{'data'}->{$1} || $self->defaults->{$1};
-                unless($val){
-                    $Logger->error('missing: '.$1 . ' make sure you add it to your mappings');
-                    assert($val);
+                while ($_ =~ m/<(\S+)>/g) {
+                    # if we have something that requires expansion
+                    # < >'s
+                    my $val;
+                    $val = $args->{'data'}->{$1} || $self->defaults->{$1};
+                    unless($val){
+                        $Logger->error('missing: '.$1 . ' make sure you add it to your mappings');
+                        assert($val);
+                    }
+                    # replace the 'variable'
+                    $_ =~ s/<\S+>/$val/;
                 }
-                
-                # replace the 'variable'
-                my $default = $_;
-                $default =~ s/<\S+>/$val/;
-                $args->{'data'}->{$k} = $default;
+                $args->{'data'}->{$k} = $_;
             } else {
                 $args->{'data'}->{$k} = $self->defaults->{$k} unless($args->{'data'}->{$k});
             }
