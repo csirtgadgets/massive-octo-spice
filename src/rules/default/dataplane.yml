@@ -1,0 +1,26 @@
+parser: pipe
+defaults:
+  tags: scanner
+  protocol: tcp
+  provider: dataplane.org
+  tlp: green
+  altid_tlp: green
+  confidence: 85
+  values:
+    - asn
+    - asn_desc
+    - observable
+    - lasttime
+    - null
+feeds:
+  ssh:
+    remote: https://dataplane.org/sshpwauth.txt
+    application: ssh
+    portlist: 22
+    description: 'seen attempting to remotely login using SSH password authentication'
+  sshclient:
+    remote: https://dataplane.org/sshclient.txt
+    application: ssh
+    portlist: 22
+    confidence: 75
+    description: 'has been seen initiating an SSH connection'
