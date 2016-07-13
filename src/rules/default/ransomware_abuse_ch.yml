@@ -4,7 +4,7 @@ defaults:
   tlp: green
   altid_tlp: white
   confidence: 85
-  tags: botnet, test3
+  tags: botnet
   application: https
   protocol: tcp
   values:
