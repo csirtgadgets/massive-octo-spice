@@ -12,6 +12,7 @@ use CIF qw/$Logger parse_config normalize_timestamp is_url is_ip/;
 use URI;
 use URI::Escape;
 use Data::Dumper;
+use Data::Visitor::Callback;
 use Regexp::Common qw/net/;
 use Regexp::Common::net::CIDR;
 
@@ -119,28 +120,35 @@ sub _normalize_ts {
 sub _merge_defaults {
     my $self = shift;
     my $args = shift;
-
+    
     return unless($self->defaults);
+    
+    my $var_expansion_visitor = Data::Visitor::Callback->new(
+        plain_value => sub { 
+            if($_ && $_ =~ /<(\S+?)>/){
+                my $default = $_;
+                while ($_ =~ m/<(\S+?)>/g) {
+                    # if we have something that requires expansion
+                    # < >'s
+                    my $val;
+                    $val = $args->{'data'}->{$1} || $self->defaults->{$1};
+                    unless($val){
+                        $Logger->error('missing: '.$1 . ' make sure you add it to your mappings');
+                        assert($val);
+                    }
+                    # replace the 'variable'
+                    $default =~ s/<\Q$1\E>/$val/;
+                }
+                return $default;
+            }
+            return $_;
+        }
+    );
+    
     foreach my $k (keys %{$self->defaults}){
         next if($k =~ RE_SKIP); 
         for($self->defaults->{$k}){
-            if($_ && $_ =~ /<(\S+)>/){
-                # if we have something that requires expansion
-                # < >'s
-                my $val;
-                $val = $args->{'data'}->{$1} || $self->defaults->{$1};
-                unless($val){
-                    $Logger->error('missing: '.$1 . ' make sure you add it to your mappings');
-                    assert($val);
-                }
-                
-                # replace the 'variable'
-                my $default = $_;
-                $default =~ s/<\S+>/$val/;
-                $args->{'data'}->{$k} = $default;
-            } else {
-                $args->{'data'}->{$k} = $self->defaults->{$k} unless($args->{'data'}->{$k});
-            }
+            $args->{'data'}->{$k} = $var_expansion_visitor->visit($self->defaults->{$k}) unless($args->{'data'}->{$k});
         }
     }
 }
