@@ -12,6 +12,7 @@ use CIF qw/$Logger parse_config normalize_timestamp is_url is_ip/;
 use URI;
 use URI::Escape;
 use Data::Dumper;
+use Data::Visitor::Callback;
 use Regexp::Common qw/net/;
 use Regexp::Common::net::CIDR;
 
@@ -119,14 +120,14 @@ sub _normalize_ts {
 sub _merge_defaults {
     my $self = shift;
     my $args = shift;
-
+    
     return unless($self->defaults);
-    foreach my $k (keys %{$self->defaults}){
-        next if($k =~ RE_SKIP); 
-        for($self->defaults->{$k}){
-            if($_ && $_ =~ /<(\S+)>/){
+    
+    my $var_expansion_visitor = Data::Visitor::Callback->new(
+        plain_value => sub { 
+            if($_ && $_ =~ /<(\S+?)>/){
                 my $default = $_;
-                while ($default =~ m/<(\S+)>/g) {
+                while ($_ =~ m/<(\S+?)>/g) {
                     # if we have something that requires expansion
                     # < >'s
                     my $val;
@@ -136,12 +137,18 @@ sub _merge_defaults {
                         assert($val);
                     }
                     # replace the 'variable'
-                    $default =~ s/<\S+>/$val/;
+                    $default =~ s/<\Q$1\E>/$val/;
                 }
-                $args->{'data'}->{$k} = $default;
-            } else {
-                $args->{'data'}->{$k} = $self->defaults->{$k} unless($args->{'data'}->{$k});
+                return $default;
             }
+            return $_;
+        }
+    );
+    
+    foreach my $k (keys %{$self->defaults}){
+        next if($k =~ RE_SKIP); 
+        for($self->defaults->{$k}){
+            $args->{'data'}->{$k} = $var_expansion_visitor->visit($self->defaults->{$k}) unless($args->{'data'}->{$k});
         }
     }
 }
