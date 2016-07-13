@@ -4,15 +4,21 @@ defaults:
   tlp: green
   altid_tlp: white
   confidence: 85
-  tags: botnet
+  tags: botnet, test3
   application: https
   protocol: tcp
   values:
     - reporttime
-    - null
-    - description
+    - threat
+    - malware
     - null
     - observable
+    - status
+  description: <malware> <threat>
+  additional_data:
+    -   threat: <threat>
+        malware: <malware>
+        status: <status>
 feeds:
   ransomware:
     remote: http://ransomwaretracker.abuse.ch/feeds/csv

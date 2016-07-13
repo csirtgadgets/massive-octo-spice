@@ -24,7 +24,15 @@ my $ret = CIF::Smrt->new({
 })->process();
 
 ok($ret && $#{$ret} >= 0,'testing for results for: '.$rule->{'feed'});
+
+ok(@$ret[0]->{'observable'} eq 'http://89.108.85.163/main.php', 'testing output...');
+ok(@$ret[0]->{'description'} eq 'Locky C2', 'testing output...');
+ok(@$ret[0]->{'additional_data'}[0]->{'threat'} eq 'C2', 'testing output...');
+
 ok(@$ret[-1]->{'observable'} eq 'http://hrfgd74nfksjdcnnklnwefvdsf.materdunst.com/', 'testing output...');
+ok(@$ret[-1]->{'description'} eq 'TeslaCrypt Payment Site', 'testing output...');
+ok(@$ret[-1]->{'additional_data'}[0]->{'threat'} eq 'Payment Site', 'testing output...');
+
 ok($#{$ret} == 13);
 
 done_testing();
