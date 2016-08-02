@@ -16,3 +16,13 @@ feeds:
     remote: https://sslbl.abuse.ch/blacklist/sslipblacklist.csv
   dyre_sslipblacklist:
     remote: https://sslbl.abuse.ch/blacklist/dyre_sslipblacklist.csv
+
+  ssl_fingerprints:
+    remote: https://sslbl.abuse.ch/blacklist/sslblacklist.csv
+    tags:
+        - ssl
+        - blacklist
+    values:
+        - reporttime
+        - observable
+        - description
