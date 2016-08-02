@@ -1,9 +1,10 @@
 Revision history for massive-octo-spice
 
-2.00.00-rc.18 2016-
+2.00.00-rc.18 2016-08-02
     - adding dataplane.org initial feeds (thanks JTK!)
     - adding ~ to search query accepted chars
     - Expansion of multiple variables in fields (#435)
+    - adding SSL blacklist example
 
 2.00.00-rc.17 2016-07-01
     - bugfix to geoip
