@@ -1,5 +1,8 @@
 Revision history for massive-octo-spice
 
+2.00.00-rc.19 2016-08-15
+    - hotfix for Test::Exception
+
 2.00.00-rc.18 2016-08-02
     - adding dataplane.org initial feeds (thanks JTK!)
     - adding ~ to search query accepted chars
