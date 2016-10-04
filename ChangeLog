@@ -1,7 +1,8 @@
 Revision history for massive-octo-spice
 
-2.00.01 2016-09-15
+2.00.01 2016-10-3
     - remote fix for malwaredomains url shortners and bulk registrars
+    - upstream bugfix: DateTime - https://github.com/csirtgadgets/massive-octo-spice/issues/451
 
 2.00.00 2016-09-07
     - first stable release

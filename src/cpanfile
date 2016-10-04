@@ -16,6 +16,7 @@ requires 'Compress::Snappy';
 requires 'Crypt::Random::Source';
 requires 'Daemon::Control';
 requires 'Data::Visitor::Callback';
+requires 'DateTime', '1.36';
 requires 'DateTime::Format::DateParse';
 requires 'Digest::SHA';
 requires 'File::Type';

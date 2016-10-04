@@ -56,6 +56,7 @@ alias cpanm='cpanm --wget --mirror https://cpan.metacpan.org --skip-installed'
 
 cpanm https://github.com/csirtgadgets/Net-Abuse-Utils/archive/master.tar.gz
 cpanm https://github.com/csirtgadgets/net-abuse-utils-spamhaus/archive/v0.08.tar.gz
+cpanm DateTime@1.36
 cpanm Regexp::Common
 cpanm Moo@1.007000
 cpanm Test::Simple@1.001014
