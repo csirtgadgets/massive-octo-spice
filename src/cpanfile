@@ -4,6 +4,7 @@ requires 'Hijk','0.19';
 requires 'Encoding::FixLatin';
 requires 'HTML::TableExtract';
 requires 'Test::Exception', '<= 0.43';
+requires 'Test2::Suite', '0.000058';
 requires 'Net::Server::SS::PreFork';
 requires 'CIF::SDK', '>= 2.00_30';
 requires 'File::Slurp','9999.19';
