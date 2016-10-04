@@ -56,11 +56,11 @@ alias cpanm='cpanm --wget --mirror https://cpan.metacpan.org --skip-installed'
 
 cpanm https://github.com/csirtgadgets/Net-Abuse-Utils/archive/master.tar.gz
 cpanm https://github.com/csirtgadgets/net-abuse-utils-spamhaus/archive/v0.08.tar.gz
+cpanm Test::Simple@1.001014
 cpanm Test2::Suite@0.000058
 cpanm DateTime@1.36
 cpanm Regexp::Common
 cpanm Moo@1.007000
-cpanm Test::Simple@1.001014
 cpanm Mouse@2.4.1
 cpanm ZMQ::FFI@0.17
 cpanm --force --notest https://github.com/csirtgadgets/ZMQx-Class/archive/master.tar.gz
