@@ -18,6 +18,7 @@ install:
     - cpanm https://github.com/csirtgadgets/Net-Abuse-Utils/archive/master.tar.gz
     - cpanm https://github.com/csirtgadgets/net-abuse-utils-spamhaus/archive/v0.08.tar.gz
     - cpanm --wget --mirror https://cpan.metacpan.org DateTime@1.36
+    - cpanm --wget --mirror https://cpan.metacpan.org Test2::Suite@0.000058 
     - cpanm --wget --mirror https://cpan.metacpan.org Regexp::Common
     - cpanm --wget --mirror https://cpan.metacpan.org Moo@1.007000
     - cpanm --wget --mirror https://cpan.metacpan.org Test::Simple@1.001014
