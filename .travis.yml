@@ -14,7 +14,7 @@ before_install:
     - perl -V
 
 install:
-    - sudo apt-get install -y curl mailutils build-essential git-core automake cpanminus rng-tools openjdk-7-jre-headless libtool pkg-config vim htop bind9 libzmq3-dev libffi6 libmoose-perl libmouse-perl libanyevent-perl liblwp-protocol-https-perl libxml2-dev libexpat-dev python-dev
+    - sudo apt-get install -y curl mailutils build-essential git-core automake cpanminus rng-tools openjdk-7-jre-headless libtool pkg-config vim htop bind9 libzmq3-dev libffi6 libmoose-perl libmouse-perl libanyevent-perl liblwp-protocol-https-perl libxml2-dev libexpat-dev python-dev python2.7
     - cpanm https://github.com/csirtgadgets/Net-Abuse-Utils/archive/master.tar.gz
     - cpanm https://github.com/csirtgadgets/net-abuse-utils-spamhaus/archive/v0.08.tar.gz
     - cpanm --wget --mirror https://cpan.metacpan.org DateTime@1.21
