@@ -2,6 +2,7 @@ Revision history for massive-octo-spice
 
 2.00.02 2016-10-
     - adding csirtg attachments feed
+    - https://github.com/csirtgadgets/massive-octo-spice/issues/456 -- multiple acl's issue
 
 2.00.01 2016-10-04
     - remote fix for malwaredomains url shortners and bulk registrars

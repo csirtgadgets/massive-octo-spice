@@ -60,7 +60,17 @@ sub process {
     if($self->user->{'acl'}){
         return 0 unless($data->{'Filters'}->{'otype'}); # unless it's specified
         return 0 if(ref($data->{'Filters'}->{'otype'})); # unless a string
-        return 0 unless($self->user->{'acl'} eq $data->{'Filters'}->{'otype'}); # unless they are equal
+        my $found = 0;
+        my @acls = split(/,/,$self->user->{'acl'});
+        foreach (@acls){
+            if($_ eq $data->{'Filters'}->{'otype'}){
+                $found = 1;
+            }
+        }
+        if(!$found) {
+            return 0;
+        }
+        #return 0 unless($self->user->{'acl'} eq $data->{'Filters'}->{'otype'}); # unless they are equal
     }
     
     my $results = $self->storage->process($data);
