@@ -58,7 +58,7 @@ cpanm https://github.com/csirtgadgets/Net-Abuse-Utils/archive/master.tar.gz
 cpanm https://github.com/csirtgadgets/net-abuse-utils-spamhaus/archive/v0.08.tar.gz
 cpanm Test::Simple@1.001014
 cpanm Test2::Suite@0.000058
-cpanm DateTime@1.36
+cpanm DateTime@1.21
 cpanm Regexp::Common
 cpanm Moo@1.007000
 cpanm Mouse@2.4.1
