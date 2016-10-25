@@ -47,16 +47,23 @@ feeds:
       - uce
       - uce-url
   # A feed of email addresses seen in UCE email. Do not alert or block on these
-  # email addresses without additional post-processing. 
+  # email addresses without additional post-processing.
   uce-email-address:
     remote: https://csirtg.io/api/users/csirtgadgets/feeds/uce-email-addresses.csv
     tags:
       - uce
       - uce-email-address
   # A feed of IP addresses seen delivering UCE email. This could be a machine that
-  # is compromised or a user account has been compromised and used to send UCE. 
+  # is compromised or a user account has been compromised and used to send UCE.
   uce-ip:
     remote: https://csirtg.io/api/users/csirtgadgets/feeds/uce-ip.csv
     tags:
       - uce
       - uce-ip
+
+  # A feed of attachment hashes extracted from UCE email
+  uce-attachments:
+    remote: https://csirtg.io/api/users/csirtgadgets/feeds/uce-attachments.csv
+    tags:
+      - uce
+      - attachment

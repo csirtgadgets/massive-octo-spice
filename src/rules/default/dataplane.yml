@@ -24,3 +24,10 @@ feeds:
     portlist: 22
     confidence: 75
     description: 'has been seen initiating an SSH connection'
+  sipquery:
+    remote: https://dataplane.org/sipquery.txt
+    application: sip
+    protocol: udp
+    portlist: 5060
+    confidence: 75 
+    description: 'seen initiating a SIP OPTIONS query to a remote host'
