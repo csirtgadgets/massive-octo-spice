@@ -589,7 +589,11 @@ sub _submission {
             }
         }
         
-        $_->{'provider'} = $args->{'username'} unless($_->{'provider'});
+        unless(exists($_->{'provider'}) && $_->{'provider'} ne ''){
+            $_->{'provider'} = $args->{'user'}->{'username'};
+        }
+        
+        warn Dumper($_);
 
         $_->{'@timestamp'}  = $timestamp;
         $_->{'@version'}    = 2;

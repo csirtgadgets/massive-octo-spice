@@ -1,5 +1,8 @@
 Revision history for massive-octo-spice
 
+2.00.05 2016-11-23
+    - [#447] fixes issue where provider is none, logs appropriately
+
 2.00.04 2016-11-23
     - [#444] bugfix to cif-tokens
 
