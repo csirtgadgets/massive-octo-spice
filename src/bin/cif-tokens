@@ -74,7 +74,7 @@ die(usage()) unless($action);
 
 croak(usage()."\n\nERROR: --new and --delete are mutually exclusive") if($action->{'new'} && $action->{'delete'});
 
-croak(usage()."\n\nERROR: missing --username") if(($action->{'new'} || $action->{'delete'}) && !$token->{'username'});
+croak(usage()."\n\nERROR: missing --username") if(($action->{'new'} || $action->{'delete'}) && (!$token->{'username'} && !$token->{'token'}));
 
 my $loglevel = ($debug) ? 'DEBUG' : 'INFO';
 
