@@ -792,10 +792,12 @@ sub token_delete {
     my $args = shift;
     
     my $ids;
-    if($args->{'Username'}){
-        $ids = $self->_tokenid_by_username($args->{'Username'});
-    } else {
+    
+    if($args->{'Token'}){
         $ids = $self->_tokenid_by_token($args->{'Token'});
+        
+    } else {
+        $ids = $self->_tokenid_by_username($args->{'Username'});
     }
     
     return 0 unless($ids);
