@@ -1,7 +1,10 @@
 Revision history for massive-octo-spice
 
+2.00.04 2016-11-23
+    - [#444] bugfix to cif-tokens
+
 2.00.03 2016-10-25
-   - bugfix to datetime dep
+    - bugfix to datetime dep
 
 2.00.02 2016-10-25
     - adding csirtg attachments feed
