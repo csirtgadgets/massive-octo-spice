@@ -40,7 +40,7 @@ debconf-set-selections <<< "postfix postfix/mailname string localhost"
 debconf-set-selections <<< "postfix postfix/main_mailer_type string 'Internet Site'"
 
 apt-get update
-apt-get install -y monit geoipupdate curl build-essential libmodule-build-perl libssl-dev elasticsearch apache2 libapache2-mod-perl2 curl mailutils build-essential git-core automake rng-tools openjdk-7-jre-headless libtool pkg-config vim htop bind9 libzmq3-dev libffi6 libmoose-perl libmouse-perl libanyevent-perl liblwp-protocol-https-perl libxml2-dev libexpat1-dev libgeoip-dev geoip-bin python-dev starman ntp
+apt-get install -y monit geoipupdate curl build-essential libmodule-build-perl libssl-dev elasticsearch apache2 libapache2-mod-perl2 curl mailutils build-essential git-core automake rng-tools openjdk-7-jre-headless libtool pkg-config vim htop bind9 libzmq3-dev libffi6 libmoose-perl libanyevent-perl liblwp-protocol-https-perl libxml2-dev libexpat1-dev libgeoip-dev geoip-bin python-dev starman ntp
 
 # set up the firewall
 bash firewall.sh
@@ -61,7 +61,7 @@ cpanm Test2::Suite@0.000058
 cpanm DateTime@1.21
 cpanm Regexp::Common
 cpanm Moo@1.007000
-cpanm Mouse@2.4.1
+cpanm --force Mouse@2.4.1
 cpanm ZMQ::FFI@0.17
 cpanm --force --notest https://github.com/csirtgadgets/ZMQx-Class/archive/master.tar.gz
 cpanm Log::Log4perl@1.44
@@ -69,7 +69,7 @@ cpanm Test::Exception@0.43
 cpanm MaxMind::DB::Reader@0.050005
 cpanm GeoIP2@0.040005
 cpanm Hijk@0.19
-cpanm https://github.com/csirtgadgets/p5-cif-sdk/archive/2.00_37.tar.gz
+cpanm https://github.com/csirtgadgets/p5-cif-sdk/archive/2.00.tar.gz
 cpanm https://github.com/kraih/mojo/archive/v5.82.tar.gz
 cpanm Search::Elasticsearch@1.19
 cpanm http://search.cpan.org/CPAN/authors/id/H/HA/HAARG/local-lib-2.000015.tar.gz
