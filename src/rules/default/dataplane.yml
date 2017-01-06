@@ -23,7 +23,7 @@ feeds:
     application: ssh
     portlist: 22
     confidence: 75
-    description: 'has been seen initiating an SSH connection'
+    description: 'seen initiating an SSH connection'
   sipquery:
     remote: https://dataplane.org/sipquery.txt
     application: sip
@@ -31,3 +31,17 @@ feeds:
     portlist: 5060
     confidence: 75 
     description: 'seen initiating a SIP OPTIONS query to a remote host'
+  sipinvitation:
+    remote: https://dataplane.org/sipinvitation.txt
+    application: sip
+    protocol: udp
+    portlist: 5060
+    confidence: 75 
+    description: 'seen initiating a SIP INVITE operation to a remote host'
+  sipregistration:
+    remote: https://dataplane.org/sipregistration.txt
+    application: sip
+    protocol: udp
+    portlist: 5060
+    confidence: 75 
+    description: 'seen initiating a SIP REGISTER operation to a remote host'
