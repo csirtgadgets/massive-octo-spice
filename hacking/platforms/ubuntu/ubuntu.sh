@@ -25,8 +25,8 @@ apt-get install -qq software-properties-common python-software-properties
 
 if [ ! -f /etc/apt/sources.list.d/chris-lea-zeromq-trusty.list ]; then
     echo 'adding updated zmq repo....'
-    echo "yes" | sudo add-apt-repository "ppa:chris-lea/zeromq"
-    echo "yes" | sudo add-apt-repository "ppa:maxmind/ppa"
+    echo "yes" | sudo -E add-apt-repository "ppa:chris-lea/zeromq"
+    echo "yes" | sudo -E add-apt-repository "ppa:maxmind/ppa"
     wget -O - https://packages.elasticsearch.org/GPG-KEY-elasticsearch | apt-key add -
 fi
 
@@ -51,7 +51,7 @@ bash firewall.sh
 #fi
 
 echo 'installing cpanm...'
-curl -L https://cpanmin.us | sudo perl - App::cpanminus
+curl -L https://cpanmin.us | sudo -E perl - App::cpanminus
 alias cpanm='cpanm --wget --mirror https://cpan.metacpan.org --skip-installed'
 
 cpanm https://github.com/csirtgadgets/Net-Abuse-Utils/archive/master.tar.gz
@@ -69,10 +69,10 @@ cpanm Test::Exception@0.43
 cpanm MaxMind::DB::Reader@0.050005
 cpanm GeoIP2@0.040005
 cpanm Hijk@0.19
-cpanm https://github.com/csirtgadgets/p5-cif-sdk/archive/2.00.tar.gz
 cpanm https://github.com/kraih/mojo/archive/v5.82.tar.gz
 cpanm Search::Elasticsearch@1.19
 cpanm http://search.cpan.org/CPAN/authors/id/H/HA/HAARG/local-lib-2.000015.tar.gz
+cpanm https://github.com/csirtgadgets/p5-cif-sdk/archive/2.00.tar.gz
 
 echo 'HRNGDEVICE=/dev/urandom' >> /etc/default/rng-tools
 service rng-tools restart
@@ -164,7 +164,7 @@ bash bind9.sh
 cd ../../../
 
 echo 'staring cif-services...'
-sudo service cif-services start
+sudo -E service cif-services start
 
 echo 'restarting apache...'
 service apache2 restart
