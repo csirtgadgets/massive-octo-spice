@@ -15,10 +15,21 @@ defaults:
 feeds:
   c2-dommasterlist:
     remote: http://osint.bambenekconsulting.com/feeds/c2-dommasterlist.txt
-    pattern: ^(\S+)\,Domain used by ([^,]+)\,([^,]+)\,(\S+)$
+    pattern: ^(\S+)\,Domain used by ((?!suppobox)[^,]+)\,([^,]+)\,(\S+)$
+
+  c2-domains-suppobox:
+    remote: http://osint.bambenekconsulting.com/feeds/c2-dommasterlist.txt
+    pattern: ^(\S+)\,Domain used by (suppobox)\,([^,]+)\,(\S+)$
+    confidence: 65
+
   c2-ipmasterlist:
     remote: http://osint.bambenekconsulting.com/feeds/c2-ipmasterlist.txt
-    pattern: ^(\S+)\,IP used by ([^,]+)\,([^,]+)\,(\S+)$
+    pattern: ^(\S+)\,IP used by ((?!suppobox)[^,]+)\,([^,]+)\,(\S+)$
+
+  c2-ipmasterlist-suppobox:
+      remote: http://osint.bambenekconsulting.com/feeds/c2-ipmasterlist.txt
+      pattern: ^(\S+)\,IP used by (suppobox C&C)\,([^,]+)\,(\S+)$
+      confidence: 65
 
 #  Warning: the dga-feed is disabled by default as it is a very large
 #           feed at ~800K records and 95MB in size. You must have a

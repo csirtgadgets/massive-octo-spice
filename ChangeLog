@@ -1,5 +1,8 @@
 Revision history for massive-octo-spice
 
+2.00.07 2016-02-
+    - re-tagging babmenks rules
+
 2.00.06 2016-12-27
     - minor fixes for ubuntu 14.04.5
     - update p5-cif-sdk dep for 2.00 release (fixes zlib error when running cif -d -p)
