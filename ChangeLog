@@ -1,6 +1,6 @@
 Revision history for massive-octo-spice
 
-2.00.07 2016-02-
+2.00.07 2016-02-15
     - re-tagging babmenks rules
     - bugfix to Net::Patricia and ElasticSearch
 
