@@ -488,23 +488,29 @@ sub _ip_results {
     }
 
     $pt->add_string($query);
-    my @ret; my $pt2;
+    my @ret; my $pt2; my $err;
     foreach (@$results){
         if(is_ip($_->{'observable'}) ne $type){
             $Logger->error('skipping: '.$_->{'observable'});
             next;
         }
         #$Logger->debug($_->{'observable'});
-        if($pt->match_string($_->{'observable'})){
-            push(@ret,$_);
-        } else {
-            $pt2 = Net::Patricia->new();
-            if ($type eq 'ipv6'){
-                $pt2 = new Net::Patricia AF_INET6;
+        try {   
+            if($pt->match_string($_->{'observable'})){
+                push(@ret,$_);
+            } else {
+                $pt2 = Net::Patricia->new();
+                if ($type eq 'ipv6'){
+                    $pt2 = new Net::Patricia AF_INET6;
+                }
+                $pt2->add_string($_->{'observable'});
+                push(@ret,$_) if($pt2->match_string($query));
             }
-            $pt2->add_string($_->{'observable'});
-            push(@ret,$_) if($pt2->match_string($query));
-        }
+        } catch {
+            $err = shift;
+            $Logger->error($err);
+            $Logger->error($_->{'observable'});
+        };
     }
     
     return \@ret;
