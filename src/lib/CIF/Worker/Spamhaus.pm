@@ -48,6 +48,10 @@ sub process {
     
     foreach my $rr (@$ret){
         next if(is_ip_private($obs));
+        my $confidence = CONFIDENCE;
+        if($rr->{'description'} =~ / legit /){
+            $confidence = 65;
+        }
         push(@array, {
             observable  => $obs,
             rdata       => $data->{'observable'},
@@ -58,7 +62,7 @@ sub process {
             tlp         => $data->{'tlp'} || CIF::TLP_DEFAULT,
             group       => $data->{'group'} || CIF::GROUP_DEFAULT,
             provider    => PROVIDER,
-            confidence  => CONFIDENCE,
+            confidence  => $confidence,
             application => $data->{'application'},
             altid       => $rr->{'id'},
             altid_tlp   => 'white',

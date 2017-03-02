@@ -1,5 +1,8 @@
 Revision history for massive-octo-spice
 
+2.00.08 2016-03-02
+    - bugfix to spamhaus worker confidence level
+
 2.00.07 2016-02-15
     - re-tagging babmenks rules
     - bugfix to Net::Patricia and ElasticSearch
