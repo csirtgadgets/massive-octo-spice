@@ -1,5 +1,8 @@
 Revision history for massive-octo-spice
 
+2.00.09 2016-03-
+    - bugfix to smrt journal logging
+
 2.00.08 2016-03-02
     - bugfix to spamhaus worker confidence level
 

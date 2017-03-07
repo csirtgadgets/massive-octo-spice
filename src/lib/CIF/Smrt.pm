@@ -123,9 +123,6 @@ sub process {
         # log
         $Logger->debug('checking journal');
         $data = $self->check_journal($data);
-        
-        $Logger->debug('writing journal...');
-        $self->write_journal($data); ##TODO -- should this be after?
     }
     # build
     $Logger->debug('processing events: '.($#{$data} + 1));
@@ -144,6 +141,7 @@ sub process {
         $Logger->info('testing observable: ' . $self->test_observable);
     }
 
+    my $to_be_logged = [];
     foreach (@$data){
         next unless($_->{'observable'});
         next unless(length($_->{'observable'}) > 2);
@@ -158,6 +156,8 @@ sub process {
         }
         next unless($_->{'otype'});
         
+        push(@$to_be_logged, {%$_});
+        
         $_->{'reporttime'} = $reporttime unless($_->{'reporttime'});
 
         $ts = $_->{'firsttime'} || $_->{'lasttime'} || $_->{'reporttime'} || MAX_DT;
@@ -166,7 +166,7 @@ sub process {
         next unless($self->not_before <= $ts );
         $_ = $self->rule->process({ data => $_ });
        
-       foreach my $f (qw/username password realm netloc remote/){
+       foreach my $f (qw/username password realm netloc remote map/){
             next unless(exists($_->{$f}));
             delete($_->{$f});
         }
@@ -178,6 +178,14 @@ sub process {
         local $Data::Dumper::Indent = 0;
         $Logger->debug(Dumper($_));
         push(@array,$_);
+    }
+    
+    unless($self->ignore_journal){
+        # log
+        if (length scalar @$to_be_logged > 0) {
+            $Logger->debug('writing journal...');
+            $self->write_journal($to_be_logged); ##TODO -- should this be after?
+        }
     }
     
     $Logger->info('processed events: '.($#array + 1));
