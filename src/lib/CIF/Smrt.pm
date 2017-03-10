@@ -130,8 +130,6 @@ sub process {
     
     my $reporttime = DateTime->from_epoch(epoch => time());
     $reporttime = $reporttime->ymd().'T'.$reporttime->hms().'Z';
-    
-    my $ts;
 
     if ($self->limit){
         $data = [ @$data[0..($self->limit-1)] ];   
@@ -141,7 +139,7 @@ sub process {
         $Logger->info('testing observable: ' . $self->test_observable);
     }
 
-    my $to_be_logged = [];
+    my @to_be_logged = ();
     foreach (@$data){
         next unless($_->{'observable'});
         next unless(length($_->{'observable'}) > 2);
@@ -151,19 +149,34 @@ sub process {
             next unless($_->{'observable'} && $_->{'observable'} eq $self->test_observable);
         }
         
+        push(@to_be_logged, {%$_}) unless($self->ignore_journal);
+        
         unless($_->{'otype'}){
             $_->{'otype'} = observable_type($_->{'observable'});
         }
         next unless($_->{'otype'});
         
-        push(@$to_be_logged, {%$_});
-        
         $_->{'reporttime'} = $reporttime unless($_->{'reporttime'});
 
-        $ts = $_->{'firsttime'} || $_->{'lasttime'} || $_->{'reporttime'} || MAX_DT;
-        $ts = normalize_timestamp($ts)->epoch();
+        my $ts = $_->{'firsttime'} || $_->{'lasttime'} || $_->{'reporttime'} || MAX_DT;
+        if(!$ts){
+            next;
+        } else {
+            $ts = normalize_timestamp($ts);
+            if($ts){
+                $ts = $ts->epoch();
+            } else {
+                warn Dumper($_);
+                next;
+            }
+        }
   
-        next unless($self->not_before <= $ts );
+        unless($self->not_before <= $ts){
+            unless($self->ignore_journal){
+                pop(@to_be_logged);
+            }
+            next;
+        }
         $_ = $self->rule->process({ data => $_ });
        
        foreach my $f (qw/username password realm netloc remote map/){
@@ -182,9 +195,9 @@ sub process {
     
     unless($self->ignore_journal){
         # log
-        if (length scalar @$to_be_logged > 0) {
-            $Logger->debug('writing journal...');
-            $self->write_journal($to_be_logged); ##TODO -- should this be after?
+        if (length scalar @to_be_logged > 0) {
+            $Logger->debug('writing journal... '.($#to_be_logged + 1));
+            $self->write_journal(\@to_be_logged);
         }
     }
     

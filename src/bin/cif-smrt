@@ -321,6 +321,7 @@ sub _main {
         }
     
         foreach my $r (@$rules){
+            undef $err;
             if($r->disabled && $r->disabled eq 'true'){
                     $Logger->info("disabled: $r->{'rule_path'} -f $r->{'feed'}");
                     next();
