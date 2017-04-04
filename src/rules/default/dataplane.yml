@@ -45,3 +45,10 @@ feeds:
     portlist: 5060
     confidence: 75 
     description: 'seen initiating a SIP REGISTER operation to a remote host'
+  vncrfb:
+    remote: https://dataplane.org/vncrfb.txt
+    application: vnc
+    protocol: tcp
+    portlist: 5900
+    confidence: 75:
+    description: 'seen initiating a VNC remote frame buffer session to a remote host'
