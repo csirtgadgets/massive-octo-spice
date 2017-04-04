@@ -50,5 +50,5 @@ feeds:
     application: vnc
     protocol: tcp
     portlist: 5900
-    confidence: 75:
+    confidence: 75
     description: 'seen initiating a VNC remote frame buffer session to a remote host'
