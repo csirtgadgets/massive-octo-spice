@@ -67,6 +67,7 @@ GetOptions(
     'notify-to=s'   => \$notify_to,
     'notify-subj=s' => \$notify_subj,
     'notify-from=s' => \$notify_from,
+    'notify-level=s'=> \$notify_level,
     
     # logging
     'verbosity|v+'  => \$verbosity,
