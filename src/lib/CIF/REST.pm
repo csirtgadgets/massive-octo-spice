@@ -65,7 +65,7 @@ sub startup {
         CIF::Client->new({
             remote              => REMOTE,
             tlp_map             => $self->config('tlp_map'),
-            enable_meta_data    => (defined($self->config('enable_metadata'))) ? $self->config('enable_metadata') : 1
+            enable_metadata    => (defined($self->config('enable_metadata'))) ? $self->config('enable_metadata') : 1
         })
     });
     
