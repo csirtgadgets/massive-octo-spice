@@ -17,7 +17,7 @@ use Regexp::Common qw/net/;
 use Regexp::Common::net::CIDR;
 
 use constant RE_IGNORE  => qw(qr/[\.]$/);
-use constant RE_SKIP    => qr/remote|pattern|values|ignore|filters/;
+use constant RE_SKIP    => qr/remote|pattern|values|ignore|filters|datamap/;
 use constant MIN_PREFIX => 14;
 
 
@@ -49,10 +49,50 @@ sub process {
     my $args = shift;
     
     $self->_merge_defaults($args);
+    $self->_process_datamap($args);
     $self->_normalize_otype($args->{'data'});
     $self->_normalize_ts($args->{'data'});
     return $args->{'data'};
 }
+
+sub _process_datamap {
+    my $self = shift;
+    my $args = shift;
+
+    my $datamap = $self->defaults->{'datamap'};
+    return unless ( $datamap );
+
+    foreach my $valName (keys %$datamap) {
+        my $value = $args->{'data'}->{$valName} || $self->defaults->{$valName};
+        unless ( $value ) {
+            $Logger->error('Trying to use datamap on unexistant field '.$valName);
+            assert($value);
+        }
+
+        # looking for all possible mapping
+        my @newVals = ();
+        foreach my $key (keys $datamap->{$valName}) {
+            if ( index($value, $key) != -1 ) {
+                push @newVals, $datamap->{$valName}->{$key};
+            }
+        }
+
+        # mapping an array or a scalar, depending of the number of matched mapping
+        my $newVal = undef;
+        if ( scalar(@newVals) > 1 )
+            {$newVal = \@newVals;}
+        elsif ( scalar(@newVals) == 1 )
+            {$newVal = pop @newVals;}
+        elsif ( $datamap->{$valName}->{'_default'} )
+            {$newVal = $datamap->{$valName}->{'_default'};}
+        else
+            {$newVal = $value;}
+
+	$args->{'data'}->{$valName} = $newVal;
+    }
+}
+
+
 
 sub _normalize_otype {
     my $self = shift;
