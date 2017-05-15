@@ -19,9 +19,15 @@ use Data::Dumper;
 my $help;
 my $frontend        = CIF::Router::DEFAULT_FRONTEND_LISTEN();
 my $backend         = CIF::Router::DEFAULT_BACKEND_LISTEN();
-my $storage         = 'elasticsearch';
-my $storage_host    = $ENV{'CIF_ES_HOST'} || 'localhost:9200';
-my $storage_index_partition = $ENV{'CIF_STORAGE_INDEX_PARTITION'} || 'month';
+
+my $storage;
+my $storage_host;
+my $storage_index_partition;
+
+my $default_storage                 = 'elasticsearch';
+my $default_storage_host            = $ENV{'CIF_ES_HOST'}                 || 'localhost:9200';
+my $default_storage_index_partition = $ENV{'CIF_STORAGE_INDEX_PARTITION'} || 'month';
+
 my $auth            = 'dummy',
 my $config          = "$CIF::EtcPath/cif-router.conf";
 my $retries         = 5;
@@ -34,10 +40,16 @@ my $group           = $CIF::CIF_GROUP;
 
 # notification
 my $notify;
-my $notify_to       = 'root@localhost';
-my $notify_subj     = '[cif-router] ERROR';
-my $notify_from     = 'cif';
-my $notify_level    = 'error';
+my $notify_to;
+my $notify_subj;
+my $notify_from;
+my $notify_level;
+
+my $default_notify_to    = 'root@localhost';
+my $default_notify_subj  = '[cif-router] ERROR';
+my $default_notify_from  = 'cif';
+my $default_notify_level = 'error';
+
 
 # logging
 my $debug           = 0;
@@ -106,17 +118,17 @@ Usage: $0 [OPTIONS] [status|start|stop|restart|reload]
     
  Notification Options:
     --notify:               turn on notification, default: off.
-    --notify-to:            default: $notify_to
-    --notify-from:          default: $notify_from
-    --notify-subj:          default: $notify_subj
-    --notify-level:         default: $notify_level
+    --notify-to:            default: $default_notify_to
+    --notify-from:          default: $default_notify_from
+    --notify-subj:          default: $default_notify_subj
+    --notify-level:         default: $default_notify_level
     
  Advanced Options:
     -A, --auth              specify authorization plugin, default: $auth
 
  Storage:
-    -s, --storage           default: $storage
-    --storage-host          default: $storage_host
+    -s, --storage           default: $default_storage
+    --storage-host          default: $default_storage_host
     
     --storage-index-partition   default: day [month]
 
@@ -130,15 +142,24 @@ EOF
 if(-e $config){
     $config = parse_config($config);
     $config = $config->{'router'};
-    $storage                 = $storage || $config->{'storage'};
-    $storage_host            = $storage_host || $config->{'storage_host'};
+    $storage                 = $storage                 || $config->{'storage'};
+    $storage_host            = $storage_host            || $config->{'storage_host'};
     $storage_index_partition = $storage_index_partition || $config->{'storage_index_partition'};
-    $notify                  = $notify || $config->{'notify'};
-    $notify_to               = $notify_to || $config->{'notify_to'};
-    $notify_subj             = $notify_subj || $config->{'notify_subj'};
-    $notify_from             = $notify_from || $config->{'notify_from'};
-    $notify_level            = $notify_level || $config->{'notify_level'};
+    $notify                  = $notify                  || $config->{'notify'};
+    $notify_to               = $notify_to               || $config->{'notify_to'};
+    $notify_subj             = $notify_subj             || $config->{'notify_subj'};
+    $notify_from             = $notify_from             || $config->{'notify_from'};
+    $notify_level            = $notify_level            || $config->{'notify_level'};
 }
+
+# Conf var default values
+$notify_to               = $notify_to               || $default_notify_to;
+$notify_subj             = $notify_subj             || $default_notify_subj;
+$notify_from             = $notify_from             || $default_notify_from;
+$notify_level            = $notify_level            || $default_notify_level;
+$storage                 = $storage                 || $default_storage;
+$storage_host            = $storage_host            || $default_storage_host;
+$storage_index_partition = $storage_index_partition || $default_storage_index_partition;
 
 my $loglevel = ($debug) ? 'DEBUG' : 'INFO';
 
