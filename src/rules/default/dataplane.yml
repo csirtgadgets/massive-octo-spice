@@ -13,6 +13,24 @@ defaults:
     - lasttime
     - null
 feeds:
+  dnsrd:
+    remote: https://dataplane.org/dnsrd.txt
+    application: dns
+    portlist: 53
+    confidence: 75
+    description: 'identified as sending recursive DNS queries to a remote host'
+  dnsrdany:
+    remote: https://dataplane.org/dnsrdany.txt
+    application: dns
+    portlist: 53
+    confidence: 75
+    description: 'identified as sending recursive DNS IN ANY queries to a remote host'
+  dnsversion:
+    remote: https://dataplane.org/dnsversion.txt
+    application: dns
+    portlist: 53
+    confidence: 75
+    description: 'identified as sending DNS CH TXT VERSION.BIND queries to a remote host'
   ssh:
     remote: https://dataplane.org/sshpwauth.txt
     application: ssh
