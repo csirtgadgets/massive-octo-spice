@@ -1,39 +1,310 @@
+parser: csv
 defaults:
-  provider: osint.bambenekconsulting.com
-  tlp: green
   altid_tlp: white
-  confidence: 85
-  alt_tlp: green
+  provider: osint.bambenekconsulting.com
   tags:
-    - botnet
+  - botnet
+  tlp: green
   values:
-      - observable
-      - description
-      - lasttime
-      - altid
-
+  - observable
+  - description
+  - lasttime
+  - altid
 feeds:
-  c2-dommasterlist:
-    remote: http://osint.bambenekconsulting.com/feeds/c2-dommasterlist.txt
-    pattern: ^(\S+)\,Domain used by ((?!suppobox)[^,]+)\,([^,]+)\,(\S+)$
-
-  c2-domains-suppobox:
-    remote: http://osint.bambenekconsulting.com/feeds/c2-dommasterlist.txt
-    pattern: ^(\S+)\,Domain used by (suppobox)\,([^,]+)\,(\S+)$
+  bamital-domlist:
     confidence: 65
-
-  c2-ipmasterlist:
-    remote: http://osint.bambenekconsulting.com/feeds/c2-ipmasterlist.txt
-    pattern: ^(\S+)\,IP used by ((?!suppobox)[^,]+)\,([^,]+)\,(\S+)$
-
-  c2-ipmasterlist-suppobox:
-      remote: http://osint.bambenekconsulting.com/feeds/c2-ipmasterlist.txt
-      pattern: ^(\S+)\,IP used by (suppobox C&C)\,([^,]+)\,(\S+)$
-      confidence: 65
-
-#  Warning: the dga-feed is disabled by default as it is a very large
-#           feed at ~800K records and 95MB in size. You must have a
-#           large CIF instance to process this data set.
-#  dga-feed:
-#    remote: http://osint.bambenekconsulting.com/feeds/dga-feed.txt
-#    pattern: ^(\S+)\,Domain used by ([^,]+)\,([^,]+)\,(\S+)$
+    remote: http://osint.bambenekconsulting.com/feeds/bamital-domlist.txt
+  bamital-iplist:
+    confidence: 65
+    remote: http://osint.bambenekconsulting.com/feeds/bamital-iplist.txt
+  banjori-domlist:
+    confidence: 75
+    remote: http://osint.bambenekconsulting.com/feeds/banjori-domlist.txt
+  banjori-iplist:
+    confidence: 75
+    remote: http://osint.bambenekconsulting.com/feeds/banjori-iplist.txt
+  bebloh_urlzone-domlist:
+    confidence: 65
+    remote: http://osint.bambenekconsulting.com/feeds/bebloh-domlist.txt
+  bebloh_urlzone-iplist:
+    confidence: 65
+    remote: http://osint.bambenekconsulting.com/feeds/bebloh-iplist.txt
+  bedep-domlist:
+    confidence: 65
+    remote: http://osint.bambenekconsulting.com/feeds/bedep-domlist.txt
+  bedep-iplist:
+    confidence: 65
+    remote: http://osint.bambenekconsulting.com/feeds/bedep-iplist.txt
+  beebone-domlist:
+    confidence: 65
+    remote: http://osint.bambenekconsulting.com/feeds/beebone-domlist.txt
+  beebone-iplist:
+    confidence: 65
+    remote: http://osint.bambenekconsulting.com/feeds/beebone-iplist.txt
+  chinad-domlist:
+    confidence: 65
+    remote: http://osint.bambenekconsulting.com/feeds/chinad-domlist.txt
+  chinad-iplist:
+    confidence: 65
+    remote: http://osint.bambenekconsulting.com/feeds/chinad-iplist.txt
+  corebot-domlist:
+    confidence: 65
+    remote: http://osint.bambenekconsulting.com/feeds/corebot-domlist.txt
+  corebot-iplist:
+    confidence: 65
+    remote: http://osint.bambenekconsulting.com/feeds/corebot-iplist.txt
+  cryptolocker-domlist:
+    confidence: 65
+    remote: http://osint.bambenekconsulting.com/feeds/cl-domlist.txt
+  cryptolocker-iplist:
+    confidence: 65
+    remote: http://osint.bambenekconsulting.com/feeds/cl-iplist.txt
+  dircrypt-domlist:
+    confidence: 65
+    remote: http://osint.bambenekconsulting.com/feeds/dircrypt-domlist.txt
+  dircrypt-iplist:
+    confidence: 65
+    remote: http://osint.bambenekconsulting.com/feeds/dircrypt-iplist.txt
+  dromedan-domlist:
+    confidence: 65
+    remote: http://osint.bambenekconsulting.com/feeds/dromedan-domlist.txt
+  dromedan-iplist:
+    confidence: 65
+    remote: http://osint.bambenekconsulting.com/feeds/dromedan-iplist.txt
+  dyre-domlist:
+    confidence: 65
+    remote: http://osint.bambenekconsulting.com/feeds/dyre-domlist.txt
+  dyre-iplist:
+    confidence: 65
+    remote: http://osint.bambenekconsulting.com/feeds/dyre-iplist.txt
+  fobber-domlist:
+    confidence: 65
+    remote: http://osint.bambenekconsulting.com/feeds/dyre-domlist.txt
+  fobber-iplist:
+    confidence: 65
+    remote: http://osint.bambenekconsulting.com/feeds/fobber-iplist.txt
+  g01-domlist:
+    confidence: 65
+    remote: http://osint.bambenekconsulting.com/feeds/G01-domlist.txt
+  g01-iplist:
+    confidence: 65
+    remote: http://osint.bambenekconsulting.com/feeds/G01-iplist.txt
+  geodo-domlist:
+    confidence: 65
+    remote: http://osint.bambenekconsulting.com/feeds/geodo-domlist.txt
+  geodo-iplist:
+    confidence: 65
+    remote: http://osint.bambenekconsulting.com/feeds/geodo-iplist.txt
+  gozi-domlist:
+    confidence: 65
+    remote: http://osint.bambenekconsulting.com/feeds/gozi-domlist.txt
+  gozi-iplist:
+    confidence: 65
+    remote: http://osint.bambenekconsulting.com/feeds/gozi-iplist.txt
+  hesperbot-domlist:
+    confidence: 65
+    remote: http://osint.bambenekconsulting.com/feeds/hesperbot-domlist.txt
+  hesperbot-iplist:
+    confidence: 65
+    remote: http://osint.bambenekconsulting.com/feeds/hesperbot-iplist.txt
+  kraken-domlist:
+    confidence: 65
+    remote: http://osint.bambenekconsulting.com/feeds/kraken-domlist.txt
+  kraken-iplist:
+    confidence: 65
+    remote: http://osint.bambenekconsulting.com/feeds/kraken-iplist.txt
+  locky-domlist:
+    confidence: 65
+    remote: http://osint.bambenekconsulting.com/feeds/locky-domlist.txt
+  locky-iplist:
+    confidence: 65
+    remote: http://osint.bambenekconsulting.com/feeds/locky-iplist.txt
+  madmax-domlist:
+    confidence: 65
+    remote: http://osint.bambenekconsulting.com/feeds/madmax-domlist.txt
+  madmax-iplist:
+    confidence: 65
+    remote: http://osint.bambenekconsulting.com/feeds/madmax-iplist.txt
+  matsnu-domlist:
+    confidence: 85
+    remote: http://osint.bambenekconsulting.com/feeds/matsnu-domlist.txt
+  matsnu-iplist:
+    confidence: 85
+    remote: http://osint.bambenekconsulting.com/feeds/matsnu-iplist.txt
+  murofet-domlist:
+    confidence: 65
+    remote: http://osint.bambenekconsulting.com/feeds/murofet-domlist.txt
+  murofet-iplist:
+    confidence: 65
+    remote: http://osint.bambenekconsulting.com/feeds/murofet-iplist.txt
+  necurs-domlist:
+    confidence: 65
+    remote: http://osint.bambenekconsulting.com/feeds/necurs-domlist.txt
+  necurs-iplist:
+    confidence: 65
+    remote: http://osint.bambenekconsulting.com/feeds/necurs-iplist.txt
+  nymaim-domlist:
+    confidence: 75
+    remote: http://osint.bambenekconsulting.com/feeds/nymaim-domlist.txt
+  nymaim-iplist:
+    confidence: 75
+    remote: http://osint.bambenekconsulting.com/feeds/nymaim-iplist.txt
+  p2p_goz-domlist:
+    confidence: 65
+    remote: http://osint.bambenekconsulting.com/feeds/p2pgoz-domlist.txt
+  p2p_goz-iplist:
+    confidence: 65
+    remote: http://osint.bambenekconsulting.com/feeds/p2pgoz-iplist.txt
+  padcrypt-domlist:
+    confidence: 65
+    remote: http://osint.bambenekconsulting.com/feeds/padcrypt-domlist.txt
+  padcrypt-iplist:
+    confidence: 65
+    remote: http://osint.bambenekconsulting.com/feeds/padcrypt-iplist.txt
+  pandabanker-domlist:
+    confidence: 65
+    remote: http://osint.bambenekconsulting.com/feeds/pandabanker-domlist.txt
+  pandabanker-iplist:
+    confidence: 65
+    remote: http://osint.bambenekconsulting.com/feeds/pandabanker-iplist.txt
+  pizd-domlist:
+    confidence: 85
+    remote: http://osint.bambenekconsulting.com/feeds/pizd-domlist.txt
+  pizd-iplist:
+    confidence: 85
+    remote: http://osint.bambenekconsulting.com/feeds/pizd-iplist.txt
+  proslikefan-domlist:
+    confidence: 65
+    remote: http://osint.bambenekconsulting.com/feeds/proslikefan-domlist.txt
+  proslikefan-iplist:
+    confidence: 65
+    remote: http://osint.bambenekconsulting.com/feeds/proslikefan-iplist.txt
+  pt_goz___new_goz-domlist:
+    confidence: 65
+    remote: http://osint.bambenekconsulting.com/feeds/ptgoz-domlist.txt
+  pushdo-domlist:
+    confidence: 65
+    remote: http://osint.bambenekconsulting.com/feeds/pushdo-domlist.txt
+  pushdo-iplist:
+    confidence: 65
+    remote: http://osint.bambenekconsulting.com/feeds/pushdo-iplist.txt
+  pykspa-domlist:
+    confidence: 75
+    remote: http://osint.bambenekconsulting.com/feeds/pykspa-domlist.txt
+  pykspa-iplist:
+    confidence: 75
+    remote: http://osint.bambenekconsulting.com/feeds/pykspa-iplist.txt
+  qadars-domlist:
+    confidence: 65
+    remote: http://osint.bambenekconsulting.com/feeds/qadars-domlist.txt
+  qadars-iplist:
+    confidence: 65
+    remote: http://osint.bambenekconsulting.com/feeds/qadars-iplist.txt
+  qakbot-domlist:
+    confidence: 65
+    remote: http://osint.bambenekconsulting.com/feeds/qakbot-domlist.txt
+  qakbot-iplist:
+    confidence: 65
+    remote: http://osint.bambenekconsulting.com/feeds/qakbot-iplist.txt
+  ramdo-domlist:
+    confidence: 65
+    remote: http://osint.bambenekconsulting.com/feeds/ramdo-domlist.txt
+  ramdo-iplist:
+    confidence: 65
+    remote: http://osint.bambenekconsulting.com/feeds/ramdo-iplist.txt
+  ramnit-domlist:
+    confidence: 65
+    remote: http://osint.bambenekconsulting.com/feeds/ramnit-domlist.txt
+  ramnit-iplist:
+    confidence: 65
+    remote: http://osint.bambenekconsulting.com/feeds/ramnit-iplist.txt
+  ranbyus-domlist:
+    confidence: 65
+    remote: http://osint.bambenekconsulting.com/feeds/ranbyus-domlist.txt
+  ranbyus-iplist:
+    confidence: 65
+    remote: http://osint.bambenekconsulting.com/feeds/ranbyus-iplist.txt
+  shifu-domlist:
+    confidence: 75
+    remote: http://osint.bambenekconsulting.com/feeds/shifu-domlist.txt
+  shifu-iplist:
+    confidence: 75
+    remote: http://osint.bambenekconsulting.com/feeds/shifu-iplist.txt
+  simda-domlist:
+    confidence: 75
+    remote: http://osint.bambenekconsulting.com/feeds/simda-domlist.txt
+  simda-iplist:
+    confidence: 75
+    remote: http://osint.bambenekconsulting.com/feeds/simda-iplist.txt
+  sisron-domlist:
+    confidence: 65
+    remote: http://osint.bambenekconsulting.com/feeds/sisron-domlist.txt
+  sisron-iplist:
+    confidence: 65
+    remote: http://osint.bambenekconsulting.com/feeds/sisron-iplist.txt
+  sphinx-domlist:
+    confidence: 65
+    remote: http://osint.bambenekconsulting.com/feeds/sphinx-domlist.txt
+  sphinx-iplist:
+    confidence: 65
+    remote: http://osint.bambenekconsulting.com/feeds/sphinx-iplist.txt
+  suppobox-domlist:
+    confidence: 85
+    remote: http://osint.bambenekconsulting.com/feeds/suppobox-domlist.txt
+  suppobox-iplist:
+    confidence: 85
+    remote: http://osint.bambenekconsulting.com/feeds/suppobox-iplist.txt
+  symmi-domlist:
+    confidence: 65
+    remote: http://osint.bambenekconsulting.com/feeds/symmi-domlist.txt
+  symmi-iplist:
+    confidence: 65
+    remote: http://osint.bambenekconsulting.com/feeds/symmi-iplist.txt
+  tempedreve-domlist:
+    confidence: 65
+    remote: http://osint.bambenekconsulting.com/feeds/tempedreve-domlist.txt
+  tempedreve-iplist:
+    confidence: 65
+    remote: http://osint.bambenekconsulting.com/feeds/tempedreve-iplist.txt
+  tinba___tinybanker-domlist:
+    confidence: 65
+    remote: http://osint.bambenekconsulting.com/feeds/tinba-domlist.txt
+  tinba___tinybanker-iplist:
+    confidence: 65
+    remote: http://osint.bambenekconsulting.com/feeds/tinba-iplist.txt
+  unknowndropper-domlist:
+    confidence: 65
+    remote: http://osint.bambenekconsulting.com/feeds/unknowndropper-domlist.txt
+  unknowndropper-iplist:
+    confidence: 65
+    remote: http://osint.bambenekconsulting.com/feeds/unknowndropper-iplist.txt
+  unknownjs-domlist:
+    confidence: 65
+    remote: http://osint.bambenekconsulting.com/feeds/unknownjs-domlist.txt
+  unknownjs-iplist:
+    confidence: 65
+    remote: http://osint.bambenekconsulting.com/feeds/unknownjs-iplist.txt
+  vawtrak-domlist:
+    confidence: 65
+    remote: http://osint.bambenekconsulting.com/feeds/vawtrak-domlist.txt
+  vawtrak-iplist:
+    confidence: 65
+    remote: http://osint.bambenekconsulting.com/feeds/vawtrak-iplist.txt
+  vidro-domlist:
+    confidence: 65
+    remote: http://osint.bambenekconsulting.com/feeds/vidro-domlist.txt
+  vidro-iplist:
+    confidence: 65
+    remote: http://osint.bambenekconsulting.com/feeds/vidro-iplist.txt
+  virut-domlist:
+    confidence: 75
+    remote: http://osint.bambenekconsulting.com/feeds/virut-domlist.txt
+  virut-iplist:
+    confidence: 75
+    remote: http://osint.bambenekconsulting.com/feeds/virut-iplist.txt
+  volatile_cedar___explosive-domlist:
+    confidence: 65
+    remote: http://osint.bambenekconsulting.com/feeds/volatile-domlist.txt
+  volatile_cedar___explosive-iplist:
+    confidence: 65
+    remote: http://osint.bambenekconsulting.com/feeds/volatile-iplist.txt
