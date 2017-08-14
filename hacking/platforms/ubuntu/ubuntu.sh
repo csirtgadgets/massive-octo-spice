@@ -72,7 +72,7 @@ cpanm Hijk@0.19
 cpanm https://github.com/kraih/mojo/archive/v5.82.tar.gz
 cpanm Search::Elasticsearch@1.19
 cpanm http://search.cpan.org/CPAN/authors/id/H/HA/HAARG/local-lib-2.000015.tar.gz
-cpanm https://github.com/csirtgadgets/p5-cif-sdk/archive/2.00.tar.gz
+cpanm https://github.com/csirtgadgets/p5-cif-sdk/archive/2.02.tar.gz
 
 echo 'HRNGDEVICE=/dev/urandom' >> /etc/default/rng-tools
 service rng-tools restart
