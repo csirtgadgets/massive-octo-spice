@@ -249,10 +249,10 @@ feeds:
     confidence: 65
     remote: http://osint.bambenekconsulting.com/feeds/sphinx-iplist.txt
   suppobox-domlist:
-    confidence: 85
+    confidence: 65
     remote: http://osint.bambenekconsulting.com/feeds/suppobox-domlist.txt
   suppobox-iplist:
-    confidence: 85
+    confidence: 65
     remote: http://osint.bambenekconsulting.com/feeds/suppobox-iplist.txt
   symmi-domlist:
     confidence: 65

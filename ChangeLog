@@ -1,7 +1,11 @@
 Revision history for massive-octo-spice
 
-2.00.09 2016-03-
+2.00.09 2017-08-24
     - bugfix to smrt journal logging
+    - added more dataplane.org feeds
+    - misc bugfixes
+    - cleaned up rules a bit
+    - fixed enable_metadata options
 
 2.00.08 2016-03-02
     - bugfix to spamhaus worker confidence level
