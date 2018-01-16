@@ -1,3 +1,5 @@
+# CIFv2 is reaching EOL, have you tested the issue on CIFv3 https://github.com/csirtgadgets/bearded-avenger-deploymentkit/wiki ?
+
 # Expected behavior and actual behavior.
 
 # Steps to reporduce the problem
