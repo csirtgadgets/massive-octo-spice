@@ -1,3 +1,8 @@
+# CIFv2 is Entering End of Life
+CIFv2 was developed around Ubuntu14, CIFv3 has been developed against Ubuntu16. If you're just starting out, you should be test driving CIFv3:
+
+https://github.com/csirtgadgets/bearded-avenger-deploymentkit
+
 # Getting Started 
  * [the EasyButton!](https://github.com/csirtgadgets/massive-octo-spice/wiki/PlatformUbuntu)
  * [the Wiki](https://github.com/csirtgadgets/massive-octo-spice/wiki)
